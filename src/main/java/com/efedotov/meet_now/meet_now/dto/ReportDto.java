@@ -5,10 +5,10 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class ChatDto {
-    private UUID chatId;
-    private UUID user1Id;
-    private UUID user2Id;
+public class ReportDto {
+    private UUID id;
+    private UUID reporterId;
+    private UUID reportedId;
+    private String reason;
     private LocalDateTime createdAt;
-    private Boolean isOpened;
 }

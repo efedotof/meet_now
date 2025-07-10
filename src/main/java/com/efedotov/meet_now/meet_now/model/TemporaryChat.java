@@ -14,15 +14,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "messages")
-public class Message {
+@Table(name = "temporary_chats")
+public class TemporaryChat {
     @Id
     @GeneratedValue
-    private UUID id;
-
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
+    @Column(name = "temp_chat_id")
+    private UUID tempChatId;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
@@ -32,9 +29,15 @@ public class Message {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @Column(columnDefinition = "TEXT")
-    private String text;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes = 5;
+
+    @Column(name = "is_finished")
+    private Boolean isFinished = false;
+
+    @Column(name = "both_agreed")
+    private Boolean bothAgreed = false;
 }

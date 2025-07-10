@@ -8,33 +8,30 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "messages")
-public class Message {
+@Table(name = "second_chance")
+public class SecondChance {
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
+    @OneToOne
+    @JoinColumn(name = "temp_chat_id")
+    private TemporaryChat temporaryChat;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
+    @Column(name = "sender_decision")
+    private Boolean senderDecision;
 
-    @ManyToOne
-    @JoinColumn(name = "recipient_id")
-    private User recipient;
-
-    @Column(columnDefinition = "TEXT")
-    private String text;
+    @Column(name = "recipient_decision")
+    private Boolean recipientDecision;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private Boolean processed = false;
 }

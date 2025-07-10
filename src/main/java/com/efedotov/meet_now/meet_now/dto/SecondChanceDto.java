@@ -5,11 +5,11 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class MessageDto {
+public class SecondChanceDto {
     private UUID id;
-    private UUID chatId;
-    private UUID senderId;
-    private UUID recipientId;
-    private String text;
+    private UUID temporaryChatId;
+    private Boolean senderDecision;
+    private Boolean recipientDecision;
     private LocalDateTime createdAt;
+    private Boolean processed;
 }

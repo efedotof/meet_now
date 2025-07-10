@@ -14,26 +14,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "messages")
-public class Message {
+@Table(name = "reports")
+public class Report {
     @Id
     @GeneratedValue
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
+    @JoinColumn(name = "reporter_id")
+    private User reporter;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
-
-    @ManyToOne
-    @JoinColumn(name = "recipient_id")
-    private User recipient;
+    @JoinColumn(name = "reported_id")
+    private User reported;
 
     @Column(columnDefinition = "TEXT")
-    private String text;
+    private String reason;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -1,5 +1,7 @@
 package com.efedotov.meet_now.meet_now.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,15 +12,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "icebreakers")
-public class IcebreakerTopec {
-    
+@Table(name = "question_of_day")
+public class QuestionOfDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String text;
+    @Column(nullable = false)
+    private String question;
 
-
+    @Column(unique = true)
+    private LocalDate date;
 }

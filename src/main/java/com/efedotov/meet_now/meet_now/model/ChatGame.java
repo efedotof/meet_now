@@ -1,6 +1,5 @@
 package com.efedotov.meet_now.meet_now.model;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -14,8 +13,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "messages")
-public class Message {
+@Table(name = "chat_games")
+public class ChatGame {
     @Id
     @GeneratedValue
     private UUID id;
@@ -24,17 +23,9 @@ public class Message {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
-
-    @ManyToOne
-    @JoinColumn(name = "recipient_id")
-    private User recipient;
+    @Column(name = "game_type")
+    private String gameType;
 
     @Column(columnDefinition = "TEXT")
-    private String text;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String state; 
 }

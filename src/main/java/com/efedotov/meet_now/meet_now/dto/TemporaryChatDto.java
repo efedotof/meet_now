@@ -5,11 +5,12 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class MessageDto {
-    private UUID id;
-    private UUID chatId;
+public class TemporaryChatDto {
+    private UUID tempChatId;
     private UUID senderId;
     private UUID recipientId;
-    private String text;
     private LocalDateTime createdAt;
+    private Integer durationMinutes;
+    private Boolean isFinished;
+    private Boolean bothAgreed;
 }
