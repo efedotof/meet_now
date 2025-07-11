@@ -8,6 +8,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -63,13 +64,12 @@ public class ChatService {
     private void scheduleTempChatTimeout(TemporaryChat tempChat) {
         Runnable task = () -> finishTemporaryChat(tempChat.getTempChatId());
 
-        Date scheduledTime = Date.from(
-                tempChat.getCreatedAt()
-                        .plusMinutes(tempChat.getDurationMinutes())
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant());
+        Instant scheduledInstant = tempChat.getCreatedAt()
+                .plusMinutes(tempChat.getDurationMinutes())
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
 
-        ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, scheduledTime);
+        ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, scheduledInstant);
         tempChatTimers.put(tempChat.getTempChatId(), scheduledTask);
         log.info("Таймер для TemporaryChat {} установлен на {} минут", tempChat.getTempChatId(),
                 tempChat.getDurationMinutes());

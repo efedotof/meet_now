@@ -19,8 +19,7 @@ public class FriendService {
 
         User fromUser = userRepository.findById(fromUserId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));
-        User toUser = userRepository.findById(toUserId)
-                .orElseThrow(() -> new RuntimeException("Пользователь (получатель) не найден"));
+    
 
         if (fromUser.getFriends().contains(toUserId)) {
             return "Пользователь уже в списке друзей";
