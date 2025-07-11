@@ -22,4 +22,5 @@ public class UserDto {
     private LocalDateTime createdAt;
     private Boolean verified;
     private Boolean isSearchable;
+    private String token;
 }

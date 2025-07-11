@@ -117,3 +117,11 @@ CREATE TABLE IF NOT EXISTS user_friends (
     friend_id UUID REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, friend_id)
 );
+
+
+CREATE TABLE IF NOT EXISTS user_sessions (
+    token VARCHAR(255) PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL
+);
