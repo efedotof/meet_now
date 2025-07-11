@@ -19,9 +19,11 @@ public class FriendService {
 
         User fromUser = userRepository.findById(fromUserId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));
-    
 
-        if (fromUser.getFriends().contains(toUserId)) {
+        User toUser = userRepository.findById(toUserId)
+                .orElseThrow(() -> new RuntimeException("Пользователь (получатель) не найден"));
+
+        if (fromUser.getFriends().contains(toUser)) {
             return "Пользователь уже в списке друзей";
         }
 
@@ -42,11 +44,13 @@ public class FriendService {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));
 
-        currentUser.getFriends().add(requesterId);
-        requester.getFriends().add(currentUserId);
+        // Добавляем друг друга в сет друзей
+        currentUser.getFriends().add(requester);
+        requester.getFriends().add(currentUser);
 
         userRepository.save(currentUser);
         userRepository.save(requester);
+
         requests.remove(requesterId);
         if (requests.isEmpty()) {
             friendRequests.remove(currentUserId);
@@ -77,8 +81,8 @@ public class FriendService {
         User friend = userRepository.findById(friendId)
                 .orElseThrow(() -> new RuntimeException("Друг не найден"));
 
-        boolean removedFromUser = user.getFriends().remove(friendId);
-        boolean removedFromFriend = friend.getFriends().remove(userId);
+        boolean removedFromUser = user.getFriends().remove(friend);
+        boolean removedFromFriend = friend.getFriends().remove(user);
 
         userRepository.save(user);
         userRepository.save(friend);
@@ -87,11 +91,10 @@ public class FriendService {
                 : "Пользователь не был в списке друзей";
     }
 
-    public List<User> getFriends(UUID userId) {
+    public Set<User> getFriends(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        List<UUID> friendIds = user.getFriends();
-        return userRepository.findAllById(friendIds);
+        return user.getFriends();
     }
 
     public List<User> getIncomingRequests(UUID userId) {

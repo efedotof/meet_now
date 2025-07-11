@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/friend")
@@ -44,8 +46,9 @@ public class FriendController {
 
     @GetMapping("/list")
     public ResponseEntity<List<User>> getFriends(@RequestParam UUID userId) {
-        List<User> friends = friendService.getFriends(userId);
-        return ResponseEntity.ok(friends);
+        Set<User> friendsSet = friendService.getFriends(userId);
+        List<User> friendsList = friendsSet.stream().collect(Collectors.toList());
+        return ResponseEntity.ok(friendsList);
     }
 
     @GetMapping("/requests/incoming")

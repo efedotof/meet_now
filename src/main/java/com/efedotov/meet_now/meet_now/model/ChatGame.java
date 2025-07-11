@@ -26,6 +26,6 @@ public class ChatGame {
     @Column(name = "game_type")
     private String gameType;
 
-    @Column(columnDefinition = "TEXT")
-    private String state; 
+    @Column(columnDefinition = "text")
+    private String state;
 }
