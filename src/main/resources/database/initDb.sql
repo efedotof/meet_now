@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Таблица пользователей
+
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS users (
     age INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     verified BOOLEAN DEFAULT FALSE,
-    is_searchable BOOLEAN DEFAULT TRUE -- для "Скрыть себя от поиска"
+    is_searchable BOOLEAN DEFAULT TRUE 
 );
 
--- Таблица целей (purposes) пользователя — связь многие-ко-многим
+
 CREATE TABLE IF NOT EXISTS user_purposes (
     user_id UUID NOT NULL,
     purpose VARCHAR(255) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user_purposes (
     CONSTRAINT fk_user_purposes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Таблица интересов (interests) пользователя — связь многие-ко-многим
+
 CREATE TABLE IF NOT EXISTS user_interests (
     user_id UUID NOT NULL,
     interest VARCHAR(255) NOT NULL,
@@ -33,16 +33,16 @@ CREATE TABLE IF NOT EXISTS user_interests (
     CONSTRAINT fk_user_interests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Чаты между двумя пользователями
+
 CREATE TABLE IF NOT EXISTS chats (
     chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id1 UUID REFERENCES users(id) ON DELETE CASCADE,
     user_id2 UUID REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_opened BOOLEAN DEFAULT FALSE -- раскрыты ли анкеты
+    is_opened BOOLEAN DEFAULT FALSE 
 );
 
--- Сообщения в чатах
+
 CREATE TABLE IF NOT EXISTS messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Временные чаты
+
 CREATE TABLE IF NOT EXISTS temporary_chats (
     temp_chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sender_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -60,10 +60,10 @@ CREATE TABLE IF NOT EXISTS temporary_chats (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     duration_minutes INT DEFAULT 5,
     is_finished BOOLEAN DEFAULT FALSE,
-    both_agreed BOOLEAN DEFAULT FALSE -- если оба раскрыли анкету
+    both_agreed BOOLEAN DEFAULT FALSE 
 );
 
--- Жалобы
+
 CREATE TABLE IF NOT EXISTS reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     reporter_id UUID REFERENCES users(id),
@@ -72,20 +72,20 @@ CREATE TABLE IF NOT EXISTS reports (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ледоколы
+
 CREATE TABLE IF NOT EXISTS icebreakers (
     id BIGSERIAL PRIMARY KEY,
     text TEXT NOT NULL
 );
 
--- Вопрос дня
+
 CREATE TABLE IF NOT EXISTS question_of_day (
     id BIGSERIAL PRIMARY KEY,
     question TEXT NOT NULL,
     date DATE UNIQUE NOT NULL
 );
 
--- Ограничения для временных чатов
+
 CREATE TABLE IF NOT EXISTS chat_constraints (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     temp_chat_id UUID REFERENCES temporary_chats(temp_chat_id) ON DELETE CASCADE,
@@ -93,15 +93,15 @@ CREATE TABLE IF NOT EXISTS chat_constraints (
     can_start BOOLEAN DEFAULT FALSE
 );
 
--- Игры в чатах
+
 CREATE TABLE IF NOT EXISTS chat_games (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
-    game_type VARCHAR(100), -- например, "угадай слово", "правда или действие"
-    state TEXT -- состояние игры
+    game_type VARCHAR(100), 
+    state TEXT 
 );
 
--- Второй шанс для временных чатов
+
 CREATE TABLE IF NOT EXISTS second_chance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     temp_chat_id UUID REFERENCES temporary_chats(temp_chat_id),
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS second_chance (
     processed BOOLEAN DEFAULT FALSE
 );
 
--- Друзья пользователей (связь многие-ко-многим)
+
 CREATE TABLE IF NOT EXISTS user_friends (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     friend_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -125,3 +125,22 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     created_at TIMESTAMP NOT NULL,
     expires_at TIMESTAMP NOT NULL
 );
+
+
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, role_id)
+);
+
+
+INSERT INTO roles (role_name) VALUES
+('MODERATION'),
+('ADMIN'),
+('USER')
+ON CONFLICT (role_name) DO NOTHING; 

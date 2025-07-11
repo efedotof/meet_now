@@ -8,5 +8,6 @@ import com.efedotov.meet_now.meet_now.model.Report;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, UUID> {
     List<Report> findByReporter_Id(UUID reporterId);
+
     List<Report> findByReported_Id(UUID reportedId);
 }

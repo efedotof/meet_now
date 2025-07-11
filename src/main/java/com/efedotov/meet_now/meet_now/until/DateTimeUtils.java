@@ -1,6 +1,5 @@
 package com.efedotov.meet_now.meet_now.until;
 
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

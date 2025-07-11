@@ -10,9 +10,11 @@ import io.swagger.v3.oas.models.info.Info;
 @Configuration
 public class SwaggerConfig {
     @Bean
-    public OpenAPI customOpenApi(){
-        return new OpenAPI().info(new Info().title("MeetNow API").version("0.0.1").description("API для приложения MeetNow - приложения для знакомств"));
+    public OpenAPI customOpenApi() {
+        return new OpenAPI().info(new Info().title("MeetNow API").version("0.0.1")
+                .description("API для приложения MeetNow - приложения для знакомств"));
     }
+
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder().group("public").pathsToMatch("/api/**").build();

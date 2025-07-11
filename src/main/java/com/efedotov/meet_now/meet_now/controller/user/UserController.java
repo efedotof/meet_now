@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -16,10 +17,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1/user")
 @Tag(name = "User", description = "Эндпоинты для управления пользователями: получение профиля, обновление анкеты, управление приватностью")
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class UserController {
 
     private final UserService userService;
-
 
     @Operation(summary = "Получение профиля по ID")
     @GetMapping("/{id}")
@@ -99,8 +100,7 @@ public class UserController {
     public ResponseEntity<Void> updatePassword(
             @PathVariable UUID id,
             @RequestParam String oldPassword,
-            @RequestParam String newPassword
-    ) {
+            @RequestParam String newPassword) {
         userService.updatePassword(id, oldPassword, newPassword);
         return ResponseEntity.ok().build();
     }

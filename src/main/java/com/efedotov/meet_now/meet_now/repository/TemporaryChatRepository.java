@@ -8,5 +8,6 @@ import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 @Repository
 public interface TemporaryChatRepository extends JpaRepository<TemporaryChat, UUID> {
     List<TemporaryChat> findBySender_IdOrRecipient_Id(UUID senderId, UUID recipientId);
+
     List<TemporaryChat> findByIsFinishedFalse();
 }

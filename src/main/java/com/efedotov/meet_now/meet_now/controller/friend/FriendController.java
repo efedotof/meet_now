@@ -5,6 +5,7 @@ import com.efedotov.meet_now.meet_now.service.FriendService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/friend")
 @Tag(name = "Friend", description = "Управление друзьями: отправка и подтверждение запросов в друзья, удаление из друзей, список друзей")
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class FriendController {
 
     private final FriendService friendService;
@@ -27,13 +29,15 @@ public class FriendController {
     }
 
     @PostMapping("/request/accept")
-    public ResponseEntity<String> acceptFriendRequest(@RequestParam UUID currentUserId, @RequestParam UUID requesterId) {
+    public ResponseEntity<String> acceptFriendRequest(@RequestParam UUID currentUserId,
+            @RequestParam UUID requesterId) {
         String result = friendService.acceptFriendRequest(currentUserId, requesterId);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/request/reject")
-    public ResponseEntity<String> rejectFriendRequest(@RequestParam UUID currentUserId, @RequestParam UUID requesterId) {
+    public ResponseEntity<String> rejectFriendRequest(@RequestParam UUID currentUserId,
+            @RequestParam UUID requesterId) {
         String result = friendService.rejectFriendRequest(currentUserId, requesterId);
         return ResponseEntity.ok(result);
     }

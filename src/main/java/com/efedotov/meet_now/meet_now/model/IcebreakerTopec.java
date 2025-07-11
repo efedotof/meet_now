@@ -12,13 +12,12 @@ import lombok.Data;
 @Entity
 @Table(name = "icebreakers")
 public class IcebreakerTopec {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
-
 
 }

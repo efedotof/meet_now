@@ -48,8 +48,8 @@ public class FriendControllerTest {
         mockMvc.perform(post("/api/v1/friend/request/send")
                 .param("fromUserId", fromUserId.toString())
                 .param("toUserId", toUserId.toString()))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Request sent"));
+                .andExpect(status().isOk())
+                .andExpect(content().string("Request sent"));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class FriendControllerTest {
         when(friendService.getFriends(userId)).thenReturn(friendsSet);
 
         mockMvc.perform(get("/api/v1/friend/list").param("userId", userId.toString()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].username").value("friend1"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("friend1"));
     }
 }

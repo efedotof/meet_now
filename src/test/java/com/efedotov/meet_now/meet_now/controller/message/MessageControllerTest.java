@@ -54,8 +54,8 @@ public class MessageControllerTest {
         when(messageService.getMessagesByChatId(chatId)).thenReturn(messages);
 
         mockMvc.perform(get("/api/v1/message/chat/{chatId}", chatId))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(messages.size()))
-            .andExpect(jsonPath("$[0].text").value("Hello"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(messages.size()))
+                .andExpect(jsonPath("$[0].text").value("Hello"));
     }
 }

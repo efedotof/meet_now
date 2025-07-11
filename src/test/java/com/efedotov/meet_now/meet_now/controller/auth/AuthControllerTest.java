@@ -62,9 +62,9 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.username").value("user"))
-            .andExpect(jsonPath("$.email").value("user@example.com"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("user"))
+                .andExpect(jsonPath("$.email").value("user@example.com"));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AuthControllerTest {
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.username").value("user"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("user"));
     }
 }

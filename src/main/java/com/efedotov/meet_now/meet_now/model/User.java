@@ -21,7 +21,6 @@ import lombok.Data;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue
     private UUID id;
@@ -56,30 +55,21 @@ public class User {
     @Column(name = "is_searchable")
     private Boolean isSearchable = true;
 
-    // Друзья — связь многие-ко-многим через user_friends
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_friends",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "friend_id")
-    )
+    @JoinTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "friend_id"))
     private Set<User> friends;
 
-    // Цели — связь многие-ко-многим через user_purposes (простой список строк)
     @ElementCollection(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_purposes",
-        joinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "user_purposes", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "purpose")
     private List<String> purposes;
 
-    // Интересы — связь многие-ко-многим через user_interests (простой список строк)
     @ElementCollection(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_interests",
-        joinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "interest")
     private List<String> interests;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
 }

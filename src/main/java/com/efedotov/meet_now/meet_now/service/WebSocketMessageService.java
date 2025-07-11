@@ -22,8 +22,7 @@ public class WebSocketMessageService {
         messagingTemplate.convertAndSendToUser(
                 message.getRecipient().getId().toString(),
                 "/queue/messages",
-                saved
-        );
+                saved);
 
         return saved;
     }

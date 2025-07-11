@@ -8,5 +8,6 @@ import com.efedotov.meet_now.meet_now.model.ChatGame;
 @Repository
 public interface ChatGameRepository extends JpaRepository<ChatGame, UUID> {
     List<ChatGame> findByChat_ChatId(UUID chatId);
+
     List<ChatGame> findByGameType(String gameType);
 }

@@ -15,7 +15,8 @@ public class FriendService {
     private final Map<UUID, Set<UUID>> friendRequests = new HashMap<>();
 
     public String sendFriendRequest(UUID fromUserId, UUID toUserId) {
-        if (fromUserId.equals(toUserId)) return "Нельзя добавить самого себя";
+        if (fromUserId.equals(toUserId))
+            return "Нельзя добавить самого себя";
 
         User fromUser = userRepository.findById(fromUserId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));

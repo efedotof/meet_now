@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +23,10 @@ import java.util.UUID;
 @RequestMapping("/api/v1/chat")
 @Tag(name = "Chat", description = "Управление чатами: создание временного чата, завершение чата, получение списка активных чатов, история сообщений")
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class ChatController {
 
     private final ChatService chatService;
-
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
@@ -33,7 +34,7 @@ public class ChatController {
             @RequestParam UUID senderId,
             @RequestParam UUID recipientId,
             @RequestParam(defaultValue = "10") int durationMinutes) {
-        
+
         var sender = new User();
         sender.setId(senderId);
         var recipient = new User();
@@ -43,14 +44,12 @@ public class ChatController {
         return ResponseEntity.ok(tempChat);
     }
 
-
     @Operation(summary = "Завершить временный чат")
     @PostMapping("/temporary/{tempChatId}/finish")
     public ResponseEntity<Void> finishTemporaryChat(@PathVariable UUID tempChatId) {
         chatService.finishTemporaryChat(tempChatId);
         return ResponseEntity.ok().build();
     }
-
 
     @Operation(summary = "Пользователь соглашается продолжить чат")
     @PostMapping("/temporary/{tempChatId}/agree")
@@ -74,7 +73,6 @@ public class ChatController {
         List<Chat> chats = chatService.getPermanentChatsForUser(userId);
         return ResponseEntity.ok(chats);
     }
-
 
     @Operation(summary = "Получить ограничения временного чата")
     @GetMapping("/temporary/{tempChatId}/constraint")

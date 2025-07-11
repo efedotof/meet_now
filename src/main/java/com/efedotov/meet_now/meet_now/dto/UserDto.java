@@ -2,6 +2,7 @@ package com.efedotov.meet_now.meet_now.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
 
@@ -23,4 +24,5 @@ public class UserDto {
     private Boolean verified;
     private Boolean isSearchable;
     private String token;
+    private Set<String> roles;
 }
