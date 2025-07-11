@@ -18,7 +18,13 @@ public class WebSocketMessageService {
     public Message processMessage(Message message) {
         message.setCreatedAt(LocalDateTime.now());
         Message saved = messageRepository.save(message);
-        messagingTemplate.convertAndSend("/topic/public", saved);
+
+        messagingTemplate.convertAndSendToUser(
+                message.getRecipient().getId().toString(),
+                "/queue/messages",
+                saved
+        );
+
         return saved;
     }
 }

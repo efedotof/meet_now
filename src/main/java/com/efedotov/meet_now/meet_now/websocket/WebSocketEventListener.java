@@ -14,12 +14,12 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        log.info("Пользователь подключился: {}", headerAccessor.getSessionId());
+        log.info("Пользователь подключился, sessionId = {}", headerAccessor.getSessionId());
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        log.info("Пользователь отключился: {}", headerAccessor.getSessionId());
+        log.info("Пользователь отключился, sessionId = {}", headerAccessor.getSessionId());
     }
 }

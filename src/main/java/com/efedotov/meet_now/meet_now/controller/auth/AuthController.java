@@ -6,19 +6,18 @@ import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.service.AuthService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "Эндпоинты для регистрации, входа, выхода и управления аутентификацией")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registration(@RequestBody RegistrationDTO dto) {
