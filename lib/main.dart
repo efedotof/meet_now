@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/storage/user/user_storage_repository.dart';
 import 'package:meet_now_app/theme/repository/theme_repository.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'server/repository/auth/auth_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +17,21 @@ void main() async {
   ]);
 
   final prefs = await SharedPreferences.getInstance();
+
+  ///
+  /// репозиторий для темы
+  ///
   final themeRepository = ThemeRepository(preferences: prefs);
+
+  ///
+  /// сохранение пользователя в local
+  ///
+  final userStorageRepository = UserStorageRepository(preferences: prefs);
+
+  ///
+  /// репозиторий для авторизации
+  ///
+  final authRepository = AuthRepository();
 
   runApp(
     MultiBlocProvider(

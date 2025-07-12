@@ -1,0 +1,49 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'user.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_UserDto _$UserDtoFromJson(Map<String, dynamic> json) => _UserDto(
+  id: json['id'] as String,
+  username: json['username'] as String,
+  email: json['email'] as String,
+  firstname: json['firstname'] as String?,
+  subname: json['subname'] as String?,
+  description: json['description'] as String?,
+  avatar: json['avatar'] as String?,
+  friends: (json['friends'] as List<dynamic>).map((e) => e as String).toList(),
+  city: json['city'] as String?,
+  age: (json['age'] as num?)?.toInt(),
+  purposes:
+      (json['purposes'] as List<dynamic>).map((e) => e as String).toList(),
+  interests:
+      (json['interests'] as List<dynamic>).map((e) => e as String).toList(),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  verified: json['verified'] as bool,
+  isSearchable: json['isSearchable'] as bool,
+  token: json['token'] as String?,
+  roles: (json['roles'] as List<dynamic>).map((e) => e as String).toSet(),
+);
+
+Map<String, dynamic> _$UserDtoToJson(_UserDto instance) => <String, dynamic>{
+  'id': instance.id,
+  'username': instance.username,
+  'email': instance.email,
+  'firstname': instance.firstname,
+  'subname': instance.subname,
+  'description': instance.description,
+  'avatar': instance.avatar,
+  'friends': instance.friends,
+  'city': instance.city,
+  'age': instance.age,
+  'purposes': instance.purposes,
+  'interests': instance.interests,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'verified': instance.verified,
+  'isSearchable': instance.isSearchable,
+  'token': instance.token,
+  'roles': instance.roles.toList(),
+};
