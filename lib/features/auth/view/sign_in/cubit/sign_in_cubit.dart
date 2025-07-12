@@ -44,6 +44,7 @@ class SignInCubit extends Cubit<SignInState> {
     final pass = password.text.trim();
 
     if (un.isEmpty || pass.isEmpty) {
+      debugPrint("nullldata");
       emit(const SignInState.error(error: 'Введите логин и пароль'));
       return;
     }
@@ -51,8 +52,10 @@ class SignInCubit extends Cubit<SignInState> {
     try {
       final loginData = Login(username: un, password: pass);
       final user = await _authInterface.login(login: loginData);
+      debugPrint("user: user:$user      loginData: $loginData");
       await _userStorageInterface.saveUser(user);
       emit(SignInState.success());
+      debugPrint("Login successful, navigating to MainHomeRoute");
       if (context.mounted) {
         context.pushRoute(const MainHomeRoute());
       }

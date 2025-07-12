@@ -14,7 +14,8 @@ _UserDto _$UserDtoFromJson(Map<String, dynamic> json) => _UserDto(
   subname: json['subname'] as String?,
   description: json['description'] as String?,
   avatar: json['avatar'] as String?,
-  friends: (json['friends'] as List<dynamic>).map((e) => e as String).toList(),
+  friends:
+      (json['friends'] as List<dynamic>?)?.map((e) => e as String).toList(),
   city: json['city'] as String?,
   age: (json['age'] as num?)?.toInt(),
   purposes:
