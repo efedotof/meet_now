@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
+import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
@@ -38,6 +40,20 @@ void main() async {
       providers: [
         BlocProvider(
           create: (context) => ThemeCubit(themeInterface: themeRepository),
+        ),
+        BlocProvider(
+          create:
+              (context) => SignInCubit(
+                authInterface: authRepository,
+                userStorageInterface: userStorageRepository,
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) => SignUpCubit(
+                authInterface: authRepository,
+                userStorageInterface: userStorageRepository,
+              ),
         ),
       ],
       child: const MeetNowApp(),

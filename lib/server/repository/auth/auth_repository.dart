@@ -26,7 +26,7 @@ class AuthRepository implements AuthInterface {
   Future<User> registration({required Registration registration}) async {
     try {
       final response = await _dio.post(
-        '/registration',
+        '/register',
         data: {
           "username": registration.username,
           "email": registration.email,
