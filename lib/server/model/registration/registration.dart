@@ -9,7 +9,7 @@ abstract class Registration with _$Registration {
     required String email,
     required String firstname,
     required String subname,
-    required String descriptio,
+    required String description,
     required String avatar,
     required String city,
     required int age,

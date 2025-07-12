@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/model/registration/registration.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
@@ -74,6 +76,7 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   /// Регистрация пользователя
   Future<void> registration({
+    required BuildContext context,
     required TextEditingController username,
     required TextEditingController email,
     required TextEditingController firstname,
@@ -88,6 +91,8 @@ class SignUpCubit extends Cubit<SignUpState> {
     required TextEditingController password,
   }) async {
     // Ещё раз быстрая проверка
+
+    debugPrint("проверяем");
     if (username.text.trim().isEmpty ||
         password.text.trim().isEmpty ||
         email.text.trim().isEmpty ||
@@ -100,6 +105,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         interests.isEmpty ||
         age <= 0) {
       emit(const SignUpState.noData());
+      debugPrint("не получилось!");
       return;
     }
 
@@ -109,7 +115,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         email: email.text.trim(),
         firstname: firstname.text.trim(),
         subname: subname.text.trim(),
-        descriptio: descriptio.text.trim(),
+        description: descriptio.text,
         avatar: avatar.trim(),
         city: city.text.trim(),
         age: age,
@@ -118,12 +124,17 @@ class SignUpCubit extends Cubit<SignUpState> {
         isSearchable: isSearchable,
         password: password.text.trim(),
       );
-
+      debugPrint("поиск");
       final user = await _authInterface.registration(
         registration: registration,
       );
 
+      debugPrint("user: $user");
+
       if (user.id.isNotEmpty) {
+        if (context.mounted) {
+          context.pushRoute(MainHomeRoute());
+        }
         await _userStorageInterface.saveUser(user);
         emit(const SignUpState.success());
       } else {

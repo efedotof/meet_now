@@ -22,7 +22,7 @@ User _$UserFromJson(
 /// @nodoc
 mixin _$User {
 
- String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String> get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles;
+ String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String>? get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -55,7 +55,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String> friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
 });
 
 
@@ -72,7 +72,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = null,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -81,8 +81,8 @@ as String,firstname: freezed == firstname ? _self.firstname : firstname // ignor
 as String?,subname: freezed == subname ? _self.subname : subname // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,friends: null == friends ? _self.friends : friends // ignore: cast_nullable_to_non_nullable
-as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,friends: freezed == friends ? _self.friends : friends // ignore: cast_nullable_to_non_nullable
+as List<String>?,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,age: freezed == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int?,purposes: null == purposes ? _self.purposes : purposes // ignore: cast_nullable_to_non_nullable
 as List<String>,interests: null == interests ? _self.interests : interests // ignore: cast_nullable_to_non_nullable
@@ -176,7 +176,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String> friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserDto() when $default != null:
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
@@ -197,7 +197,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String> friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)  $default,) {final _that = this;
 switch (_that) {
 case _UserDto():
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
@@ -217,7 +217,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String> friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,) {final _that = this;
 switch (_that) {
 case _UserDto() when $default != null:
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
@@ -232,7 +232,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 @JsonSerializable()
 
 class _UserDto implements User {
-  const _UserDto({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String> friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles;
+  const _UserDto({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String>? friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles;
   factory _UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
 
 @override final  String id;
@@ -242,11 +242,13 @@ class _UserDto implements User {
 @override final  String? subname;
 @override final  String? description;
 @override final  String? avatar;
- final  List<String> _friends;
-@override List<String> get friends {
+ final  List<String>? _friends;
+@override List<String>? get friends {
+  final value = _friends;
+  if (value == null) return null;
   if (_friends is EqualUnmodifiableListView) return _friends;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_friends);
+  return EqualUnmodifiableListView(value);
 }
 
 @override final  String? city;
@@ -310,7 +312,7 @@ abstract mixin class _$UserDtoCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserDtoCopyWith(_UserDto value, $Res Function(_UserDto) _then) = __$UserDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String> friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
 });
 
 
@@ -327,7 +329,7 @@ class __$UserDtoCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = null,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
   return _then(_UserDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -336,8 +338,8 @@ as String,firstname: freezed == firstname ? _self.firstname : firstname // ignor
 as String?,subname: freezed == subname ? _self.subname : subname // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,friends: null == friends ? _self._friends : friends // ignore: cast_nullable_to_non_nullable
-as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,friends: freezed == friends ? _self._friends : friends // ignore: cast_nullable_to_non_nullable
+as List<String>?,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,age: freezed == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
 as int?,purposes: null == purposes ? _self._purposes : purposes // ignore: cast_nullable_to_non_nullable
 as List<String>,interests: null == interests ? _self._interests : interests // ignore: cast_nullable_to_non_nullable

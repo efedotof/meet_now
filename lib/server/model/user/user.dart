@@ -13,7 +13,7 @@ abstract class User with _$User {
     String? subname,
     String? description,
     String? avatar,
-    required List<String> friends,
+    required List<String>? friends,
     String? city,
     int? age,
     required List<String> purposes,

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Registration {
 
- String get username; String get email; String get firstname; String get subname; String get descriptio; String get avatar; String get city; int get age; List<String> get purposes; List<String> get interests; bool get isSearchable; String get password;
+ String get username; String get email; String get firstname; String get subname; String get description; String get avatar; String get city; int get age; List<String> get purposes; List<String> get interests; bool get isSearchable; String get password;
 /// Create a copy of Registration
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RegistrationCopyWith<Registration> get copyWith => _$RegistrationCopyWithImpl<R
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Registration&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.descriptio, descriptio) || other.descriptio == descriptio)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&const DeepCollectionEquality().equals(other.interests, interests)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.password, password) || other.password == password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Registration&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&const DeepCollectionEquality().equals(other.interests, interests)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.password, password) || other.password == password));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,email,firstname,subname,descriptio,avatar,city,age,const DeepCollectionEquality().hash(purposes),const DeepCollectionEquality().hash(interests),isSearchable,password);
+int get hashCode => Object.hash(runtimeType,username,email,firstname,subname,description,avatar,city,age,const DeepCollectionEquality().hash(purposes),const DeepCollectionEquality().hash(interests),isSearchable,password);
 
 @override
 String toString() {
-  return 'Registration(username: $username, email: $email, firstname: $firstname, subname: $subname, descriptio: $descriptio, avatar: $avatar, city: $city, age: $age, purposes: $purposes, interests: $interests, isSearchable: $isSearchable, password: $password)';
+  return 'Registration(username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, city: $city, age: $age, purposes: $purposes, interests: $interests, isSearchable: $isSearchable, password: $password)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RegistrationCopyWith<$Res>  {
   factory $RegistrationCopyWith(Registration value, $Res Function(Registration) _then) = _$RegistrationCopyWithImpl;
 @useResult
 $Res call({
- String username, String email, String firstname, String subname, String descriptio, String avatar, String city, int age, List<String> purposes, List<String> interests, bool isSearchable, String password
+ String username, String email, String firstname, String subname, String description, String avatar, String city, int age, List<String> purposes, List<String> interests, bool isSearchable, String password
 });
 
 
@@ -62,13 +62,13 @@ class _$RegistrationCopyWithImpl<$Res>
 
 /// Create a copy of Registration
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? email = null,Object? firstname = null,Object? subname = null,Object? descriptio = null,Object? avatar = null,Object? city = null,Object? age = null,Object? purposes = null,Object? interests = null,Object? isSearchable = null,Object? password = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? email = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? avatar = null,Object? city = null,Object? age = null,Object? purposes = null,Object? interests = null,Object? isSearchable = null,Object? password = null,}) {
   return _then(_self.copyWith(
 username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,firstname: null == firstname ? _self.firstname : firstname // ignore: cast_nullable_to_non_nullable
 as String,subname: null == subname ? _self.subname : subname // ignore: cast_nullable_to_non_nullable
-as String,descriptio: null == descriptio ? _self.descriptio : descriptio // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,avatar: null == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
@@ -161,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String username,  String email,  String firstname,  String subname,  String descriptio,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String username,  String email,  String firstname,  String subname,  String description,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Registration() when $default != null:
-return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.descriptio,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
+return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
   return orElse();
 
 }
@@ -182,10 +182,10 @@ return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.d
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String username,  String email,  String firstname,  String subname,  String descriptio,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String username,  String email,  String firstname,  String subname,  String description,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)  $default,) {final _that = this;
 switch (_that) {
 case _Registration():
-return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.descriptio,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
+return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +202,10 @@ return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.d
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String username,  String email,  String firstname,  String subname,  String descriptio,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String username,  String email,  String firstname,  String subname,  String description,  String avatar,  String city,  int age,  List<String> purposes,  List<String> interests,  bool isSearchable,  String password)?  $default,) {final _that = this;
 switch (_that) {
 case _Registration() when $default != null:
-return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.descriptio,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
+return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.city,_that.age,_that.purposes,_that.interests,_that.isSearchable,_that.password);case _:
   return null;
 
 }
@@ -217,14 +217,14 @@ return $default(_that.username,_that.email,_that.firstname,_that.subname,_that.d
 
 
 class _Registration implements Registration {
-   _Registration({required this.username, required this.email, required this.firstname, required this.subname, required this.descriptio, required this.avatar, required this.city, required this.age, required final  List<String> purposes, required final  List<String> interests, required this.isSearchable, required this.password}): _purposes = purposes,_interests = interests;
+   _Registration({required this.username, required this.email, required this.firstname, required this.subname, required this.description, required this.avatar, required this.city, required this.age, required final  List<String> purposes, required final  List<String> interests, required this.isSearchable, required this.password}): _purposes = purposes,_interests = interests;
   
 
 @override final  String username;
 @override final  String email;
 @override final  String firstname;
 @override final  String subname;
-@override final  String descriptio;
+@override final  String description;
 @override final  String avatar;
 @override final  String city;
 @override final  int age;
@@ -255,16 +255,16 @@ _$RegistrationCopyWith<_Registration> get copyWith => __$RegistrationCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Registration&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.descriptio, descriptio) || other.descriptio == descriptio)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&const DeepCollectionEquality().equals(other._interests, _interests)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.password, password) || other.password == password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Registration&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&const DeepCollectionEquality().equals(other._interests, _interests)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.password, password) || other.password == password));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,username,email,firstname,subname,descriptio,avatar,city,age,const DeepCollectionEquality().hash(_purposes),const DeepCollectionEquality().hash(_interests),isSearchable,password);
+int get hashCode => Object.hash(runtimeType,username,email,firstname,subname,description,avatar,city,age,const DeepCollectionEquality().hash(_purposes),const DeepCollectionEquality().hash(_interests),isSearchable,password);
 
 @override
 String toString() {
-  return 'Registration(username: $username, email: $email, firstname: $firstname, subname: $subname, descriptio: $descriptio, avatar: $avatar, city: $city, age: $age, purposes: $purposes, interests: $interests, isSearchable: $isSearchable, password: $password)';
+  return 'Registration(username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, city: $city, age: $age, purposes: $purposes, interests: $interests, isSearchable: $isSearchable, password: $password)';
 }
 
 
@@ -275,7 +275,7 @@ abstract mixin class _$RegistrationCopyWith<$Res> implements $RegistrationCopyWi
   factory _$RegistrationCopyWith(_Registration value, $Res Function(_Registration) _then) = __$RegistrationCopyWithImpl;
 @override @useResult
 $Res call({
- String username, String email, String firstname, String subname, String descriptio, String avatar, String city, int age, List<String> purposes, List<String> interests, bool isSearchable, String password
+ String username, String email, String firstname, String subname, String description, String avatar, String city, int age, List<String> purposes, List<String> interests, bool isSearchable, String password
 });
 
 
@@ -292,13 +292,13 @@ class __$RegistrationCopyWithImpl<$Res>
 
 /// Create a copy of Registration
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? email = null,Object? firstname = null,Object? subname = null,Object? descriptio = null,Object? avatar = null,Object? city = null,Object? age = null,Object? purposes = null,Object? interests = null,Object? isSearchable = null,Object? password = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? email = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? avatar = null,Object? city = null,Object? age = null,Object? purposes = null,Object? interests = null,Object? isSearchable = null,Object? password = null,}) {
   return _then(_Registration(
 username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,firstname: null == firstname ? _self.firstname : firstname // ignore: cast_nullable_to_non_nullable
 as String,subname: null == subname ? _self.subname : subname // ignore: cast_nullable_to_non_nullable
-as String,descriptio: null == descriptio ? _self.descriptio : descriptio // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,avatar: null == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
