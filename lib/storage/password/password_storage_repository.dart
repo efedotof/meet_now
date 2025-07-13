@@ -8,7 +8,6 @@ class PasswordStorageRepository implements PasswordStorageInterface {
   static const _passwordKey = 'encrypted_password';
 
   static final _encryptionKey = encryptionKey;
-  static final _iv = iv;
 
   PasswordStorageRepository({required this.preferences});
 
