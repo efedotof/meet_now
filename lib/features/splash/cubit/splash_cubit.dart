@@ -44,11 +44,11 @@ class SplashCubit extends Cubit<SplashState> {
           _userModelAppInterface.user = responseUser;
 
           if (context.mounted) {
-            context.pushRoute(const MainHomeRoute());
+            context.replaceRoute(const MainHomeRoute());
           }
         } else {
           if (context.mounted) {
-            context.pushRoute(const AuthRoute());
+            context.replaceRoute(const AuthRoute());
           }
         }
       }
@@ -57,14 +57,13 @@ class SplashCubit extends Cubit<SplashState> {
 
       if (e.toString().contains("Пароль не установлен")) {
         if (context.mounted) {
-          context.pushRoute(const AuthRoute());
+          context.replaceRoute(const AuthRoute());
         }
       } else {
         if (context.mounted) {
-          // ScaffoldMessenger.of(
-          //   context,
-          // ).showSnackBar(SnackBar(content: Text('Ошибка авто-входа: $e')));
-          context.pushRoute(const AuthRoute());
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Ошибка авто-входа: $e')));
         }
       }
     }

@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
+import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
+import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
+import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
@@ -13,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/splash/cubit/splash_cubit.dart';
 import 'server/repository/auth/auth_repository.dart';
+import 'server/repository/search/search_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +53,27 @@ void main() async {
   final userModelAppRepository = UserModelAppRepository();
 
   ///
+  /// репозиторий для поиска
+  ///
+  final searchRepository = SearchRepository(
+    userModelAppInterface: userModelAppRepository,
+  );
+
+  ///
+  /// репозиторий с чатом
+  ///
+  final chatRepository = ChatRepository(
+    userModelAppInterface: userModelAppRepository,
+  );
+
+  ///
+  /// репозиторий с друзьями
+  ///
+  final friendRepository = FriendRepository(
+    userModelAppInterface: userModelAppRepository,
+  );
+
+  ///
   /// репозиторий для авторизации
   ///
   final authRepository = AuthRepository(
@@ -74,6 +102,20 @@ void main() async {
                 authInterface: authRepository,
                 userModelAppInterface: userModelAppRepository,
               ),
+        ),
+        BlocProvider(
+          create: (context) => SearchCubit(searchInterface: searchRepository),
+        ),
+        BlocProvider(
+          create: (context) => ChatCubit(chatInterface: chatRepository),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  SettingsCubit(userModelAppInterface: userModelAppRepository),
+        ),
+        BlocProvider(
+          create: (context) => FriendsCubit(friendInterface: friendRepository),
         ),
       ],
       child: const MeetNowApp(),

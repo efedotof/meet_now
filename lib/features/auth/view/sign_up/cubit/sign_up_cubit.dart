@@ -128,7 +128,7 @@ class SignUpCubit extends Cubit<SignUpState> {
 
       if (user.id.isNotEmpty) {
         if (context.mounted) {
-          context.pushRoute(MainHomeRoute());
+          context.replaceRoute(MainHomeRoute());
         }
         emit(const SignUpState.success());
       } else {

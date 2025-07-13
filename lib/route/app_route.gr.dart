@@ -44,18 +44,67 @@ class AuthRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [ChatMessageScreen]
-class ChatMessageRoute extends PageRouteInfo<void> {
-  const ChatMessageRoute({List<PageRouteInfo>? children})
-    : super(ChatMessageRoute.name, initialChildren: children);
+class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
+  ChatMessageRoute({
+    required Chat? chatModel,
+    Key? key,
+    required TemporaryChat temporaryChatModel,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ChatMessageRoute.name,
+         args: ChatMessageRouteArgs(
+           chatModel: chatModel,
+           key: key,
+           temporaryChatModel: temporaryChatModel,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'ChatMessageRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const ChatMessageScreen();
+      final args = data.argsAs<ChatMessageRouteArgs>();
+      return ChatMessageScreen(
+        chatModel: args.chatModel,
+        key: args.key,
+        temporaryChatModel: args.temporaryChatModel,
+      );
     },
   );
+}
+
+class ChatMessageRouteArgs {
+  const ChatMessageRouteArgs({
+    required this.chatModel,
+    this.key,
+    required this.temporaryChatModel,
+  });
+
+  final Chat? chatModel;
+
+  final Key? key;
+
+  final TemporaryChat temporaryChatModel;
+
+  @override
+  String toString() {
+    return 'ChatMessageRouteArgs{chatModel: $chatModel, key: $key, temporaryChatModel: $temporaryChatModel}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChatMessageRouteArgs) return false;
+    return chatModel == other.chatModel &&
+        key == other.key &&
+        temporaryChatModel == other.temporaryChatModel;
+  }
+
+  @override
+  int get hashCode =>
+      chatModel.hashCode ^ key.hashCode ^ temporaryChatModel.hashCode;
 }
 
 /// generated route for
