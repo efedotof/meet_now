@@ -4,11 +4,14 @@ import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
+import 'package:meet_now_app/storage/password/password_storage_repository.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
 import 'package:meet_now_app/theme/repository/theme_repository.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'features/splash/cubit/splash_cubit.dart';
 import 'server/repository/auth/auth_repository.dart';
 
 void main() async {
@@ -31,9 +34,25 @@ void main() async {
   final userStorageRepository = UserStorageRepository(preferences: prefs);
 
   ///
+  /// получение и регистрация пароля
+  ///
+  final passwordStorageRepository = PasswordStorageRepository(
+    preferences: prefs,
+  );
+
+  ///
+  /// тут getter и setter для модели пользователя
+  ///
+  final userModelAppRepository = UserModelAppRepository();
+
+  ///
   /// репозиторий для авторизации
   ///
-  final authRepository = AuthRepository();
+  final authRepository = AuthRepository(
+    passwordStorageInterface: passwordStorageRepository,
+    userModelAppInterface: userModelAppRepository,
+    userStorageInterface: userStorageRepository,
+  );
 
   runApp(
     MultiBlocProvider(
@@ -42,17 +61,18 @@ void main() async {
           create: (context) => ThemeCubit(themeInterface: themeRepository),
         ),
         BlocProvider(
-          create:
-              (context) => SignInCubit(
-                authInterface: authRepository,
-                userStorageInterface: userStorageRepository,
-              ),
+          create: (context) => SignInCubit(authInterface: authRepository),
+        ),
+        BlocProvider(
+          create: (context) => SignUpCubit(authInterface: authRepository),
         ),
         BlocProvider(
           create:
-              (context) => SignUpCubit(
-                authInterface: authRepository,
+              (context) => SplashCubit(
                 userStorageInterface: userStorageRepository,
+                passwordStorageInterface: passwordStorageRepository,
+                authInterface: authRepository,
+                userModelAppInterface: userModelAppRepository,
               ),
         ),
       ],

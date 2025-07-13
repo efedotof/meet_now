@@ -5,21 +5,16 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/model/login/login.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
-import 'package:meet_now_app/storage/user/user_storage_interface.dart';
 
 part 'sign_in_state.dart';
 part 'sign_in_cubit.freezed.dart';
 
 class SignInCubit extends Cubit<SignInState> {
-  SignInCubit({
-    required AuthInterface authInterface,
-    required UserStorageInterface userStorageInterface,
-  }) : _authInterface = authInterface,
-       _userStorageInterface = userStorageInterface,
-       super(SignInState.initial());
+  SignInCubit({required AuthInterface authInterface})
+    : _authInterface = authInterface,
+      super(SignInState.initial());
 
   final AuthInterface _authInterface;
-  final UserStorageInterface _userStorageInterface;
 
   /// Проверка на пустоту полей
   void check({
@@ -53,7 +48,6 @@ class SignInCubit extends Cubit<SignInState> {
       final loginData = Login(username: un, password: pass);
       final user = await _authInterface.login(login: loginData);
       debugPrint("user: user:$user      loginData: $loginData");
-      await _userStorageInterface.saveUser(user);
       emit(SignInState.success());
       debugPrint("Login successful, navigating to MainHomeRoute");
       if (context.mounted) {
