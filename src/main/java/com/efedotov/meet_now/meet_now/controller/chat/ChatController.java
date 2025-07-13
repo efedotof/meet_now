@@ -1,5 +1,6 @@
 package com.efedotov.meet_now.meet_now.controller.chat;
 
+import com.efedotov.meet_now.meet_now.dto.TemporaryChatDto;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.User;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -62,9 +64,12 @@ public class ChatController {
 
     @Operation(summary = "Получить активные временные чаты пользователя")
     @GetMapping("/temporary/active")
-    public ResponseEntity<List<TemporaryChat>> getActiveTemporaryChats(@RequestParam UUID userId) {
-        List<TemporaryChat> chats = chatService.getActiveTemporaryChatsForUser(userId);
-        return ResponseEntity.ok(chats);
+    public ResponseEntity<List<TemporaryChatDto>> getActiveTemporaryChats(@RequestParam UUID userId) {
+        List<TemporaryChatDto> chatDtos = chatService.getActiveTemporaryChatsForUser(userId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(chatDtos);
     }
 
     @Operation(summary = "Получить постоянные чаты пользователя")
@@ -107,6 +112,18 @@ public class ChatController {
             @RequestParam String initialState) {
         ChatGame game = chatService.addGameToChat(chatId, gameType, initialState);
         return ResponseEntity.ok(game);
+    }
+
+    private TemporaryChatDto mapToDto(TemporaryChat chat) {
+        TemporaryChatDto dto = new TemporaryChatDto();
+        dto.setTempChatId(chat.getTempChatId());
+        dto.setSenderId(chat.getSender().getId());
+        dto.setRecipientId(chat.getRecipient().getId());
+        dto.setCreatedAt(chat.getCreatedAt());
+        dto.setDurationMinutes(chat.getDurationMinutes());
+        dto.setIsFinished(chat.getIsFinished());
+        dto.setBothAgreed(chat.getBothAgreed());
+        return dto;
     }
 
 }

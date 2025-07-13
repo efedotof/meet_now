@@ -40,7 +40,7 @@ public class SearchController {
     public TemporaryChatDto findRandomUserAndCreateChat(@RequestParam UUID requesterId) {
         User sender = userService.getById(requesterId);
 
-        // Поиск случайного пользователя, кроме самого себя, с isSearchable = true
+        
         User recipient = userRepository.findAll().stream()
                 .filter(user -> !user.getId().equals(sender.getId()))
                 .filter(User::getIsSearchable)
