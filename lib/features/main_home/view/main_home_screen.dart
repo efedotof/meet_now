@@ -9,15 +9,7 @@ class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsRouter(
-      // list of your tab routes
-      // routes used here must be declared as children
-      // routes of /dashboard
-      routes: const [
-        SearchRoute(),
-        ChatRoute(),
-        FriendsRoute(),
-        SettingsRoute(),
-      ],
+      routes: [SearchRoute(), ChatRoute(), FriendsRoute(), SettingsRoute()],
       transitionBuilder:
           (context, child, animation) =>
               FadeTransition(opacity: animation, child: child),
