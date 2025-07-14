@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
+
+class BottomBar extends StatelessWidget {
+  final int currentPage;
+  final VoidCallback onNext;
+  final VoidCallback onRegister;
+
+  const BottomBar({
+    super.key,
+    required this.currentPage,
+    required this.onNext,
+    required this.onRegister,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: BlocBuilder<SignUpCubit, SignUpState>(
+          builder: (context, state) {
+            return state.maybeWhen(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              orElse:
+                  () =>
+                      currentPage == 3
+                          ? ElevatedButton(
+                            onPressed: onRegister,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                            child: const Text('Зарегистрироваться'),
+                          )
+                          : ElevatedButton(
+                            onPressed: onNext,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                            child: const Text('Далее'),
+                          ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

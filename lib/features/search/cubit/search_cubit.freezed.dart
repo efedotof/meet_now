@@ -14,30 +14,63 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SearchState {
 
-
+ String get gender; int? get ageFrom; bool get isLoading;
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SearchStateCopyWith<SearchState> get copyWith => _$SearchStateCopyWithImpl<SearchState>(this as SearchState, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading);
 
 @override
 String toString() {
-  return 'SearchState()';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading)';
 }
 
 
 }
 
 /// @nodoc
-class $SearchStateCopyWith<$Res>  {
-$SearchStateCopyWith(SearchState _, $Res Function(SearchState) __);
+abstract mixin class $SearchStateCopyWith<$Res>  {
+  factory $SearchStateCopyWith(SearchState value, $Res Function(SearchState) _then) = _$SearchStateCopyWithImpl;
+@useResult
+$Res call({
+ String gender, int? ageFrom, bool isLoading
+});
+
+
+
+
+}
+/// @nodoc
+class _$SearchStateCopyWithImpl<$Res>
+    implements $SearchStateCopyWith<$Res> {
+  _$SearchStateCopyWithImpl(this._self, this._then);
+
+  final SearchState _self;
+  final $Res Function(SearchState) _then;
+
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,}) {
+  return _then(_self.copyWith(
+gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
+as int?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
 }
 
 
@@ -55,11 +88,11 @@ extension SearchStatePatterns on SearchState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SearchState value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _:
+case _SearchState() when $default != null:
+return $default(_that);case _:
   return orElse();
 
 }
@@ -77,11 +110,11 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,}){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SearchState value)  $default,){
 final _that = this;
 switch (_that) {
-case _Initial():
-return initial(_that);case _:
+case _SearchState():
+return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -98,11 +131,11 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SearchState value)?  $default,){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _:
+case _SearchState() when $default != null:
+return $default(_that);case _:
   return null;
 
 }
@@ -119,10 +152,10 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _:
+case _SearchState() when $default != null:
+return $default(_that.gender,_that.ageFrom,_that.isLoading);case _:
   return orElse();
 
 }
@@ -140,10 +173,10 @@ return initial();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading)  $default,) {final _that = this;
 switch (_that) {
-case _Initial():
-return initial();case _:
+case _SearchState():
+return $default(_that.gender,_that.ageFrom,_that.isLoading);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +193,10 @@ return initial();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gender,  int? ageFrom,  bool isLoading)?  $default,) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _:
+case _SearchState() when $default != null:
+return $default(_that.gender,_that.ageFrom,_that.isLoading);case _:
   return null;
 
 }
@@ -174,33 +207,71 @@ return initial();case _:
 /// @nodoc
 
 
-class _Initial implements SearchState {
-  const _Initial();
+class _SearchState implements SearchState {
+  const _SearchState({this.gender = '', this.ageFrom, this.isLoading = false});
   
 
+@override@JsonKey() final  String gender;
+@override final  int? ageFrom;
+@override@JsonKey() final  bool isLoading;
 
-
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SearchStateCopyWith<_SearchState> get copyWith => __$SearchStateCopyWithImpl<_SearchState>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Initial);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading);
 
 @override
 String toString() {
-  return 'SearchState.initial()';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$SearchStateCopyWith<$Res> implements $SearchStateCopyWith<$Res> {
+  factory _$SearchStateCopyWith(_SearchState value, $Res Function(_SearchState) _then) = __$SearchStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String gender, int? ageFrom, bool isLoading
+});
 
 
+
+
+}
+/// @nodoc
+class __$SearchStateCopyWithImpl<$Res>
+    implements _$SearchStateCopyWith<$Res> {
+  __$SearchStateCopyWithImpl(this._self, this._then);
+
+  final _SearchState _self;
+  final $Res Function(_SearchState) _then;
+
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,}) {
+  return _then(_SearchState(
+gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
+as int?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 // dart format on

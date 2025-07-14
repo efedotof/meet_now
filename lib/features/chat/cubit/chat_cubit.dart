@@ -9,29 +9,28 @@ part 'chat_state.dart';
 part 'chat_cubit.freezed.dart';
 
 class ChatCubit extends Cubit<ChatState> {
+  final ChatInterface _chatInterface;
+
   ChatCubit({required ChatInterface chatInterface})
     : _chatInterface = chatInterface,
-      super(ChatState.initial());
-  final ChatInterface _chatInterface;
+      super(const ChatState.initial());
 
   Future<void> getChatsUser({required BuildContext context}) async {
     try {
-      final temporaryChat = await _chatInterface.getActiveTemporary();
-      List<Chat> permomentChat = await _chatInterface.getChatPermanent();
-      debugPrint(temporaryChat.toString());
-
+      final temporaryChats = await _chatInterface.getActiveTemporary();
+      final permanentChats = await _chatInterface.getChatPermanent();
       emit(
         ChatState.getChats(
-          temporaryChat: temporaryChat,
-          permomentChat: permomentChat,
+          temporaryChat: temporaryChats,
+          permomentChat: permanentChats,
         ),
       );
     } catch (e) {
-      debugPrint("getChatUser error: $e");
+      debugPrint("getChatsUser error: $e");
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Произошла ошибка : $e")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Ошибка при получении чатов: $e")),
+        );
       }
     }
   }
