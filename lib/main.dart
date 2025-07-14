@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/splash/cubit/splash_cubit.dart';
 import 'server/repository/auth/auth_repository.dart';
 import 'server/repository/search/search_repository.dart';
+import 'theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -134,12 +135,14 @@ class _MeetNowAppState extends State<MeetNowApp> {
   final _appRouter = AppRouter();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: _appRouter.config(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          routerConfig: _appRouter.config(),
+          theme: state.isDark ? dartTheme : lightTheme,
+        );
+      },
     );
   }
 }
