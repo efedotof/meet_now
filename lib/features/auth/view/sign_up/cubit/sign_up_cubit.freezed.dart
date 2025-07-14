@@ -55,15 +55,14 @@ extension SignUpStatePatterns on SignUpState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _NextPage value)?  nextPage,TResult Function( _Error value)?  error,TResult Function( _Success value)?  success,TResult Function( _NoData value)?  noData,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Success value)?  success,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _NextPage() when nextPage != null:
-return nextPage(_that);case _Error() when error != null:
-return error(_that);case _Success() when success != null:
-return success(_that);case _NoData() when noData != null:
-return noData(_that);case _:
+return initial(_that);case _Loading() when loading != null:
+return loading(_that);case _Success() when success != null:
+return success(_that);case _Error() when error != null:
+return error(_that);case _:
   return orElse();
 
 }
@@ -81,15 +80,14 @@ return noData(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _NextPage value)  nextPage,required TResult Function( _Error value)  error,required TResult Function( _Success value)  success,required TResult Function( _NoData value)  noData,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Success value)  success,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
-return initial(_that);case _NextPage():
-return nextPage(_that);case _Error():
-return error(_that);case _Success():
-return success(_that);case _NoData():
-return noData(_that);case _:
+return initial(_that);case _Loading():
+return loading(_that);case _Success():
+return success(_that);case _Error():
+return error(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -106,15 +104,14 @@ return noData(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _NextPage value)?  nextPage,TResult? Function( _Error value)?  error,TResult? Function( _Success value)?  success,TResult? Function( _NoData value)?  noData,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Success value)?  success,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _NextPage() when nextPage != null:
-return nextPage(_that);case _Error() when error != null:
-return error(_that);case _Success() when success != null:
-return success(_that);case _NoData() when noData != null:
-return noData(_that);case _:
+return initial(_that);case _Loading() when loading != null:
+return loading(_that);case _Success() when success != null:
+return success(_that);case _Error() when error != null:
+return error(_that);case _:
   return null;
 
 }
@@ -131,14 +128,13 @@ return noData(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  nextPage,TResult Function( String error)?  error,TResult Function()?  success,TResult Function()?  noData,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  success,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _NextPage() when nextPage != null:
-return nextPage();case _Error() when error != null:
-return error(_that.error);case _Success() when success != null:
-return success();case _NoData() when noData != null:
-return noData();case _:
+return initial();case _Loading() when loading != null:
+return loading();case _Success() when success != null:
+return success();case _Error() when error != null:
+return error(_that.error);case _:
   return orElse();
 
 }
@@ -156,14 +152,13 @@ return noData();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  nextPage,required TResult Function( String error)  error,required TResult Function()  success,required TResult Function()  noData,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  success,required TResult Function( String error)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
-return initial();case _NextPage():
-return nextPage();case _Error():
-return error(_that.error);case _Success():
-return success();case _NoData():
-return noData();case _:
+return initial();case _Loading():
+return loading();case _Success():
+return success();case _Error():
+return error(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +175,13 @@ return noData();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  nextPage,TResult? Function( String error)?  error,TResult? Function()?  success,TResult? Function()?  noData,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  success,TResult? Function( String error)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _NextPage() when nextPage != null:
-return nextPage();case _Error() when error != null:
-return error(_that.error);case _Success() when success != null:
-return success();case _NoData() when noData != null:
-return noData();case _:
+return initial();case _Loading() when loading != null:
+return loading();case _Success() when success != null:
+return success();case _Error() when error != null:
+return error(_that.error);case _:
   return null;
 
 }
@@ -230,8 +224,8 @@ String toString() {
 /// @nodoc
 
 
-class _NextPage implements SignUpState {
-  const _NextPage();
+class _Loading implements SignUpState {
+  const _Loading();
   
 
 
@@ -241,7 +235,7 @@ class _NextPage implements SignUpState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NextPage);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loading);
 }
 
 
@@ -250,7 +244,39 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'SignUpState.nextPage()';
+  return 'SignUpState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _Success implements SignUpState {
+  const _Success();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Success);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SignUpState.success()';
 }
 
 
@@ -324,69 +350,5 @@ as String,
 
 
 }
-
-/// @nodoc
-
-
-class _Success implements SignUpState {
-  const _Success();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Success);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SignUpState.success()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _NoData implements SignUpState {
-  const _NoData();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NoData);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SignUpState.noData()';
-}
-
-
-}
-
-
-
 
 // dart format on

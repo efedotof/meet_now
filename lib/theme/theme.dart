@@ -97,6 +97,18 @@ final dartTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(12)),
     ),
   ),
+  chipTheme: ChipThemeData(
+    backgroundColor: const Color(0xFF1E1E1E),
+    selectedColor: Colors.white,
+    disabledColor: Colors.grey,
+    secondarySelectedColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    labelStyle: const TextStyle(color: Colors.white70),
+    secondaryLabelStyle: const TextStyle(color: Colors.black),
+    brightness: Brightness.dark,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  ),
+
   useMaterial3: true,
 );
 
@@ -197,5 +209,17 @@ final lightTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(12)),
     ),
   ),
+  chipTheme: ChipThemeData(
+    backgroundColor: const Color(0xFFF5F5F5),
+    selectedColor: Colors.black,
+    disabledColor: Colors.grey,
+    secondarySelectedColor: Colors.black,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    labelStyle: const TextStyle(color: Colors.black87),
+    secondaryLabelStyle: const TextStyle(color: Colors.white),
+    brightness: Brightness.light,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  ),
+
   useMaterial3: true,
 );
