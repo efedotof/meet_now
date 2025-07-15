@@ -13,7 +13,6 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   final AuthInterface _authInterface;
 
-  /// Регистрация пользователя
   Future<void> registration(Registration registration) async {
     emit(const SignUpState.loading());
     try {

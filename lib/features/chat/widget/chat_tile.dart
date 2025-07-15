@@ -4,64 +4,122 @@ class ChatTile extends StatelessWidget {
   final String name;
   final String lastMessage;
   final int unreadCount;
+  final String? avatar;
 
   const ChatTile({
     super.key,
     required this.name,
     required this.lastMessage,
     required this.unreadCount,
+    this.avatar,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final isDark = theme.brightness == Brightness.dark;
     return Card(
       elevation: 2,
-      shape: theme.cardTheme.shape,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: theme.cardTheme.color,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: theme.colorScheme.secondary,
-          child: Icon(Icons.person, color: theme.iconTheme.color),
-        ),
-        title: Text(name, style: theme.textTheme.titleLarge),
-        subtitle: Text(
-          lastMessage,
-          style: theme.textTheme.bodyMedium,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        trailing:
-            unreadCount > 0
-                ? Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '$unreadCount',
-                    style: TextStyle(
-                      color:
-                          theme.colorScheme.brightness == Brightness.dark
-                              ? Colors.black
-                              : Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                )
-                : null,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: () {},
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundImage:
+                        avatar != null ? NetworkImage(avatar!) : null,
+                    backgroundColor:
+                        isDark ? Colors.grey[800] : Colors.grey[300],
+                    child:
+                        avatar == null
+                            ? Icon(
+                              Icons.person,
+                              size: 28,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            )
+                            : null,
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: theme.cardTheme.color!,
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(
+                          '$unreadCount',
+                          style: TextStyle(
+                            color: isDark ? Colors.black : Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      lastMessage,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.secondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('12:30', style: theme.textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  if (unreadCount > 0)
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

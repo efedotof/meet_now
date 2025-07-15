@@ -12,6 +12,7 @@ abstract class Chat with _$Chat {
     required User user2,
     required DateTime createdAt,
     required bool isOpened,
+    required String lastMessage,
   }) = _Chat;
 
   factory Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
