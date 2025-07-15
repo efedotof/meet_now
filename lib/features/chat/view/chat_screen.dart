@@ -15,55 +15,130 @@ class ChatScreen extends StatelessWidget {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text("Чаты")),
+          appBar: AppBar(
+            title: const Text("Чаты"),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  // Поиск чатов
+                },
+              ),
+            ],
+          ),
           body: RefreshIndicator(
             onRefresh:
                 () => context.read<ChatCubit>().getChatsUser(context: context),
+            color: Theme.of(context).colorScheme.primary,
             child: state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
+              initial:
+                  () => Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
               getChats:
-                  (temporaryChat, permanentChat) => SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (temporaryChat.isNotEmpty)
-                          TemporaryChatsBanner(count: temporaryChat.length),
-
-                        const SizedBox(height: 24),
-
-                        if (permanentChat.isEmpty)
-                          Center(
-                            child: Text(
-                              "Постоянных чатов нет",
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
+                  (temporaryChat, permanentChat) => CustomScrollView(
+                    slivers: [
+                      // Временные чаты
+                      if (temporaryChat.isNotEmpty)
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: TemporaryChatsBanner(
+                              count: temporaryChat.length,
                             ),
                           ),
+                        ),
 
-                        if (permanentChat.isNotEmpty)
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: permanentChat.length,
-                            separatorBuilder:
-                                (_, __) => const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final chat = permanentChat[index];
-                              return ChatTile(
+                      // Постоянные чаты
+                      SliverPadding(
+                        padding: const EdgeInsets.only(
+                          top: 8,
+                          left: 16,
+                          right: 16,
+                        ),
+                        sliver: SliverToBoxAdapter(
+                          child: Text(
+                            "Постоянные чаты",
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+
+                      if (permanentChat.isEmpty)
+                        SliverFillRemaining(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.forum_outlined,
+                                  size: 64,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "У вас пока нет постоянных чатов",
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Начните общение, чтобы добавить людей в друзья",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 24),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Начать поиск собеседника
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: const Text('Начать общение'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      if (permanentChat.isNotEmpty)
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final chat = permanentChat[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: ChatTile(
                                 name:
-                                    "${chat.user1.firstname!} ${chat.user1.subname!}",
+                                    "${chat.user1.firstname ?? 'Аноним'} ${chat.user1.subname ?? ''}",
                                 lastMessage: "lastMessage",
                                 unreadCount: 3,
-                              );
-                            },
-                          ),
-                      ],
-                    ),
+                                avatar: chat.user1.avatar,
+                              ),
+                            );
+                          }, childCount: permanentChat.length),
+                        ),
+                    ],
                   ),
             ),
           ),

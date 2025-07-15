@@ -12,6 +12,7 @@ _Chat _$ChatFromJson(Map<String, dynamic> json) => _Chat(
   user2: User.fromJson(json['user2'] as Map<String, dynamic>),
   createdAt: DateTime.parse(json['createdAt'] as String),
   isOpened: json['isOpened'] as bool,
+  lastMessage: json['lastMessage'] as String,
 );
 
 Map<String, dynamic> _$ChatToJson(_Chat instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$ChatToJson(_Chat instance) => <String, dynamic>{
   'user2': instance.user2,
   'createdAt': instance.createdAt.toIso8601String(),
   'isOpened': instance.isOpened,
+  'lastMessage': instance.lastMessage,
 };

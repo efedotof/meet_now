@@ -333,18 +333,49 @@ class SecurityRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [SettingProfileScreen]
-class SettingProfileRoute extends PageRouteInfo<void> {
-  const SettingProfileRoute({List<PageRouteInfo>? children})
-    : super(SettingProfileRoute.name, initialChildren: children);
+class SettingProfileRoute extends PageRouteInfo<SettingProfileRouteArgs> {
+  SettingProfileRoute({
+    Key? key,
+    required User user,
+    List<PageRouteInfo>? children,
+  }) : super(
+         SettingProfileRoute.name,
+         args: SettingProfileRouteArgs(key: key, user: user),
+         initialChildren: children,
+       );
 
   static const String name = 'SettingProfileRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const SettingProfileScreen();
+      final args = data.argsAs<SettingProfileRouteArgs>();
+      return SettingProfileScreen(key: args.key, user: args.user);
     },
   );
+}
+
+class SettingProfileRouteArgs {
+  const SettingProfileRouteArgs({this.key, required this.user});
+
+  final Key? key;
+
+  final User user;
+
+  @override
+  String toString() {
+    return 'SettingProfileRouteArgs{key: $key, user: $user}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SettingProfileRouteArgs) return false;
+    return key == other.key && user == other.user;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ user.hashCode;
 }
 
 /// generated route for

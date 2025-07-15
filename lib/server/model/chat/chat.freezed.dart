@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Chat {
 
- String get chatId; User get user1; User get user2; DateTime get createdAt; bool get isOpened;
+ String get chatId; User get user1; User get user2; DateTime get createdAt; bool get isOpened; String get lastMessage;
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ChatCopyWith<Chat> get copyWith => _$ChatCopyWithImpl<Chat>(this as Chat, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Chat&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.user1, user1) || other.user1 == user1)&&(identical(other.user2, user2) || other.user2 == user2)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isOpened, isOpened) || other.isOpened == isOpened));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Chat&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.user1, user1) || other.user1 == user1)&&(identical(other.user2, user2) || other.user2 == user2)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isOpened, isOpened) || other.isOpened == isOpened)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,user1,user2,createdAt,isOpened);
+int get hashCode => Object.hash(runtimeType,chatId,user1,user2,createdAt,isOpened,lastMessage);
 
 @override
 String toString() {
-  return 'Chat(chatId: $chatId, user1: $user1, user2: $user2, createdAt: $createdAt, isOpened: $isOpened)';
+  return 'Chat(chatId: $chatId, user1: $user1, user2: $user2, createdAt: $createdAt, isOpened: $isOpened, lastMessage: $lastMessage)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ChatCopyWith<$Res>  {
   factory $ChatCopyWith(Chat value, $Res Function(Chat) _then) = _$ChatCopyWithImpl;
 @useResult
 $Res call({
- String chatId, User user1, User user2, DateTime createdAt, bool isOpened
+ String chatId, User user1, User user2, DateTime createdAt, bool isOpened, String lastMessage
 });
 
 
@@ -65,14 +65,15 @@ class _$ChatCopyWithImpl<$Res>
 
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? user1 = null,Object? user2 = null,Object? createdAt = null,Object? isOpened = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? user1 = null,Object? user2 = null,Object? createdAt = null,Object? isOpened = null,Object? lastMessage = null,}) {
   return _then(_self.copyWith(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,user1: null == user1 ? _self.user1 : user1 // ignore: cast_nullable_to_non_nullable
 as User,user2: null == user2 ? _self.user2 : user2 // ignore: cast_nullable_to_non_nullable
 as User,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,isOpened: null == isOpened ? _self.isOpened : isOpened // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,lastMessage: null == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 /// Create a copy of Chat
@@ -175,10 +176,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Chat() when $default != null:
-return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened);case _:
+return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
   return orElse();
 
 }
@@ -196,10 +197,10 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)  $default,) {final _that = this;
 switch (_that) {
 case _Chat():
-return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened);case _:
+return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +217,10 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _Chat() when $default != null:
-return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened);case _:
+return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
   return null;
 
 }
@@ -231,7 +232,7 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 @JsonSerializable()
 
 class _Chat implements Chat {
-  const _Chat({required this.chatId, required this.user1, required this.user2, required this.createdAt, required this.isOpened});
+  const _Chat({required this.chatId, required this.user1, required this.user2, required this.createdAt, required this.isOpened, required this.lastMessage});
   factory _Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
 
 @override final  String chatId;
@@ -239,6 +240,7 @@ class _Chat implements Chat {
 @override final  User user2;
 @override final  DateTime createdAt;
 @override final  bool isOpened;
+@override final  String lastMessage;
 
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Chat&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.user1, user1) || other.user1 == user1)&&(identical(other.user2, user2) || other.user2 == user2)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isOpened, isOpened) || other.isOpened == isOpened));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Chat&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.user1, user1) || other.user1 == user1)&&(identical(other.user2, user2) || other.user2 == user2)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isOpened, isOpened) || other.isOpened == isOpened)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,user1,user2,createdAt,isOpened);
+int get hashCode => Object.hash(runtimeType,chatId,user1,user2,createdAt,isOpened,lastMessage);
 
 @override
 String toString() {
-  return 'Chat(chatId: $chatId, user1: $user1, user2: $user2, createdAt: $createdAt, isOpened: $isOpened)';
+  return 'Chat(chatId: $chatId, user1: $user1, user2: $user2, createdAt: $createdAt, isOpened: $isOpened, lastMessage: $lastMessage)';
 }
 
 
@@ -273,7 +275,7 @@ abstract mixin class _$ChatCopyWith<$Res> implements $ChatCopyWith<$Res> {
   factory _$ChatCopyWith(_Chat value, $Res Function(_Chat) _then) = __$ChatCopyWithImpl;
 @override @useResult
 $Res call({
- String chatId, User user1, User user2, DateTime createdAt, bool isOpened
+ String chatId, User user1, User user2, DateTime createdAt, bool isOpened, String lastMessage
 });
 
 
@@ -290,14 +292,15 @@ class __$ChatCopyWithImpl<$Res>
 
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? user1 = null,Object? user2 = null,Object? createdAt = null,Object? isOpened = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? user1 = null,Object? user2 = null,Object? createdAt = null,Object? isOpened = null,Object? lastMessage = null,}) {
   return _then(_Chat(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,user1: null == user1 ? _self.user1 : user1 // ignore: cast_nullable_to_non_nullable
 as User,user2: null == user2 ? _self.user2 : user2 // ignore: cast_nullable_to_non_nullable
 as User,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,isOpened: null == isOpened ? _self.isOpened : isOpened // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,lastMessage: null == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

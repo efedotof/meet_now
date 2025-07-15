@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/features.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app/server/model/user/user.dart';
 part 'app_route.gr.dart';
 
 @AutoRouterConfig()

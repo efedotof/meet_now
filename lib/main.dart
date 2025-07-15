@@ -10,6 +10,7 @@ import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
 import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
+import 'package:meet_now_app/server/repository/user/user_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
@@ -77,10 +78,20 @@ void main() async {
   ///
   /// репозиторий для авторизации
   ///
+  ///
+  ///
+
+  final userRepository = UserRepository(
+    userModelAppInterface: userModelAppRepository,
+    passwordStorageInterface: passwordStorageRepository,
+    userStorageInterface: userStorageRepository,
+  );
+
   final authRepository = AuthRepository(
     passwordStorageInterface: passwordStorageRepository,
     userModelAppInterface: userModelAppRepository,
     userStorageInterface: userStorageRepository,
+    userInterface: userRepository,
   );
 
   runApp(

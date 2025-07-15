@@ -11,104 +11,108 @@ final dartTheme = ThemeData(
     backgroundColor: Colors.black,
     elevation: 0,
     iconTheme: IconThemeData(color: Colors.white),
-    titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+    titleTextStyle: TextStyle(
+      color: Colors.white,
+      fontSize: 20,
+      fontWeight: FontWeight.normal,
+    ),
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Colors.black,
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.grey,
-    selectedIconTheme: IconThemeData(size: 24),
-    unselectedIconTheme: IconThemeData(size: 20),
+    elevation: 0,
     showUnselectedLabels: false,
     type: BottomNavigationBarType.fixed,
   ),
   textTheme: const TextTheme(
-    bodyMedium: TextStyle(color: Colors.white70, fontSize: 14),
-    titleLarge: TextStyle(color: Colors.white, fontSize: 18),
+    bodyMedium: TextStyle(color: Colors.white, fontSize: 14),
+    titleLarge: TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+    ),
   ),
-  inputDecorationTheme: const InputDecorationTheme(
+  inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Color(0xFF1E1E1E),
+    fillColor: Colors.black,
     border: OutlineInputBorder(
-      borderSide: BorderSide.none,
-      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderSide: const BorderSide(color: Colors.white24),
+      borderRadius: BorderRadius.circular(8),
     ),
-    hintStyle: TextStyle(color: Colors.grey),
+    enabledBorder: OutlineInputBorder(
+      borderSide: const BorderSide(color: Colors.white24),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    hintStyle: const TextStyle(color: Colors.grey),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   ),
-  cardTheme: const CardTheme(
-    color: Color(0xFF1E1E1E),
-    elevation: 2,
+  cardTheme: CardTheme(
+    color: const Color(0xFF121212),
+    elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderRadius: BorderRadius.circular(8),
+      side: const BorderSide(color: Colors.white12, width: 1),
     ),
   ),
-  iconTheme: const IconThemeData(color: Colors.white70),
+  iconTheme: const IconThemeData(color: Colors.white),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
     ),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: Colors.white70),
+    style: TextButton.styleFrom(
+      foregroundColor: Colors.white,
+      padding: EdgeInsets.zero,
+    ),
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: Colors.white,
     foregroundColor: Colors.black,
-    elevation: 2,
+    elevation: 0,
   ),
   checkboxTheme: CheckboxThemeData(
-    fillColor: WidgetStateProperty.all(Colors.white),
-    checkColor: WidgetStateProperty.all(Colors.black),
+    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+      if (states.contains(MaterialState.selected)) {
+        return Colors.white;
+      }
+      return Colors.transparent;
+    }),
+    checkColor: MaterialStateProperty.all(Colors.black),
+    side: const BorderSide(color: Colors.white, width: 1.5),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
   ),
   switchTheme: SwitchThemeData(
-    thumbColor: WidgetStateProperty.all(Colors.white),
-    trackColor: WidgetStateProperty.all(Colors.white24),
+    thumbColor: MaterialStateProperty.all(Colors.white),
+    trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+      if (states.contains(MaterialState.selected)) {
+        return Colors.white.withOpacity(0.5);
+      }
+      return Colors.grey.shade800;
+    }),
   ),
-  sliderTheme: const SliderThemeData(
-    activeTrackColor: Colors.white,
-    inactiveTrackColor: Colors.white30,
-    thumbColor: Colors.white,
-  ),
-  dividerTheme: const DividerThemeData(color: Colors.white10, thickness: 1),
-  dialogTheme: const DialogTheme(
-    backgroundColor: Color(0xFF1E1E1E),
-    titleTextStyle: TextStyle(color: Colors.white, fontSize: 18),
-    contentTextStyle: TextStyle(color: Colors.white70),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
-    ),
-  ),
-  listTileTheme: const ListTileThemeData(
-    iconColor: Colors.white70,
-    textColor: Colors.white,
-    tileColor: Color(0xFF1E1E1E),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
-  ),
-  snackBarTheme: const SnackBarThemeData(
-    backgroundColor: Colors.grey,
-    contentTextStyle: TextStyle(color: Colors.white),
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
+  dividerColor: Colors.white24,
+  dialogTheme: DialogTheme(
+    backgroundColor: Colors.black,
+    titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
+    contentTextStyle: const TextStyle(color: Colors.white70),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    elevation: 0,
   ),
   chipTheme: ChipThemeData(
     backgroundColor: const Color(0xFF1E1E1E),
     selectedColor: Colors.white,
-    disabledColor: Colors.grey,
-    secondarySelectedColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    labelStyle: const TextStyle(color: Colors.white70),
+    labelStyle: const TextStyle(color: Colors.white),
     secondaryLabelStyle: const TextStyle(color: Colors.black),
-    brightness: Brightness.dark,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    iconTheme: const IconThemeData(color: Colors.white, size: 18),
   ),
-
   useMaterial3: true,
 );
 
@@ -123,103 +127,107 @@ final lightTheme = ThemeData(
     backgroundColor: Colors.white,
     elevation: 0,
     iconTheme: IconThemeData(color: Colors.black),
-    titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+    titleTextStyle: TextStyle(
+      color: Colors.black,
+      fontSize: 20,
+      fontWeight: FontWeight.normal,
+    ),
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Colors.white,
     selectedItemColor: Colors.black,
     unselectedItemColor: Colors.grey,
-    selectedIconTheme: IconThemeData(size: 24),
-    unselectedIconTheme: IconThemeData(size: 20),
+    elevation: 0,
     showUnselectedLabels: false,
     type: BottomNavigationBarType.fixed,
   ),
   textTheme: const TextTheme(
-    bodyMedium: TextStyle(color: Colors.black87, fontSize: 14),
-    titleLarge: TextStyle(color: Colors.black, fontSize: 18),
+    bodyMedium: TextStyle(color: Colors.black, fontSize: 14),
+    titleLarge: TextStyle(
+      color: Colors.black,
+      fontSize: 18,
+      fontWeight: FontWeight.normal,
+    ),
   ),
-  inputDecorationTheme: const InputDecorationTheme(
+  inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: Color(0xFFF5F5F5),
+    fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderSide: BorderSide.none,
-      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderSide: const BorderSide(color: Colors.black12),
+      borderRadius: BorderRadius.circular(8),
     ),
-    hintStyle: TextStyle(color: Colors.grey),
+    enabledBorder: OutlineInputBorder(
+      borderSide: const BorderSide(color: Colors.black12),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    hintStyle: const TextStyle(color: Colors.grey),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   ),
-  cardTheme: const CardTheme(
-    color: Color(0xFFF5F5F5),
-    elevation: 2,
+  cardTheme: CardTheme(
+    color: Colors.white,
+    elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderRadius: BorderRadius.circular(8),
+      side: const BorderSide(color: Colors.black12, width: 1),
     ),
   ),
-  iconTheme: const IconThemeData(color: Colors.black54),
+  iconTheme: const IconThemeData(color: Colors.black),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
     ),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: Colors.black54),
+    style: TextButton.styleFrom(
+      foregroundColor: Colors.black,
+      padding: EdgeInsets.zero,
+    ),
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: Colors.black,
     foregroundColor: Colors.white,
-    elevation: 2,
+    elevation: 0,
   ),
   checkboxTheme: CheckboxThemeData(
-    fillColor: WidgetStateProperty.all(Colors.black),
-    checkColor: WidgetStateProperty.all(Colors.white),
+    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+      if (states.contains(MaterialState.selected)) {
+        return Colors.black;
+      }
+      return Colors.transparent;
+    }),
+    checkColor: MaterialStateProperty.all(Colors.white),
+    side: const BorderSide(color: Colors.black, width: 1.5),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
   ),
   switchTheme: SwitchThemeData(
-    thumbColor: WidgetStateProperty.all(Colors.black),
-    trackColor: WidgetStateProperty.all(Colors.black12),
+    thumbColor: MaterialStateProperty.all(Colors.white),
+    trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+      if (states.contains(MaterialState.selected)) {
+        return Colors.black.withOpacity(0.5);
+      }
+      return Colors.grey.shade300;
+    }),
   ),
-  sliderTheme: const SliderThemeData(
-    activeTrackColor: Colors.black,
-    inactiveTrackColor: Colors.black26,
-    thumbColor: Colors.black,
-  ),
-  dividerTheme: const DividerThemeData(color: Colors.black12, thickness: 1),
-  dialogTheme: const DialogTheme(
+  dividerColor: Colors.black12,
+  dialogTheme: DialogTheme(
     backgroundColor: Colors.white,
-    titleTextStyle: TextStyle(color: Colors.black, fontSize: 18),
-    contentTextStyle: TextStyle(color: Colors.black87),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
-    ),
-  ),
-  listTileTheme: const ListTileThemeData(
-    iconColor: Colors.black54,
-    textColor: Colors.black87,
-    tileColor: Color(0xFFF5F5F5),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
-  ),
-  snackBarTheme: const SnackBarThemeData(
-    backgroundColor: Colors.black87,
-    contentTextStyle: TextStyle(color: Colors.white),
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
+    titleTextStyle: const TextStyle(color: Colors.black, fontSize: 18),
+    contentTextStyle: const TextStyle(color: Colors.black87),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    elevation: 0,
   ),
   chipTheme: ChipThemeData(
     backgroundColor: const Color(0xFFF5F5F5),
     selectedColor: Colors.black,
-    disabledColor: Colors.grey,
-    secondarySelectedColor: Colors.black,
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    labelStyle: const TextStyle(color: Colors.black87),
+    labelStyle: const TextStyle(color: Colors.black),
     secondaryLabelStyle: const TextStyle(color: Colors.white),
-    brightness: Brightness.light,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    iconTheme: const IconThemeData(color: Colors.black, size: 18),
   ),
-
   useMaterial3: true,
 );
