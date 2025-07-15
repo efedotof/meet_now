@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     age INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     verified BOOLEAN DEFAULT FALSE,
-    is_searchable BOOLEAN DEFAULT TRUE 
+    is_searchable BOOLEAN DEFAULT TRUE,
+    is_online BOOLEAN DEFAULT FALSE
 );
 
 
@@ -39,7 +40,8 @@ CREATE TABLE IF NOT EXISTS chats (
     user_id1 UUID REFERENCES users(id) ON DELETE CASCADE,
     user_id2 UUID REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_opened BOOLEAN DEFAULT FALSE 
+    is_opened BOOLEAN DEFAULT FALSE,
+    last_message TEXT
 );
 
 

@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findByIsSearchableTrue();
 
     List<User> findByCity(String city);
+
+    List<User> findByIsOnlineTrue();
 }

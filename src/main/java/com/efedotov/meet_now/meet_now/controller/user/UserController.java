@@ -104,4 +104,13 @@ public class UserController {
         userService.updatePassword(id, oldPassword, newPassword);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Установка статуса онлайн/оффлайн пользователя")
+    @PatchMapping("/{id}/online")
+    public ResponseEntity<Void> updateOnlineStatus(
+            @PathVariable UUID id,
+            @RequestParam boolean isOnline) {
+        userService.setUserOnline(id, isOnline);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -100,4 +100,11 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void setUserOnline(UUID userId, boolean isOnline) {
+        User user = getById(userId);
+        user.setIsOnline(isOnline);
+        userRepository.save(user);
+    }
+
 }

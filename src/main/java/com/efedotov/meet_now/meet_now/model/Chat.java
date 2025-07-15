@@ -34,4 +34,9 @@ public class Chat {
 
     @Column(name = "is_opened")
     private Boolean isOpened = false;
+
+    @Column(name = "last_message", columnDefinition = "TEXT")
+    private String lastMessage;
+
+
 }

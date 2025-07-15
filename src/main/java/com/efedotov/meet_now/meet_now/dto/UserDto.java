@@ -25,4 +25,5 @@ public class UserDto {
     private Boolean isSearchable;
     private String token;
     private Set<String> roles;
+    private Boolean isOnline;
 }

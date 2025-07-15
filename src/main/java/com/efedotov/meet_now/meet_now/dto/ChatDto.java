@@ -11,4 +11,5 @@ public class ChatDto {
     private UUID user2Id;
     private LocalDateTime createdAt;
     private Boolean isOpened;
+    private String lastMessage;
 }
