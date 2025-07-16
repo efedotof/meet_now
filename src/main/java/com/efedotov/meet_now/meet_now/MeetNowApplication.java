@@ -9,5 +9,4 @@ public class MeetNowApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MeetNowApplication.class, args);
 	}
-
 }

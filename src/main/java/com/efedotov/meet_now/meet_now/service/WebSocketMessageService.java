@@ -1,16 +1,19 @@
 package com.efedotov.meet_now.meet_now.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.Message;
 import com.efedotov.meet_now.meet_now.repository.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.MessageRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +29,10 @@ public class WebSocketMessageService {
         UUID chatId = message.getChat().getChatId();
         Optional<Chat> optionalChat = chatRepository.findById(chatId);
 
-        if (optionalChat.isPresent()) {
-            Chat chat = optionalChat.get();
+        optionalChat.ifPresent(chat -> {
             chat.setLastMessage(message.getText());
             chatRepository.save(chat);
-        }
+        });
 
         messagingTemplate.convertAndSendToUser(
                 message.getRecipient().getId().toString(),
@@ -39,5 +41,14 @@ public class WebSocketMessageService {
         );
 
         return saved;
+    }
+
+    public void sendMessagesForChatToUser(UUID chatId, String userId) {
+        List<Message> messages = messageRepository.findByChat_ChatIdOrderByCreatedAtAsc(chatId);
+        messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/chat." + chatId + ".messages",
+                messages
+        );
     }
 }

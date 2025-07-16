@@ -1,5 +1,12 @@
 package com.efedotov.meet_now.meet_now.service;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.dto.LoginDTO;
 import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
 import com.efedotov.meet_now.meet_now.dto.UserDto;
@@ -11,12 +18,6 @@ import com.efedotov.meet_now.meet_now.repository.UserRepository;
 import com.efedotov.meet_now.meet_now.until.EncryptionUtils;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class AuthService {
         user.setPurposes(dto.getPurposes());
         user.setInterests(dto.getInterests());
         user.setIsSearchable(dto.getIsSearchable());
-
+        user.setFloor(dto.getFloor());
         Role userRole = roleRepository.findByRoleName("USER")
                 .orElseThrow(() -> new RuntimeException("Роль USER не найдена в базе"));
 
