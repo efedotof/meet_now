@@ -26,4 +26,5 @@ public class UserDto {
     private String token;
     private Set<String> roles;
     private Boolean isOnline;
+    private String floor;
 }

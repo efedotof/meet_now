@@ -18,4 +18,5 @@ public class RegistrationDTO {
     private List<String> interests;
     private Boolean isSearchable;
     private String password;
+    private String floor;
 }

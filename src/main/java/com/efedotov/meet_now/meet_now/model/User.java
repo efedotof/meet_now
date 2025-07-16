@@ -76,4 +76,6 @@ public class User {
     @Column(name = "is_online")
     private Boolean isOnline = false;
 
+    @Column(name = "floor")
+    private String floor;
 }

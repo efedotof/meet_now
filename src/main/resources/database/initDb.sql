@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     verified BOOLEAN DEFAULT FALSE,
     is_searchable BOOLEAN DEFAULT TRUE,
-    is_online BOOLEAN DEFAULT FALSE
+    is_online BOOLEAN DEFAULT FALSE,
+    floor TEXT
 );
 
 
