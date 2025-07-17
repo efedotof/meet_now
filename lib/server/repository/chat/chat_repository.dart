@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/chat_constraint/chat_constraint.dart';
@@ -7,17 +8,23 @@ import 'package:meet_now_app/server/model/chat_game/chat_game.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app/server/service/socket_service.dart';
 
 import 'chat_interface.dart';
 
 class ChatRepository implements ChatInterface {
   final UserModelAppInterface userModelAppInterface;
+  late final SocketService _socketService;
   final Dio _dio;
 
   ChatRepository({required this.userModelAppInterface})
     : _dio = Dio(
         BaseOptions(baseUrl: chatAddress, contentType: 'application/json'),
       );
+
+  final _chatStreamController = StreamController<List<Chat>>.broadcast();
+  final _temporaryChatStreamController =
+      StreamController<List<TemporaryChat>>.broadcast();
 
   void _setAuthHeader() {
     final token = userModelAppInterface.user?.token;
@@ -28,50 +35,49 @@ class ChatRepository implements ChatInterface {
   }
 
   @override
-  Future<ChatConstraint> getConstraint({
-    required TemporaryChat tempChat,
-  }) async {
-    _setAuthHeader();
-    final tempChatId = await _getTempChatId(chat: tempChat);
-
-    final response = await _dio.get('/temporary/$tempChatId/constraint');
-    if (response.statusCode == 200) {
-      return ChatConstraint.fromJson(response.data);
-    } else {
-      throw Exception(
-        'Ошибка получения ограничений временного чата: ${response.statusCode}',
-      );
-    }
-  }
+  Stream<List<Chat>> get chatStream => _chatStreamController.stream;
 
   @override
-  Future<void> updateConstraint({required TemporaryChat tempChat}) async {
-    _setAuthHeader();
-    final tempChatId = await _getTempChatId(chat: tempChat);
-    final canStart = true;
-    final waitSeconds = 10;
-    final response = await _dio.put(
-      '/temporary/$tempChatId/constraint',
-      queryParameters: {'canStart': canStart, 'waitSeconds': waitSeconds},
+  Stream<List<TemporaryChat>> get temporaryChatStream =>
+      _temporaryChatStreamController.stream;
+
+  @override
+  void init(String userId) {
+    _socketService = SocketService(
+      userId: userId,
+      onMessagesReceived: (messages) {},
+      onSingleMessageReceived: (message) {},
+      userModelAppInterface: userModelAppInterface,
+      onPermanentChatsReceived:
+          (List<Chat> chats) => _chatStreamController.add(chats),
+      onTemporaryChatsReceived:
+          (List<TemporaryChat> chats) =>
+              _temporaryChatStreamController.add(chats),
     );
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Ошибка обновления ограничений временного чата');
-    }
+    _socketService.connect();
   }
 
   @override
-  Future<List<ChatGame>> getGames({required Chat chat}) async {
-    _setAuthHeader();
-    final chatId = await _getChatId(chat: chat);
+  void dispose() {
+    _socketService.disconnect();
+    _chatStreamController.close();
+    _temporaryChatStreamController.close();
+  }
 
-    final response = await _dio.get('/$chatId/games');
-    if (response.statusCode == 200 && response.data is List) {
-      return (response.data as List)
-          .map((e) => ChatGame.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } else {
-      throw Exception('Ошибка получения игр');
-    }
+  @override
+  void getActiveTemporary() {
+    final user = userModelAppInterface.user;
+    if (user == null) throw Exception('Пользователь не авторизован');
+
+    _socketService.getActiveTemporary(user.id);
+  }
+
+  @override
+  void getChatPermanent() {
+    final user = userModelAppInterface.user;
+    if (user == null) throw Exception('Пользователь не авторизован');
+
+    _socketService.getPermanent(user.id);
   }
 
   @override
@@ -91,6 +97,24 @@ class ChatRepository implements ChatInterface {
       return ChatGame.fromJson(response.data);
     } else {
       throw Exception('Ошибка добавления игры');
+    }
+  }
+
+  @override
+  Future<void> agreeTemporary({required TemporaryChat tempChat}) async {
+    _setAuthHeader();
+    final tempChatId = await _getTempChatId(chat: tempChat);
+    final userId = userModelAppInterface.user?.id;
+
+    if (userId == null) throw Exception('Пользователь не авторизован');
+
+    final response = await _dio.post(
+      '/temporary/$tempChatId/agree',
+      queryParameters: {'userId': userId},
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Ошибка подтверждения согласия');
     }
   }
 
@@ -130,63 +154,49 @@ class ChatRepository implements ChatInterface {
   }
 
   @override
-  Future<void> agreeTemporary({required TemporaryChat tempChat}) async {
+  Future<ChatConstraint> getConstraint({
+    required TemporaryChat tempChat,
+  }) async {
     _setAuthHeader();
     final tempChatId = await _getTempChatId(chat: tempChat);
-    final userId = userModelAppInterface.user?.id;
 
-    if (userId == null) throw Exception('Пользователь не авторизован');
-
-    final response = await _dio.post(
-      '/temporary/$tempChatId/agree',
-      queryParameters: {'userId': userId},
-    );
-
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Ошибка подтверждения согласия');
+    final response = await _dio.get('/temporary/$tempChatId/constraint');
+    if (response.statusCode == 200) {
+      return ChatConstraint.fromJson(response.data);
+    } else {
+      throw Exception(
+        'Ошибка получения ограничений временного чата: ${response.statusCode}',
+      );
     }
   }
 
   @override
-  Future<List<TemporaryChat>> getActiveTemporary() async {
+  Future<List<ChatGame>> getGames({required Chat chat}) async {
     _setAuthHeader();
-    final userId = userModelAppInterface.user?.id;
+    final chatId = await _getChatId(chat: chat);
 
-    if (userId == null) throw Exception('Пользователь не авторизован');
-
-    final response = await _dio.get(
-      '/temporary/active',
-      queryParameters: {'userId': userId},
-    );
-
+    final response = await _dio.get('/$chatId/games');
     if (response.statusCode == 200 && response.data is List) {
-      debugPrint("getActiveTemporary : ${response.data}");
       return (response.data as List)
-          .map((e) => TemporaryChat.fromJson(e as Map<String, dynamic>))
+          .map((e) => ChatGame.fromJson(e as Map<String, dynamic>))
           .toList();
     } else {
-      throw Exception('Ошибка получения активных временных чатов');
+      throw Exception('Ошибка получения игр');
     }
   }
 
   @override
-  Future<List<Chat>> getChatPermanent() async {
+  Future<void> updateConstraint({required TemporaryChat tempChat}) async {
     _setAuthHeader();
-    final userId = userModelAppInterface.user?.id;
-
-    if (userId == null) throw Exception('Пользователь не авторизован');
-
-    final response = await _dio.get(
-      '/permanent',
-      queryParameters: {'userId': userId},
+    final tempChatId = await _getTempChatId(chat: tempChat);
+    final canStart = true;
+    final waitSeconds = 10;
+    final response = await _dio.put(
+      '/temporary/$tempChatId/constraint',
+      queryParameters: {'canStart': canStart, 'waitSeconds': waitSeconds},
     );
-
-    if (response.statusCode == 200 && response.data is List) {
-      return (response.data as List)
-          .map((e) => Chat.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } else {
-      throw Exception('Ошибка получения постоянных чатов');
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Ошибка обновления ограничений временного чата');
     }
   }
 

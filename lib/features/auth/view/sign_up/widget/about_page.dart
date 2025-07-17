@@ -26,6 +26,36 @@ class _AboutPageState extends State<AboutPage> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 24),
+
+            // Пол
+            Text('Пол', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ChoiceChip(
+                  label: const Text('Мужской'),
+                  selected: widget.formData.gender == 'м',
+                  onSelected: (selected) {
+                    setState(() {
+                      widget.formData.gender = selected ? 'м' : '';
+                    });
+                  },
+                ),
+                const SizedBox(width: 12),
+                ChoiceChip(
+                  label: const Text('Женский'),
+                  selected: widget.formData.gender == 'ж',
+                  onSelected: (selected) {
+                    setState(() {
+                      widget.formData.gender = selected ? 'ж' : '';
+                    });
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
             TextFormField(
               initialValue: widget.formData.description,
               maxLines: 3,
@@ -37,11 +67,9 @@ class _AboutPageState extends State<AboutPage> {
               validator: (value) => value!.isEmpty ? 'Расскажите о себе' : null,
               onChanged: (value) => widget.formData.description = value,
             ),
+
             const SizedBox(height: 24),
-            Text(
-              'Цели знакомств',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Цели знакомств'),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -49,7 +77,7 @@ class _AboutPageState extends State<AboutPage> {
               children:
                   ['Дружба', 'Любовь', 'Общение'].map((e) {
                     final selected = widget.formData.purposes.contains(e);
-                    return FilterChip(
+                    return ChoiceChip(
                       label: Text(e),
                       selected: selected,
                       onSelected:
@@ -63,6 +91,7 @@ class _AboutPageState extends State<AboutPage> {
                     );
                   }).toList(),
             ),
+
             const SizedBox(height: 24),
             Text('Интересы', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -72,7 +101,7 @@ class _AboutPageState extends State<AboutPage> {
               children:
                   ['Спорт', 'Игры', 'Книги', 'Музыка'].map((e) {
                     final selected = widget.formData.interests.contains(e);
-                    return FilterChip(
+                    return ChoiceChip(
                       label: Text(e),
                       selected: selected,
                       onSelected:

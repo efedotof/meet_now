@@ -5,7 +5,6 @@ import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/login/login.dart';
 import 'package:meet_now_app/server/model/registration/registration.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
-import 'package:meet_now_app/server/repository/user/user_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
@@ -17,9 +16,7 @@ class AuthRepository implements AuthInterface {
   final PasswordStorageInterface passwordStorageInterface;
   final UserModelAppInterface userModelAppInterface;
   final UserStorageInterface userStorageInterface;
-  final UserInterface userInterface;
   AuthRepository({
-    required this.userInterface,
     required this.passwordStorageInterface,
     required this.userModelAppInterface,
     required this.userStorageInterface,
@@ -39,13 +36,7 @@ class AuthRepository implements AuthInterface {
         passwordStorageInterface.setPassword(password: login.password);
         userModelAppInterface.user = user;
         await userStorageInterface.saveUser(user);
-        debugPrint("user: $user");
-
-        final token = user.token ?? '';
-        if (token.isNotEmpty) {
-          await userInterface.patchUserOnline(isOnline: true, token: token);
-        }
-
+        debugPrint("userToken: ${user.token}");
         return user;
       } else {
         throw Exception('Unexpected response: ${response.statusCode}');
@@ -77,6 +68,7 @@ class AuthRepository implements AuthInterface {
           "interests": registration.interests,
           "isSearchable": registration.isSearchable,
           "password": registration.password,
+          "floor": registration.floor,
         },
       );
 
@@ -86,13 +78,6 @@ class AuthRepository implements AuthInterface {
         passwordStorageInterface.setPassword(password: registration.password);
         userModelAppInterface.user = user;
         await userStorageInterface.saveUser(user);
-        debugPrint("user: $user");
-
-        final token = user.token ?? '';
-        if (token.isNotEmpty) {
-          await userInterface.patchUserOnline(isOnline: true, token: token);
-        }
-
         return user;
       } else {
         throw Exception('Unexpected response: ${response.statusCode}');

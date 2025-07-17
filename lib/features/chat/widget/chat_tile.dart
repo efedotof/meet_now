@@ -1,17 +1,24 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 
 class ChatTile extends StatelessWidget {
   final String name;
   final String lastMessage;
   final int unreadCount;
   final String? avatar;
-
+  final Chat? chat;
+  final TemporaryChat? temporaryChat;
   const ChatTile({
     super.key,
     required this.name,
     required this.lastMessage,
     required this.unreadCount,
     this.avatar,
+    this.chat,
+    this.temporaryChat,
   });
 
   @override
@@ -24,7 +31,16 @@ class ChatTile extends StatelessWidget {
       color: theme.cardTheme.color,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: () {
+          if (temporaryChat != null || chat != null) {
+            context.pushRoute(
+              ChatMessageRoute(
+                chatModel: chat,
+                temporaryChatModel: temporaryChat!,
+              ),
+            );
+          }
+        },
         child: Container(
           padding: const EdgeInsets.all(12),
           child: Row(

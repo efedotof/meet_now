@@ -11,18 +11,11 @@ part of 'user.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-User _$UserFromJson(
-  Map<String, dynamic> json
-) {
-    return _UserDto.fromJson(
-      json
-    );
-}
 
 /// @nodoc
 mixin _$User {
 
- String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String>? get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles;
+ String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String>? get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles; bool get isOnline; String get floor;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,16 +28,16 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other.friends, friends)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&const DeepCollectionEquality().equals(other.interests, interests)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.token, token) || other.token == token)&&const DeepCollectionEquality().equals(other.roles, roles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other.friends, friends)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&const DeepCollectionEquality().equals(other.interests, interests)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.token, token) || other.token == token)&&const DeepCollectionEquality().equals(other.roles, roles)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline)&&(identical(other.floor, floor) || other.floor == floor));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,email,firstname,subname,description,avatar,const DeepCollectionEquality().hash(friends),city,age,const DeepCollectionEquality().hash(purposes),const DeepCollectionEquality().hash(interests),createdAt,verified,isSearchable,token,const DeepCollectionEquality().hash(roles));
+int get hashCode => Object.hashAll([runtimeType,id,username,email,firstname,subname,description,avatar,const DeepCollectionEquality().hash(friends),city,age,const DeepCollectionEquality().hash(purposes),const DeepCollectionEquality().hash(interests),createdAt,verified,isSearchable,token,const DeepCollectionEquality().hash(roles),isOnline,floor]);
 
 @override
 String toString() {
-  return 'User(id: $id, username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, friends: $friends, city: $city, age: $age, purposes: $purposes, interests: $interests, createdAt: $createdAt, verified: $verified, isSearchable: $isSearchable, token: $token, roles: $roles)';
+  return 'User(id: $id, username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, friends: $friends, city: $city, age: $age, purposes: $purposes, interests: $interests, createdAt: $createdAt, verified: $verified, isSearchable: $isSearchable, token: $token, roles: $roles, isOnline: $isOnline, floor: $floor)';
 }
 
 
@@ -55,7 +48,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor
 });
 
 
@@ -72,7 +65,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -91,7 +84,9 @@ as DateTime,verified: null == verified ? _self.verified : verified // ignore: ca
 as bool,isSearchable: null == isSearchable ? _self.isSearchable : isSearchable // ignore: cast_nullable_to_non_nullable
 as bool,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,roles: null == roles ? _self.roles : roles // ignore: cast_nullable_to_non_nullable
-as Set<String>,
+as Set<String>,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
+as bool,floor: null == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -112,10 +107,10 @@ extension UserPatterns on User {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _User value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _UserDto() when $default != null:
+case _User() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -134,10 +129,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _User value)  $default,){
 final _that = this;
 switch (_that) {
-case _UserDto():
+case _User():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -155,10 +150,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _User value)?  $default,){
 final _that = this;
 switch (_that) {
-case _UserDto() when $default != null:
+case _User() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -176,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _UserDto() when $default != null:
-return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
+case _User() when $default != null:
+return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor);case _:
   return orElse();
 
 }
@@ -197,10 +192,10 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor)  $default,) {final _that = this;
 switch (_that) {
-case _UserDto():
-return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
+case _User():
+return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +212,10 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor)?  $default,) {final _that = this;
 switch (_that) {
-case _UserDto() when $default != null:
-return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles);case _:
+case _User() when $default != null:
+return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor);case _:
   return null;
 
 }
@@ -231,9 +226,9 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// @nodoc
 @JsonSerializable()
 
-class _UserDto implements User {
-  const _UserDto({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String>? friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles;
-  factory _UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
+class _User implements User {
+  const _User({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String>? friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles, required this.isOnline, required this.floor}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles;
+  factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  String id;
 @override final  String username;
@@ -278,41 +273,43 @@ class _UserDto implements User {
   return EqualUnmodifiableSetView(_roles);
 }
 
+@override final  bool isOnline;
+@override final  String floor;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$UserDtoCopyWith<_UserDto> get copyWith => __$UserDtoCopyWithImpl<_UserDto>(this, _$identity);
+_$UserCopyWith<_User> get copyWith => __$UserCopyWithImpl<_User>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$UserDtoToJson(this, );
+  return _$UserToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other._friends, _friends)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&const DeepCollectionEquality().equals(other._interests, _interests)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.token, token) || other.token == token)&&const DeepCollectionEquality().equals(other._roles, _roles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other._friends, _friends)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&const DeepCollectionEquality().equals(other._interests, _interests)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.token, token) || other.token == token)&&const DeepCollectionEquality().equals(other._roles, _roles)&&(identical(other.isOnline, isOnline) || other.isOnline == isOnline)&&(identical(other.floor, floor) || other.floor == floor));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,username,email,firstname,subname,description,avatar,const DeepCollectionEquality().hash(_friends),city,age,const DeepCollectionEquality().hash(_purposes),const DeepCollectionEquality().hash(_interests),createdAt,verified,isSearchable,token,const DeepCollectionEquality().hash(_roles));
+int get hashCode => Object.hashAll([runtimeType,id,username,email,firstname,subname,description,avatar,const DeepCollectionEquality().hash(_friends),city,age,const DeepCollectionEquality().hash(_purposes),const DeepCollectionEquality().hash(_interests),createdAt,verified,isSearchable,token,const DeepCollectionEquality().hash(_roles),isOnline,floor]);
 
 @override
 String toString() {
-  return 'User(id: $id, username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, friends: $friends, city: $city, age: $age, purposes: $purposes, interests: $interests, createdAt: $createdAt, verified: $verified, isSearchable: $isSearchable, token: $token, roles: $roles)';
+  return 'User(id: $id, username: $username, email: $email, firstname: $firstname, subname: $subname, description: $description, avatar: $avatar, friends: $friends, city: $city, age: $age, purposes: $purposes, interests: $interests, createdAt: $createdAt, verified: $verified, isSearchable: $isSearchable, token: $token, roles: $roles, isOnline: $isOnline, floor: $floor)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$UserDtoCopyWith<$Res> implements $UserCopyWith<$Res> {
-  factory _$UserDtoCopyWith(_UserDto value, $Res Function(_UserDto) _then) = __$UserDtoCopyWithImpl;
+abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
+  factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor
 });
 
 
@@ -320,17 +317,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$UserDtoCopyWithImpl<$Res>
-    implements _$UserDtoCopyWith<$Res> {
-  __$UserDtoCopyWithImpl(this._self, this._then);
+class __$UserCopyWithImpl<$Res>
+    implements _$UserCopyWith<$Res> {
+  __$UserCopyWithImpl(this._self, this._then);
 
-  final _UserDto _self;
-  final $Res Function(_UserDto) _then;
+  final _User _self;
+  final $Res Function(_User) _then;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,}) {
-  return _then(_UserDto(
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,}) {
+  return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -348,7 +345,9 @@ as DateTime,verified: null == verified ? _self.verified : verified // ignore: ca
 as bool,isSearchable: null == isSearchable ? _self.isSearchable : isSearchable // ignore: cast_nullable_to_non_nullable
 as bool,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,roles: null == roles ? _self._roles : roles // ignore: cast_nullable_to_non_nullable
-as Set<String>,
+as Set<String>,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
+as bool,floor: null == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

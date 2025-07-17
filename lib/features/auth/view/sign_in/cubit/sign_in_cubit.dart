@@ -16,7 +16,6 @@ class SignInCubit extends Cubit<SignInState> {
 
   final AuthInterface _authInterface;
 
-  /// Проверка на пустоту полей
   void check({
     required TextEditingController username,
     required TextEditingController password,
@@ -29,7 +28,6 @@ class SignInCubit extends Cubit<SignInState> {
     }
   }
 
-  /// Авторизация пользователя
   Future<void> login({
     required BuildContext context,
     required TextEditingController username,

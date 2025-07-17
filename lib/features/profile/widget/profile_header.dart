@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -15,7 +16,9 @@ class ProfileHeader extends StatelessWidget {
               CircleAvatar(
                 radius: 60,
                 backgroundImage:
-                    user.avatar != null ? NetworkImage(user.avatar!) : null,
+                    user.avatar != null
+                        ? NetworkImage("$uploadGetAddress${user.avatar!}")
+                        : null,
                 backgroundColor: Colors.grey[800],
                 child:
                     user.avatar == null
@@ -51,6 +54,48 @@ class ProfileHeader extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (user.verified)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Image.asset(
+                    'assets/verify.png',
+                    width: 16,
+                    height: 16,
+                    filterQuality: FilterQuality.none,
+                    cacheWidth: 32,
+                    cacheHeight: 32,
+                  ),
+                ),
+              if (user.roles.contains("ADMIN"))
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Image.asset(
+                    'assets/administration.png',
+                    width: 16,
+                    height: 16,
+                    filterQuality: FilterQuality.none,
+                    cacheWidth: 32,
+                    cacheHeight: 32,
+                  ),
+                ),
+              if (user.roles.contains("MODERATION"))
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Image.asset(
+                    'assets/moderator.png',
+                    width: 16,
+                    height: 16,
+                    filterQuality: FilterQuality.none,
+                    cacheWidth: 32,
+                    cacheHeight: 32,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

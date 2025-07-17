@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/route/app_route.dart';
@@ -33,7 +34,9 @@ class SettingsScreen extends StatelessWidget {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         backgroundImage:
                             user.avatar != null
-                                ? NetworkImage(user.avatar!)
+                                ? NetworkImage(
+                                  "$uploadGetAddress${user.avatar}",
+                                )
                                 : null,
                         child:
                             user.avatar == null
@@ -49,12 +52,56 @@ class SettingsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '${user.firstname} ${user.subname}',
-                              style: Theme.of(context).textTheme.titleLarge,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${user.firstname} ${user.subname}',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(width: 4),
+                                if (user.verified)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Image.asset(
+                                      'assets/verify.png',
+                                      width: 16,
+                                      height: 16,
+                                      filterQuality: FilterQuality.none,
+                                      cacheWidth: 32,
+                                      cacheHeight: 32,
+                                    ),
+                                  ),
+                                if (user.roles.contains("ADMIN"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Image.asset(
+                                      'assets/administration.png',
+                                      width: 16,
+                                      height: 16,
+                                      filterQuality: FilterQuality.none,
+                                      cacheWidth: 32,
+                                      cacheHeight: 32,
+                                    ),
+                                  ),
+                                if (user.roles.contains("MODERATION"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Image.asset(
+                                      'assets/moderator.png',
+                                      width: 16,
+                                      height: 16,
+                                      filterQuality: FilterQuality.none,
+                                      cacheWidth: 32,
+                                      cacheHeight: 32,
+                                    ),
+                                  ),
+                              ],
                             ),
+
                             const SizedBox(height: 4),
                             Text(
                               '@${user.username}',
@@ -182,7 +229,10 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.exit_to_app,
                         title: 'Выйти',
                         titleColor: Colors.red,
-                        onTap: () {},
+                        onTap:
+                            () => context.read<SettingsCubit>().exit(
+                              context: context,
+                            ),
                       ),
                     ],
                   ),

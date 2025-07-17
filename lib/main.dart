@@ -3,13 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/chat_message_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
+import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
 import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
+import 'package:meet_now_app/server/repository/message/message_repository.dart';
 import 'package:meet_now_app/server/repository/user/user_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
@@ -21,6 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/splash/cubit/splash_cubit.dart';
 import 'server/repository/auth/auth_repository.dart';
 import 'server/repository/search/search_repository.dart';
+import 'server/repository/upload_image/upload_image_repository.dart';
 import 'theme/theme.dart';
 
 void main() async {
@@ -31,69 +35,33 @@ void main() async {
   ]);
 
   final prefs = await SharedPreferences.getInstance();
-
-  ///
-  /// репозиторий для темы
-  ///
   final themeRepository = ThemeRepository(preferences: prefs);
-
-  ///
-  /// сохранение пользователя в local
-  ///
   final userStorageRepository = UserStorageRepository(preferences: prefs);
-
-  ///
-  /// получение и регистрация пароля
-  ///
   final passwordStorageRepository = PasswordStorageRepository(
     preferences: prefs,
   );
-
-  ///
-  /// тут getter и setter для модели пользователя
-  ///
   final userModelAppRepository = UserModelAppRepository();
-
-  ///
-  /// репозиторий для поиска
-  ///
   final searchRepository = SearchRepository(
     userModelAppInterface: userModelAppRepository,
   );
-
-  ///
-  /// репозиторий с чатом
-  ///
   final chatRepository = ChatRepository(
     userModelAppInterface: userModelAppRepository,
   );
-
-  ///
-  /// репозиторий с друзьями
-  ///
   final friendRepository = FriendRepository(
     userModelAppInterface: userModelAppRepository,
   );
-
-  ///
-  /// репозиторий для авторизации
-  ///
-  ///
-  ///
-
   final userRepository = UserRepository(
     userModelAppInterface: userModelAppRepository,
     passwordStorageInterface: passwordStorageRepository,
     userStorageInterface: userStorageRepository,
   );
-
   final authRepository = AuthRepository(
     passwordStorageInterface: passwordStorageRepository,
     userModelAppInterface: userModelAppRepository,
     userStorageInterface: userStorageRepository,
-    userInterface: userRepository,
   );
-
+  final uploadImageRepository = UploadImageRepository();
+  final messageRepository = MessageRepository();
   runApp(
     MultiBlocProvider(
       providers: [
@@ -104,7 +72,11 @@ void main() async {
           create: (context) => SignInCubit(authInterface: authRepository),
         ),
         BlocProvider(
-          create: (context) => SignUpCubit(authInterface: authRepository),
+          create:
+              (context) => SignUpCubit(
+                authInterface: authRepository,
+                uploadImageInterface: uploadImageRepository,
+              ),
         ),
         BlocProvider(
           create:
@@ -119,15 +91,34 @@ void main() async {
           create: (context) => SearchCubit(searchInterface: searchRepository),
         ),
         BlocProvider(
-          create: (context) => ChatCubit(chatInterface: chatRepository),
+          create:
+              (context) => ChatCubit(
+                chatInterface: chatRepository,
+                userModelAppInterface: userModelAppRepository,
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) => SettingsCubit(
+                userModelAppInterface: userModelAppRepository,
+                passwordStorageInterface: passwordStorageRepository,
+                userStorageInterface: userStorageRepository,
+              ),
+        ),
+        BlocProvider(
+          create: (context) => FriendsCubit(friendInterface: friendRepository),
         ),
         BlocProvider(
           create:
               (context) =>
-                  SettingsCubit(userModelAppInterface: userModelAppRepository),
+                  ChatMessageCubit(messageInterface: messageRepository),
         ),
         BlocProvider(
-          create: (context) => FriendsCubit(friendInterface: friendRepository),
+          create:
+              (context) => MainHomeCubit(
+                userInterface: userRepository,
+                userModelAppInterface: userModelAppRepository,
+              ),
         ),
       ],
       child: const MeetNowApp(),

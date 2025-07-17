@@ -61,10 +61,13 @@ class SplashCubit extends Cubit<SplashState> {
         }
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Ошибка авто-входа: $e')));
+          context.replaceRoute(const AuthRoute());
         }
+        // if (context.mounted) {
+        //   ScaffoldMessenger.of(
+        //     context,
+        //   ).showSnackBar(SnackBar(content: Text('Ошибка авто-входа: $e')));
+        // }
       }
     }
   }

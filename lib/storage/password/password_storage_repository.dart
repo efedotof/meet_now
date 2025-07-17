@@ -44,4 +44,9 @@ class PasswordStorageRepository implements PasswordStorageInterface {
       throw Exception('Ошибка расшифровки пароля: $e');
     }
   }
+
+  @override
+  Future<void> clearPassword() async {
+    await preferences.remove(_passwordKey);
+  }
 }
