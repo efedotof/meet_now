@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 @RoutePage()
@@ -99,48 +100,12 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
         title: const Text('Редактирование профиля'),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.maybePop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
-            onPressed: () {
-              // Сохранение изменений
-              Navigator.pop(
-                context,
-                User(
-                  id: widget.user.id,
-                  username: _usernameController.text,
-                  email: widget.user.email,
-                  firstname:
-                      _firstnameController.text.isNotEmpty
-                          ? _firstnameController.text
-                          : null,
-                  subname:
-                      _subnameController.text.isNotEmpty
-                          ? _subnameController.text
-                          : null,
-                  description:
-                      _descriptionController.text.isNotEmpty
-                          ? _descriptionController.text
-                          : null,
-                  avatar: widget.user.avatar,
-                  friends: widget.user.friends,
-                  city:
-                      _cityController.text.isNotEmpty
-                          ? _cityController.text
-                          : null,
-                  age: int.tryParse(_ageController.text),
-                  purposes: _purposes,
-                  interests: _interests,
-                  createdAt: widget.user.createdAt,
-                  verified: widget.user.verified,
-                  isSearchable: _isSearchable,
-                  token: widget.user.token,
-                  roles: widget.user.roles,
-                ),
-              );
-            },
+            onPressed: () => context.maybePop(),
           ),
         ],
       ),
@@ -157,7 +122,9 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                     radius: 60,
                     backgroundImage:
                         widget.user.avatar != null
-                            ? NetworkImage(widget.user.avatar!)
+                            ? NetworkImage(
+                              "$uploadGetAddress${widget.user.avatar!}",
+                            )
                             : null,
                     backgroundColor:
                         isDark ? Colors.grey[800] : Colors.grey[300],

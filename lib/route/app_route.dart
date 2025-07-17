@@ -42,5 +42,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: FriendRequestsRoute.page, path: "/friend_requests"),
     AutoRoute(page: PinCodeRoute.page, path: "/pin_code"),
     AutoRoute(page: QrCodeRoute.page, path: "/qr_code"),
+    AutoRoute(page: TemporaryChatRoute.page, path: "/temporary_chat"),
   ];
 }

@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/route/app_route.dart';
 
 class TemporaryChatsBanner extends StatelessWidget {
   final int count;
@@ -16,9 +18,7 @@ class TemporaryChatsBanner extends StatelessWidget {
       color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          // Перейти к временным чатам
-        },
+        onTap: () => context.pushRoute(TemporaryChatRoute()),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -40,11 +40,7 @@ class TemporaryChatsBanner extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.timer,
-                  color: theme.colorScheme.primary,
-                  size: 24,
-                ),
+                child: Icon(Icons.timer, color: Colors.white, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(

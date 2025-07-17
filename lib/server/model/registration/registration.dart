@@ -17,5 +17,6 @@ abstract class Registration with _$Registration {
     required List<String> interests,
     required bool isSearchable,
     required String password,
+    required String floor,
   }) = _Registration;
 }

@@ -23,7 +23,9 @@ abstract class User with _$User {
     required bool isSearchable,
     String? token,
     required Set<String> roles,
-  }) = _UserDto;
+    required bool isOnline,
+    required String floor,
+  }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }

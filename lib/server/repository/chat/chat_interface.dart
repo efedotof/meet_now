@@ -5,6 +5,12 @@ import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 abstract interface class ChatInterface {
+  void init(String userId);
+  void getActiveTemporary();
+  void getChatPermanent();
+  void dispose();
+  Stream<List<TemporaryChat>> get temporaryChatStream;
+  Stream<List<Chat>> get chatStream;
   Future<ChatConstraint> getConstraint({required TemporaryChat tempChat});
   Future<void> updateConstraint({required TemporaryChat tempChat});
 
@@ -13,7 +19,4 @@ abstract interface class ChatInterface {
   Future<void> createTemporary({required User recipient});
   Future<void> finistTemporaryChat({required TemporaryChat tempChat});
   Future<void> agreeTemporary({required TemporaryChat tempChat});
-  Future<List<TemporaryChat>> getActiveTemporary();
-
-  Future<List<Chat>> getChatPermanent();
 }

@@ -47,15 +47,15 @@ class AuthRoute extends PageRouteInfo<void> {
 class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
   ChatMessageRoute({
     required Chat? chatModel,
-    Key? key,
     required TemporaryChat temporaryChatModel,
+    Key? key,
     List<PageRouteInfo>? children,
   }) : super(
          ChatMessageRoute.name,
          args: ChatMessageRouteArgs(
            chatModel: chatModel,
-           key: key,
            temporaryChatModel: temporaryChatModel,
+           key: key,
          ),
          initialChildren: children,
        );
@@ -68,8 +68,8 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
       final args = data.argsAs<ChatMessageRouteArgs>();
       return ChatMessageScreen(
         chatModel: args.chatModel,
-        key: args.key,
         temporaryChatModel: args.temporaryChatModel,
+        key: args.key,
       );
     },
   );
@@ -78,19 +78,19 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
 class ChatMessageRouteArgs {
   const ChatMessageRouteArgs({
     required this.chatModel,
-    this.key,
     required this.temporaryChatModel,
+    this.key,
   });
 
   final Chat? chatModel;
 
-  final Key? key;
-
   final TemporaryChat temporaryChatModel;
+
+  final Key? key;
 
   @override
   String toString() {
-    return 'ChatMessageRouteArgs{chatModel: $chatModel, key: $key, temporaryChatModel: $temporaryChatModel}';
+    return 'ChatMessageRouteArgs{chatModel: $chatModel, temporaryChatModel: $temporaryChatModel, key: $key}';
   }
 
   @override
@@ -98,13 +98,13 @@ class ChatMessageRouteArgs {
     if (identical(this, other)) return true;
     if (other is! ChatMessageRouteArgs) return false;
     return chatModel == other.chatModel &&
-        key == other.key &&
-        temporaryChatModel == other.temporaryChatModel;
+        temporaryChatModel == other.temporaryChatModel &&
+        key == other.key;
   }
 
   @override
   int get hashCode =>
-      chatModel.hashCode ^ key.hashCode ^ temporaryChatModel.hashCode;
+      chatModel.hashCode ^ temporaryChatModel.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -454,6 +454,22 @@ class SupportRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SupportScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [TemporaryChatScreen]
+class TemporaryChatRoute extends PageRouteInfo<void> {
+  const TemporaryChatRoute({List<PageRouteInfo>? children})
+    : super(TemporaryChatRoute.name, initialChildren: children);
+
+  static const String name = 'TemporaryChatRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const TemporaryChatScreen();
     },
   );
 }

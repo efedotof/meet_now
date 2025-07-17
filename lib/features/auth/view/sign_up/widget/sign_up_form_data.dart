@@ -13,6 +13,7 @@ class SignUpFormData {
   List<String> purposes = [];
   List<String> interests = [];
   bool isSearchable = false;
+  String gender = "";
 
   Registration toRegistration() {
     return Registration(
@@ -28,6 +29,7 @@ class SignUpFormData {
       interests: interests,
       isSearchable: isSearchable,
       password: password.trim(),
+      floor: gender,
     );
   }
 }

@@ -6,7 +6,7 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UserDto _$UserDtoFromJson(Map<String, dynamic> json) => _UserDto(
+_User _$UserFromJson(Map<String, dynamic> json) => _User(
   id: json['id'] as String,
   username: json['username'] as String,
   email: json['email'] as String,
@@ -27,9 +27,11 @@ _UserDto _$UserDtoFromJson(Map<String, dynamic> json) => _UserDto(
   isSearchable: json['isSearchable'] as bool,
   token: json['token'] as String?,
   roles: (json['roles'] as List<dynamic>).map((e) => e as String).toSet(),
+  isOnline: json['isOnline'] as bool,
+  floor: json['floor'] as String,
 );
 
-Map<String, dynamic> _$UserDtoToJson(_UserDto instance) => <String, dynamic>{
+Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'id': instance.id,
   'username': instance.username,
   'email': instance.email,
@@ -47,4 +49,6 @@ Map<String, dynamic> _$UserDtoToJson(_UserDto instance) => <String, dynamic>{
   'isSearchable': instance.isSearchable,
   'token': instance.token,
   'roles': instance.roles.toList(),
+  'isOnline': instance.isOnline,
+  'floor': instance.floor,
 };

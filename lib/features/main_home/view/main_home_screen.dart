@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 @RoutePage()
@@ -8,6 +10,7 @@ class MainHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // context.read<MainHomeCubit>().setOnline(context: context, isOnline: true);
     return AutoTabsRouter(
       routes: [SearchRoute(), ChatRoute(), FriendsRoute(), SettingsRoute()],
       transitionBuilder:
@@ -15,26 +18,36 @@ class MainHomeScreen extends StatelessWidget {
               FadeTransition(opacity: animation, child: child),
       builder: (context, child) {
         final tabsRouter = AutoTabsRouter.of(context);
-        return Scaffold(
-          body: child,
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: tabsRouter.activeIndex,
-            onTap: (index) {
-              tabsRouter.setActiveIndex(index);
-            },
-            items: [
-              BottomNavigationBarItem(
-                label: 'Search',
-                icon: Icon(Icons.search),
+        return BlocBuilder<MainHomeCubit, MainHomeState>(
+          builder: (context, state) {
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: tabsRouter.activeIndex,
+                onTap: (index) {
+                  tabsRouter.setActiveIndex(index);
+                },
+                items: [
+                  BottomNavigationBarItem(
+                    label: 'Search',
+                    icon: Icon(Icons.search),
+                  ),
+                  BottomNavigationBarItem(
+                    label: 'Chat',
+                    icon: Icon(Icons.message),
+                  ),
+                  BottomNavigationBarItem(
+                    label: 'Friend',
+                    icon: Icon(Icons.group),
+                  ),
+                  BottomNavigationBarItem(
+                    label: 'Setting',
+                    icon: Icon(Icons.settings),
+                  ),
+                ],
               ),
-              BottomNavigationBarItem(label: 'Chat', icon: Icon(Icons.message)),
-              BottomNavigationBarItem(label: 'Friend', icon: Icon(Icons.group)),
-              BottomNavigationBarItem(
-                label: 'Setting',
-                icon: Icon(Icons.settings),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

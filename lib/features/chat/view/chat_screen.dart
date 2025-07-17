@@ -5,13 +5,23 @@ import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/chat/widget/widget.dart';
 
 @RoutePage()
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ChatCubit>().init(context: context);
+  }
 
   @override
   Widget build(BuildContext context) {
     context.read<ChatCubit>().getChatsUser(context: context);
-
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         return Scaffold(
@@ -97,9 +107,7 @@ class ChatScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 24),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    // Начать поиск собеседника
-                                  },
+                                  onPressed: () {},
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 32,

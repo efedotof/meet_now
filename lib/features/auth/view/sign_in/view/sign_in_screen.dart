@@ -15,33 +15,64 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      appBar: AppBar(elevation: 0),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: username,
-              onChanged: (value) => username.text = value,
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: password,
-              onChanged: (value) => password.text = value,
-            ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Welcome back',
+                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
+                ),
+                const SizedBox(height: 32),
 
-            OutlinedButton(
-              onPressed:
-                  () => context.read<SignInCubit>().login(
-                    context: context,
-                    username: username,
-                    password: password,
+                TextFormField(
+                  controller: username,
+                  decoration: const InputDecoration(
+                    hintText: 'Username',
+                    prefixIcon: Icon(Icons.person),
                   ),
-              child: Text("SignIn"),
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: password,
+                  decoration: const InputDecoration(
+                    hintText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                  ),
+                  obscureText: true,
+                  textInputAction: TextInputAction.done,
+                ),
+                const SizedBox(height: 24),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<SignInCubit>().login(
+                        context: context,
+                        username: username,
+                        password: password,
+                      );
+                    },
+                    child: const Text('Sign In'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

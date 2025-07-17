@@ -94,10 +94,13 @@ class UserRepository implements UserInterface {
   Future<void> patchUserOnline({
     required bool isOnline,
     required String token,
+    required String uuid,
   }) async {
-    _dio.options.headers['Authorization'] = 'Bearer $token';
-    final uuid = _getUserId();
-    await _dio.patch('/$uuid/online', queryParameters: {'isOnline': isOnline});
+    final Dio dios = Dio(
+      BaseOptions(baseUrl: userAddress, contentType: 'application/json'),
+    );
+    dios.options.headers['Authorization'] = 'Bearer $token';
+    await dios.patch('/$uuid/online', queryParameters: {'isOnline': isOnline});
   }
 
   @override

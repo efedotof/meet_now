@@ -9,7 +9,11 @@ abstract interface class UserInterface {
     required String oldPassword,
     required String newPassword,
   });
-  Future<void> patchUserOnline({required bool isOnline, required String token});
+  Future<void> patchUserOnline({
+    required bool isOnline,
+    required String token,
+    required String uuid,
+  });
   Future<void> patchUserEmail({required String email});
   Future<void> patchUserDescripton({required String description});
   Future<void> patchUserCity({required String city});
