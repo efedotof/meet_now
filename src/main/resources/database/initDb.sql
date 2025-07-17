@@ -46,15 +46,6 @@ CREATE TABLE IF NOT EXISTS chats (
 );
 
 
-CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
-    sender_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    recipient_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    text TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 
 CREATE TABLE IF NOT EXISTS temporary_chats (
     temp_chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -65,6 +56,17 @@ CREATE TABLE IF NOT EXISTS temporary_chats (
     is_finished BOOLEAN DEFAULT FALSE,
     both_agreed BOOLEAN DEFAULT FALSE 
 );
+
+CREATE TABLE IF NOT EXISTS messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
+    sender_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    recipient_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    temp_chat_id UUID REFERENCES temporary_chats(temp_chat_id) ON DELETE CASCADE,
+    text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
 CREATE TABLE IF NOT EXISTS reports (

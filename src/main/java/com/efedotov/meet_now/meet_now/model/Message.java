@@ -37,4 +37,9 @@ public class Message {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "temp_chat_id")
+    private TemporaryChat temporaryChat;
+
 }

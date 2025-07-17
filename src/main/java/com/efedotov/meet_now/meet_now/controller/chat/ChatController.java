@@ -1,6 +1,7 @@
 package com.efedotov.meet_now.meet_now.controller.chat;
 
 import com.efedotov.meet_now.meet_now.dto.TemporaryChatDto;
+import com.efedotov.meet_now.meet_now.dto.request.*;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.User;
@@ -32,17 +33,14 @@ public class ChatController {
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
-    public ResponseEntity<TemporaryChat> createTemporaryChat(
-            @RequestParam UUID senderId,
-            @RequestParam UUID recipientId,
-            @RequestParam(defaultValue = "10") int durationMinutes) {
+    public ResponseEntity<TemporaryChat> createTemporaryChat(CreateTemporaryChatRequest request) {
 
         var sender = new User();
-        sender.setId(senderId);
+        sender.setId(request.getSenderId());
         var recipient = new User();
-        recipient.setId(recipientId);
+        recipient.setId(request.getRecipientId());
 
-        TemporaryChat tempChat = chatService.createTemporaryChat(sender, recipient, durationMinutes);
+        TemporaryChat tempChat = chatService.createTemporaryChat(sender, recipient, request.getDurationMinutes());
         return ResponseEntity.ok(tempChat);
     }
 
@@ -56,9 +54,8 @@ public class ChatController {
     @Operation(summary = "Пользователь соглашается продолжить чат")
     @PostMapping("/temporary/{tempChatId}/agree")
     public ResponseEntity<Void> agreeToContinue(
-            @PathVariable UUID tempChatId,
-            @RequestParam UUID userId) {
-        chatService.agreeToContinue(tempChatId, userId);
+            AgreeChatRequest request) {
+        chatService.agreeToContinue(request.getTempChatId(), request.getUserId());
         return ResponseEntity.ok().build();
     }
 
@@ -87,13 +84,11 @@ public class ChatController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Обновить ограничения временного чата")
+     @Operation(summary = "Обновить ограничения временного чата")
     @PutMapping("/temporary/{tempChatId}/constraint")
     public ResponseEntity<Void> updateChatConstraint(
-            @PathVariable UUID tempChatId,
-            @RequestParam boolean canStart,
-            @RequestParam int waitSeconds) {
-        chatService.updateChatConstraint(tempChatId, canStart, waitSeconds);
+            UpdateConstraintRequest request) {
+        chatService.updateChatConstraint(request.getTempChatId(), request.isCanStart(), request.getWaitSeconds());
         return ResponseEntity.ok().build();
     }
 
@@ -107,10 +102,8 @@ public class ChatController {
     @Operation(summary = "Добавить игру в чат")
     @PostMapping("/{chatId}/games")
     public ResponseEntity<ChatGame> addGameToChat(
-            @PathVariable UUID chatId,
-            @RequestParam String gameType,
-            @RequestParam String initialState) {
-        ChatGame game = chatService.addGameToChat(chatId, gameType, initialState);
+            AddGameRequest request) {
+        ChatGame game = chatService.addGameToChat(request.getChatId(), request.getGameType(), request.getInitialState());
         return ResponseEntity.ok(game);
     }
 
@@ -127,3 +120,14 @@ public class ChatController {
     }
 
 }
+
+
+
+    
+
+    
+
+   
+
+
+

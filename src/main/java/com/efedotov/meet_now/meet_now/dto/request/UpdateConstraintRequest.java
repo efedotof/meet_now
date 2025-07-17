@@ -1,0 +1,12 @@
+package com.efedotov.meet_now.meet_now.dto.request;
+
+import java.util.UUID;
+
+import lombok.Data;
+
+@Data
+public class UpdateConstraintRequest {
+    private UUID tempChatId;
+    private boolean canStart;
+    private int waitSeconds;
+}
