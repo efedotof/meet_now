@@ -1,15 +1,21 @@
 package com.efedotov.meet_now.meet_now.service;
 
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.repository.UserRepository;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -24,8 +30,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserById(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found by id"));
+        log.info("Loading user by ID: {}", userId);
+        Optional<User> userOpt = userRepository.findById(userId);
+        
+        if (!userOpt.isPresent()) {
+            log.error("User not found by ID: {}", userId);
+            throw new UsernameNotFoundException("User not found by id");
+        }
+        
+        User user = userOpt.get();
+        log.info("User found: {} ({})", user.getUsername(), user.getId());
+        
         return new CustomUserDetails(user);
     }
 }

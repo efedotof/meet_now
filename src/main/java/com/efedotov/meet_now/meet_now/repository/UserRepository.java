@@ -1,8 +1,12 @@
 package com.efedotov.meet_now.meet_now.repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import com.efedotov.meet_now.meet_now.model.User;
 
 @Repository
@@ -16,4 +20,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findByCity(String city);
 
     List<User> findByIsOnlineTrue();
+
+    @Override
+    Optional<User> findById(UUID userId);
 }

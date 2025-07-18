@@ -22,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final SessionAuthFilter sessionAuthFilter;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> {}).csrf(csrf -> csrf.disable())
@@ -34,7 +32,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/v1/uploads/**").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN") .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN") 
+                        .requestMatchers("/ws/**", "/app/**", "/topic/**", "/queue/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -55,15 +54,14 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-
-        // Разрешённые адреса клиента — укажи свой
         config.setAllowedOrigins(List.of(
             "http://192.168.31.152:5678",   
             "http://127.0.0.1:5678",
-            "http://192.168.31.152:52523"
+            "http://192.168.31.152:52523",
+            "http://localhost:8000",
+            "http://127.0.0.1:8000"
+
         ));
-
-
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 

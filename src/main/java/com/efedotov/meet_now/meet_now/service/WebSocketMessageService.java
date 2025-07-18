@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import com.efedotov.meet_now.meet_now.repository.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -120,26 +120,26 @@ public class WebSocketMessageService {
         return messageDto;
     }
 
-    public void sendMessagesForChatToUser(UUID chatId, String userId) {
+    public void sendMessagesForChatToUser(UUID chatId, String username) {
         List<Message> messages;
-        log.info("Запрос пользователя {} на получение сообщений чата {}", userId, chatId);
+        log.info("Запрос пользователя {} на получение сообщений чата {}", username, chatId);
+
         if (chatRepository.existsById(chatId)) {
             messages = messageRepository.findByChat_ChatIdOrderByCreatedAtAsc(chatId);
-            log.info("Пользователь {} запросил сообщения из обычного чата {}", userId, chatId);
+            log.info("Пользователь {} запросил сообщения из обычного чата {}", username, chatId);
         } else if (temporaryChatRepository.existsById(chatId)) {
             messages = messageRepository.findByTemporaryChat_TempChatIdOrderByCreatedAtAsc(chatId);
-            log.info("Пользователь {} запросил сообщения из временного чата {}", userId, chatId);
+            log.info("Пользователь {} запросил сообщения из временного чата {}", username, chatId);
         } else {
-            log.warn("Чат с ID {} не найден для пользователя {}", chatId, userId);
+            log.warn("Чат с ID {} не найден для пользователя {}", chatId, username);
             return;
         }
 
         messagingTemplate.convertAndSendToUser(
-                userId,
-                "/queue/chat." + chatId + ".messages",
+                username,
+                "queue/chat.messages",
                 messages);
     }
-
 
     public List<TemporaryChat> getActiveTemporaryChats(UUID userId) {
         log.info("Пользователь: {} запросил список активных временных чатов", userId);
@@ -147,9 +147,8 @@ public class WebSocketMessageService {
     }
 
     public List<Chat> getPermanentChats(UUID userId) {
-         log.info("Пользователь: {} запросил список активных постоянных чатов", userId);
+        log.info("Пользователь: {} запросил список активных постоянных чатов", userId);
         return chatService.getPermanentChatsForUser(userId);
     }
-
 
 }
