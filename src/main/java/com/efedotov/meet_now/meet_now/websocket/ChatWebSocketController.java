@@ -33,6 +33,7 @@ public class ChatWebSocketController {
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload MessageDto messageDto, Principal principal) {
         CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        
         UUID senderId = userDetails.getUserId();
         messageDto.setSenderId(senderId);
         log.info("Received sendMessage request from userId={} to chatId={}, message={}",

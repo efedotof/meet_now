@@ -1,18 +1,20 @@
 package com.efedotov.meet_now.meet_now.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.Instant;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Data;
+
+
+@Data
 @Entity
-@Table(name = "user_sessions")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@Table(name = "user_sessions")
 public class UserSession {
     @Id
     private String token;
@@ -20,9 +22,9 @@ public class UserSession {
     @Column(nullable = false)
     private UUID userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private Instant createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private Instant expiresAt;
 }

@@ -35,38 +35,44 @@ public class WebSocketMessageService {
 
     public MessageDto processMessageDto(MessageDto messageDto) {
         UUID chatId = messageDto.getChatId();
+        UUID tempChatId = messageDto.getTempChatId();
         UUID senderId = messageDto.getSenderId();
         UUID recipientId = messageDto.getRecipientId();
         String text = messageDto.getText();
+
         log.info("Пользователь отправил сообщение: от {} к {}, текст: {}", senderId, recipientId, text);
-        User sender = userRepository.findById(senderId).orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
         User recipient = userRepository.findById(recipientId)
                 .orElseThrow(() -> new RuntimeException("Recipient not found"));
 
         Chat chat = null;
         TemporaryChat tempChat = null;
+        UUID finalChatId = null;
+        boolean isTemporary = false;
 
-        if (chatId != null) {
-            Optional<Chat> chatOpt = chatRepository.findById(chatId);
-            if (chatOpt.isPresent()) {
-                chat = chatOpt.get();
+
+        if (chatId != null || tempChatId != null) {
+            if (chatId != null) {
+                chat = chatRepository.findById(chatId)
+                        .orElseThrow(() -> new RuntimeException("Chat not found"));
+                finalChatId = chatId;
             } else {
-                Optional<TemporaryChat> tempChatOpt = temporaryChatRepository.findById(chatId);
-                if (tempChatOpt.isPresent()) {
-                    tempChat = tempChatOpt.get();
-                } else {
-                    throw new RuntimeException("Chat not found by chatId");
-                }
+                tempChat = temporaryChatRepository.findById(tempChatId)
+                        .orElseThrow(() -> new RuntimeException("Temporary chat not found"));
+                finalChatId = tempChatId;
+                isTemporary = true;
             }
         } else {
-            Optional<Chat> chatOpt = chatRepository.findByUser1IdAndUser2Id(senderId, recipientId);
-            if (chatOpt.isEmpty()) {
-                chatOpt = chatRepository.findByUser1IdAndUser2Id(recipientId, senderId);
-            }
-            if (chatOpt.isPresent()) {
-                chat = chatOpt.get();
+            Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(senderId, recipientId)
+                    .or(() -> chatRepository.findByUser1IdAndUser2Id(recipientId, senderId));
+
+            if (existingChat.isPresent()) {
+                chat = existingChat.get();
                 chat.setLastMessage(text);
-                messageDto.setChatId(chat.getChatId());
+                chatRepository.save(chat);
+                finalChatId = chat.getChatId();
             } else {
                 List<TemporaryChat> tempChats = temporaryChatRepository.findBySender_IdOrRecipient_Id(senderId,
                         recipientId);
@@ -76,10 +82,12 @@ public class WebSocketMessageService {
                             (tchat.getSender().getId().equals(recipientId)
                                     && tchat.getRecipient().getId().equals(senderId))) {
                         tempChat = tchat;
-                        messageDto.setChatId(tchat.getTempChatId());
+                        finalChatId = tchat.getTempChatId();
+                        isTemporary = true;
                         break;
                     }
                 }
+
                 if (tempChat == null) {
                     tempChat = new TemporaryChat();
                     tempChat.setSender(sender);
@@ -89,7 +97,8 @@ public class WebSocketMessageService {
                     tempChat.setIsFinished(false);
                     tempChat.setBothAgreed(false);
                     tempChat = temporaryChatRepository.save(tempChat);
-                    messageDto.setChatId(tempChat.getTempChatId());
+                    finalChatId = tempChat.getTempChatId();
+                    isTemporary = true;
                 }
             }
         }
@@ -102,22 +111,30 @@ public class WebSocketMessageService {
 
         if (chat != null) {
             message.setChat(chat);
-            messageRepository.save(message);
-
-            chat.setLastMessage(text);
-            chatRepository.save(chat);
-
         } else if (tempChat != null) {
             message.setTemporaryChat(tempChat);
-            messageRepository.save(message);
+        }
+
+        message = messageRepository.save(message);
+        MessageDto responseDto = new MessageDto();
+        responseDto.setId(message.getId());
+        responseDto.setText(message.getText());
+        responseDto.setCreatedAt(message.getCreatedAt());
+        responseDto.setSenderId(senderId);
+        responseDto.setRecipientId(recipientId);
+
+        if (isTemporary) {
+            responseDto.setTempChatId(finalChatId);
+        } else {
+            responseDto.setChatId(finalChatId);
         }
 
         messagingTemplate.convertAndSendToUser(
-                recipient.getId().toString(),
+                recipient.getUsername(),
                 "/queue/messages",
-                messageDto);
-
-        return messageDto;
+                responseDto);
+        log.info("Отправляем сообщение пользователю как оповещение {} от {} сообщение {}",recipient.getUsername(), sender.getUsername(),responseDto.getText()  );
+        return responseDto;
     }
 
     public void sendMessagesForChatToUser(UUID chatId, String username) {
@@ -135,10 +152,14 @@ public class WebSocketMessageService {
             return;
         }
 
+        List<MessageDto> dtos = messages.stream()
+                .map(this::convertToDto)
+                .toList();
+
         messagingTemplate.convertAndSendToUser(
                 username,
                 "queue/chat.messages",
-                messages);
+                dtos);
     }
 
     public List<TemporaryChat> getActiveTemporaryChats(UUID userId) {
@@ -149,6 +170,24 @@ public class WebSocketMessageService {
     public List<Chat> getPermanentChats(UUID userId) {
         log.info("Пользователь: {} запросил список активных постоянных чатов", userId);
         return chatService.getPermanentChatsForUser(userId);
+    }
+
+    private MessageDto convertToDto(Message message) {
+        MessageDto dto = new MessageDto();
+        dto.setId(message.getId());
+        dto.setText(message.getText());
+        dto.setCreatedAt(message.getCreatedAt());
+        dto.setSenderId(message.getSender().getId());
+        dto.setRecipientId(message.getRecipient().getId());
+
+        if (message.getChat() != null) {
+            dto.setChatId(message.getChat().getChatId());
+        }
+        if (message.getTemporaryChat() != null) {
+            dto.setTempChatId(message.getTemporaryChat().getTempChatId());
+        }
+
+        return dto;
     }
 
 }

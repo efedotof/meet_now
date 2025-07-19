@@ -1,5 +1,6 @@
 package com.efedotov.meet_now.meet_now.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -23,16 +24,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final SessionAuthFilter sessionAuthFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> {}).csrf(csrf -> csrf.disable())
+        http.cors(cors -> {
+        }).csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
                         .permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/v1/auth/token/**").permitAll()
                         .requestMatchers("/api/v1/uploads/**").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN") 
+                        .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/ws/**", "/app/**", "/topic/**", "/queue/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -54,22 +58,25 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(
-            "http://192.168.31.152:5678",   
-            "http://127.0.0.1:5678",
-            "http://192.168.31.152:52523",
-            "http://localhost:8000",
-            "http://127.0.0.1:8000"
-
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://192.168.31.*:*",
+                "http://[::1]:*" 
         ));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList(
+                "Origin", "Content-Type", "Accept", "Authorization",
+                "X-Requested-With", "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
+        config.setExposedHeaders(List.of(
+                "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+        config.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setMaxAge(3600L); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
     }
-
-
 }

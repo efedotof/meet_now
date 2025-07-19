@@ -52,10 +52,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 if (accessor.getMessageType() != null) {
-                    log.info("Outgoing message: type={}, destination={}, payload={}",
-                            accessor.getMessageType(),
-                            accessor.getDestination(),
-                            message.getPayload());
+                    log.info("Outgoing message");
                 }
                 if (ex != null) {
                     log.error("Ошибка при отправке сообщения", ex);

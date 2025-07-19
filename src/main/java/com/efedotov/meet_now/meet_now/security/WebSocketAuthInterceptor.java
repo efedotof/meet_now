@@ -41,7 +41,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                     String bearerToken = authHeaders.get(0);
                     if (bearerToken.startsWith("Bearer ")) {
                         token = bearerToken.substring(7);
-                        log.info("Extracted token: {}", token);
+                        
                     } else {
                         log.warn("Authorization header does not start with 'Bearer '");
                     }
@@ -54,7 +54,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 
                 Optional<UserSession> sessionOpt = sessionService.findByToken(token);
                 if (!sessionOpt.isPresent()) {
-                    log.error("No session found for token: {}", token);
                     throw new RuntimeException("Invalid token");
                 }
                 

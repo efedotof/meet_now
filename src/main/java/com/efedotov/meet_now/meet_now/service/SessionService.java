@@ -7,6 +7,7 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.model.UserSession;
@@ -49,4 +50,12 @@ public class SessionService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
+    public Optional<UserSession> findValidSession(String token) {
+        return sessionRepository.findValidSession(token, Instant.now());
+    }
+
+    @Scheduled(fixedRate = 86400000) 
+    public void cleanExpiredSessions() {
+        sessionRepository.deleteExpiredSessions(Instant.now());
+    }
 }
