@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.websocket;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,14 +9,16 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.dto.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.UserActivityDto;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.Message;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.repository.ChatRepository;
-import com.efedotov.meet_now.meet_now.repository.MessageRepository;
-import com.efedotov.meet_now.meet_now.repository.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.UserRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +53,6 @@ public class WebSocketMessageService {
         TemporaryChat tempChat = null;
         UUID finalChatId = null;
         boolean isTemporary = false;
-
 
         if (chatId != null || tempChatId != null) {
             if (chatId != null) {
@@ -133,8 +134,15 @@ public class WebSocketMessageService {
                 recipient.getUsername(),
                 "/queue/messages",
                 responseDto);
-        log.info("Отправляем сообщение пользователю как оповещение {} от {} сообщение {}",recipient.getUsername(), sender.getUsername(),responseDto.getText()  );
+        log.info("Отправляем сообщение пользователю как оповещение {} от {} сообщение {}", recipient.getUsername(),
+                sender.getUsername(), responseDto.getText());
         return responseDto;
+    }
+
+    public void sendActivityNotification(UserActivityDto activityDto) {
+        UUID chatId = activityDto.getChatId();
+        String topic = "/topic/chat.activity." + chatId;
+        messagingTemplate.convertAndSend(topic, activityDto);
     }
 
     public void sendMessagesForChatToUser(UUID chatId, String username) {

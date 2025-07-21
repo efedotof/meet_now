@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.websocket;
 
 import org.springframework.stereotype.Component;
 
@@ -33,9 +33,14 @@ public class WebSocketSessionService {
         }
     }
 
-    public boolean hasActiveSessions(UUID userId) {
+    public int getActiveSessionCount(UUID userId) {
         Set<String> sessions = userSessionsMap.get(userId);
-        return sessions != null && !sessions.isEmpty();
+        return sessions != null ? sessions.size() : 0;
+    }
+
+
+    public boolean hasActiveSessions(UUID userId) {
+        return getActiveSessionCount(userId) > 0;
     }
 
     public UUID getUserIdBySessionId(String sessionId) {

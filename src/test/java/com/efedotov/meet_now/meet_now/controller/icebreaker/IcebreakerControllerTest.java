@@ -1,13 +1,10 @@
 package com.efedotov.meet_now.meet_now.controller.icebreaker;
 
 import com.efedotov.meet_now.meet_now.model.IcebreakerTopec;
-import com.efedotov.meet_now.meet_now.service.IcebreakerService;
+import com.efedotov.meet_now.meet_now.service.chat.IcebreakerService;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,14 +24,6 @@ public class IcebreakerControllerTest {
 
     @Mock
     private IcebreakerService icebreakerService;
-
-    @InjectMocks
-    private IcebreakerController icebreakerController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testGetAllIcebreakerTopics() throws Exception {

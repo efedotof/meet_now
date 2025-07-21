@@ -1,7 +1,8 @@
 package com.efedotov.meet_now.meet_now.controller.icebreaker;
 
 import com.efedotov.meet_now.meet_now.model.IcebreakerTopec;
-import com.efedotov.meet_now.meet_now.service.IcebreakerService;
+import com.efedotov.meet_now.meet_now.service.chat.IcebreakerService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

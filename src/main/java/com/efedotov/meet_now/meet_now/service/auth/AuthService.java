@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.auth;
 
 import java.util.Optional;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.chat;
 
 import com.efedotov.meet_now.meet_now.model.IcebreakerTopec;
 import com.efedotov.meet_now.meet_now.repository.IcebreakerTopecRepository;
@@ -20,16 +20,12 @@ public class IcebreakerService {
     private final IcebreakerTopecRepository icebreakerTopecRepository;
     private final Random random = new Random();
 
-    /**
-     * Получить список всех тем.
-     */
+    // Получить список всех тем.
     public List<IcebreakerTopec> getAllTopics() {
         return icebreakerTopecRepository.findAll();
     }
 
-    /**
-     * Получить случайную тему из всех доступных.
-     */
+    // Получить случайную тему из всех доступных.
     public IcebreakerTopec getRandomTopic() {
         List<IcebreakerTopec> allTopics = icebreakerTopecRepository.findAll();
         if (allTopics.isEmpty()) {
@@ -39,9 +35,7 @@ public class IcebreakerService {
         return allTopics.get(index);
     }
 
-    /**
-     * Добавить новую тему.
-     */
+    // Добавить новую тему.
     @Transactional
     public IcebreakerTopec addTopic(String text) {
         IcebreakerTopec topic = new IcebreakerTopec();
@@ -49,9 +43,7 @@ public class IcebreakerService {
         return icebreakerTopecRepository.save(topic);
     }
 
-    /**
-     * Обновить существующую тему по id.
-     */
+    // Обновить существующую тему по id.
     @Transactional
     public IcebreakerTopec updateTopic(Long id, String newText) {
         IcebreakerTopec topic = icebreakerTopecRepository.findById(id)
@@ -60,9 +52,7 @@ public class IcebreakerService {
         return icebreakerTopecRepository.save(topic);
     }
 
-    /**
-     * Удалить тему по id.
-     */
+    // Удалить тему по id.
     @Transactional
     public void deleteTopic(Long id) {
         if (!icebreakerTopecRepository.existsById(id)) {
@@ -71,9 +61,7 @@ public class IcebreakerService {
         icebreakerTopecRepository.deleteById(id);
     }
 
-    /**
-     * Поиск тем, содержащих заданный текст (нечувствительно к регистру).
-     */
+    // Поиск тем, содержащих заданный текст (нечувствительно к регистру).
     @Transactional
     public List<IcebreakerTopec> findTopicsByText(String text) {
         return icebreakerTopecRepository.findByTextContainingIgnoreCase(text);

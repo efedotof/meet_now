@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.user;
 
 import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.model.Role;
@@ -9,10 +9,13 @@ import com.efedotov.meet_now.meet_now.until.EncryptionUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -103,8 +106,12 @@ public class UserService {
     @Transactional
     public void setUserOnline(UUID userId, boolean isOnline) {
         User user = getById(userId);
-        user.setIsOnline(isOnline);
-        userRepository.save(user);
+        if (user.getIsOnline() != isOnline) {
+            user.setIsOnline(isOnline);
+            userRepository.save(user);
+            log.info("Статус онлайн пользователя {} изменен на: {}", userId, isOnline);
+        } else {
+            log.debug("Статус онлайн пользователя {} уже установлен в: {}", userId, isOnline);
+        }
     }
-
 }

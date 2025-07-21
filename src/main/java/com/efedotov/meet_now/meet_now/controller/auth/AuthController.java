@@ -3,7 +3,7 @@ package com.efedotov.meet_now.meet_now.controller.auth;
 import com.efedotov.meet_now.meet_now.dto.LoginDTO;
 import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
 import com.efedotov.meet_now.meet_now.dto.UserDto;
-import com.efedotov.meet_now.meet_now.service.AuthService;
+import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

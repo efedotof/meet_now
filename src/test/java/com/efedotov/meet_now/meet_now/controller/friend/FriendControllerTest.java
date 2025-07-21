@@ -1,13 +1,9 @@
 package com.efedotov.meet_now.meet_now.controller.friend;
 
 import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.service.FriendService;
-
-import org.junit.jupiter.api.BeforeEach;
+import com.efedotov.meet_now.meet_now.service.user.FriendService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,13 +26,6 @@ public class FriendControllerTest {
     @Mock
     private FriendService friendService;
 
-    @InjectMocks
-    private FriendController friendController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testSendFriendRequest() throws Exception {

@@ -5,8 +5,8 @@ import com.efedotov.meet_now.meet_now.dto.request.*;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 import com.efedotov.meet_now.meet_now.model.ChatConstraint;
-import com.efedotov.meet_now.meet_now.service.ChatService;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,7 +84,7 @@ public class ChatController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-     @Operation(summary = "Обновить ограничения временного чата")
+    @Operation(summary = "Обновить ограничения временного чата")
     @PutMapping("/temporary/{tempChatId}/constraint")
     public ResponseEntity<Void> updateChatConstraint(
             UpdateConstraintRequest request) {
@@ -103,31 +103,21 @@ public class ChatController {
     @PostMapping("/{chatId}/games")
     public ResponseEntity<ChatGame> addGameToChat(
             AddGameRequest request) {
-        ChatGame game = chatService.addGameToChat(request.getChatId(), request.getGameType(), request.getInitialState());
+        ChatGame game = chatService.addGameToChat(request.getChatId(), request.getGameType(),
+                request.getInitialState());
         return ResponseEntity.ok(game);
     }
 
     private TemporaryChatDto mapToDto(TemporaryChat chat) {
-        TemporaryChatDto dto = new TemporaryChatDto();
-        dto.setTempChatId(chat.getTempChatId());
-        dto.setSenderId(chat.getSender().getId());
-        dto.setRecipientId(chat.getRecipient().getId());
-        dto.setCreatedAt(chat.getCreatedAt());
-        dto.setDurationMinutes(chat.getDurationMinutes());
-        dto.setIsFinished(chat.getIsFinished());
-        dto.setBothAgreed(chat.getBothAgreed());
-        return dto;
+        return TemporaryChatDto.builder()
+                .tempChatId(chat.getTempChatId())
+                .senderId(chat.getSender().getId())
+                .recipientId(chat.getRecipient().getId())
+                .createdAt(chat.getCreatedAt())
+                .durationMinutes(chat.getDurationMinutes())
+                .isFinished(chat.getIsFinished())
+                .bothAgreed(chat.getBothAgreed())
+                .build();
     }
 
 }
-
-
-
-    
-
-    
-
-   
-
-
-

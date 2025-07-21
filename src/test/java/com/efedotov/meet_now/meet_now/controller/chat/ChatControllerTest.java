@@ -1,23 +1,15 @@
 package com.efedotov.meet_now.meet_now.controller.chat;
 
 import com.efedotov.meet_now.meet_now.model.*;
-import com.efedotov.meet_now.meet_now.service.ChatService;
-
-import org.junit.jupiter.api.BeforeEach;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,14 +22,6 @@ public class ChatControllerTest {
 
     @Mock
     private ChatService chatService;
-
-    @InjectMocks
-    private ChatController chatController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testCreateTemporaryChat() throws Exception {

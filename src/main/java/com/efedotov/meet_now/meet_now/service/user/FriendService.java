@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.user;
 
 import com.efedotov.meet_now.meet_now.model.User;
 import com.efedotov.meet_now.meet_now.repository.UserRepository;

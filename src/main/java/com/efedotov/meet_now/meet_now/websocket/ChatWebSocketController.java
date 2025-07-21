@@ -13,11 +13,16 @@ import org.springframework.stereotype.Controller;
 
 import com.efedotov.meet_now.meet_now.dto.MessageDto;
 import com.efedotov.meet_now.meet_now.dto.TemporaryChatDto;
+import com.efedotov.meet_now.meet_now.dto.UserActivityDto;
 import com.efedotov.meet_now.meet_now.dto.request.ChatMessagesRequest;
+import com.efedotov.meet_now.meet_now.dto.request.MarkMessagesReadRequest;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
-import com.efedotov.meet_now.meet_now.service.WebSocketMessageService;
+import com.efedotov.meet_now.meet_now.service.chat.ActivityNotificationService;
+import com.efedotov.meet_now.meet_now.service.chat.ChatQueryService;
+import com.efedotov.meet_now.meet_now.service.chat.MessageProcessingService;
+import com.efedotov.meet_now.meet_now.service.chat.MessageQueryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,18 +32,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ChatWebSocketController {
 
-    private final WebSocketMessageService messageService;
+    private final MessageProcessingService messageProcessingService;
+    private final MessageQueryService messageQueryService;
+    private final ChatQueryService chatQueryService;
+    private final ActivityNotificationService activityNotificationService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload MessageDto messageDto, Principal principal) {
         CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        
+
         UUID senderId = userDetails.getUserId();
         messageDto.setSenderId(senderId);
         log.info("Received sendMessage request from userId={} to chatId={}, message={}",
                 senderId, messageDto.getChatId(), messageDto.getText());
-        messageService.processMessageDto(messageDto);
+        messageProcessingService.processMessageDto(messageDto);
         log.info("Processed sendMessage for chatId={}", messageDto.getChatId());
     }
 
@@ -51,8 +59,7 @@ public class ChatWebSocketController {
         log.info("Received getMessages request: chatId={}, userId={}, username={}",
                 request.getChatId(), userId, username);
 
-        messageService.sendMessagesForChatToUser(request.getChatId(), username);
-
+        messageQueryService.sendMessagesForChatToUser(request.getChatId(), username);
         log.info("Sent messages for chatId={} to username={}", request.getChatId(), username);
     }
 
@@ -63,10 +70,9 @@ public class ChatWebSocketController {
         String username = principal.getName();
 
         log.info("Received getActiveTemporary request from userId={}", userId);
-        List<TemporaryChatDto> chats = messageService.getActiveTemporaryChats(userId).stream()
+        List<TemporaryChatDto> chats = chatQueryService.getActiveTemporaryChats(userId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
-
         log.info("Returning {} active temporary chats to username={}", chats.size(), username);
         messagingTemplate.convertAndSendToUser(
                 username,
@@ -81,13 +87,18 @@ public class ChatWebSocketController {
         String username = principal.getName();
 
         log.info("Received getPermanent request from userId={}", userId);
-        List<Chat> chats = messageService.getPermanentChats(userId);
+        List<Chat> chats = chatQueryService.getPermanentChats(userId);
         log.info("Returning {} permanent chats to username={}", chats.size(), username);
 
         messagingTemplate.convertAndSendToUser(
                 username,
                 "queue/chat.permanent",
                 chats);
+    }
+
+    @MessageMapping("/chat.activity")
+    public void handleUserActivity(@Payload UserActivityDto activityDto, Principal principal) {
+        activityNotificationService.sendActivityNotification(activityDto);
     }
 
     private TemporaryChatDto mapToDto(TemporaryChat chat) {
@@ -102,10 +113,17 @@ public class ChatWebSocketController {
         return dto;
     }
 
-    @MessageMapping("/test")
-    public void test(Principal principal) {
-        String message = "Test message at лукааааа";
-        messagingTemplate.convertAndSendToUser(principal.getName(), "/queue/test", message);
+    @MessageMapping("/chat.markAsRead")
+    public void markMessagesAsRead(
+            @Payload MarkMessagesReadRequest request,
+            Principal principal) {
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID userId = userDetails.getUserId();
+
+        log.info("Marking messages as read by user: {}, message IDs: {}",
+                userId, request.getMessageIds());
+
+        messageProcessingService.markMessagesAsRead(request.getMessageIds(), userId);
     }
 
 }

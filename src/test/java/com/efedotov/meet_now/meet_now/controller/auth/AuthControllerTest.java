@@ -1,12 +1,9 @@
 package com.efedotov.meet_now.meet_now.controller.auth;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.efedotov.meet_now.meet_now.dto.LoginDTO;
 import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
 import com.efedotov.meet_now.meet_now.dto.UserDto;
-import com.efedotov.meet_now.meet_now.service.AuthService;
+import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(AuthController.class)
@@ -32,13 +29,7 @@ public class AuthControllerTest {
     @Mock
     private AuthService authService;
 
-    @InjectMocks
-    private AuthController authController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testRegistrationSuccess() throws Exception {

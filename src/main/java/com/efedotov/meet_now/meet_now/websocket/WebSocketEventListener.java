@@ -10,8 +10,8 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
-import com.efedotov.meet_now.meet_now.service.UserService;
-import com.efedotov.meet_now.meet_now.service.WebSocketSessionService;
+import com.efedotov.meet_now.meet_now.service.user.UserService;
+import com.efedotov.meet_now.meet_now.service.websocket.WebSocketSessionService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class WebSocketEventListener {
     private final UserService userService;
     private final WebSocketSessionService sessionService;
 
-    @EventListener
+   @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
@@ -33,17 +33,21 @@ public class WebSocketEventListener {
         if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             UUID userId = userDetails.getUserId();
-
+            boolean hadActiveSessionsBefore = sessionService.hasActiveSessions(userId);
             sessionService.registerNewSession(sessionId, userId);
-            
-            // Установить онлайн только если это первая сессия
-            if (!sessionService.hasActiveSessions(userId)) {
+
+            if (!hadActiveSessionsBefore) {
                 userService.setUserOnline(userId, true);
+                log.info("УСТАНОВКА ONLINE: Пользователь {} переведён в онлайн (первая сессия)", userId);
+            } else {
+                log.debug("Пользователь {} остаётся онлайн (активных сессий: {})", 
+                          userId, sessionService.getActiveSessionCount(userId));
             }
 
-            log.info("Пользователь подключился, sessionId = {}, userId = {}", sessionId, userId);
+            log.info("Подключение: sessionId={}, userId={}, активных сессий={}", 
+                     sessionId, userId, sessionService.getActiveSessionCount(userId));
         } else {
-            log.warn("Не удалось получить аутентификацию при подключении, sessionId = {}", sessionId);
+            log.warn("Не удалось получить аутентификацию, sessionId={}", sessionId);
         }
     }
 
@@ -55,14 +59,19 @@ public class WebSocketEventListener {
 
         if (userId != null) {
             sessionService.removeSession(sessionId);
+            int remainingSessions = sessionService.getActiveSessionCount(userId);
             
-            if (!sessionService.hasActiveSessions(userId)) {
+            if (remainingSessions == 0) {
                 userService.setUserOnline(userId, false);
+                log.info("УСТАНОВКА OFFLINE: Пользователь {} переведён в оффлайн", userId); 
+            } else {
+                log.debug("Пользователь {} остаётся онлайн (осталось сессий: {})", userId, remainingSessions);
             }
 
-            log.info("Пользователь отключился, sessionId = {}, userId = {}", sessionId, userId);
+            log.info("Отключение: sessionId={}, userId={}, осталось сессий={}", 
+                     sessionId, userId, remainingSessions);
         } else {
-            log.warn("Не удалось найти userId для сессии, sessionId = {}", sessionId);
+            log.warn("Не найден userId для сессии {}", sessionId);
         }
     }
 }

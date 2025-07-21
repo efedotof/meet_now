@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.service;
+package com.efedotov.meet_now.meet_now.service.auth;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.efedotov.meet_now.meet_now.model.UserSession;
 import com.efedotov.meet_now.meet_now.repository.UserSessionRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -53,7 +54,8 @@ public class SessionService {
     public Optional<UserSession> findValidSession(String token) {
         return sessionRepository.findValidSession(token, Instant.now());
     }
-
+    
+    @Transactional
     @Scheduled(fixedRate = 86400000) 
     public void cleanExpiredSessions() {
         sessionRepository.deleteExpiredSessions(Instant.now());

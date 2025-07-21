@@ -1,19 +1,31 @@
-package com.efedotov.meet_now.meet_now.service;
-
-import com.efedotov.meet_now.meet_now.model.*;
-import com.efedotov.meet_now.meet_now.repository.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package com.efedotov.meet_now.meet_now.service.chat;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.efedotov.meet_now.meet_now.model.Chat;
+import com.efedotov.meet_now.meet_now.model.ChatConstraint;
+import com.efedotov.meet_now.meet_now.model.ChatGame;
+import com.efedotov.meet_now.meet_now.model.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatConstraintRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatGameRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -101,9 +113,7 @@ public class ChatService {
         });
     }
 
-    /**
-     * Создает постоянный чат из временного и открывает анкеты (isOpened = true)
-     */
+    // Создает постоянный чат из временного и открывает анкеты (isOpened = true)
     @Transactional
     protected void createPermanentChatFromTemporary(TemporaryChat tempChat) {
         Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
@@ -120,7 +130,7 @@ public class ChatService {
             log.info("Создан постоянный чат между {} и {}",
                     tempChat.getSender().getId(), tempChat.getRecipient().getId());
         } else {
-            // Если чат уже существует — обновляем флаг isOpened, если нужно
+            // Если чат уже существует — обновляем флаг isOpened
             Chat chat = existingChat.get();
             if (!Boolean.TRUE.equals(chat.getIsOpened())) {
                 chat.setIsOpened(true);
@@ -158,26 +168,18 @@ public class ChatService {
         });
     }
 
-    /**
-     * Получить все активные (не завершённые) временные чаты для пользователя
-     */
+    // Получить все активные (не завершённые) временные чаты для пользователя
     public List<TemporaryChat> getActiveTemporaryChatsForUser(UUID userId) {
         return temporaryChatRepository.findByIsFinishedFalse().stream()
                 .filter(tc -> tc.getSender().getId().equals(userId) || tc.getRecipient().getId().equals(userId))
                 .toList();
     }
 
-    /**
-     * Получить все постоянные чаты пользователя.
-     */
+    // Получить все постоянные чаты пользователя.
     public List<Chat> getPermanentChatsForUser(UUID userId) {
         return chatRepository.findByUser1IdOrUser2Id(userId, userId);
     }
 
-    /**
-     * Логика по обновлению ограничения (например, можно ли начать чат).
-     * Можно расширять под бизнес-логику.
-     */
     @Transactional
     public void updateChatConstraint(UUID tempChatId, boolean canStart, int waitSeconds) {
         chatConstraintRepository.findByTemporaryChat_TempChatId(tempChatId).ifPresent(constraint -> {
@@ -188,16 +190,12 @@ public class ChatService {
         });
     }
 
-    /**
-     * Получить ограничения для временного чата
-     */
+    // Получить ограничения для временного чата
     public Optional<ChatConstraint> getChatConstraint(UUID tempChatId) {
         return chatConstraintRepository.findByTemporaryChat_TempChatId(tempChatId);
     }
 
-    /**
-     * Добавить или получить игры для чата
-     */
+    // Добавить или получить игры для чата
     public List<ChatGame> getChatGames(UUID chatId) {
         return chatGameRepository.findByChat_ChatId(chatId);
     }

@@ -42,4 +42,6 @@ public class Message {
     @JoinColumn(name = "temp_chat_id")
     private TemporaryChat temporaryChat;
 
+    @Column(name = "is_read", columnDefinition = "boolean default false")
+    private boolean isRead = false;
 }

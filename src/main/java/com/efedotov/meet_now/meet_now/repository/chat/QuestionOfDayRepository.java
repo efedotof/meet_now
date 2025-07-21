@@ -1,4 +1,4 @@
-package com.efedotov.meet_now.meet_now.repository;
+package com.efedotov.meet_now.meet_now.repository.chat;
 
 import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;

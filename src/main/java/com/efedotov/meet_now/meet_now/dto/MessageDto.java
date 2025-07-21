@@ -13,5 +13,6 @@ public class MessageDto {
     private UUID recipientId;
     private String text;
     private LocalDateTime createdAt;
-    private UUID tempChatId; 
+    private UUID tempChatId;
+    private boolean isRead;
 }

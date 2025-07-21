@@ -2,7 +2,8 @@ package com.efedotov.meet_now.meet_now.controller.user;
 
 import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.service.UserService;
+import com.efedotov.meet_now.meet_now.service.user.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

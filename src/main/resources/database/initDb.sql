@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS messages (
     recipient_id UUID REFERENCES users(id) ON DELETE CASCADE,
     temp_chat_id UUID REFERENCES temporary_chats(temp_chat_id) ON DELETE CASCADE,
     text TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_read BOOLEAN NOT NULL DEFAULT false
 );
 
 

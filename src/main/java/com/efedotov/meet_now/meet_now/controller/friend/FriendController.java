@@ -1,7 +1,8 @@
 package com.efedotov.meet_now.meet_now.controller.friend;
 
 import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.service.FriendService;
+import com.efedotov.meet_now.meet_now.service.user.FriendService;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
