@@ -8,19 +8,20 @@ import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
-
 import 'auth_interface.dart';
 
 class AuthRepository implements AuthInterface {
   final Dio _dio = Dio(BaseOptions(baseUrl: authAddress));
-  final PasswordStorageInterface passwordStorageInterface;
-  final UserModelAppInterface userModelAppInterface;
-  final UserStorageInterface userStorageInterface;
+  final PasswordStorageInterface _passwordStorageInterface;
+  final UserModelAppInterface _userModelAppInterface;
+  final UserStorageInterface _userStorageInterface;
   AuthRepository({
-    required this.passwordStorageInterface,
-    required this.userModelAppInterface,
-    required this.userStorageInterface,
-  });
+    required PasswordStorageInterface passwordStorageInterface,
+    required UserModelAppInterface userModelAppInterface,
+    required UserStorageInterface userStorageInterface,
+  }) : _userStorageInterface = userStorageInterface,
+       _userModelAppInterface = userModelAppInterface,
+       _passwordStorageInterface = passwordStorageInterface;
 
   @override
   Future<User> login({required Login login}) async {
@@ -33,10 +34,9 @@ class AuthRepository implements AuthInterface {
       if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
         final user = User.fromJson(response.data);
 
-        passwordStorageInterface.setPassword(password: login.password);
-        userModelAppInterface.user = user;
-        await userStorageInterface.saveUser(user);
-        debugPrint("userToken: ${user.token}");
+        _passwordStorageInterface.setPassword(password: login.password);
+        _userModelAppInterface.user = user;
+        await _userStorageInterface.saveUser(user);
         return user;
       } else {
         throw Exception('Unexpected response: ${response.statusCode}');
@@ -75,9 +75,9 @@ class AuthRepository implements AuthInterface {
       if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
         final user = User.fromJson(response.data);
 
-        passwordStorageInterface.setPassword(password: registration.password);
-        userModelAppInterface.user = user;
-        await userStorageInterface.saveUser(user);
+        _passwordStorageInterface.setPassword(password: registration.password);
+        _userModelAppInterface.user = user;
+        await _userStorageInterface.saveUser(user);
         return user;
       } else {
         throw Exception('Unexpected response: ${response.statusCode}');
@@ -88,6 +88,39 @@ class AuthRepository implements AuthInterface {
     } catch (e) {
       debugPrint("Unknown error during registration: $e");
       throw Exception('Registration failed: $e');
+    }
+  }
+
+  @override
+  Future<User?> autoLogin() async {
+    try {
+      final user = await _userStorageInterface.getUser();
+      final password = _passwordStorageInterface.getPassword();
+
+      if (user == null ||
+          user.id.isEmpty ||
+          password.isEmpty ||
+          user.token == null ||
+          user.token!.isEmpty) {
+        throw Exception('Отсутствует токен, пароль, пользователь или его ID');
+      }
+
+      final token = user.token!;
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+
+      final response = await _dio.get(tokenValidation);
+
+      if (response.statusCode == 200) {
+        _userModelAppInterface.user = user;
+        return user;
+      }
+
+      final loginData = Login(username: user.username, password: password);
+      return await login(login: loginData);
+    } catch (e, stackTrace) {
+      debugPrint('AutoLogin error: $e');
+      debugPrint('$stackTrace');
+      return null;
     }
   }
 }

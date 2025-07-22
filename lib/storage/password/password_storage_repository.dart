@@ -13,11 +13,9 @@ class PasswordStorageRepository implements PasswordStorageInterface {
 
   @override
   Future<void> setPassword({required String password}) async {
-    final iv = IV.fromSecureRandom(16); // Новый случайный IV
+    final iv = IV.fromSecureRandom(16);
     final encrypter = Encrypter(AES(_encryptionKey));
     final encrypted = encrypter.encrypt(password, iv: iv);
-
-    // Сохраняем base64 пароля и iv вместе, разделённые символом ::
     final combined = '${iv.base64}::${encrypted.base64}';
     await preferences.setString(_passwordKey, combined);
   }

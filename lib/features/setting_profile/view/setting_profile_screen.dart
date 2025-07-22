@@ -113,7 +113,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Аватар
             Center(
               child: Stack(
                 alignment: Alignment.bottomRight,
@@ -158,7 +157,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Основная информация
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -208,7 +206,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Дополнительная информация
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -260,7 +257,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Настройки приватности
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -287,7 +283,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Интересы
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -351,7 +346,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Цели знакомства
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

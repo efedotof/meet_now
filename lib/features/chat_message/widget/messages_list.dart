@@ -96,7 +96,7 @@ class MessagesList extends StatelessWidget {
                     bottom: 16,
                   ),
                   child: Text(
-                    DateFormat.Hm().format(DateTime.now()),
+                    DateFormat.Hm().format(message.createdAt!),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.secondary,
                       fontSize: 11,

@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +12,7 @@ import 'package:meet_now_app/features/auth/view/sign_up/widget/credentials_page.
 import 'package:meet_now_app/features/auth/view/sign_up/widget/personal_info_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 @RoutePage()
 class SignUpScreen extends StatefulWidget {
@@ -71,6 +75,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isDesktop =
+        kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    final double buttonWidth =
+        isDesktop ? math.min(400, screenWidth * 0.5) : double.infinity;
+
     return BlocListener<SignUpCubit, SignUpState>(
       listener: (context, state) {
         state.whenOrNull(
@@ -106,10 +116,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  PersonalInfoPage(formKey: _formKeys[0], formData: formData),
-                  AboutPage(formKey: _formKeys[1], formData: formData),
-                  AvatarPage(formKey: _formKeys[2], formData: formData),
-                  CredentialsPage(formKey: _formKeys[3], formData: formData),
+                  PersonalInfoPage(
+                    formKey: _formKeys[0],
+                    formData: formData,
+                    buttonWidth: buttonWidth,
+                  ),
+                  AboutPage(
+                    formKey: _formKeys[1],
+                    formData: formData,
+                    buttonWidth: buttonWidth,
+                  ),
+                  AvatarPage(
+                    formKey: _formKeys[2],
+                    formData: formData,
+                    buttonWidth: buttonWidth,
+                  ),
+                  CredentialsPage(
+                    formKey: _formKeys[3],
+                    formData: formData,
+                    buttonWidth: buttonWidth,
+                  ),
                 ],
               ),
             ),
@@ -119,6 +145,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           currentPage: _currentPage,
           onNext: _nextPage,
           onRegister: _onRegisterPressed,
+          buttonWidth: buttonWidth,
         ),
       ),
     );

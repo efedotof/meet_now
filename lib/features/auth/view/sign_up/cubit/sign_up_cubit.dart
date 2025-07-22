@@ -23,7 +23,7 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   Future<void> pickAndUploadAvatar(SignUpFormData formData) async {
     try {
-      emit(const SignUpState.loading());
+      emit(const SignUpState.avatarLoading());
 
       final result = await FilePicker.platform.pickFiles(type: FileType.image);
       if (result != null && result.files.single.path != null) {
@@ -31,7 +31,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         final url = await _uploadImageInterface.uploadAvatar(filePath);
         formData.avatar = url;
         debugPrint(url);
-        emit(const SignUpState.initial());
+        emit(const SignUpState.avatarLoaded());
       } else {
         emit(const SignUpState.initial());
       }
@@ -57,6 +57,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         );
       }
     } catch (e) {
+      debugPrint("error: $e");
       emit(SignUpState.error(error: e.toString()));
     }
   }

@@ -12,11 +12,17 @@ part of 'main_home_cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$MainHomeState {
+mixin _$MainHomeState implements DiagnosticableTreeMixin {
 
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MainHomeState'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -28,7 +34,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MainHomeState()';
 }
 
@@ -174,7 +180,7 @@ return initial();case _:
 /// @nodoc
 
 
-class _Initial implements MainHomeState {
+class _Initial with DiagnosticableTreeMixin implements MainHomeState {
   const _Initial();
   
 
@@ -182,6 +188,12 @@ class _Initial implements MainHomeState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MainHomeState.initial'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -193,7 +205,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MainHomeState.initial()';
 }
 

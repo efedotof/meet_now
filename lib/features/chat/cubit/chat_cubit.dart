@@ -1,87 +1,64 @@
 import 'dart:async';
-
-import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
-import 'package:meet_now_app/server/repository/chat/chat_interface.dart';
+import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 
 part 'chat_state.dart';
 part 'chat_cubit.freezed.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final ChatInterface _chatInterface;
-  final UserModelAppInterface _userModelAppInterface;
-  StreamSubscription<List<Chat>>? _permanentChatsSub;
-  StreamSubscription<List<TemporaryChat>>? _temporaryChatsSub;
-
-  List<Chat> _permanentChats = [];
-  List<TemporaryChat> _temporaryChats = [];
+  late final StreamSubscription _permanentSub;
+  late final StreamSubscription _temporarySub;
+  final SocketServiceInterface _socketServiceInterface;
 
   ChatCubit({
-    required ChatInterface chatInterface,
+    required SocketServiceInterface socketServiceInterface,
     required UserModelAppInterface userModelAppInterface,
-  }) : _userModelAppInterface = userModelAppInterface,
-       _chatInterface = chatInterface,
-       super(const ChatState.initial());
-
-  void init({required BuildContext context}) {
-    final user = _userModelAppInterface.user;
-    if (user == null || user.id.isEmpty) {
-      throw Exception('Пользователь не авторизован или ID пустой');
-    }
-
-    _chatInterface.init(user.id);
-    getChatsUser(context: context);
+  }) : _socketServiceInterface = socketServiceInterface,
+       super(
+         const ChatState(permanentChat: [], temporaryChat: [], isLoading: true),
+       ) {
+    _init();
   }
 
-  Future<void> getChatsUser({required BuildContext context}) async {
-    try {
-      _permanentChatsSub = _chatInterface.chatStream.listen((chats) {
-        debugPrint(
-          "[ChatCubit] permanentChats stream: ${chats.map((e) => e.toJson())}",
-        );
-        _permanentChats = chats;
-        _emitCombined();
-      });
+  void _init() {
+    _socketServiceInterface.getPermanent();
+    _socketServiceInterface.getActiveTemporary();
 
-      _temporaryChatsSub = _chatInterface.temporaryChatStream.listen((chats) {
-        debugPrint(
-          "[ChatCubit] temporaryChats stream: ${chats.map((e) => e.toJson())}",
+    _permanentSub = _socketServiceInterface.permanentChatsStream.listen(
+      (chats) {
+        emit(
+          state.copyWith(permanentChat: chats, isLoading: false, error: null),
         );
-        _temporaryChats = chats;
-        _emitCombined();
-      });
-
-      // Запрашиваем чаты у сокет-интерфейса
-      debugPrint("[getChatsUser] ➤ requesting chats...");
-      _chatInterface.getChatPermanent();
-      _chatInterface.getActiveTemporary();
-    } catch (e) {
-      debugPrint("[getChatsUser] ❌ error: $e");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Ошибка при получении чатов: $e")),
-        );
-      }
-    }
-  }
-
-  void _emitCombined() {
-    emit(
-      ChatState.getChats(
-        temporaryChat: _temporaryChats,
-        permomentChat: _permanentChats,
-      ),
+      },
+      onError:
+          (e) => emit(state.copyWith(error: e.toString(), isLoading: false)),
     );
+
+    _temporarySub = _socketServiceInterface.temporaryChatsStream.listen(
+      (chats) {
+        emit(
+          state.copyWith(temporaryChat: chats, isLoading: false, error: null),
+        );
+      },
+      onError:
+          (e) => emit(state.copyWith(error: e.toString(), isLoading: false)),
+    );
+  }
+
+  Future<void> refresh() async {
+    emit(state.copyWith(isLoading: true, error: null));
+    _socketServiceInterface.getPermanent();
+    _socketServiceInterface.getActiveTemporary();
   }
 
   @override
   Future<void> close() {
-    _permanentChatsSub?.cancel();
-    _temporaryChatsSub?.cancel();
+    _permanentSub.cancel();
+    _temporarySub.cancel();
     return super.close();
   }
 }
