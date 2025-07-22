@@ -4,8 +4,14 @@ import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data
 class AboutPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final SignUpFormData formData;
+  final double buttonWidth;
 
-  const AboutPage({super.key, required this.formKey, required this.formData});
+  const AboutPage({
+    super.key,
+    required this.formKey,
+    required this.formData,
+    required this.buttonWidth,
+  });
 
   @override
   State<AboutPage> createState() => _AboutPageState();
@@ -14,108 +20,117 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: widget.formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Расскажите о себе',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 24),
-
-            // Пол
-            Text('Пол', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Row(
+    return Center(
+      child: Form(
+        key: widget.formKey,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ChoiceChip(
-                  label: const Text('Мужской'),
-                  selected: widget.formData.gender == 'м',
-                  onSelected: (selected) {
-                    setState(() {
-                      widget.formData.gender = selected ? 'м' : '';
-                    });
-                  },
+                Text(
+                  'Расскажите о себе',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                const SizedBox(width: 12),
-                ChoiceChip(
-                  label: const Text('Женский'),
-                  selected: widget.formData.gender == 'ж',
-                  onSelected: (selected) {
-                    setState(() {
-                      widget.formData.gender = selected ? 'ж' : '';
-                    });
-                  },
+                const SizedBox(height: 24),
+
+                // Пол
+                Text('Пол', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Мужской'),
+                      selected: widget.formData.gender == 'м',
+                      onSelected: (selected) {
+                        setState(() {
+                          widget.formData.gender = selected ? 'м' : '';
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    ChoiceChip(
+                      label: const Text('Женский'),
+                      selected: widget.formData.gender == 'ж',
+                      onSelected: (selected) {
+                        setState(() {
+                          widget.formData.gender = selected ? 'ж' : '';
+                        });
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                TextFormField(
+                  initialValue: widget.formData.description,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Описание',
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(),
+                  ),
+                  validator:
+                      (value) => value!.isEmpty ? 'Расскажите о себе' : null,
+                  onChanged: (value) => widget.formData.description = value,
+                ),
+
+                const SizedBox(height: 24),
+                Text('Цели знакомств'),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children:
+                      ['Дружба', 'Любовь', 'Общение'].map((e) {
+                        final selected = widget.formData.purposes.contains(e);
+                        return ChoiceChip(
+                          label: Text(e),
+                          selected: selected,
+                          onSelected:
+                              (val) => setState(() {
+                                if (val) {
+                                  widget.formData.purposes.add(e);
+                                } else {
+                                  widget.formData.purposes.remove(e);
+                                }
+                              }),
+                        );
+                      }).toList(),
+                ),
+
+                const SizedBox(height: 24),
+                Text(
+                  'Интересы',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children:
+                      ['Спорт', 'Игры', 'Книги', 'Музыка'].map((e) {
+                        final selected = widget.formData.interests.contains(e);
+                        return ChoiceChip(
+                          label: Text(e),
+                          selected: selected,
+                          onSelected:
+                              (val) => setState(() {
+                                if (val) {
+                                  widget.formData.interests.add(e);
+                                } else {
+                                  widget.formData.interests.remove(e);
+                                }
+                              }),
+                        );
+                      }).toList(),
                 ),
               ],
             ),
-
-            const SizedBox(height: 24),
-
-            TextFormField(
-              initialValue: widget.formData.description,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Описание',
-                alignLabelWithHint: true,
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) => value!.isEmpty ? 'Расскажите о себе' : null,
-              onChanged: (value) => widget.formData.description = value,
-            ),
-
-            const SizedBox(height: 24),
-            Text('Цели знакомств'),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  ['Дружба', 'Любовь', 'Общение'].map((e) {
-                    final selected = widget.formData.purposes.contains(e);
-                    return ChoiceChip(
-                      label: Text(e),
-                      selected: selected,
-                      onSelected:
-                          (val) => setState(() {
-                            if (val) {
-                              widget.formData.purposes.add(e);
-                            } else {
-                              widget.formData.purposes.remove(e);
-                            }
-                          }),
-                    );
-                  }).toList(),
-            ),
-
-            const SizedBox(height: 24),
-            Text('Интересы', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  ['Спорт', 'Игры', 'Книги', 'Музыка'].map((e) {
-                    final selected = widget.formData.interests.contains(e);
-                    return ChoiceChip(
-                      label: Text(e),
-                      selected: selected,
-                      onSelected:
-                          (val) => setState(() {
-                            if (val) {
-                              widget.formData.interests.add(e);
-                            } else {
-                              widget.formData.interests.remove(e);
-                            }
-                          }),
-                    );
-                  }).toList(),
-            ),
-          ],
+          ),
         ),
       ),
     );

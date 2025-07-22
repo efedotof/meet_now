@@ -14,30 +14,64 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatState {
 
-
+ List<Chat> get permanentChat; List<TemporaryChat> get temporaryChat; bool get isLoading; String? get error;
+/// Create a copy of ChatState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatStateCopyWith<ChatState> get copyWith => _$ChatStateCopyWithImpl<ChatState>(this as ChatState, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState&&const DeepCollectionEquality().equals(other.permanentChat, permanentChat)&&const DeepCollectionEquality().equals(other.temporaryChat, temporaryChat)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(permanentChat),const DeepCollectionEquality().hash(temporaryChat),isLoading,error);
 
 @override
 String toString() {
-  return 'ChatState()';
+  return 'ChatState(permanentChat: $permanentChat, temporaryChat: $temporaryChat, isLoading: $isLoading, error: $error)';
 }
 
 
 }
 
 /// @nodoc
-class $ChatStateCopyWith<$Res>  {
-$ChatStateCopyWith(ChatState _, $Res Function(ChatState) __);
+abstract mixin class $ChatStateCopyWith<$Res>  {
+  factory $ChatStateCopyWith(ChatState value, $Res Function(ChatState) _then) = _$ChatStateCopyWithImpl;
+@useResult
+$Res call({
+ List<Chat> permanentChat, List<TemporaryChat> temporaryChat, bool isLoading, String? error
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChatStateCopyWithImpl<$Res>
+    implements $ChatStateCopyWith<$Res> {
+  _$ChatStateCopyWithImpl(this._self, this._then);
+
+  final ChatState _self;
+  final $Res Function(ChatState) _then;
+
+/// Create a copy of ChatState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? permanentChat = null,Object? temporaryChat = null,Object? isLoading = null,Object? error = freezed,}) {
+  return _then(_self.copyWith(
+permanentChat: null == permanentChat ? _self.permanentChat : permanentChat // ignore: cast_nullable_to_non_nullable
+as List<Chat>,temporaryChat: null == temporaryChat ? _self.temporaryChat : temporaryChat // ignore: cast_nullable_to_non_nullable
+as List<TemporaryChat>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
 }
 
 
@@ -55,12 +89,11 @@ extension ChatStatePatterns on ChatState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _GetChats value)?  getChats,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ChatState value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _GetChats() when getChats != null:
-return getChats(_that);case _:
+case _ChatState() when $default != null:
+return $default(_that);case _:
   return orElse();
 
 }
@@ -78,12 +111,11 @@ return getChats(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _GetChats value)  getChats,}){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ChatState value)  $default,){
 final _that = this;
 switch (_that) {
-case _Initial():
-return initial(_that);case _GetChats():
-return getChats(_that);case _:
+case _ChatState():
+return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +132,11 @@ return getChats(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _GetChats value)?  getChats,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ChatState value)?  $default,){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _GetChats() when getChats != null:
-return getChats(_that);case _:
+case _ChatState() when $default != null:
+return $default(_that);case _:
   return null;
 
 }
@@ -122,11 +153,10 @@ return getChats(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<TemporaryChat> temporaryChat,  List<Chat> permomentChat)?  getChats,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Chat> permanentChat,  List<TemporaryChat> temporaryChat,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _GetChats() when getChats != null:
-return getChats(_that.temporaryChat,_that.permomentChat);case _:
+case _ChatState() when $default != null:
+return $default(_that.permanentChat,_that.temporaryChat,_that.isLoading,_that.error);case _:
   return orElse();
 
 }
@@ -144,11 +174,10 @@ return getChats(_that.temporaryChat,_that.permomentChat);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<TemporaryChat> temporaryChat,  List<Chat> permomentChat)  getChats,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Chat> permanentChat,  List<TemporaryChat> temporaryChat,  bool isLoading,  String? error)  $default,) {final _that = this;
 switch (_that) {
-case _Initial():
-return initial();case _GetChats():
-return getChats(_that.temporaryChat,_that.permomentChat);case _:
+case _ChatState():
+return $default(_that.permanentChat,_that.temporaryChat,_that.isLoading,_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +194,10 @@ return getChats(_that.temporaryChat,_that.permomentChat);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<TemporaryChat> temporaryChat,  List<Chat> permomentChat)?  getChats,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Chat> permanentChat,  List<TemporaryChat> temporaryChat,  bool isLoading,  String? error)?  $default,) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _GetChats() when getChats != null:
-return getChats(_that.temporaryChat,_that.permomentChat);case _:
+case _ChatState() when $default != null:
+return $default(_that.permanentChat,_that.temporaryChat,_that.isLoading,_that.error);case _:
   return null;
 
 }
@@ -180,88 +208,58 @@ return getChats(_that.temporaryChat,_that.permomentChat);case _:
 /// @nodoc
 
 
-class _Initial implements ChatState {
-  const _Initial();
+class _ChatState implements ChatState {
+  const _ChatState({required final  List<Chat> permanentChat, required final  List<TemporaryChat> temporaryChat, this.isLoading = false, this.error}): _permanentChat = permanentChat,_temporaryChat = temporaryChat;
   
 
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Initial);
+ final  List<Chat> _permanentChat;
+@override List<Chat> get permanentChat {
+  if (_permanentChat is EqualUnmodifiableListView) return _permanentChat;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_permanentChat);
 }
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ChatState.initial()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _GetChats implements ChatState {
-  const _GetChats({required final  List<TemporaryChat> temporaryChat, required final  List<Chat> permomentChat}): _temporaryChat = temporaryChat,_permomentChat = permomentChat;
-  
 
  final  List<TemporaryChat> _temporaryChat;
- List<TemporaryChat> get temporaryChat {
+@override List<TemporaryChat> get temporaryChat {
   if (_temporaryChat is EqualUnmodifiableListView) return _temporaryChat;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_temporaryChat);
 }
 
- final  List<Chat> _permomentChat;
- List<Chat> get permomentChat {
-  if (_permomentChat is EqualUnmodifiableListView) return _permomentChat;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_permomentChat);
-}
-
+@override@JsonKey() final  bool isLoading;
+@override final  String? error;
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$GetChatsCopyWith<_GetChats> get copyWith => __$GetChatsCopyWithImpl<_GetChats>(this, _$identity);
+_$ChatStateCopyWith<_ChatState> get copyWith => __$ChatStateCopyWithImpl<_ChatState>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetChats&&const DeepCollectionEquality().equals(other._temporaryChat, _temporaryChat)&&const DeepCollectionEquality().equals(other._permomentChat, _permomentChat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatState&&const DeepCollectionEquality().equals(other._permanentChat, _permanentChat)&&const DeepCollectionEquality().equals(other._temporaryChat, _temporaryChat)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_temporaryChat),const DeepCollectionEquality().hash(_permomentChat));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_permanentChat),const DeepCollectionEquality().hash(_temporaryChat),isLoading,error);
 
 @override
 String toString() {
-  return 'ChatState.getChats(temporaryChat: $temporaryChat, permomentChat: $permomentChat)';
+  return 'ChatState(permanentChat: $permanentChat, temporaryChat: $temporaryChat, isLoading: $isLoading, error: $error)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$GetChatsCopyWith<$Res> implements $ChatStateCopyWith<$Res> {
-  factory _$GetChatsCopyWith(_GetChats value, $Res Function(_GetChats) _then) = __$GetChatsCopyWithImpl;
-@useResult
+abstract mixin class _$ChatStateCopyWith<$Res> implements $ChatStateCopyWith<$Res> {
+  factory _$ChatStateCopyWith(_ChatState value, $Res Function(_ChatState) _then) = __$ChatStateCopyWithImpl;
+@override @useResult
 $Res call({
- List<TemporaryChat> temporaryChat, List<Chat> permomentChat
+ List<Chat> permanentChat, List<TemporaryChat> temporaryChat, bool isLoading, String? error
 });
 
 
@@ -269,20 +267,22 @@ $Res call({
 
 }
 /// @nodoc
-class __$GetChatsCopyWithImpl<$Res>
-    implements _$GetChatsCopyWith<$Res> {
-  __$GetChatsCopyWithImpl(this._self, this._then);
+class __$ChatStateCopyWithImpl<$Res>
+    implements _$ChatStateCopyWith<$Res> {
+  __$ChatStateCopyWithImpl(this._self, this._then);
 
-  final _GetChats _self;
-  final $Res Function(_GetChats) _then;
+  final _ChatState _self;
+  final $Res Function(_ChatState) _then;
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? temporaryChat = null,Object? permomentChat = null,}) {
-  return _then(_GetChats(
-temporaryChat: null == temporaryChat ? _self._temporaryChat : temporaryChat // ignore: cast_nullable_to_non_nullable
-as List<TemporaryChat>,permomentChat: null == permomentChat ? _self._permomentChat : permomentChat // ignore: cast_nullable_to_non_nullable
-as List<Chat>,
+@override @pragma('vm:prefer-inline') $Res call({Object? permanentChat = null,Object? temporaryChat = null,Object? isLoading = null,Object? error = freezed,}) {
+  return _then(_ChatState(
+permanentChat: null == permanentChat ? _self._permanentChat : permanentChat // ignore: cast_nullable_to_non_nullable
+as List<Chat>,temporaryChat: null == temporaryChat ? _self._temporaryChat : temporaryChat // ignore: cast_nullable_to_non_nullable
+as List<TemporaryChat>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

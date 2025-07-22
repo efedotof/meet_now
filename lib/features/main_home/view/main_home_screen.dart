@@ -10,7 +10,6 @@ class MainHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.read<MainHomeCubit>().setOnline(context: context, isOnline: true);
     return AutoTabsRouter(
       routes: [SearchRoute(), ChatRoute(), FriendsRoute(), SettingsRoute()],
       transitionBuilder:

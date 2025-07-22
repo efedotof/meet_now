@@ -1,28 +1,27 @@
 import 'dart:async';
+
 import 'package:meet_now_app/server/model/message/message.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
-import 'package:meet_now_app/server/service/socket_service.dart';
+import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 
 class MessageRepository implements MessageInterface {
-  late final SocketService _socketService;
+  final SocketServiceInterface _socketService;
+  final StreamController<List<Message>> _messagesController =
+      StreamController.broadcast();
+  final StreamController<Message> _singleMessageController =
+      StreamController.broadcast();
 
-  final _messageStreamController = StreamController<List<Message>>.broadcast();
-  final _incomingMessageController = StreamController<Message>.broadcast();
-  @override
-  Stream<List<Message>> get messagesStream => _messageStreamController.stream;
-  @override
-  Stream<Message> get incomingMessageStream =>
-      _incomingMessageController.stream;
+  MessageRepository({required SocketServiceInterface socketService})
+    : _socketService = socketService {
+    _socketService.messagesStream.listen(_messagesController.add);
+    _socketService.singleMessageStream.listen(_singleMessageController.add);
+  }
 
-  // @override
-  // void init(String userId) {
-  //   _socketService = SocketService(
-  //     userId: userId,
-  //     onMessagesReceived: (messages) => _messageStreamController.add(messages),
-  //     onSingleMessageReceived: (msg) => _incomingMessageController.add(msg),
-  //   );
-  //   _socketService.connect();
-  // }
+  @override
+  Stream<List<Message>> get messagesStream => _messagesController.stream;
+
+  @override
+  Stream<Message> get singleMessageStream => _singleMessageController.stream;
 
   @override
   void requestMessages(String chatId) {
@@ -36,8 +35,7 @@ class MessageRepository implements MessageInterface {
 
   @override
   void dispose() {
-    _socketService.disconnect();
-    _messageStreamController.close();
-    _incomingMessageController.close();
+    _messagesController.close();
+    _singleMessageController.close();
   }
 }

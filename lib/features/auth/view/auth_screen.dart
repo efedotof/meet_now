@@ -1,16 +1,24 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 @RoutePage()
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
-
+  static const double mobileButtonWidth = double.infinity;
+  static const double desktopButtonWidth = 300.0;
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = Theme.of(context).colorScheme;
 
+    final bool isDesktop =
+        kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    final double buttonWidth =
+        isDesktop ? desktopButtonWidth : mobileButtonWidth;
     return Scaffold(
       body: DecoratedBox(
         decoration: BoxDecoration(
@@ -81,39 +89,48 @@ class AuthScreen extends StatelessWidget {
 
                 const SizedBox(height: 48),
 
-                ElevatedButton(
-                  onPressed: () => context.pushRoute(const SignInRoute()),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: buttonWidth),
+                  child: ElevatedButton(
+                    onPressed: () => context.pushRoute(const SignInRoute()),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      backgroundColor: isDark ? Colors.white : Colors.black,
+                      foregroundColor: isDark ? Colors.black : Colors.white,
                     ),
-                    backgroundColor: isDark ? Colors.white : Colors.black,
-                    foregroundColor: isDark ? Colors.black : Colors.white,
-                  ),
-                  child: const Text(
-                    "Войти",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    child: const Text(
+                      "Войти",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                OutlinedButton(
-                  onPressed: () => context.pushRoute(const SignUpRoute()),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    side: BorderSide(color: colors.primary, width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: buttonWidth),
+                  child: OutlinedButton(
+                    onPressed: () => context.pushRoute(const SignUpRoute()),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                      side: BorderSide(color: colors.primary, width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    "Зарегистрироваться",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: colors.primary,
+                    child: Text(
+                      "Зарегистрироваться",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -121,8 +138,12 @@ class AuthScreen extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(child: Divider(color: colors.secondary)),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: Expanded(child: Divider(color: colors.secondary)),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
@@ -130,7 +151,10 @@ class AuthScreen extends StatelessWidget {
                         style: TextStyle(color: colors.secondary),
                       ),
                     ),
-                    Expanded(child: Divider(color: colors.secondary)),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      child: Expanded(child: Divider(color: colors.secondary)),
+                    ),
                   ],
                 ),
 

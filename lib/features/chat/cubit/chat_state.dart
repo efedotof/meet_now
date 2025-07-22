@@ -2,9 +2,10 @@ part of 'chat_cubit.dart';
 
 @freezed
 abstract class ChatState with _$ChatState {
-  const factory ChatState.initial() = _Initial;
-  const factory ChatState.getChats({
+  const factory ChatState({
+    required List<Chat> permanentChat,
     required List<TemporaryChat> temporaryChat,
-    required List<Chat> permomentChat,
-  }) = _GetChats;
+    @Default(false) bool isLoading,
+    String? error,
+  }) = _ChatState;
 }

@@ -14,30 +14,31 @@ class TemporaryChatScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Временные чаты")),
       body: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
-          return state.maybeMap(
-            getChats: (chatsState) {
-              final temporaryChats = chatsState.temporaryChat;
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              if (temporaryChats.isEmpty) {
-                return const Center(child: Text('Временных чатов нет'));
-              }
+          if (state.error != null) {
+            return Center(child: Text('Ошибка: ${state.error}'));
+          }
 
-              return ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: temporaryChats.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final chat = temporaryChats[index];
-                  return ChatTile(
-                    name: 'Анонимный чат $index',
-                    lastMessage: 'Нажмите, чтобы посмотреть',
-                    unreadCount: 0,
-                    temporaryChat: chat,
-                  );
-                },
+          if (state.temporaryChat.isEmpty) {
+            return const Center(child: Text('Временных чатов нет'));
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: state.temporaryChat.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final chat = state.temporaryChat[index];
+              return ChatTile(
+                name: 'Анонимный чат ${index + 1}',
+                lastMessage: 'Нажмите, чтобы посмотреть',
+                unreadCount: 0,
+                temporaryChat: chat,
               );
             },
-            orElse: () => const Center(child: CircularProgressIndicator()),
           );
         },
       ),

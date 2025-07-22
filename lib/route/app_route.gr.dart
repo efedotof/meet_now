@@ -46,15 +46,15 @@ class AuthRoute extends PageRouteInfo<void> {
 /// [ChatMessageScreen]
 class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
   ChatMessageRoute({
-    required Chat? chatModel,
-    required TemporaryChat temporaryChatModel,
+    required TemporaryChat? temporaryChatModel,
+    Chat? chatModel,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
          ChatMessageRoute.name,
          args: ChatMessageRouteArgs(
-           chatModel: chatModel,
            temporaryChatModel: temporaryChatModel,
+           chatModel: chatModel,
            key: key,
          ),
          initialChildren: children,
@@ -67,8 +67,8 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
     builder: (data) {
       final args = data.argsAs<ChatMessageRouteArgs>();
       return ChatMessageScreen(
-        chatModel: args.chatModel,
         temporaryChatModel: args.temporaryChatModel,
+        chatModel: args.chatModel,
         key: args.key,
       );
     },
@@ -77,34 +77,34 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
 
 class ChatMessageRouteArgs {
   const ChatMessageRouteArgs({
-    required this.chatModel,
     required this.temporaryChatModel,
+    this.chatModel,
     this.key,
   });
 
-  final Chat? chatModel;
+  final TemporaryChat? temporaryChatModel;
 
-  final TemporaryChat temporaryChatModel;
+  final Chat? chatModel;
 
   final Key? key;
 
   @override
   String toString() {
-    return 'ChatMessageRouteArgs{chatModel: $chatModel, temporaryChatModel: $temporaryChatModel, key: $key}';
+    return 'ChatMessageRouteArgs{temporaryChatModel: $temporaryChatModel, chatModel: $chatModel, key: $key}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! ChatMessageRouteArgs) return false;
-    return chatModel == other.chatModel &&
-        temporaryChatModel == other.temporaryChatModel &&
+    return temporaryChatModel == other.temporaryChatModel &&
+        chatModel == other.chatModel &&
         key == other.key;
   }
 
   @override
   int get hashCode =>
-      chatModel.hashCode ^ temporaryChatModel.hashCode ^ key.hashCode;
+      temporaryChatModel.hashCode ^ chatModel.hashCode ^ key.hashCode;
 }
 
 /// generated route for

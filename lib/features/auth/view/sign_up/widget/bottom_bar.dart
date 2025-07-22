@@ -6,12 +6,13 @@ class BottomBar extends StatelessWidget {
   final int currentPage;
   final VoidCallback onNext;
   final VoidCallback onRegister;
-
+  final double buttonWidth;
   const BottomBar({
     super.key,
     required this.currentPage,
     required this.onNext,
     required this.onRegister,
+    required this.buttonWidth,
   });
 
   @override
@@ -26,19 +27,25 @@ class BottomBar extends StatelessWidget {
               orElse:
                   () =>
                       currentPage == 3
-                          ? ElevatedButton(
-                            onPressed: onRegister,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 50),
+                          ? ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: buttonWidth),
+                            child: ElevatedButton(
+                              onPressed: onRegister,
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 50),
+                              ),
+                              child: const Text('Зарегистрироваться'),
                             ),
-                            child: const Text('Зарегистрироваться'),
                           )
-                          : ElevatedButton(
-                            onPressed: onNext,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 50),
+                          : ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: buttonWidth),
+                            child: ElevatedButton(
+                              onPressed: onNext,
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 50),
+                              ),
+                              child: const Text('Далее'),
                             ),
-                            child: const Text('Далее'),
                           ),
             );
           },

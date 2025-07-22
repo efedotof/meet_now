@@ -6,4 +6,6 @@ abstract interface class AuthInterface {
   Future<User> registration({required Registration registration});
 
   Future<User> login({required Login login});
+
+  Future<User?> autoLogin();
 }

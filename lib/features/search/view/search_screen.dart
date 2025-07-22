@@ -1,3 +1,4 @@
+// search_screen.dart
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +18,8 @@ class SearchScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Поиск"), elevation: 0),
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
+          final cubit = context.read<SearchCubit>();
+
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 500),
@@ -46,14 +49,11 @@ class SearchScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children:
-                              context.read<SearchCubit>().genders.map((gender) {
+                              cubit.genders.map((gender) {
                                 final isSelected = state.gender == gender;
                                 return Expanded(
                                   child: GestureDetector(
-                                    onTap:
-                                        () => context
-                                            .read<SearchCubit>()
-                                            .selectGender(gender),
+                                    onTap: () => cubit.selectGender(gender),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16,
@@ -105,28 +105,116 @@ class SearchScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-
                         Wrap(
                           spacing: 12,
                           runSpacing: 12,
                           children:
-                              context.read<SearchCubit>().ageFromList.map((
-                                ageStart,
-                              ) {
-                                return SizedBox(
-                                  width:
-                                      (MediaQuery.of(context).size.width - 96) /
-                                      2,
-                                  child: AgeOption(
-                                    ageStart: ageStart,
-                                    state: state,
-                                    context: context,
-                                    theme: theme,
-                                    isDark: isDark,
-                                  ),
-                                );
-                              }).toList(),
+                              cubit.ageFromList
+                                  .map(
+                                    (ageStart) => SizedBox(
+                                      width:
+                                          (MediaQuery.of(context).size.width -
+                                              96) /
+                                          2,
+                                      child: AgeOption(ageStart: ageStart),
+                                    ),
+                                  )
+                                  .toList(),
                         ),
+                      ],
+                      if (state.gender.isNotEmpty && state.ageFrom != null) ...[
+                        const SizedBox(height: 40),
+                        TextField(
+                          onChanged: (value) => cubit.setCity(value),
+                          decoration: InputDecoration(
+                            labelText: 'Город (необязательно)',
+                            border: const OutlineInputBorder(),
+                            filled: true,
+                            fillColor: theme.cardTheme.color,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: state.verified,
+                              onChanged: (_) => cubit.toggleVerified(),
+                            ),
+                            const Text('Только проверенные пользователи'),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        OutlinedButton(
+                          onPressed: () async {
+                            final result = await showDialog<List<String>>(
+                              context: context,
+                              builder:
+                                  (context) => MultiSelectDialog(
+                                    title: 'Интересы',
+                                    items: cubit.availableInterests,
+                                    selectedItems: state.interests,
+                                  ),
+                            );
+                            if (result != null) {
+                              cubit.setInterests(result);
+                            }
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Интересы (${state.interests.length})',
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_drop_down, size: 24),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        OutlinedButton(
+                          onPressed: () async {
+                            final result = await showDialog<List<String>>(
+                              context: context,
+                              builder:
+                                  (context) => MultiSelectDialog(
+                                    title: 'Цели',
+                                    items: cubit.availablePurposes,
+                                    selectedItems: state.purposes,
+                                  ),
+                            );
+                            if (result != null) {
+                              cubit.setPurposes(result);
+                            }
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Цели (${state.purposes.length})',
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_drop_down, size: 24),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 40),
                       ],
                     ],
                   ),

@@ -8,13 +8,11 @@ import 'package:meet_now_app/server/model/chat_game/chat_game.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
-import 'package:meet_now_app/server/service/socket_service.dart';
 
 import 'chat_interface.dart';
 
 class ChatRepository implements ChatInterface {
   final UserModelAppInterface userModelAppInterface;
-  late final SocketService _socketService;
   final Dio _dio;
 
   ChatRepository({required this.userModelAppInterface})
@@ -22,62 +20,12 @@ class ChatRepository implements ChatInterface {
         BaseOptions(baseUrl: chatAddress, contentType: 'application/json'),
       );
 
-  final _chatStreamController = StreamController<List<Chat>>.broadcast();
-  final _temporaryChatStreamController =
-      StreamController<List<TemporaryChat>>.broadcast();
-
   void _setAuthHeader() {
     final token = userModelAppInterface.user?.token;
     if (token == null || token.isEmpty) {
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
-  }
-
-  @override
-  Stream<List<Chat>> get chatStream => _chatStreamController.stream;
-
-  @override
-  Stream<List<TemporaryChat>> get temporaryChatStream =>
-      _temporaryChatStreamController.stream;
-
-  @override
-  void init(String userId) {
-    _socketService = SocketService(
-      userId: userId,
-      onMessagesReceived: (messages) {},
-      onSingleMessageReceived: (message) {},
-      userModelAppInterface: userModelAppInterface,
-      onPermanentChatsReceived:
-          (List<Chat> chats) => _chatStreamController.add(chats),
-      onTemporaryChatsReceived:
-          (List<TemporaryChat> chats) =>
-              _temporaryChatStreamController.add(chats),
-    );
-    _socketService.connect();
-  }
-
-  @override
-  void dispose() {
-    _socketService.disconnect();
-    _chatStreamController.close();
-    _temporaryChatStreamController.close();
-  }
-
-  @override
-  void getActiveTemporary() {
-    final user = userModelAppInterface.user;
-    if (user == null) throw Exception('Пользователь не авторизован');
-
-    _socketService.getActiveTemporary(user.id);
-  }
-
-  @override
-  void getChatPermanent() {
-    final user = userModelAppInterface.user;
-    if (user == null) throw Exception('Пользователь не авторизован');
-
-    _socketService.getPermanent(user.id);
   }
 
   @override

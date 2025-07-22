@@ -77,21 +77,21 @@ final dartTheme = ThemeData(
     elevation: 0,
   ),
   checkboxTheme: CheckboxThemeData(
-    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-      if (states.contains(MaterialState.selected)) {
+    fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+      if (states.contains(WidgetState.selected)) {
         return Colors.white;
       }
       return Colors.transparent;
     }),
-    checkColor: MaterialStateProperty.all(Colors.black),
+    checkColor: WidgetStateProperty.all(Colors.black),
     side: const BorderSide(color: Colors.white, width: 1.5),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
   ),
   switchTheme: SwitchThemeData(
-    thumbColor: MaterialStateProperty.all(Colors.white),
-    trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-      if (states.contains(MaterialState.selected)) {
-        return Colors.white.withOpacity(0.5);
+    thumbColor: WidgetStateProperty.all(Colors.white),
+    trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+      if (states.contains(WidgetState.selected)) {
+        return Colors.white54;
       }
       return Colors.grey.shade800;
     }),
@@ -193,21 +193,21 @@ final lightTheme = ThemeData(
     elevation: 0,
   ),
   checkboxTheme: CheckboxThemeData(
-    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-      if (states.contains(MaterialState.selected)) {
+    fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+      if (states.contains(WidgetState.selected)) {
         return Colors.black;
       }
       return Colors.transparent;
     }),
-    checkColor: MaterialStateProperty.all(Colors.white),
+    checkColor: WidgetStateProperty.all(Colors.white),
     side: const BorderSide(color: Colors.black, width: 1.5),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
   ),
   switchTheme: SwitchThemeData(
-    thumbColor: MaterialStateProperty.all(Colors.white),
-    trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-      if (states.contains(MaterialState.selected)) {
-        return Colors.black.withOpacity(0.5);
+    thumbColor: WidgetStateProperty.all(Colors.white),
+    trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+      if (states.contains(WidgetState.selected)) {
+        return Colors.black54;
       }
       return Colors.grey.shade300;
     }),
