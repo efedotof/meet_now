@@ -2,8 +2,9 @@ import "dart:async";
 import "package:meet_now_app/server/model/chat/chat.dart";
 import "package:meet_now_app/server/model/message/message.dart";
 import "package:meet_now_app/server/model/temporary/temporary_chat.dart";
+import "package:meet_now_app/server/model/user_activity/user_activity.dart";
 import "package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart";
-import "package:meet_now_app/server/service/socket_service.dart";
+import "package:meet_now_app/server/service/socket/socket_service.dart";
 
 import "socket_service_interface.dart";
 
@@ -19,6 +20,8 @@ class SocketServiceImpl implements SocketServiceInterface {
   final _temporaryChatsController =
       StreamController<List<TemporaryChat>>.broadcast();
 
+  final _userActivityController = StreamController<UserActivity>.broadcast();
+
   @override
   Stream<List<Message>> get messagesStream => _messagesController.stream;
 
@@ -32,6 +35,9 @@ class SocketServiceImpl implements SocketServiceInterface {
   @override
   Stream<List<TemporaryChat>> get temporaryChatsStream =>
       _temporaryChatsController.stream;
+
+  @override
+  Stream<UserActivity> get userActivityStream => _userActivityController.stream;
 
   @override
   void connect() {
@@ -55,6 +61,9 @@ class SocketServiceImpl implements SocketServiceInterface {
       onTemporaryChatsReceived: (List<TemporaryChat> chats) {
         _temporaryChatsController.add(chats);
       },
+      onUserActivity: (UserActivity activity) {
+        _userActivityController.add(activity);
+      },
     );
   }
 
@@ -71,6 +80,11 @@ class SocketServiceImpl implements SocketServiceInterface {
       throw Exception('Пользователь не авторизован или ID пустой');
     }
     _service.getActiveTemporary(userId);
+  }
+
+  @override
+  void sendActivity(UserActivity activity) {
+    _service.sendActivity(activity);
   }
 
   @override
@@ -91,5 +105,10 @@ class SocketServiceImpl implements SocketServiceInterface {
   @override
   void sendMessage(Message message) {
     _service.sendMessage(message);
+  }
+
+  @override
+  void actionSub({required String chatId}) {
+    _service.actionSub(chatId: chatId);
   }
 }

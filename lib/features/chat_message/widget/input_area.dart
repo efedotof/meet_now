@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/server/model/commands/commands_chat.dart';
+import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
 import 'command_suggestions_widget.dart';
 import 'send_button.dart';
@@ -11,13 +13,14 @@ class InputArea extends StatefulWidget {
     required this.controller,
     required this.onSend,
     required this.onCommandResult,
+    required this.chatId,
     super.key,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
   final Function(String) onCommandResult;
-
+  final String chatId;
   @override
   State<InputArea> createState() => _InputAreaState();
 }
@@ -99,6 +102,13 @@ class _InputAreaState extends State<InputArea> {
                           horizontal: 16,
                         ),
                       ),
+                      onChanged: (value) {
+                        context.read<UserActivityCubit>().sendActivity(
+                          type: ActivityType.TYPING,
+                          chatId: widget.chatId,
+                        );
+                      },
+
                       style: theme.textTheme.bodyMedium,
                       minLines: 1,
                       maxLines: 5,

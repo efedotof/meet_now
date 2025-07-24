@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/message/message.dart';
@@ -60,6 +61,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         isTemporary
             ? widget.temporaryChatModel!.tempChatId
             : widget.chatModel!.chatId;
+
+    context.read<UserActivityCubit>().subscribeAction(chatId: _chatId);
 
     _senderId = currentUser.id;
 
@@ -134,7 +137,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(chatModel: widget.chatModel),
+      appBar: AppBarWidget(chatModel: widget.chatModel, userId: _senderId),
       body: Column(
         children: [
           Expanded(
@@ -169,6 +172,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             controller: _messageController,
             onSend: _sendNormalMessage,
             onCommandResult: _handleCommandResult,
+            chatId: _chatId,
           ),
         ],
       ),
