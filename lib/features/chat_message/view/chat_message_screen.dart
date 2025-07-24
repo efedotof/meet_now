@@ -35,6 +35,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   late StreamSubscription<ChatMessageState> _subscription;
   late final ChatMessageCubit _cubit;
 
+  void _handleCommandResult(String result) {
+    final message = Message(
+      senderId: _senderId,
+      recipientId: _recipientId,
+      text: result,
+      createdAt: DateTime.now(),
+      chatId: isTemporary ? null : _chatId,
+      tempChatId: isTemporary ? _chatId : null,
+    );
+    _cubit.sendMessage(message);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -103,9 +115,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     });
   }
 
-  void _sendMessage() {
+  void _sendNormalMessage() {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
+
     final message = Message(
       senderId: _senderId,
       recipientId: _recipientId,
@@ -152,7 +165,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               },
             ),
           ),
-          InputArea(controller: _messageController, onSend: _sendMessage),
+          InputArea(
+            controller: _messageController,
+            onSend: _sendNormalMessage,
+            onCommandResult: _handleCommandResult,
+          ),
         ],
       ),
     );
