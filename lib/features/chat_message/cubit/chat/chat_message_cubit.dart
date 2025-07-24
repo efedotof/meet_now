@@ -10,11 +10,12 @@ part 'chat_message_cubit.freezed.dart';
 class ChatMessageCubit extends Cubit<ChatMessageState> {
   StreamSubscription<List<Message>>? _messagesSubscription;
   StreamSubscription<Message>? _singleMessageSubscription;
-  final MessageInterface messageInterface;
+  final MessageInterface _messageInterface;
   String? _currentChatId;
 
-  ChatMessageCubit({required this.messageInterface})
-    : super(const ChatMessageState.initial());
+  ChatMessageCubit({required MessageInterface messageInterface})
+    : _messageInterface = messageInterface,
+      super(const ChatMessageState.initial());
 
   void connect(String chatId) {
     if (_currentChatId == chatId || isClosed) return;
@@ -23,7 +24,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _disposeSubscriptions();
     emit(const ChatMessageState.loading());
 
-    _messagesSubscription = messageInterface.messagesStream.listen(
+    _messagesSubscription = _messageInterface.messagesStream.listen(
       (messages) {
         if (isClosed) return;
         emit(ChatMessageState.loaded(messages: messages));
@@ -34,7 +35,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       },
     );
 
-    _singleMessageSubscription = messageInterface.singleMessageStream.listen(
+    _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
       (newMessage) {
         if (isClosed) return;
         state.maybeMap(
@@ -54,7 +55,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       },
     );
 
-    messageInterface.requestMessages(chatId);
+    _messageInterface.requestMessages(chatId);
   }
 
   void sendMessage(Message message) {
@@ -68,9 +69,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           ..add(optimisticMessage);
 
         emit(state.copyWith(messages: updatedMessages));
-        messageInterface.sendMessage(message);
+        _messageInterface.sendMessage(message);
       },
-      orElse: () => messageInterface.sendMessage(message),
+      orElse: () => _messageInterface.sendMessage(message),
     );
   }
 

@@ -48,10 +48,10 @@ class _InputAreaState extends State<InputArea> {
       widget.onCommandResult(result);
     } else {
       widget.onSend();
+      _suggestionsCubit.clearSearchResults();
     }
 
     widget.controller.clear();
-    _suggestionsCubit.hideSuggestions();
   }
 
   @override
@@ -67,14 +67,7 @@ class _InputAreaState extends State<InputArea> {
       value: _suggestionsCubit,
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              border: Border(top: BorderSide(color: theme.dividerColor)),
-            ),
-            child: CommandSuggestionsWidget(controller: widget.controller),
-          ),
+          CommandSuggestionsWidget(controller: widget.controller),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -108,7 +101,6 @@ class _InputAreaState extends State<InputArea> {
                           chatId: widget.chatId,
                         );
                       },
-
                       style: theme.textTheme.bodyMedium,
                       minLines: 1,
                       maxLines: 5,

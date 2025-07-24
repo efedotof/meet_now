@@ -1,13 +1,16 @@
 enum CommandsChat {
-  iceb,
-  chatgame;
+  icebRandom('/iceb_random'),
+  icebSearch('/iceb_search'),
+  games('/games'),
+  icebGetAll('/iceb_getall');
 
-  String get command => '/$name';
+  final String command;
+  const CommandsChat(this.command);
 
   static CommandsChat? fromString(String text) {
-    final command = text.startsWith('/') ? text.substring(1) : text;
+    final normalizedText = text.toLowerCase().trim();
     for (final value in values) {
-      if (value.name == command) return value;
+      if (value.command == normalizedText) return value;
     }
     return null;
   }

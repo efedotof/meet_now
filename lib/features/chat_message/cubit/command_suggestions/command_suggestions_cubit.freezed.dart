@@ -55,13 +55,14 @@ extension CommandSuggestionsStatePatterns on CommandSuggestionsState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Visible value)?  visible,TResult Function( _Hidden value)?  hidden,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Visible value)?  visible,TResult Function( _Hidden value)?  hidden,TResult Function( _SearchResults value)?  searchResults,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Visible() when visible != null:
 return visible(_that);case _Hidden() when hidden != null:
-return hidden(_that);case _:
+return hidden(_that);case _SearchResults() when searchResults != null:
+return searchResults(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return hidden(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Visible value)  visible,required TResult Function( _Hidden value)  hidden,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Visible value)  visible,required TResult Function( _Hidden value)  hidden,required TResult Function( _SearchResults value)  searchResults,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Visible():
 return visible(_that);case _Hidden():
-return hidden(_that);case _:
+return hidden(_that);case _SearchResults():
+return searchResults(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +104,14 @@ return hidden(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Visible value)?  visible,TResult? Function( _Hidden value)?  hidden,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Visible value)?  visible,TResult? Function( _Hidden value)?  hidden,TResult? Function( _SearchResults value)?  searchResults,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Visible() when visible != null:
 return visible(_that);case _Hidden() when hidden != null:
-return hidden(_that);case _:
+return hidden(_that);case _SearchResults() when searchResults != null:
+return searchResults(_that);case _:
   return null;
 
 }
@@ -125,12 +128,13 @@ return hidden(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<String> suggestions)?  visible,TResult Function()?  hidden,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<String> suggestions)?  visible,TResult Function()?  hidden,TResult Function( List<String> results)?  searchResults,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Visible() when visible != null:
 return visible(_that.suggestions);case _Hidden() when hidden != null:
-return hidden();case _:
+return hidden();case _SearchResults() when searchResults != null:
+return searchResults(_that.results);case _:
   return orElse();
 
 }
@@ -148,12 +152,13 @@ return hidden();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<String> suggestions)  visible,required TResult Function()  hidden,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<String> suggestions)  visible,required TResult Function()  hidden,required TResult Function( List<String> results)  searchResults,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Visible():
 return visible(_that.suggestions);case _Hidden():
-return hidden();case _:
+return hidden();case _SearchResults():
+return searchResults(_that.results);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +175,13 @@ return hidden();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<String> suggestions)?  visible,TResult? Function()?  hidden,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<String> suggestions)?  visible,TResult? Function()?  hidden,TResult? Function( List<String> results)?  searchResults,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Visible() when visible != null:
 return visible(_that.suggestions);case _Hidden() when hidden != null:
-return hidden();case _:
+return hidden();case _SearchResults() when searchResults != null:
+return searchResults(_that.results);case _:
   return null;
 
 }
@@ -318,5 +324,77 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _SearchResults implements CommandSuggestionsState {
+  const _SearchResults({required final  List<String> results}): _results = results;
+  
+
+ final  List<String> _results;
+ List<String> get results {
+  if (_results is EqualUnmodifiableListView) return _results;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_results);
+}
+
+
+/// Create a copy of CommandSuggestionsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SearchResultsCopyWith<_SearchResults> get copyWith => __$SearchResultsCopyWithImpl<_SearchResults>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchResults&&const DeepCollectionEquality().equals(other._results, _results));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_results));
+
+@override
+String toString() {
+  return 'CommandSuggestionsState.searchResults(results: $results)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SearchResultsCopyWith<$Res> implements $CommandSuggestionsStateCopyWith<$Res> {
+  factory _$SearchResultsCopyWith(_SearchResults value, $Res Function(_SearchResults) _then) = __$SearchResultsCopyWithImpl;
+@useResult
+$Res call({
+ List<String> results
+});
+
+
+
+
+}
+/// @nodoc
+class __$SearchResultsCopyWithImpl<$Res>
+    implements _$SearchResultsCopyWith<$Res> {
+  __$SearchResultsCopyWithImpl(this._self, this._then);
+
+  final _SearchResults _self;
+  final $Res Function(_SearchResults) _then;
+
+/// Create a copy of CommandSuggestionsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? results = null,}) {
+  return _then(_SearchResults(
+results: null == results ? _self._results : results // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+
+}
 
 // dart format on

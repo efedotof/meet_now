@@ -7,4 +7,7 @@ class CommandSuggestionsState with _$CommandSuggestionsState {
     required List<String> suggestions,
   }) = _Visible;
   const factory CommandSuggestionsState.hidden() = _Hidden;
+  const factory CommandSuggestionsState.searchResults({
+    required List<String> results,
+  }) = _SearchResults;
 }
