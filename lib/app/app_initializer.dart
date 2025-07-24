@@ -3,7 +3,9 @@ import 'package:meet_now_app/app/app_config.dart';
 import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
-import 'package:meet_now_app/features/chat_message/cubit/chat_message_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/icebreaker/icebreaker_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
@@ -16,6 +18,8 @@ import 'package:meet_now_app/server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
+import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
+import 'package:meet_now_app/server/repository/icebreaker/icebreaker_repository.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_repository.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
@@ -110,6 +114,12 @@ class AppInitializer extends StatelessWidget {
                 socketService: context.read<SocketServiceInterface>(),
               ),
         ),
+        RepositoryProvider<IcebreakerInterface>(
+          create:
+              (context) => IcebreakerRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -172,9 +182,21 @@ class AppInitializer extends StatelessWidget {
           ),
           BlocProvider(
             create:
+                (context) => IcebreakerCubit(
+                  icebreakerInterface: context.read<IcebreakerInterface>(),
+                ),
+          ),
+          BlocProvider(
+            create:
                 (context) => MainHomeCubit(
                   socketServiceInterface:
                       context.read<SocketServiceInterface>(),
+                ),
+          ),
+          BlocProvider(
+            create:
+                (context) => CommandSuggestionsCubit(
+                  icebreakerInterface: context.read<IcebreakerInterface>(),
                 ),
           ),
         ],
