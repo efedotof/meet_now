@@ -3,6 +3,8 @@ package com.efedotov.meet_now.meet_now.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,5 +45,6 @@ public class Message {
     private TemporaryChat temporaryChat;
 
     @Column(name = "is_read", columnDefinition = "boolean default false")
+    @JsonProperty("isRead")
     private boolean isRead = false;
 }

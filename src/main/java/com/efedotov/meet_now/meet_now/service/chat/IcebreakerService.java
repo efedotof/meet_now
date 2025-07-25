@@ -1,16 +1,17 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
+
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.model.IcebreakerTopec;
 import com.efedotov.meet_now.meet_now.repository.IcebreakerTopecRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -61,10 +62,16 @@ public class IcebreakerService {
         icebreakerTopecRepository.deleteById(id);
     }
 
-    // Поиск тем, содержащих заданный текст (нечувствительно к регистру).
     @Transactional
     public List<IcebreakerTopec> findTopicsByText(String text) {
-        return icebreakerTopecRepository.findByTextContainingIgnoreCase(text);
+        String safeText = escapeForLike(text);
+        return icebreakerTopecRepository.findByTextContainingIgnoreCase(safeText);
+    }
+
+    private String escapeForLike(String input) {
+        return input.replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
     }
 
 }
