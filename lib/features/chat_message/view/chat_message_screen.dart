@@ -136,45 +136,66 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBarWidget(chatModel: widget.chatModel, userId: _senderId),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
-              builder: (context, state) {
-                return state.when(
-                  initial:
-                      () => const Center(child: CircularProgressIndicator()),
-                  loading:
-                      () => const Center(child: CircularProgressIndicator()),
-                  error: (message) => Center(child: Text('Ошибка: $message')),
-                  loaded: (messages, isLoadingMore) {
-                    return Column(
-                      children: [
-                        if (isLoadingMore)
-                          const LinearProgressIndicator(minHeight: 2),
-                        Expanded(
-                          child: MessagesList(
-                            messages: messages,
-                            scrollController: _scrollController,
-                            currentUserId: _senderId,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.colorScheme.surface,
+              theme.colorScheme.surface,
+              theme.colorScheme.surfaceContainerHighest,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
+                builder: (context, state) {
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: state.when(
+                      initial: () => const LoadingMessages(),
+                      loading: () => const LoadingMessages(),
+                      error:
+                          (message) =>
+                              ErrorMessage(message: message, chatId: _chatId),
+                      loaded: (messages, isLoadingMore) {
+                        return Column(
+                          children: [
+                            if (isLoadingMore)
+                              const LinearProgressIndicator(
+                                minHeight: 2,
+                                color: Colors.blueAccent,
+                              ),
+                            Expanded(
+                              child: MessagesList(
+                                messages: messages,
+                                scrollController: _scrollController,
+                                currentUserId: _senderId,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          InputArea(
-            controller: _messageController,
-            onSend: _sendNormalMessage,
-            onCommandResult: _handleCommandResult,
-            chatId: _chatId,
-          ),
-        ],
+            InputArea(
+              controller: _messageController,
+              onSend: _sendNormalMessage,
+              onCommandResult: _handleCommandResult,
+              chatId: _chatId,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -14,32 +14,51 @@ class SearchResultsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       height: 50,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHigh,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      ),
       child: Row(
         children: [
+          const SizedBox(width: 8),
+          Text(
+            'Найдено:',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: results.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ChoiceChip(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: FilterChip(
                     label: Text(results[index]),
                     selected: false,
                     onSelected: (_) {
                       controller.text = results[index];
                       onClear();
                     },
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    showCheckmark: false,
+                    labelStyle: theme.textTheme.bodySmall,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 );
               },
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, size: 20),
+            icon: Icon(Icons.close, size: 20, color: theme.colorScheme.primary),
             onPressed: onClear,
           ),
         ],

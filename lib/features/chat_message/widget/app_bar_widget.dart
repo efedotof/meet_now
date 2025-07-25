@@ -17,21 +17,62 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     return BlocBuilder<UserActivityCubit, UserActivityState>(
       builder: (context, activityState) {
+        final isOnline = activityState.maybeWhen(
+          activity: (activity) => activity.activityType == ActivityType.ONLINE,
+          orElse: () => false,
+        );
+
         return AppBar(
-          backgroundColor: theme.appBarTheme.backgroundColor,
-          elevation: theme.appBarTheme.elevation,
+          backgroundColor: theme.colorScheme.surface,
+          elevation: 1,
+          scrolledUnderElevation: 4,
+          shadowColor: theme.colorScheme.shadow,
+          surfaceTintColor: Colors.transparent,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
             onPressed: () => context.maybePop(),
-            color: theme.iconTheme.color,
           ),
           title: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: theme.colorScheme.secondary,
-                child: const Icon(Icons.person, size: 24),
+              Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color:
+                            isOnline
+                                ? Colors.green
+                                : theme.colorScheme.outlineVariant,
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      foregroundColor: theme.colorScheme.onPrimaryContainer,
+                      child: const Icon(Icons.person, size: 24),
+                    ),
+                  ),
+                  if (isOnline)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: theme.colorScheme.surface,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(width: 13),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -39,39 +80,44 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                     chatModel != null
                         ? "${chatModel!.user1.firstname} ${chatModel!.user1.subname}"
                         : "Анонимный пользователь",
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    activityState.when(
-                      initial: () => "Добро пожаловать!",
+                  const SizedBox(height: 2),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: activityState.when(
+                      initial:
+                          () => Text(
+                            'подключается...',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
                       activity: (UserActivity activity) {
-                        switch (activity.activityType) {
-                          case ActivityType.TYPING:
-                            return 'печатает...';
-                          case ActivityType.OFFLINE:
-                            return 'куда-то потерялся(ась)...';
-                          case ActivityType.SENDING_FILE:
-                            return "отправляет файл(ы)...";
-                          case ActivityType.SENDING_IMAGE:
-                            return "отправляет изображение...";
-                          case ActivityType.ONLINE:
-                            return "он/она тут...";
-                        }
+                        if (activity.userId == userId) return const SizedBox();
+
+                        final statusText = switch (activity.activityType) {
+                          ActivityType.TYPING => 'печатает...',
+                          ActivityType.OFFLINE => 'не в сети',
+                          ActivityType.SENDING_FILE => "отправляет файл",
+                          ActivityType.SENDING_IMAGE => "отправляет фото",
+                          ActivityType.ONLINE => "в сети",
+                        };
+
+                        return Text(
+                          statusText,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color:
+                                activity.activityType == ActivityType.ONLINE
+                                    ? Colors.green
+                                    : theme.colorScheme.outline,
+                          ),
+                        );
                       },
-                    ),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: activityState.when(
-                        initial: () => theme.colorScheme.secondary,
-                        activity: (activity) {
-                          if (activity.userId == userId) {
-                            return theme.colorScheme.secondary;
-                          } else {
-                            return Colors.green;
-                          }
-                        },
-                      ),
                     ),
                   ),
                 ],
@@ -81,9 +127,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           actions: [
             if (chatModel != null)
               IconButton(
-                icon: const Icon(Icons.more_vert),
+                icon: Icon(Icons.more_vert, color: theme.colorScheme.onSurface),
                 onPressed: () {},
-                color: theme.iconTheme.color,
               ),
           ],
         );

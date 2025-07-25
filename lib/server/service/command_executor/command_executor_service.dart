@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:meet_now_app/server/model/commands/command_result.dart';
 import 'package:meet_now_app/server/model/commands/commands_chat.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
@@ -6,6 +7,17 @@ class CommandExecutorService {
   final IcebreakerInterface icebreakerInterface;
 
   CommandExecutorService({required this.icebreakerInterface});
+
+  Future<List<String>> searchIcebreakers(String text) async {
+    try {
+      if (text.isEmpty) return [];
+      final list = await icebreakerInterface.textSearch(text: text);
+      return list.map((e) => e.text).toList();
+    } catch (e) {
+      debugPrint("Ошибка поиска: ${e.toString()}");
+      return [];
+    }
+  }
 
   Future<CommandResult> execute(CommandsChat command, String argument) async {
     switch (command) {
@@ -41,7 +53,18 @@ class CommandExecutorService {
     return Future.value(CommandResult("Все icebreaker"));
   }
 
-  Future<CommandResult> _handlerIcebRandomCommand() {
-    return Future.value(CommandResult("Случайный icebreaker"));
+  Future<CommandResult> _handlerIcebRandomCommand() async {
+    try {
+      final iceb = await icebreakerInterface.getRandomIce();
+      if (iceb != null) {
+        return CommandResult(iceb.text);
+      } else {
+        return CommandResult(
+          "Интересно получается, в небе птицы, а на земле люди...",
+        );
+      }
+    } catch (e) {
+      return CommandResult("Тук-тук");
+    }
   }
 }

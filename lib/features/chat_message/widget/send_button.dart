@@ -8,25 +8,42 @@ class SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BlocBuilder<CommandSuggestionsCubit, CommandSuggestionsState>(
       builder: (context, state) {
-        return state.when(
-          initial:
-              () => IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: onPressed,
-              ),
-          visible:
-              (suggestions) =>
-                  IconButton(icon: const Icon(Icons.send), onPressed: () {}),
-          hidden:
-              () => IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: onPressed,
-              ),
-          searchResults:
-              (results) =>
-                  IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+        return Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.colorScheme.primary,
+          ),
+          margin: const EdgeInsets.only(bottom: 8),
+          child: IconButton(
+            icon: state.when(
+              initial:
+                  () => Icon(Icons.send, color: theme.colorScheme.onPrimary),
+              visible:
+                  (suggestions) =>
+                      Icon(Icons.send, color: theme.colorScheme.onPrimary),
+              hidden:
+                  () => Icon(Icons.send, color: theme.colorScheme.onPrimary),
+              searching:
+                  () => SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+              searchResults:
+                  (results) =>
+                      Icon(Icons.search, color: theme.colorScheme.onPrimary),
+            ),
+            onPressed: state.maybeWhen(
+              searching: () => null,
+              orElse: () => onPressed,
+            ),
+          ),
         );
       },
     );
