@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/server/model/commands/commands_chat.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
@@ -14,11 +17,43 @@ class CommandSuggestionsCubit extends Cubit<CommandSuggestionsState> {
 
   List<String> get availableCommands =>
       CommandsChat.values.map((cmd) => cmd.command).toList();
+  Timer? _debounceTimer;
+
+  void showSuggestionsVisible(String input) {
+    if (input == '/') {
+      emit(CommandSuggestionsState.visible(suggestions: availableCommands));
+      return;
+    }
+  }
 
   void showSuggestions(String input) {
+    _debounceTimer?.cancel();
+    if (input == '/') {
+      emit(CommandSuggestionsState.visible(suggestions: availableCommands));
+      return;
+    }
+
     if (!input.startsWith('/')) {
       emit(CommandSuggestionsState.hidden());
       return;
+    }
+
+    if (input.startsWith('${CommandsChat.icebSearch.command} ')) {
+      final argument = input.substring(
+        CommandsChat.icebSearch.command.length + 1,
+      );
+      if (argument.isNotEmpty) {
+        emit(CommandSuggestionsState.searching());
+
+        _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+          final results = await commandExecutorService.searchIcebreakers(
+            argument,
+          );
+          if (isClosed) return;
+          emit(CommandSuggestionsState.searchResults(results: results));
+        });
+        return;
+      }
     }
 
     final query = input.substring(1).toLowerCase();
@@ -47,9 +82,12 @@ class CommandSuggestionsCubit extends Cubit<CommandSuggestionsState> {
     final command = CommandsChat.fromString(parts[0]);
     final argument = parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
+    debugPrint("command: $command argument: $argument");
+
     if (command == null) return "Неизвестная команда: ${parts[0]}";
 
     final result = await commandExecutorService.execute(command, argument);
+    debugPrint("result: $result");
     if (command == CommandsChat.icebSearch && result.searchResults != null) {
       emit(
         CommandSuggestionsState.searchResults(results: result.searchResults!),
@@ -57,5 +95,11 @@ class CommandSuggestionsCubit extends Cubit<CommandSuggestionsState> {
     }
 
     return result.message;
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    return super.close();
   }
 }

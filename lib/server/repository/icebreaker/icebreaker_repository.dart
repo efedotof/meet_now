@@ -53,4 +53,44 @@ class IcebreakerRepository implements IcebreakerInterface {
       return [];
     }
   }
+
+  @override
+  Future<List<IcebreakerTopec>> getAllIce() async {
+    try {
+      _setAuthHeader();
+      final response = await _dio.get('/get_all_ice');
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data
+            .map((e) => IcebreakerTopec.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        debugPrint("Request failed with status: ${response.statusCode}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint("Unknown error: $e");
+      return [];
+    }
+  }
+
+  @override
+  Future<IcebreakerTopec?> getRandomIce() async {
+    try {
+      _setAuthHeader();
+      final response = await _dio.get('/random');
+      if (response.statusCode == 200) {
+        final data = response.data as IcebreakerTopec;
+        return data;
+      } else {
+        debugPrint(
+          "Request getRandomIce failed with status: ${response.statusCode}",
+        );
+        return null;
+      }
+    } catch (e) {
+      debugPrint("Unknown error: $e");
+      return null;
+    }
+  }
 }

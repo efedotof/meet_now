@@ -61,16 +61,16 @@ class SocketService {
             (error) => debugPrint('[SocketService] WebSocket Error: $error'),
         onStompError:
             (frame) => debugPrint('[SocketService] STOMP Error: ${frame.body}'),
-        onUnhandledMessage:
-            (frame) =>
-                debugPrint('[SocketService] Unhandled message: ${frame.body}'),
-        onUnhandledReceipt:
-            (frame) =>
-                debugPrint('[SocketService] Unhandled receipt: ${frame.body}'),
-        onUnhandledFrame:
-            (frame) =>
-                debugPrint('[SocketService] Unhandled frame: ${frame.body}'),
-        onDebugMessage: (msg) => debugPrint('[SocketService] Debug: $msg'),
+        // onUnhandledMessage:
+        //     (frame) =>
+        //         debugPrint('[SocketService] Unhandled message: ${frame.body}'),
+        // onUnhandledReceipt:
+        //     (frame) =>
+        //         debugPrint('[SocketService] Unhandled receipt: ${frame.body}'),
+        // onUnhandledFrame:
+        //     (frame) =>
+        //         debugPrint('[SocketService] Unhandled frame: ${frame.body}'),
+        // onDebugMessage: (msg) => debugPrint('[SocketService] Debug: $msg'),
         onWebSocketDone: () {
           debugPrint('[SocketService] WebSocket connection closed.');
           _isConnected = false;

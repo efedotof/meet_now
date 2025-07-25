@@ -12,25 +12,49 @@ class SuggestionsCard extends StatelessWidget {
   final List<String> suggestions;
   final CommandSuggestionsCubit cubit;
   final TextEditingController controller;
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: suggestions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          return ChoiceChip(
-            label: Text(suggestions[index]),
-            selected: false,
-            onSelected: (_) {
-              controller.text = suggestions[index];
-              cubit.hideSuggestions();
-            },
-          );
-        },
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHigh,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Доступные команды:',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                suggestions.map((command) {
+                  return InputChip(
+                    label: Text(command),
+                    onPressed: () {
+                      controller.text = command;
+                      cubit.hideSuggestions();
+                    },
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    labelStyle: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  );
+                }).toList(),
+          ),
+        ],
       ),
     );
   }

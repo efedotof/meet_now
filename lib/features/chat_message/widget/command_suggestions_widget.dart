@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
+import 'searching_indicator.dart';
 import 'suggestions_card.dart';
 import 'search_results_widget.dart';
 
@@ -24,6 +25,7 @@ class CommandSuggestionsWidget extends StatelessWidget {
                 cubit: cubit,
                 controller: controller,
               ),
+          searching: () => const SearchingIndicator(),
           searchResults:
               (results) =>
                   results.isEmpty

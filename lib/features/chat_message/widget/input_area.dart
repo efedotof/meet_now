@@ -36,7 +36,12 @@ class _InputAreaState extends State<InputArea> {
   }
 
   void _onTextChanged() {
-    _suggestionsCubit.showSuggestions(widget.controller.text);
+    final text = widget.controller.text;
+    _suggestionsCubit.showSuggestions(text);
+
+    if (!text.startsWith('${CommandsChat.icebSearch.command} ')) {
+      _suggestionsCubit.clearSearchResults();
+    }
   }
 
   void _handleSend() async {
@@ -65,55 +70,89 @@ class _InputAreaState extends State<InputArea> {
     final theme = Theme.of(context);
     return BlocProvider.value(
       value: _suggestionsCubit,
-      child: Column(
-        children: [
-          CommandSuggestionsWidget(controller: widget.controller),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              border: Border(top: BorderSide(color: theme.dividerColor)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: theme.cardTheme.color,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: TextField(
-                      controller: widget.controller,
-                      decoration: InputDecoration(
-                        hintText:
-                            "Сообщение или команда (${CommandsChat.values.map((c) => c.command).join(', ')})",
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
-                      ),
-                      onChanged: (value) {
-                        context.read<UserActivityCubit>().sendActivity(
-                          type: ActivityType.TYPING,
-                          chatId: widget.chatId,
-                        );
-                      },
-                      style: theme.textTheme.bodyMedium,
-                      minLines: 1,
-                      maxLines: 5,
-                      onSubmitted: (_) => _handleSend(),
-                    ),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Column(
+          children: [
+            CommandSuggestionsWidget(controller: widget.controller),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border(
+                  top: BorderSide(
+                    color: theme.colorScheme.outlineVariant.withOpacity(0.3),
+                    width: 0.5,
                   ),
                 ),
-                const SizedBox(width: 8),
-                SendButton(onPressed: _handleSend),
-              ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onPressed: () {},
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.shadow.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: widget.controller,
+                        decoration: InputDecoration(
+                          hintText: "Сообщение...",
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              Icons.emoji_emotions_outlined,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {},
+                          ),
+                        ),
+                        onChanged: (value) {
+                          context.read<UserActivityCubit>().sendActivity(
+                            type: ActivityType.TYPING,
+                            chatId: widget.chatId,
+                          );
+                          context
+                              .read<CommandSuggestionsCubit>()
+                              .showSuggestionsVisible(value);
+                        },
+                        style: theme.textTheme.bodyMedium,
+                        minLines: 1,
+                        maxLines: 5,
+                        onSubmitted: (_) => _handleSend(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SendButton(onPressed: _handleSend),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
