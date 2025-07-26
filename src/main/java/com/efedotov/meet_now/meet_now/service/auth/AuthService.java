@@ -76,7 +76,7 @@ public class AuthService {
         if (userOpt.isEmpty()) {
             throw new RuntimeException("Пользователь не найден.");
         }
-            
+
         User user = userOpt.get();
         String hashedInputPassword = encryptionUtils.hashPassword(dto.getPassword());
 
@@ -103,5 +103,9 @@ public class AuthService {
         }
 
         return dto;
+    }
+
+    public void logout(String token) {
+        sessionService.deleteSession(token);
     }
 }

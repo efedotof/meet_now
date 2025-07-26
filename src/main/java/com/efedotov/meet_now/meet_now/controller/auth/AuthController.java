@@ -1,17 +1,19 @@
 package com.efedotov.meet_now.meet_now.controller.auth;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.efedotov.meet_now.meet_now.dto.LoginDTO;
 import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
 import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -47,4 +49,21 @@ public class AuthController {
             return ResponseEntity.status(500).body("Ошибка при входе: " + e.getMessage());
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Invalid authorization header");
+            }
+
+            String token = authHeader.substring(7);
+            authService.logout(token);
+            return ResponseEntity.ok("Logged out successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Logout failed: " + e.getMessage());
+        }
+    }
+
 }

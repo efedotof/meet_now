@@ -41,8 +41,11 @@ public class SessionService {
                 .filter(session -> session.getExpiresAt().isAfter(Instant.now()));
     }
 
+    @Transactional
     public void deleteSession(String token) {
-        sessionRepository.deleteById(token);
+        if (sessionRepository.existsById(token)) {
+            sessionRepository.deleteById(token);
+        }
     }
 
     private String generateOpaqueToken() {
@@ -54,9 +57,9 @@ public class SessionService {
     public Optional<UserSession> findValidSession(String token) {
         return sessionRepository.findValidSession(token, Instant.now());
     }
-    
+
     @Transactional
-    @Scheduled(fixedRate = 86400000) 
+    @Scheduled(fixedRate = 86400000)
     public void cleanExpiredSessions() {
         sessionRepository.deleteExpiredSessions(Instant.now());
     }
