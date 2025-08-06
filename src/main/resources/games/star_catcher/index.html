@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ловец Звезд</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-board">
+            <div class="score">Счет: <span id="score">0</span></div>
+            <div class="lives">Жизни: <span id="lives">3</span></div>
+        </div>
+        
+        <div id="player" class="player"></div>
+        
+        <div class="game-controls">
+            <button id="start-btn" class="btn">Начать игру</button>
+            <button id="pause-btn" class="btn">Пауза</button>
+            <button id="reset-btn" class="btn">Сброс</button>
+        </div>
+        
+        <div id="game-over" class="game-over">
+            <h2>Игра окончена!</h2>
+            <p>Ваш счет: <span id="final-score">0</span></p>
+            <button id="restart-btn" class="btn">Играть снова</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

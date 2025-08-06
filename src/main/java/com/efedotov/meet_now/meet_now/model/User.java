@@ -78,4 +78,10 @@ public class User {
 
     @Column(name = "floor")
     private String floor;
+
+    @Column(name = "is_searching")
+    private Boolean isSearching = false;
+
+    @Column(name = "game_points")
+    private int gamePoints = 0;
 }

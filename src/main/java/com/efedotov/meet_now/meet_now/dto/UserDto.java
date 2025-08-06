@@ -27,4 +27,5 @@ public class UserDto {
     private Set<String> roles;
     private Boolean isOnline;
     private String floor;
+    private int gamePoints;
 }

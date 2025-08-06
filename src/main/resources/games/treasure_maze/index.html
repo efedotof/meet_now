@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Лабиринт с сокровищами</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Лабиринт с сокровищами</h1>
+            <p>Собери все сокровища и доберись до выхода!</p>
+        </header>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div>Сокровищ собрано:</div>
+                <div class="stat-value"><span id="treasureCount">0</span>/5</div>
+            </div>
+            <div class="stat-box">
+                <div>Шагов:</div>
+                <div class="stat-value" id="steps">0</div>
+            </div>
+            <div class="stat-box">
+                <div>Уровень:</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+            <div class="stat-box">
+                <div>Время:</div>
+                <div class="stat-value" id="timer">00:00</div>
+            </div>
+            <div class="stat-box">
+                <div>Счет:</div>
+                <div class="stat-value" id="totalScore">0</div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="maze-container" id="mazeContainer">
+                <div id="maze"></div>
+                <div class="message" id="message">
+                    <h2 id="messageTitle">Победа!</h2>
+                    <p id="messageText">Вы успешно прошли лабиринт!</p>
+                    <div id="levelStats"></div>
+                    <button id="restartBtn">Играть снова</button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h2>Как играть</h2>
+                <ul>
+                    <li>Используйте кнопки ниже или клавиши со стрелками для перемещения</li>
+                    <li>На мобильных устройствах используйте свайпы для движения</li>
+                    <li>Собирайте золотые сокровища (<span style="color:#ffd700">●</span>)</li>
+                    <li>Доберитесь до выхода (<span style="color:#ff4d4d">●</span>), собрав все сокровища</li>
+                    <li>Избегайте стен (<span style="color:#1e3a5f">■</span>)</li>
+                </ul>
+                
+                <div class="controls">
+                    <button class="control-btn up">↑</button>
+                    <button class="control-btn left">←</button>
+                    <button class="control-btn right">→</button>
+                    <button class="control-btn down">↓</button>
+                    <button class="control-btn restart">Новая игра</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

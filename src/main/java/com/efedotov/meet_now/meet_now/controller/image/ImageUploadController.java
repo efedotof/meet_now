@@ -1,33 +1,28 @@
 package com.efedotov.meet_now.meet_now.controller.image;
-import org.springframework.beans.factory.annotation.Value;
+
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.efedotov.meet_now.meet_now.service.user.S3Service;
+
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/uploads")
+@RequiredArgsConstructor
 public class ImageUploadController {
-     @Value("${upload.dir}")
-    private String uploadDir;
+
+    private final S3Service s3Service;
 
     @PostMapping("/upload-avatar")
     public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
         try {
-            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String filename = UUID.randomUUID() + extension;
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Path filePath = uploadPath.resolve(filename);
-            file.transferTo(filePath);
-            String fileUrl = "/uploads/" + filename;
+            String fileName = s3Service.uploadFile(file);
+            String fileUrl = "https://s3.ru1.storage.beget.cloud/" + fileName; 
             return ResponseEntity.ok(fileUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка загрузки изображения");

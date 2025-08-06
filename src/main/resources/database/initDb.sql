@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS users (
     verified BOOLEAN DEFAULT FALSE,
     is_searchable BOOLEAN DEFAULT TRUE,
     is_online BOOLEAN DEFAULT FALSE,
-    floor TEXT
+    floor TEXT,
+    is_searching BOOLEAN DEFAULT FALSE,
+    game_points INT DEFAULT 0 
 );
 
 

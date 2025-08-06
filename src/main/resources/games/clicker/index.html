@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Элегантный Кликер</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-sparkles"></i> Элегантный Кликер</h1>
+            <p>Кликайте по кристаллу, чтобы зарабатывать очки!</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Ваши очки</div>
+                <div id="score" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Кликов в секунду</div>
+                <div id="cps" class="stat-value">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Всего кликов</div>
+                <div id="total-clicks" class="stat-value">0</div>
+            </div>
+        </div>
+        
+        <div id="click-area" class="click-area">
+            <div class="crystal"></div>
+            <div class="shine"></div>
+            <div class="click-text">КЛИКНИТЕ!</div>
+        </div>
+        
+        <div class="upgrades">
+            <h2><i class="fas fa-level-up-alt"></i> Улучшения</h2>
+            <div class="upgrades-grid">
+                <!-- Улучшения будут добавлены через JS -->
+            </div>
+        </div>
+        
+        <div class="effects-container" id="effects-container"></div>
+        
+        <div class="footer">
+            <p>Ваша цель: 1,000,000 очков!</p>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

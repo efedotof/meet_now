@@ -74,6 +74,7 @@ public class SearchController {
                 Specification<User> spec = Stream.of(
                                 UserSpecifications.notCurrentUser(currentUserId),
                                 UserSpecifications.isSearchable(),
+                                UserSpecifications.isSearching(),
                                 UserSpecifications.isOnline(),
                                 UserSpecifications.hasInterests(interests),
                                 UserSpecifications.hasPurposes(purposes),

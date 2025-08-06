@@ -36,7 +36,6 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .requestMatchers("/uploads/**").permitAll()
                                                 .requestMatchers("/api/v1/auth/token/**").permitAll()
-                                                .requestMatchers("/api/v1/uploads/**").permitAll()
                                                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                                                 .requestMatchers("/api/v1/search/**").hasAnyRole("USER", "ADMIN")
                                                 .requestMatchers("/error").permitAll()
@@ -47,7 +46,6 @@ public class SecurityConfig {
 
                 return http.build();
         }
-
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();
@@ -57,16 +55,15 @@ public class SecurityConfig {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
-
         @Bean
         public CorsFilter corsFilter() {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
                 config.setAllowedOriginPatterns(List.of(
+                                "http://mnapp.ru",
+                                "http://www.mnapp.ru",
                                 "http://localhost:*",
-                                "http://127.0.0.1:*",
-                                "http://192.168.31.*:*",
-                                "http://[::1]:*"));
+                                "http://127.0.0.1:*"));
                 config.setAllowedHeaders(Arrays.asList(
                                 "Origin", "Content-Type", "Accept", "Authorization",
                                 "X-Requested-With", "Access-Control-Request-Method",

@@ -9,6 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "game.urls")
 public class GameConfig {
     private Map<String, String> urls;
+    private Map<String, Double> scores;
+
+    public int convertScoreToPoints(String gameType, int score) {
+        Double multiplier = scores.getOrDefault(gameType, 0.05);
+        return (int) (score * multiplier);
+    }
 
     public Map<String, String> getUrls() {
         return urls;
@@ -16,6 +22,14 @@ public class GameConfig {
 
     public void setUrls(Map<String, String> urls) {
         this.urls = urls;
+    }
+
+    public Map<String, Double> getScores() {
+        return scores;
+    }
+
+    public void setScores(Map<String, Double> scores) {
+        this.scores = scores;
     }
 
     public String getUrl(String gameType) {

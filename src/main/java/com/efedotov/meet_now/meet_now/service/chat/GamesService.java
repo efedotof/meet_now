@@ -6,8 +6,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.config.GameConfig;
+import com.efedotov.meet_now.meet_now.dto.request.GameCompletionRequest;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
+import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.repository.UserRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.GamesRepository;
 
@@ -21,6 +24,7 @@ public class GamesService {
     private final GamesRepository repository;
     private final ChatRepository chatRepository;
     private final GameConfig gameConfig;
+    private final UserRepository userRepository;
 
     public String getGameUrl(String gameType) {
         return gameConfig.getUrl(gameType);
@@ -52,4 +56,17 @@ public class GamesService {
     public void deleteGame(UUID gameId) {
         repository.deleteById(gameId);
     }
+
+    public void completeGameAndRewardUser(GameCompletionRequest request) {
+        int points = gameConfig.convertScoreToPoints(request.getGameType(), request.getScore());
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.setGamePoints(user.getGamePoints() + points);
+        userRepository.save(user);
+
+        log.info("Начислено {} очков пользователю {}", points, user.getUsername());
+    }
+
 }

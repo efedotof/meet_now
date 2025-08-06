@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.efedotov.meet_now.meet_now.dto.request.AddGameRequest;
+import com.efedotov.meet_now.meet_now.dto.request.GameCompletionRequest;
 import com.efedotov.meet_now.meet_now.dto.request.UpdateGameStateRequest;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
 import com.efedotov.meet_now.meet_now.service.chat.GamesService;
@@ -66,4 +67,15 @@ public class GamesController {
         gamesService.deleteGame(gameId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Завершить игру и начислить очки")
+    @PostMapping("/complete")
+    public ResponseEntity<Void> completeGame(
+            @RequestBody GameCompletionRequest request
+    ) {
+        gamesService.completeGameAndRewardUser(request);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

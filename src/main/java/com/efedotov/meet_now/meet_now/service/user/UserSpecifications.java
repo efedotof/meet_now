@@ -1,14 +1,14 @@
 package com.efedotov.meet_now.meet_now.service.user;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.jpa.domain.Specification;
+
 import com.efedotov.meet_now.meet_now.model.User;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-
-import org.springframework.data.jpa.domain.Specification;
-
-import java.util.List;
-import java.util.UUID;
 
 public class UserSpecifications {
 
@@ -85,5 +85,10 @@ public class UserSpecifications {
 
     public static Specification<User> isOnline() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isOnline"));
+    }
+
+    public static Specification<User> isSearching() {
+        return (root, query, criteriaBuilder) -> 
+            criteriaBuilder.equal(root.get("isSearching"), true);
     }
 }

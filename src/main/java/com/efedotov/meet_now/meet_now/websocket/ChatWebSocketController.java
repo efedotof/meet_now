@@ -126,13 +126,9 @@ public class ChatWebSocketController {
         messageProcessingService.markMessagesAsRead(request.getMessageIds(), userId);
     }
 
-
     @MessageMapping("/chat.subscribeNewTemporary")
     public void subscribeToNewTemporaryChats(Principal principal) {
-        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        UUID userId = userDetails.getUserId();
         String username = principal.getName();
-        
         log.info("Пользователь {} подписался на получение новых временных чатов", username);
     }
 }

@@ -114,4 +114,12 @@ public class UserService {
             log.debug("Статус онлайн пользователя {} уже установлен в: {}", userId, isOnline);
         }
     }
+
+    public void setUserSearching(UUID userId, boolean isSearching) {
+    User user = getById(userId);
+    user.setIsSearching(isSearching);
+    userRepository.save(user);
 }
+
+
+}   
