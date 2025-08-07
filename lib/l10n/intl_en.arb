@@ -136,5 +136,19 @@
   "qrScanning": "QR Scanning",
   "cameraStartError": "Camera start error",
   "scanned": "Scanned",
-  "qrNotAvailable": "QR scanning is not available on this platform"
+  "qrNotAvailable": "QR scanning is not available on this platform",
+  "enterPinCode": "Enter PIN code",
+  "incorrectPinCode": "Incorrect PIN code",
+  "autoLock": "Auto Lock",
+  "autoLockDescription": "Lock the app after 5 minutes of inactivity",
+  "pinProtection": "PIN Protection",
+  "enablePin": "Enable PIN",
+  "changePin": "Change PIN",
+  "privacyMode": "Privacy Mode",
+  "privacyModeDescription": "Hide sensitive information in background",
+  "confirmPin": "Confirm PIN",
+  "setNewPin": "Set new PIN",
+  "pinMismatch": "PIN codes do not match",
+  "pinSetSuccess": "PIN code set successfully",
+  "confirm": "Confirm"
 }

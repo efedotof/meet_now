@@ -1429,6 +1429,146 @@ class S {
       args: [],
     );
   }
+
+  /// `Enter PIN code`
+  String get enterPinCode {
+    return Intl.message(
+      'Enter PIN code',
+      name: 'enterPinCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incorrect PIN code`
+  String get incorrectPinCode {
+    return Intl.message(
+      'Incorrect PIN code',
+      name: 'incorrectPinCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto Lock`
+  String get autoLock {
+    return Intl.message(
+      'Auto Lock',
+      name: 'autoLock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lock the app after 5 minutes of inactivity`
+  String get autoLockDescription {
+    return Intl.message(
+      'Lock the app after 5 minutes of inactivity',
+      name: 'autoLockDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PIN Protection`
+  String get pinProtection {
+    return Intl.message(
+      'PIN Protection',
+      name: 'pinProtection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable PIN`
+  String get enablePin {
+    return Intl.message(
+      'Enable PIN',
+      name: 'enablePin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change PIN`
+  String get changePin {
+    return Intl.message(
+      'Change PIN',
+      name: 'changePin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy Mode`
+  String get privacyMode {
+    return Intl.message(
+      'Privacy Mode',
+      name: 'privacyMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide sensitive information in background`
+  String get privacyModeDescription {
+    return Intl.message(
+      'Hide sensitive information in background',
+      name: 'privacyModeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm PIN`
+  String get confirmPin {
+    return Intl.message(
+      'Confirm PIN',
+      name: 'confirmPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set new PIN`
+  String get setNewPin {
+    return Intl.message(
+      'Set new PIN',
+      name: 'setNewPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PIN codes do not match`
+  String get pinMismatch {
+    return Intl.message(
+      'PIN codes do not match',
+      name: 'pinMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PIN code set successfully`
+  String get pinSetSuccess {
+    return Intl.message(
+      'PIN code set successfully',
+      name: 'pinSetSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm`
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

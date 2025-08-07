@@ -40,6 +40,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "anonymousChat": MessageLookupByLibrary.simpleMessage("Anonymous chat"),
         "anonymousUser": MessageLookupByLibrary.simpleMessage("Anonymous user"),
         "appSettings": MessageLookupByLibrary.simpleMessage("App Settings"),
+        "autoLock": MessageLookupByLibrary.simpleMessage("Auto Lock"),
+        "autoLockDescription": MessageLookupByLibrary.simpleMessage(
+            "Lock the app after 5 minutes of inactivity"),
         "availableCommands":
             MessageLookupByLibrary.simpleMessage("Available commands"),
         "background": MessageLookupByLibrary.simpleMessage("Background"),
@@ -47,6 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cameraStartError":
             MessageLookupByLibrary.simpleMessage("Camera start error"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "changePin": MessageLookupByLibrary.simpleMessage("Change PIN"),
         "chat": MessageLookupByLibrary.simpleMessage("Chat"),
         "chatTimeEnding": MessageLookupByLibrary.simpleMessage(
             "Chat time is coming to an end"),
@@ -56,6 +60,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "cityOptional": MessageLookupByLibrary.simpleMessage("City (optional)"),
         "close": MessageLookupByLibrary.simpleMessage("Close"),
         "communication": MessageLookupByLibrary.simpleMessage("Communication"),
+        "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "confirmPin": MessageLookupByLibrary.simpleMessage("Confirm PIN"),
         "connecting": MessageLookupByLibrary.simpleMessage("connecting..."),
         "continues": MessageLookupByLibrary.simpleMessage("Continue"),
         "credentials": MessageLookupByLibrary.simpleMessage("Credentials"),
@@ -67,6 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "description": MessageLookupByLibrary.simpleMessage("Description"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "enablePin": MessageLookupByLibrary.simpleMessage("Enable PIN"),
         "enterAge": MessageLookupByLibrary.simpleMessage("Please enter age"),
         "enterCity": MessageLookupByLibrary.simpleMessage("Please enter city"),
         "enterEmail":
@@ -77,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter last name"),
         "enterPassword":
             MessageLookupByLibrary.simpleMessage("Please enter password"),
+        "enterPinCode": MessageLookupByLibrary.simpleMessage("Enter PIN code"),
         "enterUsername":
             MessageLookupByLibrary.simpleMessage("Please enter username"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
@@ -100,6 +108,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendship": MessageLookupByLibrary.simpleMessage("Friendship"),
         "games": MessageLookupByLibrary.simpleMessage("Games"),
         "gender": MessageLookupByLibrary.simpleMessage("Gender"),
+        "incorrectPinCode":
+            MessageLookupByLibrary.simpleMessage("Incorrect PIN code"),
         "interests": MessageLookupByLibrary.simpleMessage("Interests"),
         "invalidEmail": MessageLookupByLibrary.simpleMessage("Invalid email"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
@@ -139,7 +149,15 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Permanent Chats"),
         "personalInfo":
             MessageLookupByLibrary.simpleMessage("Personal information"),
+        "pinMismatch":
+            MessageLookupByLibrary.simpleMessage("PIN codes do not match"),
+        "pinProtection": MessageLookupByLibrary.simpleMessage("PIN Protection"),
+        "pinSetSuccess":
+            MessageLookupByLibrary.simpleMessage("PIN code set successfully"),
         "primary": MessageLookupByLibrary.simpleMessage("Primary"),
+        "privacyMode": MessageLookupByLibrary.simpleMessage("Privacy Mode"),
+        "privacyModeDescription": MessageLookupByLibrary.simpleMessage(
+            "Hide sensitive information in background"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "purposes": MessageLookupByLibrary.simpleMessage("Purposes"),
         "qrNotAvailable": MessageLookupByLibrary.simpleMessage(
@@ -163,6 +181,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendMessage": MessageLookupByLibrary.simpleMessage("Send message"),
         "sendingFile": MessageLookupByLibrary.simpleMessage("sending file"),
         "sendingImage": MessageLookupByLibrary.simpleMessage("sending photo"),
+        "setNewPin": MessageLookupByLibrary.simpleMessage("Set new PIN"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),

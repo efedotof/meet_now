@@ -136,5 +136,19 @@
   "qrScanning": "Сканирование QR",
   "cameraStartError": "Ошибка запуска камеры",
   "scanned": "Отсканировано",
-  "qrNotAvailable": "Сканирование QR недоступно на этой платформе"
+  "qrNotAvailable": "Сканирование QR недоступно на этой платформе",
+  "enterPinCode": "Введите PIN-код",
+  "incorrectPinCode": "Неверный PIN-код",
+  "autoLock": "Автоблокировка",
+  "autoLockDescription": "Блокировать приложение после 5 минут неактивности",
+  "pinProtection": "Защита PIN-кодом",
+  "enablePin": "Включить PIN-код",
+  "changePin": "Изменить PIN-код",
+  "privacyMode": "Приватный режим",
+  "privacyModeDescription": "Скрывать конфиденциальную информацию в фоне",
+  "confirmPin": "Подтвердите PIN-код",
+  "setNewPin": "Установите новый PIN-код",
+  "pinMismatch": "PIN-коды не совпадают",
+  "pinSetSuccess": "PIN-код успешно установлен",
+  "confirm": "Подтвердить"
 }
