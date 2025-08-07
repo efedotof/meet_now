@@ -1,16 +1,39 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWidget({super.key, this.chatModel, required this.userId});
+class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
+  const AppBarWidget({
+    super.key,
+    this.chatModel,
+    required this.userId,
+    required this.onBackPressed,
+    required this.isTemporary,
+    this.remainingSeconds,
+  });
+
   final Chat? chatModel;
   final String userId;
+  final VoidCallback onBackPressed;
+  final bool isTemporary;
+  final int? remainingSeconds;
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  State<AppBarWidget> createState() => _AppBarWidgetState();
+}
+
+class _AppBarWidgetState extends State<AppBarWidget> {
+  String _formatTime(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$remainingSeconds';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +53,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-            onPressed: () => context.maybePop(),
+            onPressed: widget.onBackPressed,
           ),
           title: Row(
             children: [
@@ -77,9 +100,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    chatModel != null
-                        ? "${chatModel!.user1.firstname} ${chatModel!.user1.subname}"
-                        : "Анонимный пользователь",
+                    widget.chatModel != null
+                        ? "${widget.chatModel!.user1.firstname} ${widget.chatModel!.user1.subname}"
+                        : S.of(context).anonymousUser,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -92,20 +115,24 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                     child: activityState.when(
                       initial:
                           () => Text(
-                            'подключается...',
+                            S.of(context).connecting,
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.outline,
                             ),
                           ),
                       activity: (UserActivity activity) {
-                        if (activity.userId == userId) return const SizedBox();
+                        if (activity.userId == widget.userId) {
+                          return const SizedBox();
+                        }
 
                         final statusText = switch (activity.activityType) {
-                          ActivityType.TYPING => 'печатает...',
-                          ActivityType.OFFLINE => 'не в сети',
-                          ActivityType.SENDING_FILE => "отправляет файл",
-                          ActivityType.SENDING_IMAGE => "отправляет фото",
-                          ActivityType.ONLINE => "в сети",
+                          ActivityType.TYPING => S.of(context).typing,
+                          ActivityType.OFFLINE => S.of(context).offline,
+                          ActivityType.SENDING_FILE =>
+                            S.of(context).sendingFile,
+                          ActivityType.SENDING_IMAGE =>
+                            S.of(context).sendingImage,
+                          ActivityType.ONLINE => S.of(context).online,
                         };
 
                         return Text(
@@ -125,10 +152,26 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           actions: [
-            if (chatModel != null)
+            if (widget.chatModel != null)
               IconButton(
                 icon: Icon(Icons.more_vert, color: theme.colorScheme.onSurface),
                 onPressed: () {},
+              ),
+            if (widget.isTemporary && widget.remainingSeconds != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Center(
+                  child: Text(
+                    _formatTime(widget.remainingSeconds!),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color:
+                          widget.remainingSeconds! < 60
+                              ? Colors.red
+                              : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
               ),
           ],
         );

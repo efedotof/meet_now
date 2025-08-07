@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class AboutPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -31,18 +32,20 @@ class _AboutPageState extends State<AboutPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Расскажите о себе',
+                  S.of(context).tellAboutYourself,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 24),
 
-                // Пол
-                Text('Пол', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  S.of(context).gender,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     ChoiceChip(
-                      label: const Text('Мужской'),
+                      label: Text(S.of(context).male),
                       selected: widget.formData.gender == 'м',
                       onSelected: (selected) {
                         setState(() {
@@ -52,7 +55,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                     const SizedBox(width: 12),
                     ChoiceChip(
-                      label: const Text('Женский'),
+                      label: Text(S.of(context).female),
                       selected: widget.formData.gender == 'ж',
                       onSelected: (selected) {
                         setState(() {
@@ -68,24 +71,31 @@ class _AboutPageState extends State<AboutPage> {
                 TextFormField(
                   initialValue: widget.formData.description,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Описание',
+                  decoration: InputDecoration(
+                    labelText: S.of(context).description,
                     alignLabelWithHint: true,
                     border: OutlineInputBorder(),
                   ),
                   validator:
-                      (value) => value!.isEmpty ? 'Расскажите о себе' : null,
+                      (value) =>
+                          value!.isEmpty
+                              ? S.of(context).tellAboutYourselfValidation
+                              : null,
                   onChanged: (value) => widget.formData.description = value,
                 ),
 
                 const SizedBox(height: 24),
-                Text('Цели знакомств'),
+                Text(S.of(context).datingGoals),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children:
-                      ['Дружба', 'Любовь', 'Общение'].map((e) {
+                      [
+                        S.of(context).friendship,
+                        S.of(context).love,
+                        S.of(context).communication,
+                      ].map((e) {
                         final selected = widget.formData.purposes.contains(e);
                         return ChoiceChip(
                           label: Text(e),
@@ -104,7 +114,7 @@ class _AboutPageState extends State<AboutPage> {
 
                 const SizedBox(height: 24),
                 Text(
-                  'Интересы',
+                  S.of(context).interests,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
@@ -112,7 +122,12 @@ class _AboutPageState extends State<AboutPage> {
                   spacing: 8,
                   runSpacing: 8,
                   children:
-                      ['Спорт', 'Игры', 'Книги', 'Музыка'].map((e) {
+                      [
+                        S.of(context).sports,
+                        S.of(context).games,
+                        S.of(context).books,
+                        S.of(context).music,
+                      ].map((e) {
                         final selected = widget.formData.interests.contains(e);
                         return ChoiceChip(
                           label: Text(e),

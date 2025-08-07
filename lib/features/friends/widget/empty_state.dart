@@ -1,8 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/route/app_route.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({super.key, required this.theme});
   final ThemeData theme;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -15,17 +19,17 @@ class EmptyState extends StatelessWidget {
             color: theme.colorScheme.secondary,
           ),
           const SizedBox(height: 24),
-          Text('У вас пока нет друзей', style: theme.textTheme.titleLarge),
+          Text(S.of(context).noFriendsYet, style: theme.textTheme.titleLarge),
           const SizedBox(height: 16),
           Text(
-            'Начните общаться, чтобы добавить людей в друзья',
+            S.of(context).startCommunicationHint,
             style: theme.textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () {
-              // Навигация к поиску или чатам
+              context.replaceRoute(SearchRoute());
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -33,7 +37,7 @@ class EmptyState extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: Text('Начать общение'),
+            child: Text(S.of(context).startCommunication),
           ),
         ],
       ),

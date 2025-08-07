@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/chat/widget/chat_tile.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class TemporaryChatScreen extends StatelessWidget {
@@ -10,8 +11,10 @@ class TemporaryChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Временные чаты")),
+      appBar: AppBar(title: Text(l10n.temporaryChats)),
       body: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
           if (state.isLoading) {
@@ -19,11 +22,11 @@ class TemporaryChatScreen extends StatelessWidget {
           }
 
           if (state.error != null) {
-            return Center(child: Text('Ошибка: ${state.error}'));
+            return Center(child: Text('${l10n.errorPrefix}: ${state.error}'));
           }
 
           if (state.temporaryChat.isEmpty) {
-            return const Center(child: Text('Временных чатов нет'));
+            return Center(child: Text(l10n.noTemporaryChats));
           }
 
           return ListView.separated(
@@ -33,8 +36,8 @@ class TemporaryChatScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final chat = state.temporaryChat[index];
               return ChatTile(
-                name: 'Анонимный чат ${index + 1}',
-                lastMessage: 'Нажмите, чтобы посмотреть',
+                name: "${l10n.anonymousChat} ${index + 1}",
+                lastMessage: l10n.tapToView,
                 unreadCount: 0,
                 temporaryChat: chat,
               );

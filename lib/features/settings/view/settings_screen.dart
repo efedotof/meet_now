@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 @RoutePage()
@@ -14,7 +15,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.read<SettingsCubit>().userModelAppInterface.user!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Настройки"), elevation: 0),
+      appBar: AppBar(title: Text(S.of(context).settings), elevation: 0),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +118,7 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${user.friends?.length ?? 0} друзей',
+                                  S.of(context).friendsCount(user.friends?.length ?? 0),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -144,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Настройки аккаунта',
+                    S.of(context).accountSettings,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -155,29 +156,34 @@ class SettingsScreen extends StatelessWidget {
                     items: [
                       SettingsItem(
                         icon: Icons.person,
-                        title: 'Профиль',
+                        title: S.of(context).profile,
                         onTap: () => context.pushRoute(ProfileRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.group_add,
-                        title: 'Мои заявки',
+                        title: S.of(context).friendRequests,
                         onTap: () => context.pushRoute(FriendRequestsRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.language,
-                        title: 'Язык',
+                        title: S.of(context).language,
                         trailing: Text(
-                          'Русский',
+                          S.of(context).russian,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         onTap: () => context.pushRoute(LanguageRoute()),
+                      ),
+                      SettingsItem(
+                        icon: Icons.qr_code,
+                        title: S.of(context).qrScanner,
+                        onTap: () => context.pushRoute(QrCodeRoute()),
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 24),
                   Text(
-                    'Настройки приложения',
+                    S.of(context).appSettings,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -188,25 +194,25 @@ class SettingsScreen extends StatelessWidget {
                     items: [
                       SettingsItem(
                         icon: Icons.notifications,
-                        title: 'Уведомления',
+                        title: S.of(context).notifications,
                         onTap:
                             () => context.pushRoute(NotificationSettingRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.security,
-                        title: 'Безопасность',
+                        title: S.of(context).security,
                         onTap: () => context.pushRoute(SecurityRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.brightness_6,
-                        title: 'Тема',
+                        title: S.of(context).theme,
                         onTap: () => context.pushRoute(ThemeRoute()),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'О приложении',
+                    S.of(context).aboutApp,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -217,22 +223,22 @@ class SettingsScreen extends StatelessWidget {
                     items: [
                       SettingsItem(
                         icon: Icons.info,
-                        title: 'О приложении',
+                        title: S.of(context).aboutApp,
                         onTap: () => context.pushRoute(AboutAppRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.support_agent,
-                        title: 'Поддержка',
+                        title: S.of(context).support,
                         onTap: () => context.pushRoute(SupportRoute()),
                       ),
                       SettingsItem(
                         icon: Icons.exit_to_app,
-                        title: 'Выйти',
+                        title: S.of(context).exit,
                         titleColor: Colors.red,
                         onTap:
                             () => context.read<SettingsCubit>().exit(
-                              context: context,
-                            ),
+                                  context: context,
+                                ),
                       ),
                     ],
                   ),
@@ -243,7 +249,7 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Center(
                 child: Text(
-                  'Версия 1.0.0',
+                  S.of(context).version('1.0.0'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
                   ),

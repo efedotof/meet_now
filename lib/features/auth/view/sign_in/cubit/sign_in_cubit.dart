@@ -49,7 +49,7 @@ class SignInCubit extends Cubit<SignInState> {
       emit(SignInState.success());
       debugPrint("Login successful, navigating to MainHomeRoute");
       if (context.mounted) {
-        context.replaceRoute(const MainHomeRoute());
+        context.router.replaceAll([MainHomeRoute()]);
       }
     } catch (e) {
       emit(SignInState.error(error: e.toString()));

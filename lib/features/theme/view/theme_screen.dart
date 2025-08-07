@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/theme/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 
 @RoutePage()
@@ -12,7 +13,10 @@ class ThemeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Выбор темы'), centerTitle: true),
+      appBar: AppBar(
+        title: Text(S.of(context).themeSelection),
+        centerTitle: true,
+      ),
       body: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           return Padding(
@@ -21,7 +25,7 @@ class ThemeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Выберите тему оформления',
+                  S.of(context).chooseTheme,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
@@ -29,15 +33,15 @@ class ThemeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Изменения коснутся всего интерфейса приложения',
+                  S.of(context).themeChangesAffect,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.secondary,
                   ),
                 ),
                 const SizedBox(height: 32),
                 ThemeCard(
-                  title: 'Светлая тема',
-                  description: 'Чистый и яркий дизайн',
+                  title: S.of(context).lightTheme,
+                  description: S.of(context).lightDescription,
                   isSelected: state.brightness == Brightness.light,
                   brightness: Brightness.light,
                   themeColors: [
@@ -49,8 +53,8 @@ class ThemeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 ThemeCard(
-                  title: 'Темная тема',
-                  description: 'Стильный и современный дизайн',
+                  title: S.of(context).darkTheme,
+                  description: S.of(context).darkDescription,
                   isSelected: state.brightness == Brightness.dark,
                   brightness: Brightness.dark,
                   themeColors: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class SearchResultsWidget extends StatelessWidget {
   final List<String> results;
@@ -26,7 +27,7 @@ class SearchResultsWidget extends StatelessWidget {
         children: [
           const SizedBox(width: 8),
           Text(
-            'Найдено:',
+            '${S.of(context).found}:',
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

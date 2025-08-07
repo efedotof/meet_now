@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class BottomBar extends StatelessWidget {
   final int currentPage;
@@ -34,7 +35,7 @@ class BottomBar extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 50),
                               ),
-                              child: const Text('Зарегистрироваться'),
+                              child: Text(S.of(context).register),
                             ),
                           )
                           : ConstrainedBox(
@@ -44,7 +45,7 @@ class BottomBar extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 50),
                               ),
-                              child: const Text('Далее'),
+                              child: Text(S.of(context).next),
                             ),
                           ),
             );

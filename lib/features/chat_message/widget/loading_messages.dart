@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class LoadingMessages extends StatelessWidget {
   const LoadingMessages({super.key});
@@ -16,7 +17,7 @@ class LoadingMessages extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Загрузка сообщений...',
+            S.of(context).loadingMessages,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

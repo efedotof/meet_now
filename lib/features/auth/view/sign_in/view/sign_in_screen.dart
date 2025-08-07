@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class SignInScreen extends StatefulWidget {
@@ -16,10 +17,17 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
+  bool _obscureText = true;
 
   final _formKey = GlobalKey<FormState>();
   static const double mobileButtonWidth = double.infinity;
   static const double desktopButtonWidth = 300.0;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,7 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Welcome back',
+                  S.of(context).welcomeBack,
                   style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
                 ),
                 const SizedBox(height: 32),
@@ -48,8 +56,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   constraints: BoxConstraints(maxWidth: buttonWidth),
                   child: TextFormField(
                     controller: username,
-                    decoration: const InputDecoration(
-                      hintText: 'Username',
+                    decoration:  InputDecoration(
+                      hintText: S.of(context).username,
                       prefixIcon: Icon(Icons.person),
                     ),
                     textInputAction: TextInputAction.next,
@@ -61,11 +69,20 @@ class _SignInScreenState extends State<SignInScreen> {
                   constraints: BoxConstraints(maxWidth: buttonWidth),
                   child: TextFormField(
                     controller: password,
-                    decoration: const InputDecoration(
-                      hintText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
+                    decoration: InputDecoration(
+                      hintText: S.of(context).password,
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: _togglePasswordVisibility,
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: _obscureText,
                     textInputAction: TextInputAction.done,
                   ),
                 ),
@@ -83,7 +100,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           password: password,
                         );
                       },
-                      child: const Text('Sign In'),
+                      child:  Text(S.of(context).signIn),
                     ),
                   ),
                 ),

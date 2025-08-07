@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/profile/widget/widget.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 @RoutePage()
@@ -15,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
     final user = context.read<SettingsCubit>().userModelAppInterface.user!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Мой профиль'),
+        title: Text(S.of(context).myProfile),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

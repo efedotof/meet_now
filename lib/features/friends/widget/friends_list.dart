@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/friends/widget/friend_card.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 class FriendsList extends StatelessWidget {
   const FriendsList({super.key, required this.friends, required this.theme});
   final List<User> friends;
   final ThemeData theme;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -15,7 +17,7 @@ class FriendsList extends StatelessWidget {
           // Поисковая строка
           TextField(
             decoration: InputDecoration(
-              hintText: 'Поиск друзей...',
+              hintText: S.of(context).searchFriendsHint,
               prefixIcon: const Icon(Icons.search),
               filled: true,
               border: OutlineInputBorder(

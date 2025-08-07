@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.user});
   final User user;
+  
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -50,7 +52,7 @@ class ProfileHeader extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                '${user.age != null ? '${user.age} лет' : ''} ${user.city ?? ''}',
+                '${user.age != null ? '${user.age} ${S.of(context).years}' : ''} ${user.city ?? ''}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),

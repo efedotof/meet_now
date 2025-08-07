@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/commands/commands_chat.dart';
 import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
@@ -21,6 +22,7 @@ class InputArea extends StatefulWidget {
   final VoidCallback onSend;
   final Function(String) onCommandResult;
   final String chatId;
+  
   @override
   State<InputArea> createState() => _InputAreaState();
 }
@@ -113,7 +115,7 @@ class _InputAreaState extends State<InputArea> {
                       child: TextField(
                         controller: widget.controller,
                         decoration: InputDecoration(
-                          hintText: "Сообщение...",
+                          hintText: S.of(context).messageHint,
                           hintStyle: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

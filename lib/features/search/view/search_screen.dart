@@ -1,9 +1,9 @@
-// search_screen.dart
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
 import 'package:meet_now_app/features/search/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class SearchScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class SearchScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Поиск"), elevation: 0),
+      appBar: AppBar(title: Text(S.of(context).search), elevation: 0),
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
           final cubit = context.read<SearchCubit>();
@@ -31,7 +31,7 @@ class SearchScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Выберите пол",
+                        S.of(context).selectGender,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -99,7 +99,7 @@ class SearchScreen extends StatelessWidget {
                       const SizedBox(height: 40),
                       if (state.gender.isNotEmpty) ...[
                         Text(
-                          "Выберите возраст",
+                          S.of(context).selectAge,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -127,7 +127,7 @@ class SearchScreen extends StatelessWidget {
                         TextField(
                           onChanged: (value) => cubit.setCity(value),
                           decoration: InputDecoration(
-                            labelText: 'Город (необязательно)',
+                            labelText: S.of(context).cityOptional,
                             border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: theme.cardTheme.color,
@@ -140,7 +140,7 @@ class SearchScreen extends StatelessWidget {
                               value: state.verified,
                               onChanged: (_) => cubit.toggleVerified(),
                             ),
-                            const Text('Только проверенные пользователи'),
+                            Text(S.of(context).onlyVerified),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -150,7 +150,7 @@ class SearchScreen extends StatelessWidget {
                               context: context,
                               builder:
                                   (context) => MultiSelectDialog(
-                                    title: 'Интересы',
+                                    title: S.of(context).interests,
                                     items: cubit.availableInterests,
                                     selectedItems: state.interests,
                                   ),
@@ -170,7 +170,7 @@ class SearchScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Интересы (${state.interests.length})',
+                                '${S.of(context).interests} (${state.interests.length})',
                                 style: theme.textTheme.bodyLarge,
                               ),
                               const SizedBox(width: 8),
@@ -186,7 +186,7 @@ class SearchScreen extends StatelessWidget {
                               context: context,
                               builder:
                                   (context) => MultiSelectDialog(
-                                    title: 'Цели',
+                                    title: S.of(context).purposes,
                                     items: cubit.availablePurposes,
                                     selectedItems: state.purposes,
                                   ),
@@ -206,7 +206,7 @@ class SearchScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Цели (${state.purposes.length})',
+                                '${S.of(context).purposes} (${state.purposes.length})',
                                 style: theme.textTheme.bodyLarge,
                               ),
                               const SizedBox(width: 8),
@@ -257,7 +257,7 @@ class SearchScreen extends StatelessWidget {
                             ?.resolve({}),
                       )
                       : Text(
-                        "Начать поиск",
+                        S.of(context).startSearch,
                         style: theme.elevatedButtonTheme.style?.textStyle
                             ?.resolve({}),
                       ),
