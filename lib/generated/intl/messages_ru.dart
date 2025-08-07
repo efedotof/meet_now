@@ -44,6 +44,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Анонимный пользователь"),
         "appSettings":
             MessageLookupByLibrary.simpleMessage("Настройки приложения"),
+        "autoLock": MessageLookupByLibrary.simpleMessage("Автоблокировка"),
+        "autoLockDescription": MessageLookupByLibrary.simpleMessage(
+            "Блокировать приложение после 5 минут неактивности"),
         "availableCommands":
             MessageLookupByLibrary.simpleMessage("Доступные команды"),
         "background": MessageLookupByLibrary.simpleMessage("Фон"),
@@ -51,6 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cameraStartError":
             MessageLookupByLibrary.simpleMessage("Ошибка запуска камеры"),
         "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
+        "changePin": MessageLookupByLibrary.simpleMessage("Изменить PIN-код"),
         "chat": MessageLookupByLibrary.simpleMessage("Чат"),
         "chatTimeEnding":
             MessageLookupByLibrary.simpleMessage("Время чата подходит к концу"),
@@ -62,6 +66,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Город (необязательно)"),
         "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
         "communication": MessageLookupByLibrary.simpleMessage("Общение"),
+        "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
+        "confirmPin":
+            MessageLookupByLibrary.simpleMessage("Подтвердите PIN-код"),
         "connecting": MessageLookupByLibrary.simpleMessage("подключается..."),
         "continues": MessageLookupByLibrary.simpleMessage("Продолжить"),
         "credentials": MessageLookupByLibrary.simpleMessage("Учетные данные"),
@@ -74,6 +81,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "editProfile":
             MessageLookupByLibrary.simpleMessage("Редактирование профиля"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "enablePin": MessageLookupByLibrary.simpleMessage("Включить PIN-код"),
         "enterAge": MessageLookupByLibrary.simpleMessage("Введите возраст"),
         "enterCity": MessageLookupByLibrary.simpleMessage("Введите город"),
         "enterEmail": MessageLookupByLibrary.simpleMessage("Введите email"),
@@ -81,6 +89,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterLastName":
             MessageLookupByLibrary.simpleMessage("Введите фамилию"),
         "enterPassword": MessageLookupByLibrary.simpleMessage("Введите пароль"),
+        "enterPinCode": MessageLookupByLibrary.simpleMessage("Введите PIN-код"),
         "enterUsername": MessageLookupByLibrary.simpleMessage("Введите логин"),
         "error": MessageLookupByLibrary.simpleMessage("Ошибка"),
         "errorPrefix": MessageLookupByLibrary.simpleMessage("Ошибка"),
@@ -102,6 +111,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendship": MessageLookupByLibrary.simpleMessage("Дружба"),
         "games": MessageLookupByLibrary.simpleMessage("Игры"),
         "gender": MessageLookupByLibrary.simpleMessage("Пол"),
+        "incorrectPinCode":
+            MessageLookupByLibrary.simpleMessage("Неверный PIN-код"),
         "interests": MessageLookupByLibrary.simpleMessage("Интересы"),
         "invalidEmail":
             MessageLookupByLibrary.simpleMessage("Некорректный email"),
@@ -143,7 +154,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Постоянные чаты"),
         "personalInfo":
             MessageLookupByLibrary.simpleMessage("Основная информация"),
+        "pinMismatch":
+            MessageLookupByLibrary.simpleMessage("PIN-коды не совпадают"),
+        "pinProtection":
+            MessageLookupByLibrary.simpleMessage("Защита PIN-кодом"),
+        "pinSetSuccess":
+            MessageLookupByLibrary.simpleMessage("PIN-код успешно установлен"),
         "primary": MessageLookupByLibrary.simpleMessage("Основной"),
+        "privacyMode": MessageLookupByLibrary.simpleMessage("Приватный режим"),
+        "privacyModeDescription": MessageLookupByLibrary.simpleMessage(
+            "Скрывать конфиденциальную информацию в фоне"),
         "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
         "purposes": MessageLookupByLibrary.simpleMessage("Цели"),
         "qrNotAvailable": MessageLookupByLibrary.simpleMessage(
@@ -169,6 +189,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Написать сообщение"),
         "sendingFile": MessageLookupByLibrary.simpleMessage("отправляет файл"),
         "sendingImage": MessageLookupByLibrary.simpleMessage("отправляет фото"),
+        "setNewPin":
+            MessageLookupByLibrary.simpleMessage("Установите новый PIN-код"),
         "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
         "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
         "signUp": MessageLookupByLibrary.simpleMessage("Зарегистрироваться"),

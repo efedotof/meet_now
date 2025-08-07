@@ -9,7 +9,9 @@ import 'package:meet_now_app/features/chat_message/cubit/icebreaker/icebreaker_c
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
+import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,7 @@ import 'package:meet_now_app/server/repository/upload_image/upload_image_interfa
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
+import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
 import 'package:meet_now_app/theme/repository/theme_interface.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
@@ -56,8 +59,11 @@ class AppBloc extends StatelessWidget {
         ),
         BlocProvider(
           create:
-              (context) =>
-                  SplashCubit(authInterface: context.read<AuthInterface>()),
+              (context) => SplashCubit(
+                authInterface: context.read<AuthInterface>(),
+                pincodeStorageInterface:
+                    context.read<PincodeStorageInterface>(),
+              ),
         ),
         BlocProvider(
           create:
@@ -117,6 +123,15 @@ class AppBloc extends StatelessWidget {
                 userModelApp: context.read<UserModelAppInterface>(),
               ),
         ),
+        BlocProvider(
+          create:
+              (context) => PinCodeCubit(
+                pincodeStorageInterface:
+                    context.read<PincodeStorageInterface>(),
+                authInterface: context.read<AuthInterface>(),
+              ),
+        ),
+        BlocProvider(create: (context) => SecurityCubit(pincodeStorageInterface: context.read<PincodeStorageInterface>())),
       ],
       child: child,
     );

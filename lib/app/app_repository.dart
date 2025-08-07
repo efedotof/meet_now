@@ -24,6 +24,8 @@ import 'package:meet_now_app/server/repository/user_model_app/user_model_app_rep
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
+import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
+import 'package:meet_now_app/storage/pincode/pinconde_storage_repository.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
 import 'package:meet_now_app/theme/repository/theme_interface.dart';
@@ -114,6 +116,10 @@ class AppRepository extends StatelessWidget {
               (context) => CommandExecutorService(
                 icebreakerInterface: context.read<IcebreakerInterface>(),
               ),
+        ),
+        RepositoryProvider<PincodeStorageInterface>(
+          create:
+              (context) => PincondeStorageRepository(preferences: config.prefs),
         ),
       ],
       child: child,
