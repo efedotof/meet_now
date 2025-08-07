@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 class PersonalInfo extends StatelessWidget {
@@ -26,7 +27,7 @@ class PersonalInfo extends StatelessWidget {
             ),
             if (user.description != null) ...[
               const Divider(height: 32),
-              Text('Обо мне', style: theme.textTheme.titleLarge),
+              Text(S.of(context).aboutMe, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               Text(user.description!, style: theme.textTheme.bodyLarge),
             ],

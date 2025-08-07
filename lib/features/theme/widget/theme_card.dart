@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/theme/widget/color_circle.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 
 class ThemeCard extends StatelessWidget {
@@ -19,6 +20,7 @@ class ThemeCard extends StatelessWidget {
   final Brightness brightness;
   final List<Color> themeColors;
   final IconData icon;
+  
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -69,7 +71,7 @@ class ThemeCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        'Текущая',
+                        S.of(context).currents,
                         style: TextStyle(
                           color: isDark ? Colors.black : Colors.white,
                           fontWeight: FontWeight.bold,
@@ -99,9 +101,9 @@ class ThemeCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ColorCircle(color: themeColors[0], label: 'Основной'),
-                  ColorCircle(color: themeColors[0], label: 'Фон'),
-                  ColorCircle(color: themeColors[0], label: 'Текст'),
+                  ColorCircle(color: themeColors[0], label: S.of(context).primary),
+                  ColorCircle(color: themeColors[1], label: S.of(context).background),
+                  ColorCircle(color: themeColors[2], label: S.of(context).text),
                 ],
               ),
             ],

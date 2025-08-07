@@ -11,6 +11,7 @@ import 'package:meet_now_app/features/auth/view/sign_up/widget/bottom_bar.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/credentials_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/personal_info_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -84,7 +85,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocListener<SignUpCubit, SignUpState>(
       listener: (context, state) {
         state.whenOrNull(
-          success: () => context.replaceRoute(const MainHomeRoute()),
+          success: () => context.router.replaceAll([MainHomeRoute()]),
           error: (error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(error), backgroundColor: Colors.red),
@@ -94,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Регистрация'),
+          title:  Text(S.of(context).registration),
           leading:
               _currentPage > 0
                   ? IconButton(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class AvatarPage extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -28,7 +29,7 @@ class AvatarPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Ваше фото',
+                S.of(context).yourPhoto,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),

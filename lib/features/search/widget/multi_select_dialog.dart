@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class MultiSelectDialog extends StatefulWidget {
   final String title;
@@ -57,11 +58,11 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Отмена'),
+          child: Text(S.of(context).cancel),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(context, _tempSelected),
-          child: const Text('Сохранить'),
+          child: Text(S.of(context).save),
         ),
       ],
     );

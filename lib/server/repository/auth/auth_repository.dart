@@ -106,9 +106,8 @@ class AuthRepository implements AuthInterface {
       }
 
       final token = user.token!;
-      _dio.options.headers['Authorization'] = 'Bearer $token';
 
-      final response = await _dio.get(tokenValidation);
+      final response = await _dio.get(tokenValidation, options: Options(headers: {'Authorization':'Bearer $token'}));
 
       if (response.statusCode == 200) {
         _userModelAppInterface.user = user;

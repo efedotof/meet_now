@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/config.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 @RoutePage()
@@ -97,7 +98,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Редактирование профиля'),
+        title: Text(S.of(context).editProfile),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.maybePop(),
@@ -168,7 +169,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: InputDecoration(
-                        labelText: 'Имя пользователя',
+                        labelText: S.of(context).username,
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -180,7 +181,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                     TextFormField(
                       controller: _firstnameController,
                       decoration: InputDecoration(
-                        labelText: 'Имя',
+                        labelText: S.of(context).firstName,
                         prefixIcon: const Icon(Icons.badge_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -192,7 +193,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                     TextFormField(
                       controller: _subnameController,
                       decoration: InputDecoration(
-                        labelText: 'Фамилия',
+                        labelText: S.of(context).lastName,
                         prefixIcon: const Icon(Icons.badge),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -217,7 +218,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                     TextFormField(
                       controller: _cityController,
                       decoration: InputDecoration(
-                        labelText: 'Город',
+                        labelText: S.of(context).city,
                         prefixIcon: const Icon(Icons.location_on_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -230,7 +231,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                       controller: _ageController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Возраст',
+                        labelText: S.of(context).age,
                         prefixIcon: const Icon(Icons.cake_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -243,7 +244,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                       controller: _descriptionController,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        labelText: 'О себе',
+                        labelText: S.of(context).aboutMe,
                         prefixIcon: const Icon(Icons.description_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -266,10 +267,8 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Видим в поиске'),
-                      subtitle: const Text(
-                        'Другие пользователи могут найти вас',
-                      ),
+                      title: Text(S.of(context).visibleInSearch),
+                      subtitle: Text(S.of(context).visibleInSearchDescription),
                       value: _isSearchable,
                       onChanged: (value) {
                         setState(() {
@@ -292,7 +291,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Мои интересы', style: theme.textTheme.titleLarge),
+                    Text(S.of(context).myInterests, style: theme.textTheme.titleLarge),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -318,7 +317,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                           child: TextFormField(
                             controller: _interestController,
                             decoration: InputDecoration(
-                              hintText: 'Добавьте интерес',
+                              hintText: S.of(context).addInterestHint,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -355,7 +354,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Цели знакомства', style: theme.textTheme.titleLarge),
+                    Text(S.of(context).datingGoals, style: theme.textTheme.titleLarge),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -381,7 +380,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                           child: TextFormField(
                             controller: _purposeController,
                             decoration: InputDecoration(
-                              hintText: 'Добавьте цель',
+                              hintText: S.of(context).addPurposeHint,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

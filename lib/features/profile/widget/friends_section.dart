@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
@@ -7,6 +8,7 @@ class FriendsSection extends StatelessWidget {
   const FriendsSection({super.key, required this.theme, required this.user});
   final ThemeData theme;
   final User user;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -19,10 +21,10 @@ class FriendsSection extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Друзья', style: theme.textTheme.titleLarge),
+                Text(S.of(context).friends, style: theme.textTheme.titleLarge),
                 TextButton(
                   onPressed: () => context.replaceRoute(FriendsRoute()),
-                  child: const Text('Смотреть всех'),
+                  child: Text(S.of(context).viewAll),
                 ),
               ],
             ),
@@ -45,7 +47,7 @@ class FriendsSection extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Друг ${index + 1}',
+                            '${S.of(context).friend} ${index + 1}',
                             style: theme.textTheme.bodySmall,
                           ),
                         ],
@@ -55,7 +57,10 @@ class FriendsSection extends StatelessWidget {
                 ),
               )
             else
-              Text('У вас пока нет друзей', style: theme.textTheme.bodyMedium),
+              Text(
+                S.of(context).noFriendsYet,
+                style: theme.textTheme.bodyMedium,
+              ),
           ],
         ),
       ),

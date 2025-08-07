@@ -47,7 +47,7 @@ final dartTheme = ThemeData(
     hintStyle: const TextStyle(color: Colors.grey),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     color: const Color(0xFF121212),
     elevation: 0,
     shape: RoundedRectangleBorder(
@@ -97,7 +97,7 @@ final dartTheme = ThemeData(
     }),
   ),
   dividerColor: Colors.white24,
-  dialogTheme: DialogTheme(
+  dialogTheme: DialogThemeData(
     backgroundColor: Colors.black,
     titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
     contentTextStyle: const TextStyle(color: Colors.white70),
@@ -163,7 +163,7 @@ final lightTheme = ThemeData(
     hintStyle: const TextStyle(color: Colors.grey),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     color: Colors.white,
     elevation: 0,
     shape: RoundedRectangleBorder(
@@ -213,7 +213,7 @@ final lightTheme = ThemeData(
     }),
   ),
   dividerColor: Colors.black12,
-  dialogTheme: DialogTheme(
+  dialogTheme: DialogThemeData(
     backgroundColor: Colors.white,
     titleTextStyle: const TextStyle(color: Colors.black, fontSize: 18),
     contentTextStyle: const TextStyle(color: Colors.black87),

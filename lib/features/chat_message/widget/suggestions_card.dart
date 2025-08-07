@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class SuggestionsCard extends StatelessWidget {
   const SuggestionsCard({
@@ -26,7 +27,7 @@ class SuggestionsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Доступные команды:',
+            S.of(context).availableCommands,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

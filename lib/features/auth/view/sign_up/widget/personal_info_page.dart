@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -23,7 +24,7 @@ class PersonalInfoPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Основная информация',
+                S.of(context).personalInfo,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
@@ -31,11 +32,13 @@ class PersonalInfoPage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: buttonWidth),
                 child: TextFormField(
                   initialValue: formData.firstname,
-                  decoration: const InputDecoration(
-                    labelText: 'Имя',
+                  decoration: InputDecoration(
+                    labelText: S.of(context).firstName,
                     prefixIcon: Icon(Icons.person_outline),
                   ),
-                  validator: (value) => value!.isEmpty ? 'Введите имя' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enterFirstName : null,
                   onChanged: (value) => formData.firstname = value,
                 ),
               ),
@@ -44,12 +47,13 @@ class PersonalInfoPage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: buttonWidth),
                 child: TextFormField(
                   initialValue: formData.subname,
-                  decoration: const InputDecoration(
-                    labelText: 'Фамилия',
+                  decoration: InputDecoration(
+                    labelText: S.of(context).lastName,
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                   validator:
-                      (value) => value!.isEmpty ? 'Введите фамилию' : null,
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enterLastName : null,
                   onChanged: (value) => formData.subname = value,
                 ),
               ),
@@ -58,18 +62,18 @@ class PersonalInfoPage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: buttonWidth),
                 child: TextFormField(
                   initialValue: formData.age > 0 ? formData.age.toString() : '',
-                  decoration: const InputDecoration(
-                    labelText: 'Возраст',
+                  decoration: InputDecoration(
+                    labelText: S.of(context).age,
                     prefixIcon: Icon(Icons.cake_outlined),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Введите возраст';
+                      return S.of(context).enterAge;
                     }
                     final age = int.tryParse(value);
                     if (age == null || age < 14) {
-                      return 'Минимальный возраст 14 лет';
+                      return S.of(context).minAge;
                     }
                     return null;
                   },

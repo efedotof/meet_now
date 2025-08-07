@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
 class FriendCard extends StatelessWidget {
   const FriendCard({super.key, required this.friend, required this.theme});
   final User friend;
   final ThemeData theme;
+
   @override
   Widget build(BuildContext context) {
     final isDark = theme.brightness == Brightness.dark;
@@ -70,14 +72,14 @@ class FriendCard extends StatelessWidget {
                     onPressed: () {
                       // Начать чат
                     },
-                    tooltip: 'Написать сообщение',
+                    tooltip: S.of(context).sendMessage,
                   ),
                   IconButton(
                     icon: const Icon(Icons.person_remove_outlined),
                     onPressed: () {
                       // Удалить из друзей
                     },
-                    tooltip: 'Удалить из друзей',
+                    tooltip: S.of(context).removeFriend,
                   ),
                 ],
               ),
