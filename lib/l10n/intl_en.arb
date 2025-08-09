@@ -150,5 +150,11 @@
   "setNewPin": "Set new PIN",
   "pinMismatch": "PIN codes do not match",
   "pinSetSuccess": "PIN code set successfully",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "qrScanInstruction": "Point your camera at the QR code",
+  "qrNoValue": "Unable to recognize data",
+   "enterCurrentPin": "Enter current PIN",
+  "incorrectPin": "Incorrect PIN",
+  "enterFullPin": "Please enter all 4 digits",
+  "pinChangedSuccess": "PIN changed successfully"
 }

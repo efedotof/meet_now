@@ -6,7 +6,7 @@ import 'pincode_storage_interface.dart';
 
 class PincondeStorageRepository implements PincodeStorageInterface {
   final SharedPreferences preferences;
-  static const _passwordKey = 'encrypted_password';
+  static const _passwordKey = 'pin_code_keys';
   static final _encryptionKey = encryptionKey;
 
   PincondeStorageRepository({required this.preferences});

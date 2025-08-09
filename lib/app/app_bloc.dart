@@ -8,6 +8,7 @@ import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/com
 import 'package:meet_now_app/features/chat_message/cubit/icebreaker/icebreaker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
+import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
@@ -17,6 +18,7 @@ import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
+import 'package:meet_now_app/server/repository/games/games_interface.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
@@ -24,6 +26,7 @@ import 'package:meet_now_app/server/repository/socket/socket_service_interface.d
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
+import 'package:meet_now_app/storage/language/language_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
@@ -96,6 +99,8 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => ChatMessageCubit(
                 messageInterface: context.read<MessageInterface>(),
+                gamesInterface: context.read<GamesInterface>(),
+                friendInterface: context.read<FriendInterface>(),
               ),
         ),
         BlocProvider(
@@ -131,7 +136,20 @@ class AppBloc extends StatelessWidget {
                 authInterface: context.read<AuthInterface>(),
               ),
         ),
-        BlocProvider(create: (context) => SecurityCubit(pincodeStorageInterface: context.read<PincodeStorageInterface>())),
+        BlocProvider(
+          create:
+              (context) => SecurityCubit(
+                pincodeStorageInterface:
+                    context.read<PincodeStorageInterface>(),
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) => LanguageCubit(
+                languageStorageInterface:
+                    context.read<LanguageStorageInterface>(),
+              ),
+        ),
       ],
       child: child,
     );

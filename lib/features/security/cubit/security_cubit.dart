@@ -20,6 +20,22 @@ class SecurityCubit extends Cubit<SecurityState> {
   void setPinSetInProgress(bool value) =>
       emit(state.copyWith(pinSetInProgress: value));
 
+  bool hasPinCode() {
+    try {
+      return _pincodeStorageInterface.getPinCode().isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  bool verifyPin(String pincode) {
+    try {
+      return _pincodeStorageInterface.getPinCode() == pincode;
+    } catch (e) {
+      return false;
+    }
+  }
+
   void setPinCode({required String pincode}) {
     _pincodeStorageInterface.setPinCode(pincode: pincode);
   }

@@ -150,5 +150,11 @@
   "setNewPin": "Установите новый PIN-код",
   "pinMismatch": "PIN-коды не совпадают",
   "pinSetSuccess": "PIN-код успешно установлен",
-  "confirm": "Подтвердить"
+  "confirm": "Подтвердить",
+  "qrScanInstruction": "Наведите камеру на QR-код",
+  "qrNoValue": "Не удалось распознать данные",
+  "enterCurrentPin": "Введите текущий PIN",
+  "incorrectPin": "Неверный PIN",
+  "enterFullPin": "Введите все 4 цифры",
+  "pinChangedSuccess": "PIN успешно изменен"
 }

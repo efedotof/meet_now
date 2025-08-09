@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
-class SetPinModal extends StatefulWidget {
-  const SetPinModal({super.key});
+class EnterCurrentPinModal extends StatefulWidget {
+  const EnterCurrentPinModal({super.key});
 
   @override
-  State<SetPinModal> createState() => _SetPinModalState();
+  State<EnterCurrentPinModal> createState() => _EnterCurrentPinModalState();
 }
 
-class _SetPinModalState extends State<SetPinModal> {
+class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
   final TextEditingController _pinController = TextEditingController();
-  final TextEditingController _confirmPinController = TextEditingController();
   String _errorText = '';
-  bool _isConfirming = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +28,14 @@ class _SetPinModalState extends State<SetPinModal> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            _isConfirming ? S.of(context).confirmPin : S.of(context).setNewPin,
+            S.of(context).enterCurrentPin,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
           PinCodeTextField(
             appContext: context,
             length: 4,
-            controller: _isConfirming ? _confirmPinController : _pinController,
+            controller: _pinController,
             obscureText: true,
             animationType: AnimationType.fade,
             pinTheme: PinTheme(
@@ -47,9 +45,7 @@ class _SetPinModalState extends State<SetPinModal> {
               selectedColor: Theme.of(context).colorScheme.secondary,
             ),
             onChanged: (value) {
-              if (value.length == 4 && _isConfirming) {
-                _validatePins();
-              }
+              if (value.length == 4) _validatePin(context);
             },
           ),
           if (_errorText.isNotEmpty)
@@ -62,10 +58,8 @@ class _SetPinModalState extends State<SetPinModal> {
             ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: _validatePins,
-            child: Text(
-              _isConfirming ? S.of(context).confirm : S.of(context).continues,
-            ),
+            onPressed: () => _validatePin(context),
+            child: Text(S.of(context).confirm),
           ),
           const SizedBox(height: 32),
         ],
@@ -73,45 +67,24 @@ class _SetPinModalState extends State<SetPinModal> {
     );
   }
 
-  void _validatePins() {
-    if (!_isConfirming) {
-      if (_pinController.text.length != 4) {
-        setState(() => _errorText = S.of(context).enterFullPin);
-        return;
-      }
-      setState(() {
-        _isConfirming = true;
-        _errorText = '';
-      });
-      return;
-    }
-
-    if (_confirmPinController.text.length != 4) {
+  void _validatePin(BuildContext context) {
+    if (_pinController.text.length != 4) {
       setState(() => _errorText = S.of(context).enterFullPin);
       return;
     }
 
-    if (_pinController.text == _confirmPinController.text) {
-      final cubit = context.read<SecurityCubit>();
-      cubit.setPinCode(pincode: _pinController.text);
+    final cubit = context.read<SecurityCubit>();
+    if (cubit.verifyPin(_pinController.text)) {
       Navigator.pop(context, true);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(S.of(context).pinSetSuccess)));
     } else {
-      setState(() {
-        _errorText = S.of(context).pinMismatch;
-        _pinController.clear();
-        _confirmPinController.clear();
-        _isConfirming = false;
-      });
+      setState(() => _errorText = S.of(context).incorrectPin);
+      _pinController.clear();
     }
   }
 
   @override
   void dispose() {
     _pinController.dispose();
-    _confirmPinController.dispose();
     super.dispose();
   }
 }

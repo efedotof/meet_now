@@ -84,8 +84,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "enablePin": MessageLookupByLibrary.simpleMessage("Включить PIN-код"),
         "enterAge": MessageLookupByLibrary.simpleMessage("Введите возраст"),
         "enterCity": MessageLookupByLibrary.simpleMessage("Введите город"),
+        "enterCurrentPin":
+            MessageLookupByLibrary.simpleMessage("Введите текущий PIN"),
         "enterEmail": MessageLookupByLibrary.simpleMessage("Введите email"),
         "enterFirstName": MessageLookupByLibrary.simpleMessage("Введите имя"),
+        "enterFullPin":
+            MessageLookupByLibrary.simpleMessage("Введите все 4 цифры"),
         "enterLastName":
             MessageLookupByLibrary.simpleMessage("Введите фамилию"),
         "enterPassword": MessageLookupByLibrary.simpleMessage("Введите пароль"),
@@ -111,6 +115,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendship": MessageLookupByLibrary.simpleMessage("Дружба"),
         "games": MessageLookupByLibrary.simpleMessage("Игры"),
         "gender": MessageLookupByLibrary.simpleMessage("Пол"),
+        "incorrectPin": MessageLookupByLibrary.simpleMessage("Неверный PIN"),
         "incorrectPinCode":
             MessageLookupByLibrary.simpleMessage("Неверный PIN-код"),
         "interests": MessageLookupByLibrary.simpleMessage("Интересы"),
@@ -154,6 +159,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Постоянные чаты"),
         "personalInfo":
             MessageLookupByLibrary.simpleMessage("Основная информация"),
+        "pinChangedSuccess":
+            MessageLookupByLibrary.simpleMessage("PIN успешно изменен"),
         "pinMismatch":
             MessageLookupByLibrary.simpleMessage("PIN-коды не совпадают"),
         "pinProtection":
@@ -166,8 +173,12 @@ class MessageLookup extends MessageLookupByLibrary {
             "Скрывать конфиденциальную информацию в фоне"),
         "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
         "purposes": MessageLookupByLibrary.simpleMessage("Цели"),
+        "qrNoValue": MessageLookupByLibrary.simpleMessage(
+            "Не удалось распознать данные"),
         "qrNotAvailable": MessageLookupByLibrary.simpleMessage(
             "Сканирование QR недоступно на этой платформе"),
+        "qrScanInstruction":
+            MessageLookupByLibrary.simpleMessage("Наведите камеру на QR-код"),
         "qrScanner": MessageLookupByLibrary.simpleMessage("Сканнер QR"),
         "qrScanning": MessageLookupByLibrary.simpleMessage("Сканирование QR"),
         "register": MessageLookupByLibrary.simpleMessage("Зарегистрироваться"),
