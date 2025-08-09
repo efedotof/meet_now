@@ -11,9 +11,9 @@ abstract class SecurityState with _$SecurityState {
   }) = _SecurityState;
 
   factory SecurityState.initial() => const SecurityState(
-        pinEnabled: false,
-        biometricEnabled: false,
-        privacyMode: false,
-        autoLock: true,
-      );
+    pinEnabled: false,
+    biometricEnabled: false,
+    privacyMode: false,
+    autoLock: true,
+  );
 }

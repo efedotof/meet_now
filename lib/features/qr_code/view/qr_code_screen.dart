@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/qr_code/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 @RoutePage()
 class QrCodeScreen extends StatefulWidget {
@@ -15,128 +13,64 @@ class QrCodeScreen extends StatefulWidget {
 }
 
 class _QrCodeScreenState extends State<QrCodeScreen> {
-  late MobileScannerController cameraController;
-  bool _isScanning = false;
-  bool _isTorchOn = false;
-  bool _hasTorch = false;
-  String? _scannedData;
-  StreamSubscription<BarcodeCapture>? _barcodeSubscription;
+  Barcode? _barcode;
+  MobileScannerController controller = MobileScannerController();
 
-  @override
-  void initState() {
-    super.initState();
-    cameraController = MobileScannerController(
-      torchEnabled: false,
-      detectionSpeed: DetectionSpeed.normal,
-    );
-
-    cameraController.addListener(_handleControllerChange);
-
-    _startScanner();
-  }
-
-  void _handleControllerChange() {
-    final state = cameraController.value;
-
-    setState(() {
-      _hasTorch = state.torchState != TorchState.unavailable;
-
-      if (state.torchState == TorchState.on) {
-        _isTorchOn = true;
-      } else if (state.torchState == TorchState.off) {
-        _isTorchOn = false;
-      }
-    });
-  }
-
-  Future<void> _startScanner() async {
-    try {
-      await cameraController.start();
-      _barcodeSubscription = cameraController.barcodes.listen(_handleBarcode);
-      setState(() => _isScanning = true);
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${S.of(context).cameraStartError}: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-      setState(() => _isScanning = false);
+  Widget _barcodePreview(Barcode? value) {
+    if (value == null) {
+      return Text(
+        S.of(context).qrScanInstruction,
+        overflow: TextOverflow.fade,
+        style: const TextStyle(color: Colors.white),
+      );
     }
+
+    return Text(
+      value.displayValue ?? S.of(context).qrNoValue,
+      overflow: TextOverflow.fade,
+      style: const TextStyle(color: Colors.white),
+    );
   }
 
-  void _toggleTorch() {
-    cameraController.toggleTorch();
-  }
-
-  void _handleBarcode(BarcodeCapture capture) {
-    final barcodes = capture.barcodes;
-    for (final barcode in barcodes) {
-      if (barcode.rawValue != null && _scannedData != barcode.rawValue) {
-        setState(() => _scannedData = barcode.rawValue);
-        debugPrint('${S.of(context).scanned}: ${barcode.rawValue}');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${S.of(context).scanned}: ${barcode.rawValue}'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      }
+  void _handleBarcode(BarcodeCapture barcodes) {
+    if (mounted) {
+      setState(() {
+        _barcode = barcodes.barcodes.firstOrNull;
+      });
     }
   }
 
   @override
   void dispose() {
-    cameraController.removeListener(_handleControllerChange);
-    _barcodeSubscription?.cancel();
-    cameraController.dispose();
+    controller.dispose();
     super.dispose();
-  }
-
-  bool get _isMobilePlatform {
-    return UniversalPlatform.isAndroid || UniversalPlatform.isIOS;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).qrScanning),
-        actions: [
-          if (_hasTorch)
-            IconButton(
-              icon: Icon(
-                _isTorchOn ? Icons.flash_on : Icons.flash_off,
-                color: Colors.white,
+      appBar: AppBar(title: Text(S.of(context).qrScanner)),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          MobileScanner(controller: controller, onDetect: _handleBarcode),
+
+          Center(child: CustomPaint(painter: QrScannerOverlay(ratio: 0.75))),
+
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              color: const Color.fromRGBO(0, 0, 0, 0.4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [_barcodePreview(_barcode)],
               ),
-              onPressed: _isScanning ? _toggleTorch : null,
             ),
+          ),
         ],
       ),
-      body: _buildBody(),
-    );
-  }
-
-  Widget _buildBody() {
-    if (!_isMobilePlatform) {
-      return Center(
-        child: Text(
-          S.of(context).qrNotAvailable,
-          style: TextStyle(fontSize: 18),
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        MobileScanner(controller: cameraController),
-        CustomPaint(painter: QrScannerOverlay(ratio: 0.7), child: Container()),
-      ],
     );
   }
 }

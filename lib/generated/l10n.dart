@@ -1569,6 +1569,66 @@ class S {
       args: [],
     );
   }
+
+  /// `Point your camera at the QR code`
+  String get qrScanInstruction {
+    return Intl.message(
+      'Point your camera at the QR code',
+      name: 'qrScanInstruction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to recognize data`
+  String get qrNoValue {
+    return Intl.message(
+      'Unable to recognize data',
+      name: 'qrNoValue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter current PIN`
+  String get enterCurrentPin {
+    return Intl.message(
+      'Enter current PIN',
+      name: 'enterCurrentPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incorrect PIN`
+  String get incorrectPin {
+    return Intl.message(
+      'Incorrect PIN',
+      name: 'incorrectPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter all 4 digits`
+  String get enterFullPin {
+    return Intl.message(
+      'Please enter all 4 digits',
+      name: 'enterFullPin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PIN changed successfully`
+  String get pinChangedSuccess {
+    return Intl.message(
+      'PIN changed successfully',
+      name: 'pinChangedSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

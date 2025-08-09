@@ -3,29 +3,61 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 
+import 'enter_current_pin_modal.dart';
 import 'set_pin_modal.dart';
 
 class PinSection extends StatelessWidget {
   final SecurityState state;
   const PinSection({super.key, required this.state});
 
+  void _showPinSetupFlow(BuildContext context) async {
+    final cubit = context.read<SecurityCubit>();
+    bool? result = false;
+
+    if (cubit.hasPinCode()) {
+      result = await _showEnterCurrentPinModal(context);
+      if (result != true) return;
+    }
+
+    if (context.mounted) {
+      final newPinResult = await _showSetNewPinModal(context);
+      if (newPinResult == true) {
+        cubit.togglePin(true);
+      } else if (!cubit.hasPinCode()) {
+        cubit.togglePin(false);
+      }
+    }
+  }
+
+  Future<bool?> _showEnterCurrentPinModal(BuildContext context) async {
+    return await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const EnterCurrentPinModal(),
+    );
+  }
+
+  Future<bool?> _showSetNewPinModal(BuildContext context) async {
+    return await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const SetPinModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          S.of(context).pinProtection,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
         SwitchListTile(
           title: Text(S.of(context).enablePin),
           value: state.pinEnabled,
           onChanged: (value) {
-            context.read<SecurityCubit>().togglePin(value);
             if (value) {
-              _showSetPinModal(context);
+              _showPinSetupFlow(context);
+            } else {
+              context.read<SecurityCubit>().togglePin(false);
             }
           },
         ),
@@ -35,23 +67,10 @@ class PinSection extends StatelessWidget {
             title: Text(S.of(context).changePin),
             leading: const Icon(Icons.lock_outline),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _showSetPinModal(context),
+            onTap: () => _showPinSetupFlow(context),
           ),
         ],
       ],
     );
-  }
-
-  void _showSetPinModal(BuildContext context) {
-    context.read<SecurityCubit>().setPinSetInProgress(true);
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => const SetPinModal(),
-    ).then((_) {
-      if (context.mounted) {
-        context.read<SecurityCubit>().setPinSetInProgress(false);
-      }
-    });
   }
 }

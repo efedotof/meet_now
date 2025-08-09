@@ -24,35 +24,38 @@ class SplashCubit extends Cubit<SplashState> {
   Future<void> checkAutoLogin({required BuildContext context}) async {
     try {
       final code = _pincodeStorageInterface.getPinCode();
-      if (code != '') {
-        if (context.mounted) {
-          context.replaceRoute(const PinCodeRoute());
-        }
-      }
+      debugPrint("PinCode: $code");
 
-      final user = await _authInterface.autoLogin();
-
-      if (user == null) {
-        if (context.mounted) {
-          context.replaceRoute(const AuthRoute());
-        }
-      } else {
-        if (context.mounted) {
-          context.replaceRoute(const MainHomeRoute());
-        }
+      if (code.isNotEmpty) {
+        if (context.mounted) context.replaceRoute(const PinCodeRoute());
+        return;
       }
+      await _performAutoLogin(context);
     } catch (e) {
       debugPrint('Ошибка авто-входа: $e');
-
-      if (e.toString().contains("Пароль не установлен")) {
+      if (e.toString().contains("PinCode не установлен")) {
         if (context.mounted) {
-          context.replaceRoute(const AuthRoute());
+          await _performAutoLogin(context);
         }
       } else {
-        if (context.mounted) {
-          context.replaceRoute(const AuthRoute());
-        }
+        if (context.mounted) context.replaceRoute(const AuthRoute());
       }
+    }
+  }
+
+  Future<void> _performAutoLogin(BuildContext context) async {
+    try {
+      final user = await _authInterface.autoLogin();
+      debugPrint("user: $user");
+
+      if (user == null) {
+        if (context.mounted) context.replaceRoute(const AuthRoute());
+      } else {
+        if (context.mounted) context.replaceRoute(const MainHomeRoute());
+      }
+    } catch (e) {
+      debugPrint('Ошибка при выполнении авто-логина: $e');
+      if (context.mounted) context.replaceRoute(const AuthRoute());
     }
   }
 }

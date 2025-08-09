@@ -7,6 +7,8 @@ import 'package:meet_now_app/server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
+import 'package:meet_now_app/server/repository/games/games_interface.dart';
+import 'package:meet_now_app/server/repository/games/games_repository.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_repository.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
@@ -22,6 +24,8 @@ import 'package:meet_now_app/server/repository/user/user_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
+import 'package:meet_now_app/storage/language/language_storage_interface.dart';
+import 'package:meet_now_app/storage/language/language_storage_repository.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
@@ -121,6 +125,11 @@ class AppRepository extends StatelessWidget {
           create:
               (context) => PincondeStorageRepository(preferences: config.prefs),
         ),
+        RepositoryProvider<LanguageStorageInterface>(
+          create:
+              (context) => LanguageStorageRepository(preferences: config.prefs),
+        ),
+        RepositoryProvider<GamesInterface>(create: (context) => GamesRepository(userModelAppInterface: context.read<UserModelAppInterface>()))
       ],
       child: child,
     );

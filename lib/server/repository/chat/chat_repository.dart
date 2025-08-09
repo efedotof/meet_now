@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:meet_now_app/config.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/chat_constraint/chat_constraint.dart';
-import 'package:meet_now_app/server/model/chat_game/chat_game.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
@@ -26,26 +23,6 @@ class ChatRepository implements ChatInterface {
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
-  }
-
-  @override
-  Future<ChatGame> addGames({required Chat chat}) async {
-    _setAuthHeader();
-    final chatId = await _getChatId(chat: chat);
-
-    final gameType = 'someGameType';
-    final initialState = 'initialState';
-
-    final response = await _dio.post(
-      '/$chatId/games',
-      queryParameters: {'gameType': gameType, 'initialState': initialState},
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return ChatGame.fromJson(response.data);
-    } else {
-      throw Exception('Ошибка добавления игры');
-    }
   }
 
   @override
@@ -119,21 +96,6 @@ class ChatRepository implements ChatInterface {
   }
 
   @override
-  Future<List<ChatGame>> getGames({required Chat chat}) async {
-    _setAuthHeader();
-    final chatId = await _getChatId(chat: chat);
-
-    final response = await _dio.get('/$chatId/games');
-    if (response.statusCode == 200 && response.data is List) {
-      return (response.data as List)
-          .map((e) => ChatGame.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } else {
-      throw Exception('Ошибка получения игр');
-    }
-  }
-
-  @override
   Future<void> updateConstraint({required TemporaryChat tempChat}) async {
     _setAuthHeader();
     final tempChatId = await _getTempChatId(chat: tempChat);
@@ -152,11 +114,5 @@ class ChatRepository implements ChatInterface {
     final user = userModelAppInterface.user;
     if (user == null) throw Exception('Пользователь не авторизован');
     return chat.tempChatId;
-  }
-
-  Future<String> _getChatId({required Chat chat}) async {
-    final user = userModelAppInterface.user;
-    if (user == null) throw Exception('Пользователь не авторизован');
-    return chat.chatId;
   }
 }

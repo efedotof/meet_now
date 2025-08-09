@@ -76,10 +76,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "enablePin": MessageLookupByLibrary.simpleMessage("Enable PIN"),
         "enterAge": MessageLookupByLibrary.simpleMessage("Please enter age"),
         "enterCity": MessageLookupByLibrary.simpleMessage("Please enter city"),
+        "enterCurrentPin":
+            MessageLookupByLibrary.simpleMessage("Enter current PIN"),
         "enterEmail":
             MessageLookupByLibrary.simpleMessage("Please enter email"),
         "enterFirstName":
             MessageLookupByLibrary.simpleMessage("Please enter first name"),
+        "enterFullPin":
+            MessageLookupByLibrary.simpleMessage("Please enter all 4 digits"),
         "enterLastName":
             MessageLookupByLibrary.simpleMessage("Please enter last name"),
         "enterPassword":
@@ -108,6 +112,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendship": MessageLookupByLibrary.simpleMessage("Friendship"),
         "games": MessageLookupByLibrary.simpleMessage("Games"),
         "gender": MessageLookupByLibrary.simpleMessage("Gender"),
+        "incorrectPin": MessageLookupByLibrary.simpleMessage("Incorrect PIN"),
         "incorrectPinCode":
             MessageLookupByLibrary.simpleMessage("Incorrect PIN code"),
         "interests": MessageLookupByLibrary.simpleMessage("Interests"),
@@ -149,6 +154,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Permanent Chats"),
         "personalInfo":
             MessageLookupByLibrary.simpleMessage("Personal information"),
+        "pinChangedSuccess":
+            MessageLookupByLibrary.simpleMessage("PIN changed successfully"),
         "pinMismatch":
             MessageLookupByLibrary.simpleMessage("PIN codes do not match"),
         "pinProtection": MessageLookupByLibrary.simpleMessage("PIN Protection"),
@@ -160,8 +167,12 @@ class MessageLookup extends MessageLookupByLibrary {
             "Hide sensitive information in background"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "purposes": MessageLookupByLibrary.simpleMessage("Purposes"),
+        "qrNoValue":
+            MessageLookupByLibrary.simpleMessage("Unable to recognize data"),
         "qrNotAvailable": MessageLookupByLibrary.simpleMessage(
             "QR scanning is not available on this platform"),
+        "qrScanInstruction": MessageLookupByLibrary.simpleMessage(
+            "Point your camera at the QR code"),
         "qrScanner": MessageLookupByLibrary.simpleMessage("QR Scanner"),
         "qrScanning": MessageLookupByLibrary.simpleMessage("QR Scanning"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),

@@ -3,6 +3,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/server/model/message/message.dart';
+import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
+import 'package:meet_now_app/server/repository/games/games_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
 
 part 'chat_message_state.dart';
@@ -12,13 +14,17 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   StreamSubscription<List<Message>>? _messagesSubscription;
   StreamSubscription<Message>? _singleMessageSubscription;
   final MessageInterface _messageInterface;
+  final FriendInterface _friendInterface;
+  final GamesInterface _gamesInterface;
+
+
   String? _currentChatId;
   late String _senderId;
   late String _recipientId;
   late bool _isTemporary;
 
-  ChatMessageCubit({required MessageInterface messageInterface})
-    : _messageInterface = messageInterface,
+  ChatMessageCubit({required GamesInterface gamesInterface,required FriendInterface friendInterface,required MessageInterface messageInterface})
+    : _gamesInterface = gamesInterface, _friendInterface = friendInterface, _messageInterface = messageInterface,
       super(const ChatMessageState.initial());
 
   void initialize({
