@@ -19,6 +19,7 @@ import com.efedotov.meet_now.meet_now.model.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
 import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.repository.UserRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatConstraintRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatGameRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
@@ -36,6 +37,7 @@ public class ChatService {
     private final TemporaryChatRepository temporaryChatRepository;
     private final ChatConstraintRepository chatConstraintRepository;
     private final ChatGameRepository chatGameRepository;
+    private final UserRepository userRepository;
 
     private final TaskScheduler taskScheduler;
     private final Map<UUID, ScheduledFuture<?>> tempChatTimers = new ConcurrentHashMap<>();
@@ -63,7 +65,8 @@ public class ChatService {
         constraint.setWaitSeconds(30);
         constraint.setCanStart(false);
         chatConstraintRepository.save(constraint);
-
+        sender.setIsSearchable(false);
+        recipient.setIsSearchable(false);
         scheduleTempChatTimeout(tempChat);
 
         return tempChat;
@@ -97,6 +100,13 @@ public class ChatService {
             if (!tempChat.getIsFinished()) {
                 tempChat.setIsFinished(true);
                 temporaryChatRepository.save(tempChat);
+                User sender = tempChat.getSender();
+                User recipient = tempChat.getRecipient();
+
+                sender.setIsSearchable(true);
+                recipient.setIsSearchable(true);
+                userRepository.save(sender);
+                userRepository.save(recipient);
                 log.info("TemporaryChat {} завершен", tempChatId);
 
                 // Удаляем таймер

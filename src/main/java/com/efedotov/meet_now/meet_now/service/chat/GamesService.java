@@ -1,11 +1,14 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.config.GameConfig;
+import com.efedotov.meet_now.meet_now.dto.GameInfoResponse;
 import com.efedotov.meet_now.meet_now.dto.request.GameCompletionRequest;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
@@ -34,14 +37,20 @@ public class GamesService {
         return repository.findByChatId(chatId);
     }
 
-    public ChatGame createGame(UUID chatId, String gameType, String initialState) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat not found: " + chatId));
+    public List<ChatGame> getAllGames() {
+        return repository.findAll();
+    }
 
+    public ChatGame createGame(UUID chatId, String gameType, String initialState) {
         ChatGame game = new ChatGame();
-        game.setChat(chat);
         game.setGameType(gameType);
         game.setState(initialState);
+
+        if (chatId != null) {
+            Chat chat = chatRepository.findById(chatId)
+                    .orElseThrow(() -> new IllegalArgumentException("Chat not found: " + chatId));
+            game.setChat(chat);
+        }
 
         return repository.save(game);
     }
@@ -67,6 +76,16 @@ public class GamesService {
         userRepository.save(user);
 
         log.info("Начислено {} очков пользователю {}", points, user.getUsername());
+    }
+
+    public Map<String, String> getAllGameUrls() {
+        return gameConfig.getAllUrls();
+    }
+
+    public List<GameInfoResponse> getAllGameInfo() {
+        return gameConfig.getAllUrls().entrySet().stream()
+                .map(entry -> new GameInfoResponse(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,9 +1,11 @@
 package com.efedotov.meet_now.meet_now.controller.games;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.dto.GameInfoResponse;
 import com.efedotov.meet_now.meet_now.dto.request.AddGameRequest;
 import com.efedotov.meet_now.meet_now.dto.request.GameCompletionRequest;
 import com.efedotov.meet_now.meet_now.dto.request.UpdateGameStateRequest;
@@ -25,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/games")
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class GamesController {
     private final GamesService gamesService;
 
@@ -40,16 +45,6 @@ public class GamesController {
     public ResponseEntity<List<ChatGame>> getChatGames(@PathVariable UUID chatId) {
         List<ChatGame> games = gamesService.getGamesByChatId(chatId);
         return ResponseEntity.ok(games);
-    }
-
-    @Operation(summary = "Добавить игру в чат")
-    @PostMapping
-    public ResponseEntity<ChatGame> addGameToChat(@RequestBody AddGameRequest request) {
-        ChatGame game = gamesService.createGame(
-                request.getChatId(),
-                request.getGameType(),
-                request.getInitialState());
-        return ResponseEntity.ok(game);
     }
 
     @Operation(summary = "Обновить состояние игры")
@@ -71,11 +66,46 @@ public class GamesController {
     @Operation(summary = "Завершить игру и начислить очки")
     @PostMapping("/complete")
     public ResponseEntity<Void> completeGame(
-            @RequestBody GameCompletionRequest request
-    ) {
+            @RequestBody GameCompletionRequest request) {
         gamesService.completeGameAndRewardUser(request);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Получить игры по ID чата или все игры")
+    @GetMapping
+    public ResponseEntity<List<ChatGame>> getGames(
+            @RequestParam(required = false) UUID chatId) {
+        List<ChatGame> games;
+        if (chatId != null) {
+            games = gamesService.getGamesByChatId(chatId);
+        } else {
+            games = gamesService.getAllGames();
+        }
+        return ResponseEntity.ok(games);
+    }
+
+    @Operation(summary = "Добавить игру (с привязкой к чату или без)")
+    @PostMapping
+    public ResponseEntity<ChatGame> addGame(@RequestBody AddGameRequest request) {
+        ChatGame game = gamesService.createGame(
+                request.getChatId(),
+                request.getGameType(),
+                request.getInitialState());
+        return ResponseEntity.ok(game);
+    }
+
+    @Operation(summary = "Получить все URL игр")
+    @GetMapping("/urls")
+    public ResponseEntity<Map<String, String>> getAllGameUrls() {
+        Map<String, String> urls = gamesService.getAllGameUrls();
+        return ResponseEntity.ok(urls);
+    }
+
+    @Operation(summary = "Получить список всех игр с типами и ссылками")
+    @GetMapping("/list")
+    public ResponseEntity<List<GameInfoResponse>> getAllGamesInfo() {
+        List<GameInfoResponse> games = gamesService.getAllGameInfo();
+        return ResponseEntity.ok(games);
+    }
 
 }

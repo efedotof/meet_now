@@ -15,7 +15,7 @@ public class UserSpecifications {
     public static Specification<User> hasInterests(List<String> interests) {
         return (root, query, criteriaBuilder) -> {
             if (interests == null || interests.isEmpty())
-                return null;
+                return criteriaBuilder.conjunction();
 
             query.distinct(true);
             Join<User, String> join = root.join("interests", JoinType.INNER);
@@ -26,7 +26,7 @@ public class UserSpecifications {
     public static Specification<User> hasPurposes(List<String> purposes) {
         return (root, query, criteriaBuilder) -> {
             if (purposes == null || purposes.isEmpty())
-                return null;
+                return criteriaBuilder.conjunction();
 
             query.distinct(true);
             Join<User, String> join = root.join("purposes", JoinType.INNER);
@@ -37,13 +37,13 @@ public class UserSpecifications {
     public static Specification<User> isVerified(Boolean verified) {
         return (root, query, criteriaBuilder) -> verified != null
                 ? criteriaBuilder.equal(root.get("verified"), verified)
-                : null;
+                : criteriaBuilder.conjunction();
     }
 
     public static Specification<User> hasAgeRange(Integer ageStart, Integer ageStop) {
         return (root, query, criteriaBuilder) -> {
             if (ageStart == null && ageStop == null) {
-                return null;
+                return criteriaBuilder.conjunction();
             }
 
             if (ageStart != null && ageStop != null) {
@@ -61,7 +61,7 @@ public class UserSpecifications {
     public static Specification<User> hasCity(String city) {
         return (root, query, criteriaBuilder) -> city != null && !city.isEmpty()
                 ? criteriaBuilder.equal(root.get("city"), city)
-                : null;
+                : criteriaBuilder.conjunction();
     }
 
     public static Specification<User> isSearchable() {
@@ -75,7 +75,7 @@ public class UserSpecifications {
     public static Specification<User> hasFloor(String floor) {
         return (root, query, criteriaBuilder) -> {
             if (floor == null || floor.isEmpty()) {
-                return null;
+                return criteriaBuilder.conjunction();
             }
             return criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("floor")),
@@ -88,7 +88,6 @@ public class UserSpecifications {
     }
 
     public static Specification<User> isSearching() {
-        return (root, query, criteriaBuilder) -> 
-            criteriaBuilder.equal(root.get("isSearching"), true);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isTrue(root.get("isSearching"));
     }
 }

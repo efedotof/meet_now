@@ -20,7 +20,7 @@ public class ChatGame {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "chat_id")
+    @JoinColumn(name = "chat_id", nullable = true)
     private Chat chat;
 
     @Column(name = "game_type")

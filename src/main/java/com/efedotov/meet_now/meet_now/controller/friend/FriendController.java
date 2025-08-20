@@ -1,18 +1,27 @@
 package com.efedotov.meet_now.meet_now.controller.friend;
 
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.efedotov.meet_now.meet_now.dto.request.FriendAction;
+import com.efedotov.meet_now.meet_now.dto.request.FriendRequest;
+import com.efedotov.meet_now.meet_now.dto.request.RemoveFriendRequest;
 import com.efedotov.meet_now.meet_now.model.User;
 import com.efedotov.meet_now.meet_now.service.user.FriendService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/friend")
@@ -24,28 +33,26 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping("/request/send")
-    public ResponseEntity<String> sendFriendRequest(@RequestParam UUID fromUserId, @RequestParam UUID toUserId) {
-        String result = friendService.sendFriendRequest(fromUserId, toUserId);
+    public ResponseEntity<String> sendFriendRequest(@RequestBody FriendRequest request) {
+        String result = friendService.sendFriendRequest(request.getFromUserId(), request.getToUserId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/request/accept")
-    public ResponseEntity<String> acceptFriendRequest(@RequestParam UUID currentUserId,
-            @RequestParam UUID requesterId) {
-        String result = friendService.acceptFriendRequest(currentUserId, requesterId);
+    public ResponseEntity<String> acceptFriendRequest(@RequestBody FriendAction request) {
+        String result = friendService.acceptFriendRequest(request.getCurrentUserId(), request.getRequesterId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/request/reject")
-    public ResponseEntity<String> rejectFriendRequest(@RequestParam UUID currentUserId,
-            @RequestParam UUID requesterId) {
-        String result = friendService.rejectFriendRequest(currentUserId, requesterId);
+    public ResponseEntity<String> rejectFriendRequest(@RequestBody FriendAction request) {
+        String result = friendService.rejectFriendRequest(request.getCurrentUserId(), request.getRequesterId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<String> removeFriend(@RequestParam UUID userId, @RequestParam UUID friendId) {
-        String result = friendService.removeFriend(userId, friendId);
+    public ResponseEntity<String> removeFriend(@RequestBody RemoveFriendRequest request) {
+        String result = friendService.removeFriend(request.getUserId(), request.getFriendId());
         return ResponseEntity.ok(result);
     }
 

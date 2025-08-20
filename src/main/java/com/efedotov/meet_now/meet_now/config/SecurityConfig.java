@@ -60,10 +60,8 @@ public class SecurityConfig {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
                 config.setAllowedOriginPatterns(List.of(
-                                "http://mnapp.ru",
-                                "http://www.mnapp.ru",
-                                "http://localhost:*",
-                                "http://127.0.0.1:*"));
+                                
+                                ));
                 config.setAllowedHeaders(Arrays.asList(
                                 "Origin", "Content-Type", "Accept", "Authorization",
                                 "X-Requested-With", "Access-Control-Request-Method",

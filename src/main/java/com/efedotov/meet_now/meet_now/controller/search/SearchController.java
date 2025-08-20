@@ -1,16 +1,14 @@
-// SearchController.java
 package com.efedotov.meet_now.meet_now.controller.search;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/search")
 @Tag(name = "Search", description = "Поиск доступных для общения пользователей и автоматическое создание временного чата")
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SearchController {
 
         private final UserRepository userRepository;
@@ -70,39 +69,73 @@ public class SearchController {
                 UUID currentUserId = userDetails.getUserId();
 
                 User sender = userService.getById(currentUserId);
+                log.info("Отправитель: {} (ID: {})", sender.getUsername(), sender.getId());
 
-                Specification<User> spec = Stream.of(
+                Specification<User> baseSpec = Specification.allOf(
                                 UserSpecifications.notCurrentUser(currentUserId),
                                 UserSpecifications.isSearchable(),
                                 UserSpecifications.isSearching(),
-                                UserSpecifications.isOnline(),
-                                UserSpecifications.hasInterests(interests),
-                                UserSpecifications.hasPurposes(purposes),
-                                (verified != null && verified) ? UserSpecifications.isVerified(true) : null,
-                                UserSpecifications.hasAgeRange(ageStart, ageStop),
-                                UserSpecifications.hasCity(city),
-                                UserSpecifications.hasFloor(floor))
-                                .filter(Objects::nonNull)
-                                .reduce(Specification::and)
-                                .orElse(null);
+                                UserSpecifications.isOnline());
 
-                List<User> users = (spec != null)
-                                ? userRepository.findAll(spec)
-                                : userRepository.findByIsSearchableTrueAndIsOnlineTrue();
+                log.info("Базовые условия поиска: isOnline=true, isSearchable=true, isSearching=true, notCurrentUser=true");
 
-                users = users.stream()
-                                .filter(user -> !user.getId().equals(currentUserId))
-                                .filter(User::getIsOnline)
-                                .toList();
+                if (interests != null && !interests.isEmpty()) {
+                        baseSpec = baseSpec.and(UserSpecifications.hasInterests(interests));
+                        log.info("Добавлен фильтр по интересам: {}", interests);
+                }
+
+                if (purposes != null && !purposes.isEmpty()) {
+                        baseSpec = baseSpec.and(UserSpecifications.hasPurposes(purposes));
+                        log.info("Добавлен фильтр по целям: {}", purposes);
+                }
+
+                if (verified != null) {
+                        baseSpec = baseSpec.and(UserSpecifications.isVerified(verified));
+                        log.info("Добавлен фильтр верификации: {}", verified);
+                }
+
+                if (ageStart != null || ageStop != null) {
+                        baseSpec = baseSpec.and(UserSpecifications.hasAgeRange(ageStart, ageStop));
+                        log.info("Добавлен фильтр по возрасту: {} - {}", ageStart, ageStop);
+                }
+
+                if (city != null && !city.isEmpty()) {
+                        baseSpec = baseSpec.and(UserSpecifications.hasCity(city));
+                        log.info("Добавлен фильтр по городу: {}", city);
+                }
+
+                if (floor != null && !floor.isEmpty()) {
+                        baseSpec = baseSpec.and(UserSpecifications.hasFloor(floor));
+                        log.info("Добавлен фильтр по полу: {}", floor);
+                }
+
+                List<User> users = userRepository.findAll(baseSpec);
 
                 log.info("Найдено пользователей: {}", users.size());
+                for (User user : users) {
+                        log.info("Найден пользователь: {} (ID: {}), online: {}, searchable: {}, searching: {}, verified: {}, age: {}, city: {}, floor: {}",
+                                        user.getUsername(), user.getId(), user.getIsOnline(),
+                                        user.getIsSearchable(), user.getIsSearching(), user.getVerified(),
+                                        user.getAge(), user.getCity(), user.getFloor());
+                }
 
                 if (users.isEmpty()) {
                         log.warn("Пользователи по фильтрам не найдены");
+
+                        long totalUsers = userRepository.count();
+                        long onlineUsers = userRepository.countByIsOnlineTrue();
+                        long searchableUsers = userRepository.countByIsSearchableTrue();
+                        long searchingUsers = userRepository.countByIsSearchingTrue();
+
+                        log.info("Статистика системы: Всего пользователей: {}, Онлайн: {}, Доступны для поиска: {}, В поиске: {}",
+                                        totalUsers, onlineUsers, searchableUsers, searchingUsers);
+
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователи не найдены");
                 }
 
                 User recipient = users.get(new Random().nextInt(users.size()));
+                log.info("Выбран получатель: {} (ID: {})", recipient.getUsername(), recipient.getId());
+
                 var tempChat = chatService.createTemporaryChat(sender, recipient, 5);
 
                 TemporaryChatDto dto = TemporaryChatDto.builder()

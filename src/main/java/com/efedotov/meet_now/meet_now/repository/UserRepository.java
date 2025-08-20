@@ -26,4 +26,9 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
     @Override
     Optional<User> findById(UUID userId);
+
+
+    long countByIsOnlineTrue();
+    long countByIsSearchableTrue();
+    long countByIsSearchingTrue();
 }

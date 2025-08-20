@@ -35,4 +35,8 @@ public class GameConfig {
     public String getUrl(String gameType) {
         return urls.getOrDefault(gameType, "");
     }
+
+    public Map<String, String> getAllUrls() {
+        return urls;
+    }
 }

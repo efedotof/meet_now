@@ -28,9 +28,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
-                        "http://mnapp.ru",
-                        "http://www.mnapp.ru",
-                        "http://localhost:*")
+                        
+                        )
                 .withSockJS();
     }
 
