@@ -15,17 +15,19 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   StreamSubscription<Message>? _singleMessageSubscription;
   final MessageInterface _messageInterface;
   final FriendInterface _friendInterface;
-  final GamesInterface _gamesInterface;
-
 
   String? _currentChatId;
   late String _senderId;
   late String _recipientId;
   late bool _isTemporary;
 
-  ChatMessageCubit({required GamesInterface gamesInterface,required FriendInterface friendInterface,required MessageInterface messageInterface})
-    : _gamesInterface = gamesInterface, _friendInterface = friendInterface, _messageInterface = messageInterface,
-      super(const ChatMessageState.initial());
+  ChatMessageCubit({
+    required GamesInterface gamesInterface,
+    required FriendInterface friendInterface,
+    required MessageInterface messageInterface,
+  }) : _friendInterface = friendInterface,
+       _messageInterface = messageInterface,
+       super(const ChatMessageState.initial());
 
   void initialize({
     required BuildContext context,
@@ -114,5 +116,21 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   Future<void> close() {
     _disposeSubscriptions();
     return super.close();
+  }
+
+  Future<void> friendRequest({
+    required BuildContext context,
+    required String toUserId,
+  }) async {
+    if (toUserId == "") return;
+
+    try {
+      final result = await _friendInterface.sendFriendRequest(
+        toUserId: toUserId,
+      );
+      debugPrint("запрос выполнен, данные получены: $result");
+    } catch (e) {
+      debugPrint("Произошла ошибка: $e");
+    }
   }
 }

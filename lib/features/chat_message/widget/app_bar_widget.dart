@@ -63,10 +63,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color:
-                            isOnline
-                                ? Colors.green
-                                : theme.colorScheme.outlineVariant,
+                        color: isOnline
+                            ? Colors.green
+                            : theme.colorScheme.outlineVariant,
                         width: 2,
                       ),
                     ),
@@ -113,13 +112,12 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: activityState.when(
-                      initial:
-                          () => Text(
-                            S.of(context).connecting,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.outline,
-                            ),
-                          ),
+                      initial: () => Text(
+                        S.of(context).connecting,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.outline,
+                        ),
+                      ),
                       activity: (UserActivity activity) {
                         if (activity.userId == widget.userId) {
                           return const SizedBox();
@@ -138,10 +136,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                         return Text(
                           statusText,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color:
-                                activity.activityType == ActivityType.ONLINE
-                                    ? Colors.green
-                                    : theme.colorScheme.outline,
+                            color: activity.activityType == ActivityType.ONLINE
+                                ? Colors.green
+                                : theme.colorScheme.outline,
                           ),
                         );
                       },
@@ -165,10 +162,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     _formatTime(widget.remainingSeconds!),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color:
-                          widget.remainingSeconds! < 60
-                              ? Colors.red
-                              : theme.colorScheme.onSurface,
+                      color: widget.remainingSeconds! < 60
+                          ? Colors.red
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                 ),

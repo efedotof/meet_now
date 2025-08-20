@@ -228,39 +228,42 @@ class SearchScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<SearchCubit, SearchState>(
           builder: (context, state) {
-            final canSearch =
-                state.gender.isNotEmpty &&
-                state.ageFrom != null &&
-                !state.isLoading;
-            return ElevatedButton(
-              onPressed:
-                  canSearch
-                      ? () => context.read<SearchCubit>().startRandomSearch(
-                        context: context,
-                      )
-                      : null,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor:
+            final canSearch = state.gender.isNotEmpty && state.ageFrom != null;
+            final cubit = context.read<SearchCubit>();
+            return PulseAnimation(
+              isAnimating: state.isSearching,
+              child: ElevatedButton(
+                onPressed:
                     canSearch
-                        ? theme.elevatedButtonTheme.style?.backgroundColor
-                            ?.resolve({})
+                        ? () => cubit.toggleSearch(context: context)
                         : null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                  backgroundColor:
+                      canSearch
+                          ? theme.elevatedButtonTheme.style?.backgroundColor
+                              ?.resolve({})
+                          : null,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
+                child:
+                    state.isSearching
+                        ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Stop search"),
+                            const SizedBox(width: 8),
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ],
+                        )
+                        : Text(S.of(context).startSearch),
               ),
-              child:
-                  state.isLoading
-                      ? CircularProgressIndicator(
-                        color: theme.elevatedButtonTheme.style?.foregroundColor
-                            ?.resolve({}),
-                      )
-                      : Text(
-                        S.of(context).startSearch,
-                        style: theme.elevatedButtonTheme.style?.textStyle
-                            ?.resolve({}),
-                      ),
             );
           },
         ),

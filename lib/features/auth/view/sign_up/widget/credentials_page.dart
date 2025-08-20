@@ -62,8 +62,9 @@ class _CredentialsPageState extends State<CredentialsPage> {
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return S.of(context).enterEmail;
+                  }
                   if (!value.contains('@')) return S.of(context).invalidEmail;
                   return null;
                 },
@@ -84,8 +85,9 @@ class _CredentialsPageState extends State<CredentialsPage> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return S.of(context).enterPassword;
+                  }
                   if (value.length < 6) return S.of(context).minPassword;
                   return null;
                 },

@@ -33,7 +33,7 @@ class PinSection extends StatelessWidget {
     return await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const EnterCurrentPinModal(),
+      builder: (context) => EnterCurrentPinModal(key: UniqueKey()),
     );
   }
 
@@ -41,7 +41,7 @@ class PinSection extends StatelessWidget {
     return await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const SetPinModal(),
+      builder: (context) => SetPinModal(key: UniqueKey()),
     );
   }
 

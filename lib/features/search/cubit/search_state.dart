@@ -6,6 +6,7 @@ abstract class SearchState with _$SearchState {
     @Default('') String gender,
     int? ageFrom,
     @Default(false) bool isLoading,
+    @Default(false) bool isSearching, 
     @Default([]) List<String> interests,
     @Default([]) List<String> purposes,
     @Default('') String city,

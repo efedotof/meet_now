@@ -22,7 +22,7 @@ class InputArea extends StatefulWidget {
   final VoidCallback onSend;
   final Function(String) onCommandResult;
   final String chatId;
-  
+
   @override
   State<InputArea> createState() => _InputAreaState();
 }
@@ -84,7 +84,9 @@ class _InputAreaState extends State<InputArea> {
                 color: theme.colorScheme.surface,
                 border: Border(
                   top: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withOpacity(0.3),
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.3,
+                    ),
                     width: 0.5,
                   ),
                 ),
@@ -106,7 +108,9 @@ class _InputAreaState extends State<InputArea> {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.shadow.withOpacity(0.05),
+                            color: theme.colorScheme.shadow.withValues(
+                              alpha: 0.05,
+                            ),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),

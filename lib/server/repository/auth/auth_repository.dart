@@ -93,9 +93,12 @@ class AuthRepository implements AuthInterface {
 
   @override
   Future<User?> autoLogin() async {
+    User? user;
+    String password = '';
+
     try {
-      final user = await _userStorageInterface.getUser();
-      final password = _passwordStorageInterface.getPassword();
+      user = await _userStorageInterface.getUser();
+      password = _passwordStorageInterface.getPassword();
 
       if (user == null ||
           user.id.isEmpty ||
@@ -107,15 +110,26 @@ class AuthRepository implements AuthInterface {
 
       final token = user.token!;
 
-      final response = await _dio.get(tokenValidation, options: Options(headers: {'Authorization':'Bearer $token'}));
+      try {
+        final response = await _dio.get(
+          tokenValidation,
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
 
-      if (response.statusCode == 200) {
-        _userModelAppInterface.user = user;
-        return user;
+        if (response.statusCode == 200) {
+          _userModelAppInterface.user = user;
+          return user;
+        }
+      } on DioException catch (dioError) {
+        if (dioError.response?.statusCode == 401) {
+          final loginData = Login(username: user.username, password: password);
+          return await login(login: loginData);
+        } else {
+          rethrow;
+        }
       }
 
-      final loginData = Login(username: user.username, password: password);
-      return await login(login: loginData);
+      throw Exception('Unexpected status code');
     } catch (e, stackTrace) {
       debugPrint('AutoLogin error: $e');
       debugPrint('$stackTrace');
