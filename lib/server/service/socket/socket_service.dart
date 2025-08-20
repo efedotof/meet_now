@@ -13,6 +13,7 @@ typedef SingleMessageCallback = void Function(Message message);
 typedef ChatListCallback = void Function(List<Chat> chats);
 typedef TemporaryChatListCallback = void Function(List<TemporaryChat> chats);
 typedef UserActivityCallback = void Function(UserActivity activity);
+typedef TemporaryChatNewCallback = void Function(TemporaryChat chat);
 
 class SocketService {
   late final StompClient _stompClient;
@@ -23,6 +24,7 @@ class SocketService {
   final ChatListCallback? onPermanentChatsReceived;
   final TemporaryChatListCallback? onTemporaryChatsReceived;
   final UserActivityCallback? onUserActivity;
+  final TemporaryChatNewCallback? onTemporaryChatNewCallback;
 
   bool _isConnected = false;
   final List<void Function()> _pendingActions = [];
@@ -34,6 +36,7 @@ class SocketService {
     required this.onPermanentChatsReceived,
     required this.onTemporaryChatsReceived,
     required this.onUserActivity,
+    required this.onTemporaryChatNewCallback,
   }) {
     connect();
   }
@@ -61,16 +64,6 @@ class SocketService {
             (error) => debugPrint('[SocketService] WebSocket Error: $error'),
         onStompError:
             (frame) => debugPrint('[SocketService] STOMP Error: ${frame.body}'),
-        // onUnhandledMessage:
-        //     (frame) =>
-        //         debugPrint('[SocketService] Unhandled message: ${frame.body}'),
-        // onUnhandledReceipt:
-        //     (frame) =>
-        //         debugPrint('[SocketService] Unhandled receipt: ${frame.body}'),
-        // onUnhandledFrame:
-        //     (frame) =>
-        //         debugPrint('[SocketService] Unhandled frame: ${frame.body}'),
-        // onDebugMessage: (msg) => debugPrint('[SocketService] Debug: $msg'),
         onWebSocketDone: () {
           debugPrint('[SocketService] WebSocket connection closed.');
           _isConnected = false;
@@ -107,6 +100,12 @@ class SocketService {
     _subscribe('/user/queue/chat.messages', (frame) {
       final raw = json.decode(frame.body!) as List;
       debugPrint("Пришло сообщение в чате: $raw");
+    });
+
+    _subscribe('/user/queue/chat.temporary.new', (frame) {
+      final data = json.decode(frame.body!);
+      final tempChat = TemporaryChat.fromJson(data);
+      onTemporaryChatNewCallback?.call(tempChat);
     });
 
     for (final action in _pendingActions) {

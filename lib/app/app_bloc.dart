@@ -24,6 +24,7 @@ import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app/server/repository/user/user_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
 import 'package:meet_now_app/storage/language/language_storage_interface.dart';
@@ -71,7 +72,7 @@ class AppBloc extends StatelessWidget {
         BlocProvider(
           create:
               (context) =>
-                  SearchCubit(searchInterface: context.read<SearchInterface>()),
+                  SearchCubit(searchInterface: context.read<SearchInterface>(), userInterface: context.read<UserInterface>()),
         ),
         BlocProvider(
           create:

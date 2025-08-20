@@ -5,16 +5,22 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/model/search/search_random_model.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
+import 'package:meet_now_app/server/repository/user/user_interface.dart';
 
 part 'search_state.dart';
 part 'search_cubit.freezed.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({required SearchInterface searchInterface})
-    : _searchInterface = searchInterface,
-      super(const SearchState());
+  SearchCubit({
+    required UserInterface userInterface,
+    required SearchInterface searchInterface,
+  }) : _userInterface = userInterface,
+       _searchInterface = searchInterface,
+       super(const SearchState());
 
   final SearchInterface _searchInterface;
+  final UserInterface _userInterface;
+  bool _shouldStopSearch = false;
 
   final List<String> genders = const ['М', 'Ж'];
   final List<int> ageFromList = [for (int i = 0; i < 15; i++) 18 + i * 3];
@@ -78,37 +84,61 @@ class SearchCubit extends Cubit<SearchState> {
     emit(state.copyWith(verified: !state.verified));
   }
 
-  Future<void> startRandomSearch({required BuildContext context}) async {
+  Future<void> toggleSearch({required BuildContext context}) async {
+    if (state.isSearching) {
+      _shouldStopSearch = true;
+      emit(state.copyWith(isSearching: false));
+      return;
+    }
+
     if (state.gender.isEmpty || state.ageFrom == null) return;
 
-    emit(state.copyWith(isLoading: true));
-    try {
-      final request = SearchRandomModel(
-        interests: state.interests,
-        purposes: state.purposes,
-        ageStart: state.ageFrom!,
-        ageStop: state.ageFrom! + 3,
-        floor: state.gender,
-        city: state.city,
-        verified: state.verified,
-      );
+    _shouldStopSearch = false;
+    emit(state.copyWith(isSearching: true));
+    await _userInterface.startSearch();
 
-      final chat = await _searchInterface.randomSearch(request: request);
+    while (!_shouldStopSearch && !isClosed) {
+      try {
+        final request = SearchRandomModel(
+          interests: state.interests,
+          purposes: state.purposes,
+          ageStart: state.ageFrom!,
+          ageStop: state.ageFrom! + 3,
+          floor: state.gender,
+          city: state.city,
+          verified: state.verified,
+        );
 
-      if (chat.tempChatId.isNotEmpty && context.mounted) {
-        context.router.push(
-          ChatMessageRoute(chatModel: null, temporaryChatModel: chat),
-        );
+        final chat = await _searchInterface.randomSearch(request: request);
+
+        if (chat.tempChatId.isNotEmpty &&
+            context.mounted &&
+            !_shouldStopSearch) {
+          await _userInterface.stopSearch();
+          emit(state.copyWith(isSearching: false));
+          if (context.mounted) {
+            context.router.push(
+              ChatMessageRoute(chatModel: null, temporaryChatModel: chat),
+            );
+          }
+          break;
+        }
+      } catch (e) {
+        debugPrint("Search Error: $e");
+        if (context.mounted && !_shouldStopSearch) {
+          await _userInterface.stopSearch();
+        }
       }
-    } catch (e) {
-      debugPrint("Search Error: $e");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Произошла ошибка: ${e.toString()}")),
-        );
+
+      if (!_shouldStopSearch) {
+        await Future.delayed(const Duration(seconds: 3));
       }
-    } finally {
-      emit(state.copyWith(isLoading: false));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _shouldStopSearch = true;
+    return super.close();
   }
 }

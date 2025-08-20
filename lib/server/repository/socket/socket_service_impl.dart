@@ -21,6 +21,8 @@ class SocketServiceImpl implements SocketServiceInterface {
       StreamController<List<TemporaryChat>>.broadcast();
 
   final _userActivityController = StreamController<UserActivity>.broadcast();
+  final _temporaryChatNewController =
+      StreamController<TemporaryChat>.broadcast();
 
   @override
   Stream<List<Message>> get messagesStream => _messagesController.stream;
@@ -38,6 +40,10 @@ class SocketServiceImpl implements SocketServiceInterface {
 
   @override
   Stream<UserActivity> get userActivityStream => _userActivityController.stream;
+
+  @override
+  Stream<TemporaryChat> get temporaryChatNewStream =>
+      _temporaryChatNewController.stream;
 
   @override
   void connect() {
@@ -63,6 +69,9 @@ class SocketServiceImpl implements SocketServiceInterface {
       },
       onUserActivity: (UserActivity activity) {
         _userActivityController.add(activity);
+      },
+      onTemporaryChatNewCallback: (TemporaryChat tempNewChat) {
+        _temporaryChatNewController.add(tempNewChat);
       },
     );
   }

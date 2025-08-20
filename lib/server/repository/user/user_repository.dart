@@ -147,4 +147,24 @@ class UserRepository implements UserInterface {
     }
     await _dio.put('/$uuid/profile', data: user.toJson());
   }
+
+  @override
+  Future<void> startSearch() async {
+    try {
+      _setAuthHeader();
+      await _dio.post("/start-search");
+    } catch (e) {
+      debugPrint("Произошла ошибка старта поиска: $e");
+    }
+  }
+
+  @override
+  Future<void> stopSearch() async {
+    try {
+      _setAuthHeader();
+      await _dio.post("/stop-search");
+    } catch (e) {
+      debugPrint("Произошла ошибка остановки поиска: $e");
+    }
+  }
 }

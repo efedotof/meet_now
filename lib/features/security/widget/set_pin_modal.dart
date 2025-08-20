@@ -12,10 +12,17 @@ class SetPinModal extends StatefulWidget {
 }
 
 class _SetPinModalState extends State<SetPinModal> {
-  final TextEditingController _pinController = TextEditingController();
-  final TextEditingController _confirmPinController = TextEditingController();
+  late final TextEditingController _pinController;
+  late final TextEditingController _confirmPinController;
   String _errorText = '';
   bool _isConfirming = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pinController = TextEditingController();
+    _confirmPinController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +41,7 @@ class _SetPinModalState extends State<SetPinModal> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
-          PinCodeTextField(
-            appContext: context,
-            length: 4,
-            controller: _isConfirming ? _confirmPinController : _pinController,
-            obscureText: true,
-            animationType: AnimationType.fade,
-            pinTheme: PinTheme(
-              shape: PinCodeFieldShape.circle,
-              activeColor: Theme.of(context).colorScheme.primary,
-              inactiveColor: Colors.grey,
-              selectedColor: Theme.of(context).colorScheme.secondary,
-            ),
-            onChanged: (value) {
-              if (value.length == 4 && _isConfirming) {
-                _validatePins();
-              }
-            },
-          ),
+          _isConfirming ? _buildConfirmPinField() : _buildNewPinField(),
           if (_errorText.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -73,6 +63,43 @@ class _SetPinModalState extends State<SetPinModal> {
     );
   }
 
+  Widget _buildNewPinField() {
+    return PinCodeTextField(
+      appContext: context,
+      length: 4,
+      controller: _pinController,
+      obscureText: true,
+      animationType: AnimationType.fade,
+      pinTheme: PinTheme(
+        shape: PinCodeFieldShape.circle,
+        activeColor: Theme.of(context).colorScheme.primary,
+        inactiveColor: Colors.grey,
+        selectedColor: Theme.of(context).colorScheme.secondary,
+      ),
+      onChanged: (value) {},
+    );
+  }
+
+  Widget _buildConfirmPinField() {
+    return PinCodeTextField(
+      appContext: context,
+      key: ValueKey('confirm_pin_field'),
+      length: 4,
+      controller: _confirmPinController,
+      obscureText: true,
+      animationType: AnimationType.fade,
+      pinTheme: PinTheme(
+        shape: PinCodeFieldShape.circle,
+        activeColor: Theme.of(context).colorScheme.primary,
+        inactiveColor: Colors.grey,
+        selectedColor: Theme.of(context).colorScheme.secondary,
+      ),
+      onChanged: (value) {
+        if (value.length == 4) _validatePins();
+      },
+    );
+  }
+
   void _validatePins() {
     if (!_isConfirming) {
       if (_pinController.text.length != 4) {
@@ -82,6 +109,7 @@ class _SetPinModalState extends State<SetPinModal> {
       setState(() {
         _isConfirming = true;
         _errorText = '';
+        _confirmPinController.clear();
       });
       return;
     }
@@ -102,8 +130,10 @@ class _SetPinModalState extends State<SetPinModal> {
       setState(() {
         _errorText = S.of(context).pinMismatch;
         _pinController.clear();
-        _confirmPinController.clear();
         _isConfirming = false;
+      });
+      Future.delayed(Duration.zero, () {
+        _confirmPinController.clear();
       });
     }
   }

@@ -18,4 +18,5 @@ abstract interface class SocketServiceInterface {
   Stream<List<Chat>> get permanentChatsStream;
   Stream<List<TemporaryChat>> get temporaryChatsStream;
   Stream<UserActivity> get userActivityStream;
+  Stream<TemporaryChat> get temporaryChatNewStream;
 }

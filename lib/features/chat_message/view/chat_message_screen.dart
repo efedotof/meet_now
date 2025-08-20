@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/chat_timer/chat_timer_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
@@ -35,14 +36,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool isTemporary = false;
   String senderID = '';
   String recipientId = '';
-  bool _isModalShown = false;
-  Timer? _modalTimer;
-  int _secondsRemaining = 30;
-
-  Timer? _countdownTimer;
-  int _remainingSeconds = 0;
-  int _totalSeconds = 0;
-  bool _isOneThirdModalShown = false;
+  late ChatTimerCubit _timerCubit;
 
   @override
   void initState() {
@@ -78,118 +72,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     });
 
     if (isTemporary) {
-      _totalSeconds = widget.temporaryChatModel!.durationMinutes * 60;
-      _remainingSeconds = _totalSeconds;
-      _startCountdownTimer();
+      _timerCubit = ChatTimerCubit(
+        durationMinutes: widget.temporaryChatModel!.durationMinutes,
+        onTimerFinished: () => Navigator.maybePop(context),
+      );
     }
-  }
-
-  void _startCountdownTimer() {
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds > 0) {
-        setState(() {
-          _remainingSeconds--;
-        });
-        if (!_isOneThirdModalShown && _remainingSeconds <= _totalSeconds ~/ 3) {
-          _isOneThirdModalShown = true;
-          if (mounted) {
-            _showOneThirdModal(context);
-          }
-        }
-      } else {
-        timer.cancel();
-      }
-    });
-  }
-
-  void _showModal(BuildContext context) {
-    _isModalShown = true;
-    _secondsRemaining = 30;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return PopScope(
-          canPop: false,
-          child: AlertDialog(
-            title: Text(S.of(context).stopThink),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 16),
-                Text(
-                  "${S.of(context).timerSeconds} $_secondsRemaining ${S.of(context).seconds}",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const CircularProgressIndicator(),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed:
-                    _secondsRemaining <= 0
-                        ? () => Navigator.of(context).pop()
-                        : null,
-                child: Text(S.of(context).continues),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    _modalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_secondsRemaining > 0) {
-          _secondsRemaining--;
-        } else {
-          timer.cancel();
-          Navigator.of(context).pop();
-        }
-      });
-    });
-  }
-
-  void _showOneThirdModal(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(S.of(context).chatTimeEnding),
-          content: Text(S.of(context).extendOrQuestionnaire),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _remainingSeconds += 3 * 60;
-                  _totalSeconds += 3 * 60;
-                });
-                Navigator.of(context).pop();
-              },
-              child: Text(S.of(context).add3Minutes),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(S.of(context).openQuestionnaire),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(S.of(context).close),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -197,16 +84,17 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     _subscription.cancel();
     _messageController.dispose();
     _scrollController.dispose();
-    _modalTimer?.cancel();
-    _countdownTimer?.cancel();
+    if (isTemporary) {
+      _timerCubit.close();
+    }
     super.dispose();
   }
 
   void _checkForModal(BuildContext context, ChatMessageState state) {
     state.maybeWhen(
       loaded: (messages, isLoadingMore) {
-        if (isTemporary && messages.isEmpty && !_isModalShown) {
-          _showModal(context);
+        if (isTemporary && messages.isEmpty) {
+          _timerCubit.startModalTimer();
         }
       },
       orElse: () {},
@@ -280,6 +168,42 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
+  void _showOneThirdModal(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.of(context).chatTimeEnding),
+          content: Text(S.of(context).extendOrQuestionnaire),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _timerCubit.addTime(3 * 60);
+                Navigator.of(context).pop();
+              },
+              child: Text(S.of(context).add3Minutes),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<ChatMessageCubit>().friendRequest(
+                  context: context,
+                  toUserId: recipientId,
+                );
+                Navigator.of(context).pop();
+              },
+              child: Text(S.of(context).openQuestionnaire),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(S.of(context).close),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -289,83 +213,43 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       listener: (context, state) {
         _checkForModal(context, state);
       },
-      child: Scaffold(
-        backgroundColor: theme.colorScheme.surface,
-        appBar: AppBarWidget(
-          chatModel: widget.chatModel,
-          userId: currentUserId,
-          onBackPressed: _onBackPressed,
-          isTemporary: isTemporary,
-          remainingSeconds: isTemporary ? _remainingSeconds : null,
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.colorScheme.surface,
-                theme.colorScheme.surface,
-                theme.colorScheme.surfaceContainerHighest,
-              ],
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
-                  builder: (context, state) {
-                    final cubit = context.read<ChatMessageCubit>();
-
-                    return AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: state.when(
-                        initial: () => const LoadingMessages(),
-                        loading: () => const LoadingMessages(),
-                        error:
-                            (message) => ErrorMessage(
-                              message: message,
-                              onRetry:
-                                  () => cubit.reconnect(
-                                    context: context,
-                                    isTemporary: isTemporary,
-                                    chatId: _chatId,
-                                    senderId: senderID,
-                                    recipientId: recipientId,
-                                  ),
-                            ),
-                        loaded:
-                            (messages, isLoadingMore) => Column(
-                              children: [
-                                if (isLoadingMore)
-                                  const LinearProgressIndicator(
-                                    minHeight: 2,
-                                    color: Colors.blueAccent,
-                                  ),
-                                Expanded(
-                                  child: MessagesList(
-                                    messages: messages,
-                                    scrollController: _scrollController,
-                                    currentUserId: currentUserId,
-                                  ),
-                                ),
-                              ],
-                            ),
-                      ),
+      child:
+          isTemporary
+              ? BlocProvider.value(
+                value: _timerCubit,
+                child: BlocListener<ChatTimerCubit, ChatTimerState>(
+                  listener: (context, state) {
+                    state.maybeMap(
+                      oneThirdReached: (_) => _showOneThirdModal(context),
+                      orElse: () {},
                     );
                   },
+                  child: BuildScaffold(
+                    theme: theme,
+                    currentUserId: currentUserId,
+                    onBackPressed: _onBackPressed,
+                    isTemporary: isTemporary,
+                    chatId: _chatId,
+                    senderID: senderID,
+                    recipientId: recipientId,
+                    messageController: _messageController,
+                    sendMessage: _sendMessage,
+                    scrollController: _scrollController,
+                  ),
                 ),
-              ),
-              InputArea(
-                controller: _messageController,
-                onSend: _sendMessage,
-                onCommandResult: (result) {
-                  context.read<ChatMessageCubit>().sendTextMessage(result);
-                },
+              )
+              : BuildScaffold(
+                theme: theme,
+                currentUserId: currentUserId,
+                onBackPressed: _onBackPressed,
+                isTemporary: isTemporary,
                 chatId: _chatId,
+                senderID: senderID,
+                recipientId: recipientId,
+                messageController: _messageController,
+                sendMessage: _sendMessage,
+                scrollController: _scrollController,
               ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

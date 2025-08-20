@@ -12,8 +12,14 @@ class EnterCurrentPinModal extends StatefulWidget {
 }
 
 class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
-  final TextEditingController _pinController = TextEditingController();
+  late final TextEditingController _pinController;
   String _errorText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _pinController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +51,7 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
               selectedColor: Theme.of(context).colorScheme.secondary,
             ),
             onChanged: (value) {
-              if (value.length == 4) _validatePin(context);
+              if (value.length == 4) _validatePin();
             },
           ),
           if (_errorText.isNotEmpty)
@@ -58,7 +64,7 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
             ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => _validatePin(context),
+            onPressed: _validatePin,
             child: Text(S.of(context).confirm),
           ),
           const SizedBox(height: 32),
@@ -67,9 +73,9 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
     );
   }
 
-  void _validatePin(BuildContext context) {
+  void _validatePin() {
     if (_pinController.text.length != 4) {
-      setState(() => _errorText = S.of(context).enterFullPin);
+      if (mounted) setState(() => _errorText = S.of(context).enterFullPin);
       return;
     }
 
@@ -77,8 +83,10 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
     if (cubit.verifyPin(_pinController.text)) {
       Navigator.pop(context, true);
     } else {
-      setState(() => _errorText = S.of(context).incorrectPin);
-      _pinController.clear();
+      if (mounted) {
+        setState(() => _errorText = S.of(context).incorrectPin);
+        _pinController.clear();
+      }
     }
   }
 

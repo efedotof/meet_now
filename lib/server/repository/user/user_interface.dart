@@ -20,4 +20,7 @@ abstract interface class UserInterface {
   Future<void> patchUserAvatar({required String avatar});
   Future<void> patchUserAge({required int age});
   Future<User> getUser();
+
+  Future<void> startSearch();
+  Future<void> stopSearch();
 }
