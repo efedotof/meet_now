@@ -37,10 +37,10 @@ public class ChatController {
 
     private final ChatService chatService;
 
+
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
     public ResponseEntity<TemporaryChat> createTemporaryChat(CreateTemporaryChatRequest request) {
-
         var sender = new User();
         sender.setId(request.getSenderId());
         var recipient = new User();
@@ -98,8 +98,6 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
-
-    
     private TemporaryChatDto mapToDto(TemporaryChat chat) {
         return TemporaryChatDto.builder()
                 .tempChatId(chat.getTempChatId())

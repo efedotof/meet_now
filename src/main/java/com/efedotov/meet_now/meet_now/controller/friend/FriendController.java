@@ -20,6 +20,7 @@ import com.efedotov.meet_now.meet_now.dto.request.RemoveFriendRequest;
 import com.efedotov.meet_now.meet_now.model.User;
 import com.efedotov.meet_now.meet_now.service.user.FriendService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -33,30 +34,35 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping("/request/send")
+     @Operation(summary = "Отправить запрос на добавление в друзья")
     public ResponseEntity<String> sendFriendRequest(@RequestBody FriendRequest request) {
         String result = friendService.sendFriendRequest(request.getFromUserId(), request.getToUserId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/request/accept")
+     @Operation(summary = "Принять предложение в друзья")
     public ResponseEntity<String> acceptFriendRequest(@RequestBody FriendAction request) {
         String result = friendService.acceptFriendRequest(request.getCurrentUserId(), request.getRequesterId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/request/reject")
+     @Operation(summary = "Отклонить предложение")
     public ResponseEntity<String> rejectFriendRequest(@RequestBody FriendAction request) {
         String result = friendService.rejectFriendRequest(request.getCurrentUserId(), request.getRequesterId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/remove")
+     @Operation(summary = "Удалить друга")
     public ResponseEntity<String> removeFriend(@RequestBody RemoveFriendRequest request) {
         String result = friendService.removeFriend(request.getUserId(), request.getFriendId());
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/list")
+     @Operation(summary = "Получить список друзей пользователя")
     public ResponseEntity<List<User>> getFriends(@RequestParam UUID userId) {
         Set<User> friendsSet = friendService.getFriends(userId);
         List<User> friendsList = friendsSet.stream().collect(Collectors.toList());
@@ -64,6 +70,7 @@ public class FriendController {
     }
 
     @GetMapping("/requests/incoming")
+     @Operation(summary = "Получить список на дружбу")
     public ResponseEntity<List<User>> getIncomingRequests(@RequestParam UUID userId) {
         List<User> incoming = friendService.getIncomingRequests(userId);
         return ResponseEntity.ok(incoming);

@@ -12,6 +12,7 @@ import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
 import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -19,17 +20,17 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "Эндпоинты для регистрации, входа, выхода и управления аутентификацией")
 @RequiredArgsConstructor
-
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/register")
+     @Operation(summary = "Регистрация в систему")
     public ResponseEntity<?> registration(@RequestBody RegistrationDTO dto) {
         try {
             System.out.println("Password from DTO: " + dto.getPassword());
             UserDto userDto = authService.register(dto);
-
+            
             return ResponseEntity.ok(userDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(409).body(e.getMessage());
@@ -39,6 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+     @Operation(summary = "Вход в систему")
     public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
             UserDto userDto = authService.login(dto);
@@ -51,6 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+     @Operation(summary = "Выход из системы")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         try {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {

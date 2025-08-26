@@ -31,6 +31,7 @@ public class SecurityConfig {
                 }).csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                                .requestMatchers("/api/v1/purpAndInt/**").permitAll()
                                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
                                                                 "/swagger-resources/**", "/webjars/**")
                                                 .permitAll()
@@ -46,6 +47,7 @@ public class SecurityConfig {
 
                 return http.build();
         }
+
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();
@@ -55,13 +57,13 @@ public class SecurityConfig {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
+
         @Bean
         public CorsFilter corsFilter() {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
                 config.setAllowedOriginPatterns(List.of(
-                                
-                                ));
+                               ));
                 config.setAllowedHeaders(Arrays.asList(
                                 "Origin", "Content-Type", "Accept", "Authorization",
                                 "X-Requested-With", "Access-Control-Request-Method",

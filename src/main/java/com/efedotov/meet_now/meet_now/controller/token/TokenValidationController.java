@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.efedotov.meet_now.meet_now.model.UserSession;
 import com.efedotov.meet_now.meet_now.service.auth.SessionService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,6 +23,7 @@ public class TokenValidationController {
 
 
     @GetMapping("/validate-token")
+     @Operation(summary = "Проверка токена")
     public ResponseEntity<?> validateToken(
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

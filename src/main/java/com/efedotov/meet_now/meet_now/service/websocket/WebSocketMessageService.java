@@ -34,6 +34,8 @@ public class WebSocketMessageService {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
+    // private final EncryptionUtils encryption;
+
 
     public MessageDto processMessageDto(MessageDto messageDto) {
         UUID chatId = messageDto.getChatId();
@@ -107,7 +109,9 @@ public class WebSocketMessageService {
         Message message = new Message();
         message.setSender(sender);
         message.setRecipient(recipient);
-        message.setText(text);
+        String encriptionText = text;
+        // String encriptionText = encryption.encryptAES(text);
+        message.setText(encriptionText);
         message.setCreatedAt(LocalDateTime.now());
 
         if (chat != null) {
