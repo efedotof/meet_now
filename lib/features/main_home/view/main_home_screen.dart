@@ -22,6 +22,7 @@ class MainHomeScreen extends StatelessWidget {
 
         return BlocBuilder<MainHomeCubit, MainHomeState>(
           builder: (context, state) {
+            context.read<MainHomeCubit>().getNewTempChat(context: context);
             return Scaffold(
               body:
                   isWideScreen

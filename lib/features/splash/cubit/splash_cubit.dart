@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
+import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
+import 'package:meet_now_app/storage/first_open_app/first_open_app_interface.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
 
 part 'splash_state.dart';
@@ -11,50 +13,63 @@ part 'splash_cubit.freezed.dart';
 
 class SplashCubit extends Cubit<SplashState> {
   SplashCubit({
+    required FirstOpenAppInterface firstOpenAppInterface,
+    required PurpAndInteresInterface purpAndInteresInterface,
     required PincodeStorageInterface pincodeStorageInterface,
     required AuthInterface authInterface,
-  }) : _pincodeStorageInterface = pincodeStorageInterface,
+  }) : _firstOpenAppInterface = firstOpenAppInterface,
+       _purpAndInteresInterface = purpAndInteresInterface,
+       _pincodeStorageInterface = pincodeStorageInterface,
        _authInterface = authInterface,
-
        super(SplashState.initial());
 
   final AuthInterface _authInterface;
   final PincodeStorageInterface _pincodeStorageInterface;
+  final PurpAndInteresInterface _purpAndInteresInterface;
+  final FirstOpenAppInterface _firstOpenAppInterface;
 
   Future<void> checkAutoLogin({required BuildContext context}) async {
     try {
-      final code = _pincodeStorageInterface.getPinCode();
-      debugPrint("PinCode: $code");
-
-      if (code.isNotEmpty) {
-        if (context.mounted) context.replaceRoute(const PinCodeRoute());
-        return;
-      }
-      await _performAutoLogin(context);
-    } catch (e) {
-      debugPrint('Ошибка авто-входа: $e');
-      if (e.toString().contains("PinCode не установлен")) {
-        if (context.mounted) {
-          await _performAutoLogin(context);
-        }
+      if (_firstOpenAppInterface.isFirstOpenApp()) {
+        await _handleFirstLaunch(context);
       } else {
-        if (context.mounted) context.replaceRoute(const AuthRoute());
+        await _handleRegularLaunch(context);
       }
+    } catch (e) {
+      debugPrint('Ошибка в checkAutoLogin: $e');
+      if (context.mounted) context.replaceRoute(const AuthRoute());
     }
   }
 
-  Future<void> _performAutoLogin(BuildContext context) async {
+  Future<void> _handleFirstLaunch(BuildContext context) async {
     try {
-      final user = await _authInterface.autoLogin();
-      debugPrint("user: $user");
+      await _purpAndInteresInterface.getAllInterest();
+      await _purpAndInteresInterface.getAllPurpose();
+      await _firstOpenAppInterface.setValue(value: false);
 
+      if (context.mounted) await _handleRegularLaunch(context);
+    } catch (e) {
+      debugPrint('Ошибка при первом запуске: $e');
+      if (context.mounted) context.replaceRoute(const AuthRoute());
+    }
+  }
+
+  Future<void> _handleRegularLaunch(BuildContext context) async {
+    try {
+      final hasPinCode = _pincodeStorageInterface.getPinCode().isNotEmpty;
+      final user = await _authInterface.autoLogin();
+      if (!context.mounted) return;
       if (user == null) {
-        if (context.mounted) context.replaceRoute(const AuthRoute());
+        context.replaceRoute(const AuthRoute());
+        return;
+      }
+      if (hasPinCode) {
+        context.replaceRoute(const PinCodeRoute());
       } else {
-        if (context.mounted) context.replaceRoute(const MainHomeRoute());
+        context.replaceRoute(const MainHomeRoute());
       }
     } catch (e) {
-      debugPrint('Ошибка при выполнении авто-логина: $e');
+      debugPrint('Ошибка при обычном запуске: $e');
       if (context.mounted) context.replaceRoute(const AuthRoute());
     }
   }

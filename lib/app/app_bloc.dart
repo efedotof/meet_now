@@ -21,12 +21,14 @@ import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/games/games_interface.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
+import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app/server/repository/user/user_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
+import 'package:meet_now_app/storage/first_open_app/first_open_app_interface.dart';
 import 'package:meet_now_app/storage/language/language_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
@@ -67,12 +69,17 @@ class AppBloc extends StatelessWidget {
                 authInterface: context.read<AuthInterface>(),
                 pincodeStorageInterface:
                     context.read<PincodeStorageInterface>(),
+                purpAndInteresInterface:
+                    context.read<PurpAndInteresInterface>(),
+                firstOpenAppInterface: context.read<FirstOpenAppInterface>(),
               ),
         ),
         BlocProvider(
           create:
-              (context) =>
-                  SearchCubit(searchInterface: context.read<SearchInterface>(), userInterface: context.read<UserInterface>()),
+              (context) => SearchCubit(
+                searchInterface: context.read<SearchInterface>(),
+                userInterface: context.read<UserInterface>(),
+              ),
         ),
         BlocProvider(
           create:
