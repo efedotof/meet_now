@@ -57,7 +57,7 @@ class SearchRepository implements SearchInterface {
         throw _handleUnexpectedResponse(response);
       }
     } on DioException catch (e) {
-      throw _handleDioError(e); // Обработка будет в обновленном методе
+      throw _handleDioError(e); 
     } catch (e) {
       throw Exception('Неизвестная ошибка: $e');
     }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
@@ -6,11 +7,13 @@ import 'package:meet_now_app/app/app_config.dart';
 import 'package:meet_now_app/app/app_initializer.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/hive_registrar.g.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/theme.dart';
+import "package:hive_ce/hive.dart";
 
 void main() async {
   // bool isJailbroken = false;
@@ -44,7 +47,9 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
+  Hive
+    ..init(Directory.current.path)
+    ..registerAdapters();
   final appConfig = AppConfig(prefs: await SharedPreferences.getInstance());
 
   runApp(AppInitializer(config: appConfig, child: const MeetNowApp()));

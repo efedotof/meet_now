@@ -13,6 +13,8 @@ import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.d
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_repository.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_repository.dart';
+import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
+import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_repository.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_repository.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_impl.dart';
@@ -24,6 +26,10 @@ import 'package:meet_now_app/server/repository/user/user_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_repository.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
+import 'package:meet_now_app/storage/first_open_app/first_open_app_interface.dart';
+import 'package:meet_now_app/storage/first_open_app/first_open_app_repository.dart';
+import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app/storage/hive/repository/storage_hive_repository.dart';
 import 'package:meet_now_app/storage/language/language_storage_interface.dart';
 import 'package:meet_now_app/storage/language/language_storage_repository.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
@@ -129,7 +135,25 @@ class AppRepository extends StatelessWidget {
           create:
               (context) => LanguageStorageRepository(preferences: config.prefs),
         ),
-        RepositoryProvider<GamesInterface>(create: (context) => GamesRepository(userModelAppInterface: context.read<UserModelAppInterface>()))
+        RepositoryProvider<GamesInterface>(
+          create:
+              (context) => GamesRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
+        ),
+        RepositoryProvider<StorageHiveInterface>(
+          create: (context) => StorageHiveRepository()..init(),
+        ),
+        RepositoryProvider<PurpAndInteresInterface>(
+          create:
+              (context) => PurpAndInteresRepository(
+                storageHiveInterface: context.read<StorageHiveInterface>(),
+              ),
+        ),
+        RepositoryProvider<FirstOpenAppInterface>(
+          create:
+              (context) => FirstOpenAppRepository(preferences: config.prefs),
+        ),
       ],
       child: child,
     );
