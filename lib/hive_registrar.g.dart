@@ -3,19 +3,28 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
+import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/friends_request/friend_request.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
+import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(ChatAdapter());
+    registerAdapter(FriendRequestAdapter());
     registerAdapter(InterestAdapter());
     registerAdapter(PurposeAdapter());
+    registerAdapter(TemporaryChatAdapter());
   }
 }
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(ChatAdapter());
+    registerAdapter(FriendRequestAdapter());
     registerAdapter(InterestAdapter());
     registerAdapter(PurposeAdapter());
+    registerAdapter(TemporaryChatAdapter());
   }
 }

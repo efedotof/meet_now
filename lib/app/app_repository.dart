@@ -142,7 +142,7 @@ class AppRepository extends StatelessWidget {
               ),
         ),
         RepositoryProvider<StorageHiveInterface>(
-          create: (context) => StorageHiveRepository()..init(),
+          create: (context) => StorageHiveRepository(),
         ),
         RepositoryProvider<PurpAndInteresInterface>(
           create:

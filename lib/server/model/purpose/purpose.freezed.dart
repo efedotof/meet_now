@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Purpose {
 
-@HiveField(0) String get id;@HiveField(1) String get text;
+@HiveField(0) String get id;@HiveField(1) String? get text;
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $PurposeCopyWith<$Res>  {
   factory $PurposeCopyWith(Purpose value, $Res Function(Purpose) _then) = _$PurposeCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String text
+@HiveField(0) String id,@HiveField(1) String? text
 });
 
 
@@ -65,11 +65,11 @@ class _$PurposeCopyWithImpl<$Res>
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,
+as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -154,7 +154,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String text)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? text)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Purpose() when $default != null:
 return $default(_that.id,_that.text);case _:
@@ -175,7 +175,7 @@ return $default(_that.id,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String text)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? text)  $default,) {final _that = this;
 switch (_that) {
 case _Purpose():
 return $default(_that.id,_that.text);case _:
@@ -195,7 +195,7 @@ return $default(_that.id,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String text)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? text)?  $default,) {final _that = this;
 switch (_that) {
 case _Purpose() when $default != null:
 return $default(_that.id,_that.text);case _:
@@ -214,7 +214,7 @@ class _Purpose implements Purpose {
   factory _Purpose.fromJson(Map<String, dynamic> json) => _$PurposeFromJson(json);
 
 @override@HiveField(0) final  String id;
-@override@HiveField(1) final  String text;
+@override@HiveField(1) final  String? text;
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
@@ -249,7 +249,7 @@ abstract mixin class _$PurposeCopyWith<$Res> implements $PurposeCopyWith<$Res> {
   factory _$PurposeCopyWith(_Purpose value, $Res Function(_Purpose) _then) = __$PurposeCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String text
+@HiveField(0) String id,@HiveField(1) String? text
 });
 
 
@@ -266,11 +266,11 @@ class __$PurposeCopyWithImpl<$Res>
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = freezed,}) {
   return _then(_Purpose(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
-as String,
+as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
