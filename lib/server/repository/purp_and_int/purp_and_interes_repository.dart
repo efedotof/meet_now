@@ -4,6 +4,7 @@ import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
 import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'dart:convert'; 
 
 import 'purp_and_interes_interface.dart';
 
@@ -14,7 +15,11 @@ class PurpAndInteresRepository implements PurpAndInteresInterface {
   PurpAndInteresRepository({required StorageHiveInterface storageHiveInterface})
     : _storageHiveInterface = storageHiveInterface,
       _dio = Dio(
-        BaseOptions(baseUrl: purpAndInter, contentType: 'application/json'),
+        BaseOptions(
+          baseUrl: purpAndInter, 
+          contentType: 'application/json; charset=utf-8', 
+          responseType: ResponseType.bytes,
+        ),
       );
 
   @override
@@ -22,12 +27,14 @@ class PurpAndInteresRepository implements PurpAndInteresInterface {
     try {
       final res = await _dio.get("/getInterest");
       if (res.statusCode == 200) {
-        final data = res.data as List;
-        debugPrint(res.data);
-        final interests =
-            data
-                .map((e) => Interest.fromJson(e as Map<String, dynamic>))
-                .toList();
+        String responseBody = utf8.decode(res.data);
+        debugPrint(responseBody);
+        
+        final data = jsonDecode(responseBody) as List;
+        final interests = data
+            .map((e) => Interest.fromJson(e as Map<String, dynamic>))
+            .toList();
+            
         _storageHiveInterface.addAllInterestBox(items: interests);
         return interests;
       } else {
@@ -43,12 +50,14 @@ class PurpAndInteresRepository implements PurpAndInteresInterface {
     try {
       final res = await _dio.get("/getPurpose");
       if (res.statusCode == 200) {
-        final data = res.data as List;
-        debugPrint(res.data);
-        final purpose =
-            data
-                .map((e) => Purpose.fromJson(e as Map<String, dynamic>)) 
-                .toList();
+        String responseBody = utf8.decode(res.data);
+        debugPrint(responseBody);
+        
+        final data = jsonDecode(responseBody) as List;
+        final purpose = data
+            .map((e) => Purpose.fromJson(e as Map<String, dynamic>)) 
+            .toList();
+            
         _storageHiveInterface.addAllPurposeBox(items: purpose);
         return purpose;
       } else {
