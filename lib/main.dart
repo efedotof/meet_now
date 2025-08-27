@@ -6,6 +6,7 @@ import 'package:meet_now_app/app/app_config.dart';
 import 'package:meet_now_app/app/app_initializer.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/hive_registrar.g.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/storage/hive/repository/storage_hive_repository.dart';
@@ -48,10 +49,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   final directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
-  // Hive
-  //   ..init(Directory.current.path)
-  //   ..registerAdapters();
+  Hive
+    ..init(directory.path)
+    ..registerAdapters();
   final appConfig = AppConfig(prefs: await SharedPreferences.getInstance());
   await StorageHiveRepository().init();
   runApp(AppInitializer(config: appConfig, child: const MeetNowApp()));

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
@@ -22,6 +23,7 @@ class PurpAndInteresRepository implements PurpAndInteresInterface {
       final res = await _dio.get("/getInterest");
       if (res.statusCode == 200) {
         final data = res.data as List;
+        debugPrint(res.data);
         final interests =
             data
                 .map((e) => Interest.fromJson(e as Map<String, dynamic>))
@@ -42,9 +44,10 @@ class PurpAndInteresRepository implements PurpAndInteresInterface {
       final res = await _dio.get("/getPurpose");
       if (res.statusCode == 200) {
         final data = res.data as List;
+        debugPrint(res.data);
         final purpose =
             data
-                .map((e) => Purpose.fromJson(e as Map<String, dynamic>))
+                .map((e) => Purpose.fromJson(e as Map<String, dynamic>)) 
                 .toList();
         _storageHiveInterface.addAllPurposeBox(items: purpose);
         return purpose;

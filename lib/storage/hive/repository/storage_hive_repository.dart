@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import "package:hive_ce_flutter/hive_flutter.dart";
 import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/friends_request/friend_request.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
@@ -13,6 +14,7 @@ class StorageHiveRepository implements StorageHiveInterface {
   Box<Purpose>? _purposeBox;
   Box<Chat>? _permChatBox;
   Box<TemporaryChat>? _tempChatBox;
+  Box<FriendRequest>? _friendRequestBox;
 
   final Completer<void> _initializationCompleter = Completer<void>();
 
@@ -49,6 +51,15 @@ class StorageHiveRepository implements StorageHiveInterface {
   }
 
   @override
+  Box<FriendRequest> get friendRequestBox{
+    if(_friendRequestBox == null || !_friendRequestBox!.isOpen){
+      throw Exception("Friend request box is not initialized or open");
+    }
+    return _friendRequestBox!;
+  }
+
+
+  @override
   ValueListenable<Box<Interest>> get listenableInterestBox {
     if (_interestBox == null || !_interestBox!.isOpen) {
       throw Exception("Interest box is not initialized or open");
@@ -81,21 +92,24 @@ class StorageHiveRepository implements StorageHiveInterface {
   }
 
   @override
+  ValueListenable<Box<FriendRequest>> get listenableFriendRequestBox{
+    if(_friendRequestBox == null || !_friendRequestBox!.isOpen){
+      throw Exception("Friend request box is not initialized or open");
+    }
+    return _friendRequestBox!.listenable();
+  }
+
+  @override
   Future<void> init() async {
     if (_initializationCompleter.isCompleted) {
       return;
     }
-
     try {
-      Hive.registerAdapter(InterestAdapter());
-      Hive.registerAdapter(PurposeAdapter());
-      Hive.registerAdapter(ChatAdapter());
-      Hive.registerAdapter(TemporaryChatAdapter());
-
       _interestBox = await Hive.openBox<Interest>('interest_box');
       _purposeBox = await Hive.openBox<Purpose>('purpose_box');
       _permChatBox = await Hive.openBox<Chat>('perm_chat_box');
       _tempChatBox = await Hive.openBox<TemporaryChat>('temp_chat_box');
+      _friendRequestBox = await Hive.openBox<FriendRequest>('friend_request');
 
       debugPrint("All Hive boxes initialized successfully");
       _initializationCompleter.complete();
