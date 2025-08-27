@@ -29,6 +29,7 @@ import 'package:meet_now_app/server/repository/user/user_interface.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
 import 'package:meet_now_app/storage/first_open_app/first_open_app_interface.dart';
+import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
 import 'package:meet_now_app/storage/language/language_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
@@ -120,7 +121,7 @@ class AppBloc extends StatelessWidget {
         BlocProvider(
           create:
               (context) => MainHomeCubit(
-                socketServiceInterface: context.read<SocketServiceInterface>(),
+                socketServiceInterface: context.read<SocketServiceInterface>(), storageHiveInterface: context.read<StorageHiveInterface>(),
               ),
         ),
         BlocProvider(

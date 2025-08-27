@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TemporaryChat {
 
- String get tempChatId; String get senderId; String get recipientId; DateTime get createdAt; int get durationMinutes; bool get isFinished; bool get bothAgreed;
+@HiveField(0) String get tempChatId;@HiveField(1) String get senderId;@HiveField(2) String get recipientId;@HiveField(3) DateTime get createdAt;@HiveField(4) int get durationMinutes;@HiveField(5) bool get isFinished;@HiveField(6) bool get bothAgreed;
 /// Create a copy of TemporaryChat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TemporaryChatCopyWith<$Res>  {
   factory $TemporaryChatCopyWith(TemporaryChat value, $Res Function(TemporaryChat) _then) = _$TemporaryChatCopyWithImpl;
 @useResult
 $Res call({
- String tempChatId, String senderId, String recipientId, DateTime createdAt, int durationMinutes, bool isFinished, bool bothAgreed
+@HiveField(0) String tempChatId,@HiveField(1) String senderId,@HiveField(2) String recipientId,@HiveField(3) DateTime createdAt,@HiveField(4) int durationMinutes,@HiveField(5) bool isFinished,@HiveField(6) bool bothAgreed
 });
 
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String tempChatId,  String senderId,  String recipientId,  DateTime createdAt,  int durationMinutes,  bool isFinished,  bool bothAgreed)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String tempChatId, @HiveField(1)  String senderId, @HiveField(2)  String recipientId, @HiveField(3)  DateTime createdAt, @HiveField(4)  int durationMinutes, @HiveField(5)  bool isFinished, @HiveField(6)  bool bothAgreed)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TemporaryChat() when $default != null:
 return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdAt,_that.durationMinutes,_that.isFinished,_that.bothAgreed);case _:
@@ -180,7 +180,7 @@ return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdA
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String tempChatId,  String senderId,  String recipientId,  DateTime createdAt,  int durationMinutes,  bool isFinished,  bool bothAgreed)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String tempChatId, @HiveField(1)  String senderId, @HiveField(2)  String recipientId, @HiveField(3)  DateTime createdAt, @HiveField(4)  int durationMinutes, @HiveField(5)  bool isFinished, @HiveField(6)  bool bothAgreed)  $default,) {final _that = this;
 switch (_that) {
 case _TemporaryChat():
 return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdAt,_that.durationMinutes,_that.isFinished,_that.bothAgreed);case _:
@@ -200,7 +200,7 @@ return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdA
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String tempChatId,  String senderId,  String recipientId,  DateTime createdAt,  int durationMinutes,  bool isFinished,  bool bothAgreed)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String tempChatId, @HiveField(1)  String senderId, @HiveField(2)  String recipientId, @HiveField(3)  DateTime createdAt, @HiveField(4)  int durationMinutes, @HiveField(5)  bool isFinished, @HiveField(6)  bool bothAgreed)?  $default,) {final _that = this;
 switch (_that) {
 case _TemporaryChat() when $default != null:
 return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdAt,_that.durationMinutes,_that.isFinished,_that.bothAgreed);case _:
@@ -215,16 +215,16 @@ return $default(_that.tempChatId,_that.senderId,_that.recipientId,_that.createdA
 @JsonSerializable()
 
 class _TemporaryChat implements TemporaryChat {
-  const _TemporaryChat({required this.tempChatId, required this.senderId, required this.recipientId, required this.createdAt, required this.durationMinutes, required this.isFinished, required this.bothAgreed});
+  const _TemporaryChat({@HiveField(0) required this.tempChatId, @HiveField(1) required this.senderId, @HiveField(2) required this.recipientId, @HiveField(3) required this.createdAt, @HiveField(4) required this.durationMinutes, @HiveField(5) required this.isFinished, @HiveField(6) required this.bothAgreed});
   factory _TemporaryChat.fromJson(Map<String, dynamic> json) => _$TemporaryChatFromJson(json);
 
-@override final  String tempChatId;
-@override final  String senderId;
-@override final  String recipientId;
-@override final  DateTime createdAt;
-@override final  int durationMinutes;
-@override final  bool isFinished;
-@override final  bool bothAgreed;
+@override@HiveField(0) final  String tempChatId;
+@override@HiveField(1) final  String senderId;
+@override@HiveField(2) final  String recipientId;
+@override@HiveField(3) final  DateTime createdAt;
+@override@HiveField(4) final  int durationMinutes;
+@override@HiveField(5) final  bool isFinished;
+@override@HiveField(6) final  bool bothAgreed;
 
 /// Create a copy of TemporaryChat
 /// with the given fields replaced by the non-null parameter values.
@@ -259,7 +259,7 @@ abstract mixin class _$TemporaryChatCopyWith<$Res> implements $TemporaryChatCopy
   factory _$TemporaryChatCopyWith(_TemporaryChat value, $Res Function(_TemporaryChat) _then) = __$TemporaryChatCopyWithImpl;
 @override @useResult
 $Res call({
- String tempChatId, String senderId, String recipientId, DateTime createdAt, int durationMinutes, bool isFinished, bool bothAgreed
+@HiveField(0) String tempChatId,@HiveField(1) String senderId,@HiveField(2) String recipientId,@HiveField(3) DateTime createdAt,@HiveField(4) int durationMinutes,@HiveField(5) bool isFinished,@HiveField(6) bool bothAgreed
 });
 
 

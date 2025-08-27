@@ -1,52 +1,129 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import "package:hive_ce_flutter/hive_flutter.dart";
+import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
+import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'storage_hive_interface.dart';
-import 'package:hive_ce_flutter/hive_flutter.dart';
 
 class StorageHiveRepository implements StorageHiveInterface {
-  late Box<Interest> _interestBox;
-  late Box<Purpose> _purposeBox;
+  Box<Interest>? _interestBox;
+  Box<Purpose>? _purposeBox;
+  Box<Chat>? _permChatBox;
+  Box<TemporaryChat>? _tempChatBox;
+
+  final Completer<void> _initializationCompleter = Completer<void>();
 
   @override
-  Box<Interest> get interestBox => _interestBox;
+  Box<Interest> get interestBox {
+    if (_interestBox == null || !_interestBox!.isOpen) {
+      throw Exception("Interest box is not initialized or open");
+    }
+    return _interestBox!;
+  }
 
   @override
-  Box<Purpose> get purposeBox => _purposeBox;
+  Box<Purpose> get purposeBox {
+    if (_purposeBox == null || !_purposeBox!.isOpen) {
+      throw Exception("Purpose box is not initialized or open");
+    }
+    return _purposeBox!;
+  }
 
   @override
-  ValueListenable<Box<Interest>> get listenableInterestBox =>
-      _interestBox.listenable();
+  Box<Chat> get permChatBox {
+    if (_permChatBox == null || !_permChatBox!.isOpen) {
+      throw Exception("Permanent chat box is not initialized or open");
+    }
+    return _permChatBox!;
+  }
 
   @override
-  ValueListenable<Box<Purpose>> get listenablePurposeBox =>
-      _purposeBox.listenable();
+  Box<TemporaryChat> get tempChatBox {
+    if (_tempChatBox == null || !_tempChatBox!.isOpen) {
+      throw Exception("Temporary chat box is not initialized or open");
+    }
+    return _tempChatBox!;
+  }
+
+  @override
+  ValueListenable<Box<Interest>> get listenableInterestBox {
+    if (_interestBox == null || !_interestBox!.isOpen) {
+      throw Exception("Interest box is not initialized or open");
+    }
+    return _interestBox!.listenable();
+  }
+
+  @override
+  ValueListenable<Box<Purpose>> get listenablePurposeBox {
+    if (_purposeBox == null || !_purposeBox!.isOpen) {
+      throw Exception("Purpose box is not initialized or open");
+    }
+    return _purposeBox!.listenable();
+  }
+
+  @override
+  ValueListenable<Box<Chat>> get listenablePermChatBox {
+    if (_permChatBox == null || !_permChatBox!.isOpen) {
+      throw Exception("Permanent chat box is not initialized or open");
+    }
+    return _permChatBox!.listenable();
+  }
+
+  @override
+  ValueListenable<Box<TemporaryChat>> get listenableTempChatBox {
+    if (_tempChatBox == null || !_tempChatBox!.isOpen) {
+      throw Exception("Temporary chat box is not initialized or open");
+    }
+    return _tempChatBox!.listenable();
+  }
 
   @override
   Future<void> init() async {
-    if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(InterestAdapter());
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(PurposeAdapter());
-
-    _interestBox = await Hive.openBox<Interest>('interest_box');
-    if (_interestBox.isOpen) {
-      debugPrint("Box: interest_box is open");
+    if (_initializationCompleter.isCompleted) {
+      return;
     }
 
-    _purposeBox = await Hive.openBox<Purpose>('purpose_box');
-    if (_purposeBox.isOpen) {
-      debugPrint("Box: purpose_box is open");
+    try {
+      Hive.registerAdapter(InterestAdapter());
+      Hive.registerAdapter(PurposeAdapter());
+      Hive.registerAdapter(ChatAdapter());
+      Hive.registerAdapter(TemporaryChatAdapter());
+
+      _interestBox = await Hive.openBox<Interest>('interest_box');
+      _purposeBox = await Hive.openBox<Purpose>('purpose_box');
+      _permChatBox = await Hive.openBox<Chat>('perm_chat_box');
+      _tempChatBox = await Hive.openBox<TemporaryChat>('temp_chat_box');
+
+      debugPrint("All Hive boxes initialized successfully");
+      _initializationCompleter.complete();
+    } catch (e) {
+      debugPrint("Error initializing Hive boxes: $e");
+      _initializationCompleter.completeError(e);
+      rethrow;
     }
+  }
+
+  Future<void> _ensureInitialized() async {
+    if (!_initializationCompleter.isCompleted) {
+      await init();
+    }
+    await _initializationCompleter.future;
   }
 
   @override
   Future<void> addInterestBox({required Interest item}) async {
-    await _interestBox.add(item);
+    await _ensureInitialized();
+    await _interestBox!.add(item);
     debugPrint('StorageRepository: Added item to interestBox => $item');
   }
 
   @override
   Future<void> addAllInterestBox({required List<Interest> items}) async {
-    await _interestBox.addAll(items);
+    await _ensureInitialized();
+    await _interestBox!.addAll(items);
     debugPrint('StorageRepository: Added ${items.length} items to interestBox');
   }
 
@@ -55,7 +132,8 @@ class StorageHiveRepository implements StorageHiveInterface {
     required int index,
     required Interest item,
   }) async {
-    await _interestBox.putAt(index, item);
+    await _ensureInitialized();
+    await _interestBox!.putAt(index, item);
     debugPrint(
       'StorageRepository: Updated interestBox at index $index => $item',
     );
@@ -63,7 +141,8 @@ class StorageHiveRepository implements StorageHiveInterface {
 
   @override
   Future<void> deleteInterestBox({required int index}) async {
-    await _interestBox.deleteAt(index);
+    await _ensureInitialized();
+    await _interestBox!.deleteAt(index);
     debugPrint(
       'StorageRepository: Deleted item from interestBox at index $index',
     );
@@ -71,19 +150,22 @@ class StorageHiveRepository implements StorageHiveInterface {
 
   @override
   Future<void> clearInterestBox() async {
-    await _interestBox.clear();
+    await _ensureInitialized();
+    await _interestBox!.clear();
     debugPrint('StorageRepository: Cleared all items from interestBox');
   }
 
   @override
   Future<void> addPurposeBox({required Purpose item}) async {
-    await _purposeBox.add(item);
+    await _ensureInitialized();
+    await _purposeBox!.add(item);
     debugPrint('StorageRepository: Added item to purposeBox => $item');
   }
 
   @override
   Future<void> addAllPurposeBox({required List<Purpose> items}) async {
-    await _purposeBox.addAll(items);
+    await _ensureInitialized();
+    await _purposeBox!.addAll(items);
     debugPrint('StorageRepository: Added ${items.length} items to purposeBox');
   }
 
@@ -92,7 +174,8 @@ class StorageHiveRepository implements StorageHiveInterface {
     required int index,
     required Purpose item,
   }) async {
-    await _purposeBox.putAt(index, item);
+    await _ensureInitialized();
+    await _purposeBox!.putAt(index, item);
     debugPrint(
       'StorageRepository: Updated purposeBox at index $index => $item',
     );
@@ -100,7 +183,8 @@ class StorageHiveRepository implements StorageHiveInterface {
 
   @override
   Future<void> deletePurposeBox({required int index}) async {
-    await _purposeBox.deleteAt(index);
+    await _ensureInitialized();
+    await _purposeBox!.deleteAt(index);
     debugPrint(
       'StorageRepository: Deleted item from purposeBox at index $index',
     );
@@ -108,18 +192,84 @@ class StorageHiveRepository implements StorageHiveInterface {
 
   @override
   Future<void> clearPurposeBox() async {
-    await _purposeBox.clear();
+    await _ensureInitialized();
+    await _purposeBox!.clear();
     debugPrint('StorageRepository: Cleared all items from purposeBox');
+  }
+
+  @override
+  Future<void> addCachedTemporaryChat({required TemporaryChat tempChat}) async {
+    await _ensureInitialized();
+    await _tempChatBox!.add(tempChat);
+    debugPrint('Added temporary chat: $tempChat');
+  }
+
+  @override
+  Future<void> addAllTemporaryChat({
+    required List<TemporaryChat> tempChats,
+  }) async {
+    await _ensureInitialized();
+    await _tempChatBox!.addAll(tempChats);
+    debugPrint('Added ${tempChats.length} temporary chats');
+  }
+
+  @override
+  Future<void> deleteTemporaryChat({
+    required int index,
+    required TemporaryChat tempChat,
+  }) async {
+    await _ensureInitialized();
+    await _tempChatBox!.deleteAt(index);
+    debugPrint('Deleted temporary chat at index $index');
+  }
+
+  @override
+  Future<void> clearTemporaryChat() async {
+    await _ensureInitialized();
+    await _tempChatBox!.clear();
+    debugPrint('Cleared all temporary chats');
+  }
+
+  @override
+  Future<void> addPermChat({required Chat chat}) async {
+    await _ensureInitialized();
+    await _permChatBox!.add(chat);
+    debugPrint('Added permanent chat: $chat');
+  }
+
+  @override
+  Future<void> addAllPermChat({required List<Chat> chats}) async {
+    await _ensureInitialized();
+    await _permChatBox!.addAll(chats);
+    debugPrint('Added ${chats.length} permanent chats');
+  }
+
+  @override
+  Future<void> deletePermChat({required int index, required Chat chat}) async {
+    await _ensureInitialized();
+    await _permChatBox!.deleteAt(index);
+    debugPrint('Deleted permanent chat at index $index');
+  }
+
+  @override
+  Future<void> clearPermChat() async {
+    await _ensureInitialized();
+    await _permChatBox!.clear();
+    debugPrint('Cleared all permanent chats');
   }
 
   @override
   Future<void> clearAll() async {
     await clearInterestBox();
     await clearPurposeBox();
+    await clearTemporaryChat();
+    await clearPermChat();
   }
 
   Future<void> close() async {
-    await _interestBox.close();
-    await _purposeBox.close();
+    await _interestBox?.close();
+    await _purposeBox?.close();
+    await _tempChatBox?.close();
+    await _permChatBox?.close();
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
 
 class AboutPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -118,31 +121,65 @@ class _AboutPageState extends State<AboutPage> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children:
-                      [
-                        S.of(context).sports,
-                        S.of(context).games,
-                        S.of(context).books,
-                        S.of(context).music,
-                      ].map((e) {
-                        final selected = widget.formData.interests.contains(e);
-                        return ChoiceChip(
-                          label: Text(e),
-                          selected: selected,
-                          onSelected:
-                              (val) => setState(() {
-                                if (val) {
-                                  widget.formData.interests.add(e);
-                                } else {
-                                  widget.formData.interests.remove(e);
-                                }
-                              }),
-                        );
-                      }).toList(),
+                ValueListenableBuilder<Box>(
+                  valueListenable:
+                      context
+                          .read<StorageHiveInterface>()
+                          .listenableInterestBox,
+                  builder: (context, box, child) {
+                    final interests = box.values.cast<String>().toList();
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children:
+                          interests.map((interest) {
+                            final selected = widget.formData.interests.contains(
+                              interest,
+                            );
+                            return ChoiceChip(
+                              label: Text(interest),
+                              selected: selected,
+                              onSelected:
+                                  (val) => setState(() {
+                                    if (val) {
+                                      widget.formData.interests.add(interest);
+                                    } else {
+                                      widget.formData.interests.remove(
+                                        interest,
+                                      );
+                                    }
+                                  }),
+                            );
+                          }).toList(),
+                    );
+                  },
                 ),
+
+                // Wrap(
+                //   spacing: 8,
+                //   runSpacing: 8,
+                //   children:
+                //       [
+                //         S.of(context).sports,
+                //         S.of(context).games,
+                //         S.of(context).books,
+                //         S.of(context).music,
+                //       ].map((e) {
+                //         final selected = widget.formData.interests.contains(e);
+                //         return ChoiceChip(
+                //           label: Text(e),
+                //           selected: selected,
+                //           onSelected:
+                //               (val) => setState(() {
+                //                 if (val) {
+                //                   widget.formData.interests.add(e);
+                //                 } else {
+                //                   widget.formData.interests.remove(e);
+                //                 }
+                //               }),
+                //         );
+                //       }).toList(),
+                // ),
               ],
             ),
           ),

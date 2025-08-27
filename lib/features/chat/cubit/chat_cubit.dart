@@ -12,6 +12,7 @@ part 'chat_cubit.freezed.dart';
 class ChatCubit extends Cubit<ChatState> {
   late final StreamSubscription _permanentSub;
   late final StreamSubscription _temporarySub;
+
   final SocketServiceInterface _socketServiceInterface;
 
   ChatCubit({

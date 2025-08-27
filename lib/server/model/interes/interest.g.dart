@@ -16,7 +16,7 @@ class InterestAdapter extends TypeAdapter<Interest> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Interest(id: fields[0] as String, text: fields[1] as String);
+    return Interest(id: fields[0] as String, text: fields[1] as String?);
   }
 
   @override
@@ -45,7 +45,7 @@ class InterestAdapter extends TypeAdapter<Interest> {
 // **************************************************************************
 
 _Interest _$InterestFromJson(Map<String, dynamic> json) =>
-    _Interest(id: json['id'] as String, text: json['text'] as String);
+    _Interest(id: json['id'] as String, text: json['text'] as String?);
 
 Map<String, dynamic> _$InterestToJson(_Interest instance) => <String, dynamic>{
   'id': instance.id,
