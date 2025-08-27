@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:meet_now_app/config.dart';
+import 'package:meet_now_app/server/model/friends_request/friend_request.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 
@@ -51,7 +52,7 @@ class FriendRepository implements FriendInterface {
   }
 
   @override
-  Future<List<User>> getIncomingRequests() async {
+  Future<List<FriendRequest>> getIncomingRequests() async {
     try {
       _setAuthHeader();
       final uuid = getUserId();
@@ -61,7 +62,7 @@ class FriendRepository implements FriendInterface {
       );
       if (response.statusCode == 200) {
         return (response.data as List)
-            .map((e) => User.fromJson(e as Map<String, dynamic>))
+            .map((e) => FriendRequest.fromJson(e as Map<String, dynamic>))
             .toList();
       }
       throw Exception(

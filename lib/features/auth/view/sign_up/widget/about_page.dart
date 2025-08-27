@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/server/model/interes/interest.dart';
 import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
 
 class AboutPage extends StatefulWidget {
@@ -127,25 +128,27 @@ class _AboutPageState extends State<AboutPage> {
                           .read<StorageHiveInterface>()
                           .listenableInterestBox,
                   builder: (context, box, child) {
-                    final interests = box.values.cast<String>().toList();
+                    final interests = box.values.cast<Interest>().toList();
                     return Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children:
                           interests.map((interest) {
                             final selected = widget.formData.interests.contains(
-                              interest,
+                              interest.id,
                             );
                             return ChoiceChip(
-                              label: Text(interest),
+                              label: Text(interest.text ?? ''),
                               selected: selected,
                               onSelected:
                                   (val) => setState(() {
                                     if (val) {
-                                      widget.formData.interests.add(interest);
+                                      widget.formData.interests.add(
+                                        interest.id,
+                                      );
                                     } else {
                                       widget.formData.interests.remove(
-                                        interest,
+                                        interest.id,
                                       );
                                     }
                                   }),

@@ -7,6 +7,7 @@ import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/icebreaker/icebreaker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
+import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
@@ -121,7 +122,8 @@ class AppBloc extends StatelessWidget {
         BlocProvider(
           create:
               (context) => MainHomeCubit(
-                socketServiceInterface: context.read<SocketServiceInterface>(), storageHiveInterface: context.read<StorageHiveInterface>(),
+                socketServiceInterface: context.read<SocketServiceInterface>(),
+                storageHiveInterface: context.read<StorageHiveInterface>(),
               ),
         ),
         BlocProvider(
@@ -158,6 +160,11 @@ class AppBloc extends StatelessWidget {
                 languageStorageInterface:
                     context.read<LanguageStorageInterface>(),
               ),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  FriendCubit(friendInterface: context.read<FriendInterface>()),
         ),
       ],
       child: child,
