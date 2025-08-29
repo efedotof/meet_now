@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.dto.request.FriendAction;
 import com.efedotov.meet_now.meet_now.dto.request.FriendRequest;
 import com.efedotov.meet_now.meet_now.dto.request.RemoveFriendRequest;
@@ -71,8 +72,8 @@ public class FriendController {
 
     @GetMapping("/requests/incoming")
      @Operation(summary = "Получить список на дружбу")
-    public ResponseEntity<List<User>> getIncomingRequests(@RequestParam UUID userId) {
-        List<User> incoming = friendService.getIncomingRequests(userId);
+    public ResponseEntity<List<UserDto>> getIncomingRequests(@RequestParam UUID userId) {
+        List<UserDto> incoming = friendService.getIncomingRequests(userId);
         return ResponseEntity.ok(incoming);
     }
 }

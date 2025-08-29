@@ -1,11 +1,23 @@
 package com.efedotov.meet_now.meet_now.service.user;
 
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.efedotov.meet_now.meet_now.dto.UserDto;
+import com.efedotov.meet_now.meet_now.model.Role;
+import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -98,12 +110,28 @@ public class FriendService {
         return user.getFriends();
     }
 
-    public List<User> getIncomingRequests(UUID userId) {
+    public List<UserDto> getIncomingRequests(UUID userId) {
         Set<UUID> requests = friendRequests.getOrDefault(userId, Collections.emptySet());
-        return userRepository.findAllById(requests);
+
+        List<User> users = userRepository.findAllById(requests);
+
+        return users.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     private void sendNotification(UUID userId, String message) {
         System.out.printf("Уведомление пользователю [%s]: %s%n", userId, message);
+    }
+
+    private UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        BeanUtils.copyProperties(user, dto);
+
+        if (user.getRoles() != null) {
+            Set<String> roles = user.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRoles(roles);
+        }
+        return dto;
     }
 }

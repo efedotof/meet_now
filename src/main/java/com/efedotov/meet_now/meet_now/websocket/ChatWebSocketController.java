@@ -131,4 +131,5 @@ public class ChatWebSocketController {
         String username = principal.getName();
         log.info("Пользователь {} подписался на получение новых временных чатов", username);
     }
+    
 }

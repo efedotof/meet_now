@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS chats (
 );
 
 
-
 CREATE TABLE IF NOT EXISTS temporary_chats (
     temp_chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sender_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -158,8 +157,18 @@ CREATE TABLE IF NOT EXISTS user_roles (
 );
 
 
+CREATE TABLE IF NOT EXISTS sticker_pack (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(100) UNIQUE NOT NULL
+);
 
-
+CREATE TABLE IF NOT EXISTS sticker (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    pack_id UUID NOT NULL REFERENCES sticker_pack(id) ON DELETE CASCADE,
+    emoji VARCHAR(100) NOT NULL,
+    image_url TEXT NOT NULL,
+    UNIQUE (pack_id, emoji) 
+);
 
 INSERT INTO roles (role_name) VALUES
 ('MODERATION'),

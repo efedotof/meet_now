@@ -1,5 +1,9 @@
 package com.efedotov.meet_now.meet_now.service.user;
 
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.dto.UserDto;
 import com.efedotov.meet_now.meet_now.model.Role;
 import com.efedotov.meet_now.meet_now.model.User;
@@ -10,10 +14,6 @@ import com.efedotov.meet_now.meet_now.until.EncryptionUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Slf4j
 @Service
@@ -73,7 +73,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // Обновление пароля
     public void updatePassword(UUID userId, String oldPassword, String newPassword) {
         User user = getById(userId);
         String oldPasswordHash = encryptionUtils.hashPassword(oldPassword);
@@ -116,10 +115,9 @@ public class UserService {
     }
 
     public void setUserSearching(UUID userId, boolean isSearching) {
-    User user = getById(userId);
-    user.setIsSearching(isSearching);
-    userRepository.save(user);
+        User user = getById(userId);
+        user.setIsSearching(isSearching);
+        userRepository.save(user);
+    }
+
 }
-
-
-}   
