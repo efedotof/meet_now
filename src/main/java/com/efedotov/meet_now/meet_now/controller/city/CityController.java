@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.model.City;
 import com.efedotov.meet_now.meet_now.service.CityService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class CityController {
             @ApiResponse(responseCode = "400", description = "Неверные параметры запроса")
         }
     )
-    public ResponseEntity<List<String>> searchCities(
+    public ResponseEntity<List<City>> searchCities(
             @Parameter(description = "Строка для поиска", example = "Мо", required = true)
             @RequestParam String query,
             
@@ -44,7 +45,7 @@ public class CityController {
             return ResponseEntity.badRequest().body(List.of());
         }
         
-        List<String> cities = cityService.searchCitiesLimited(query.trim(), limit);
+        List<City> cities = cityService.searchCitiesLimited(query.trim(), limit);
         return ResponseEntity.ok(cities);
     }
 
@@ -57,7 +58,7 @@ public class CityController {
             @ApiResponse(responseCode = "400", description = "Неверные параметры запроса")
         }
     )
-    public ResponseEntity<List<String>> searchCitiesByPrefix(
+    public ResponseEntity<List<City>> searchCitiesByPrefix(
             @Parameter(description = "Префикс для поиска", example = "Мо", required = true)
             @RequestParam String prefix,
             
@@ -68,7 +69,7 @@ public class CityController {
             return ResponseEntity.badRequest().body(List.of());
         }
         
-        List<String> cities = cityService.searchCitiesByPrefixLimited(prefix.trim(), limit);
+        List<City> cities = cityService.searchCitiesByPrefixLimited(prefix.trim(), limit);
         return ResponseEntity.ok(cities);
     }
 }
