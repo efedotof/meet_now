@@ -16,7 +16,7 @@ class PurposeAdapter extends TypeAdapter<Purpose> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Purpose(id: fields[0] as String, text: fields[1] as String?);
+    return Purpose(id: fields[0] as String, title: fields[1] as String?);
   }
 
   @override
@@ -26,7 +26,7 @@ class PurposeAdapter extends TypeAdapter<Purpose> {
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.text);
+      ..write(obj.title);
   }
 
   @override
@@ -45,9 +45,9 @@ class PurposeAdapter extends TypeAdapter<Purpose> {
 // **************************************************************************
 
 _Purpose _$PurposeFromJson(Map<String, dynamic> json) =>
-    _Purpose(id: json['id'] as String, text: json['text'] as String?);
+    _Purpose(id: json['id'] as String, title: json['title'] as String?);
 
 Map<String, dynamic> _$PurposeToJson(_Purpose instance) => <String, dynamic>{
   'id': instance.id,
-  'text': instance.text,
+  'title': instance.title,
 };

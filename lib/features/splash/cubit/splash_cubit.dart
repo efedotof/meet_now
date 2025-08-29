@@ -56,16 +56,31 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> _handleRegularLaunch(BuildContext context) async {
     try {
-      final hasPinCode = _pincodeStorageInterface.getPinCode().isNotEmpty;
       final user = await _authInterface.autoLogin();
       if (!context.mounted) return;
+
       if (user == null) {
+        debugPrint('Автологин не удался: пользователь null');
         context.replaceRoute(const AuthRoute());
         return;
       }
+
+      String pinCode;
+      try {
+        pinCode = _pincodeStorageInterface.getPinCode();
+      } catch (e) {
+        debugPrint('Пинкод не установлен, переходим на главный экран');
+        context.replaceRoute(const MainHomeRoute());
+        return;
+      }
+
+      final hasPinCode = pinCode.isNotEmpty;
+
       if (hasPinCode) {
+        debugPrint('Пинкод установлен, переходим на экран пинкода');
         context.replaceRoute(const PinCodeRoute());
       } else {
+        debugPrint('Пинкод не установлен, переходим на главный экран');
         context.replaceRoute(const MainHomeRoute());
       }
     } catch (e) {

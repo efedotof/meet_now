@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/model/login/login.dart';
+import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
 
 part 'sign_in_state.dart';
@@ -48,11 +49,23 @@ class SignInCubit extends Cubit<SignInState> {
       debugPrint("user: user:$user      loginData: $loginData");
       emit(SignInState.success());
       debugPrint("Login successful, navigating to MainHomeRoute");
+
       if (context.mounted) {
-        context.router.replaceAll([MainHomeRoute()]);
+        _checkAvatarUser(user: user, context: context);
       }
     } catch (e) {
       emit(SignInState.error(error: e.toString()));
+    }
+  }
+
+  Future<void> _checkAvatarUser({
+    required User user,
+    required BuildContext context,
+  }) async {
+    if (user.avatar == null) {
+      context.replaceRoute(UploadsAvatarsRoute());
+    } else {
+      context.router.replaceAll([MainHomeRoute()]);
     }
   }
 }

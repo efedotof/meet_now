@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/about_page.dart';
-import 'package:meet_now_app/features/auth/view/sign_up/widget/avatar_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/bottom_bar.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/credentials_page.dart';
+import 'package:meet_now_app/features/auth/view/sign_up/widget/interest_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/personal_info_page.dart';
+import 'package:meet_now_app/features/auth/view/sign_up/widget/purpose_page.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
@@ -27,12 +28,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final SignUpFormData formData = SignUpFormData();
   late PageController _pageController;
   int _currentPage = 0;
+
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
-    GlobalKey<FormState>(),
   ];
+
+  int get _formKeyIndex {
+    switch (_currentPage) {
+      case 0:
+        return 0;
+      case 1:
+        return 1;
+      case 4:
+        return 2;
+      default:
+        return -1;
+    }
+  }
 
   @override
   void initState() {
@@ -47,14 +61,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _nextPage() {
-    if (_formKeys[_currentPage].currentState!.validate()) {
-      if (_currentPage < 3) {
-        setState(() => _currentPage++);
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+    final formKeyIndex = _formKeyIndex;
+    if (formKeyIndex >= 0) {
+      if (!_formKeys[formKeyIndex].currentState!.validate()) {
+        return;
       }
+    }
+
+    if (_currentPage < 5) {
+      setState(() => _currentPage++);
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -69,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _onRegisterPressed() {
-    if (_formKeys[3].currentState!.validate()) {
+    if (_formKeys[2].currentState!.validate()) {
       context.read<SignUpCubit>().registration(formData.toRegistration());
     }
   }
@@ -85,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocListener<SignUpCubit, SignUpState>(
       listener: (context, state) {
         state.whenOrNull(
-          success: () => context.router.replaceAll([MainHomeRoute()]),
+          success: () => context.router.replaceAll([UploadsAvatarsRoute()]),
           error: (error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(error), backgroundColor: Colors.red),
@@ -95,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title:  Text(S.of(context).registration),
+          title: Text(S.of(context).registration),
           leading:
               _currentPage > 0
                   ? IconButton(
@@ -107,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         body: Column(
           children: [
             LinearProgressIndicator(
-              value: (_currentPage + 1) / 4,
+              value: (_currentPage + 1) / 5,
               backgroundColor:
                   Theme.of(context).colorScheme.surfaceContainerHighest,
               minHeight: 4,
@@ -127,13 +146,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     formData: formData,
                     buttonWidth: buttonWidth,
                   ),
-                  AvatarPage(
-                    formKey: _formKeys[2],
-                    formData: formData,
-                    buttonWidth: buttonWidth,
-                  ),
+                  PurposePage(formData: formData, buttonWidth: buttonWidth),
+                  InterestPage(formData: formData, buttonWidth: buttonWidth),
                   CredentialsPage(
-                    formKey: _formKeys[3],
+                    formKey: _formKeys[2],
                     formData: formData,
                     buttonWidth: buttonWidth,
                   ),
@@ -144,6 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         bottomNavigationBar: BottomBar(
           currentPage: _currentPage,
+          totalPages: 5,
           onNext: _nextPage,
           onRegister: _onRegisterPressed,
           buttonWidth: buttonWidth,

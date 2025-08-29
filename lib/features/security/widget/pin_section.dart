@@ -22,7 +22,6 @@ class PinSection extends StatelessWidget {
     if (context.mounted) {
       final newPinResult = await _showSetNewPinModal(context);
       if (newPinResult == true) {
-        cubit.togglePin(true);
       } else if (!cubit.hasPinCode()) {
         cubit.togglePin(false);
       }

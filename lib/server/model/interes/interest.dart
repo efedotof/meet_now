@@ -9,7 +9,7 @@ part "interest.g.dart";
 abstract class Interest with _$Interest {
   factory Interest({
     @HiveField(0) required String id,
-    @HiveField(1) required String? text,
+    @HiveField(1) required String? title,
   }) = _Interest;
 
   factory Interest.fromJson(Map<String, dynamic> json) =>

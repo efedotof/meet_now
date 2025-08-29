@@ -31,13 +31,23 @@ class ProfileScreen extends StatelessWidget {
           children: [
             ProfileHeader(user: user),
             const SizedBox(height: 24),
+
+            ProfileStats(user: user),
+            const SizedBox(height: 24),
+
             PersonalInfo(theme: theme, user: user),
             const SizedBox(height: 24),
+
             InterestsSection(theme: theme, user: user),
             const SizedBox(height: 24),
+
             PurposesSection(theme: theme, user: user),
             const SizedBox(height: 24),
+
             FriendsSection(theme: theme, user: user),
+            const SizedBox(height: 24),
+
+            AccountInfoSection(theme: theme, user: user),
           ],
         ),
       ),

@@ -9,10 +9,26 @@ part 'security_cubit.freezed.dart';
 class SecurityCubit extends Cubit<SecurityState> {
   SecurityCubit({required PincodeStorageInterface pincodeStorageInterface})
     : _pincodeStorageInterface = pincodeStorageInterface,
-      super(SecurityState.initial());
+      super(SecurityState.initial()) {
+    _checkPinCode();
+  }
+
   final PincodeStorageInterface _pincodeStorageInterface;
 
-  void togglePin(bool value) => emit(state.copyWith(pinEnabled: value));
+  void _checkPinCode() {
+    final hasPin = hasPinCode();
+    if (state.pinEnabled != hasPin) {
+      emit(state.copyWith(pinEnabled: hasPin));
+    }
+  }
+
+  void togglePin(bool value) {
+    if (!value) {
+      _pincodeStorageInterface.clearPinCode();
+    }
+    emit(state.copyWith(pinEnabled: value));
+  }
+
   void toggleBiometric(bool value) =>
       emit(state.copyWith(biometricEnabled: value));
   void togglePrivacyMode(bool value) =>
@@ -39,5 +55,6 @@ class SecurityCubit extends Cubit<SecurityState> {
 
   void setPinCode({required String pincode}) {
     _pincodeStorageInterface.setPinCode(pincode: pincode);
+    emit(state.copyWith(pinEnabled: true));
   }
 }

@@ -9,7 +9,7 @@ part "purpose.g.dart";
 abstract class Purpose with _$Purpose {
   factory Purpose({
     @HiveField(0) required String id,
-    @HiveField(1) required String? text,
+    @HiveField(1) required String? title,
   }) = _Purpose;
 
   factory Purpose.fromJson(Map<String, dynamic> json) =>

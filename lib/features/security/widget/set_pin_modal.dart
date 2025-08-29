@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+
+import 'num_pad.dart';
+import 'pin_display.dart';
 
 class SetPinModal extends StatefulWidget {
   const SetPinModal({super.key});
@@ -12,16 +14,70 @@ class SetPinModal extends StatefulWidget {
 }
 
 class _SetPinModalState extends State<SetPinModal> {
-  late final TextEditingController _pinController;
-  late final TextEditingController _confirmPinController;
+  String _newPin = '';
+  String _confirmPin = '';
   String _errorText = '';
   bool _isConfirming = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _pinController = TextEditingController();
-    _confirmPinController = TextEditingController();
+  void _handleKeyPressed(String value) {
+    setState(() {
+      _errorText = '';
+    });
+
+    if (!_isConfirming) {
+      if (_newPin.length < 4) {
+        setState(() => _newPin += value);
+      }
+    } else {
+      if (_confirmPin.length < 4) {
+        setState(() => _confirmPin += value);
+        if (_confirmPin.length == 4) {
+          _validatePins();
+        }
+      }
+    }
+  }
+
+  void _handleBackspace() {
+    setState(() => _errorText = '');
+    if (!_isConfirming) {
+      if (_newPin.isNotEmpty) {
+        setState(() => _newPin = _newPin.substring(0, _newPin.length - 1));
+      }
+    } else {
+      if (_confirmPin.isNotEmpty) {
+        setState(
+          () => _confirmPin = _confirmPin.substring(0, _confirmPin.length - 1),
+        );
+      }
+    }
+  }
+
+  void _validatePins() {
+    if (!_isConfirming) {
+      if (_newPin.length == 4) {
+        setState(() => _isConfirming = true);
+      } else {
+        setState(() => _errorText = S.of(context).enterFullPin);
+      }
+      return;
+    }
+
+    if (_newPin == _confirmPin) {
+      final cubit = context.read<SecurityCubit>();
+      cubit.setPinCode(pincode: _newPin);
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(S.of(context).pinSetSuccess)));
+    } else {
+      setState(() {
+        _errorText = S.of(context).pinMismatch;
+        _newPin = '';
+        _confirmPin = '';
+        _isConfirming = false;
+      });
+    }
   }
 
   @override
@@ -40,8 +96,8 @@ class _SetPinModalState extends State<SetPinModal> {
             _isConfirming ? S.of(context).confirmPin : S.of(context).setNewPin,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 24),
-          _isConfirming ? _buildConfirmPinField() : _buildNewPinField(),
+          const SizedBox(height: 32),
+          PinDisplay(pin: _isConfirming ? _confirmPin : _newPin, length: 4),
           if (_errorText.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -50,6 +106,11 @@ class _SetPinModalState extends State<SetPinModal> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
+          const SizedBox(height: 32),
+          NumPad(
+            onKeyPressed: _handleKeyPressed,
+            onBackspacePressed: _handleBackspace,
+          ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: _validatePins,
@@ -61,87 +122,5 @@ class _SetPinModalState extends State<SetPinModal> {
         ],
       ),
     );
-  }
-
-  Widget _buildNewPinField() {
-    return PinCodeTextField(
-      appContext: context,
-      length: 4,
-      controller: _pinController,
-      obscureText: true,
-      animationType: AnimationType.fade,
-      pinTheme: PinTheme(
-        shape: PinCodeFieldShape.circle,
-        activeColor: Theme.of(context).colorScheme.primary,
-        inactiveColor: Colors.grey,
-        selectedColor: Theme.of(context).colorScheme.secondary,
-      ),
-      onChanged: (value) {},
-    );
-  }
-
-  Widget _buildConfirmPinField() {
-    return PinCodeTextField(
-      appContext: context,
-      key: ValueKey('confirm_pin_field'),
-      length: 4,
-      controller: _confirmPinController,
-      obscureText: true,
-      animationType: AnimationType.fade,
-      pinTheme: PinTheme(
-        shape: PinCodeFieldShape.circle,
-        activeColor: Theme.of(context).colorScheme.primary,
-        inactiveColor: Colors.grey,
-        selectedColor: Theme.of(context).colorScheme.secondary,
-      ),
-      onChanged: (value) {
-        if (value.length == 4) _validatePins();
-      },
-    );
-  }
-
-  void _validatePins() {
-    if (!_isConfirming) {
-      if (_pinController.text.length != 4) {
-        setState(() => _errorText = S.of(context).enterFullPin);
-        return;
-      }
-      setState(() {
-        _isConfirming = true;
-        _errorText = '';
-        _confirmPinController.clear();
-      });
-      return;
-    }
-
-    if (_confirmPinController.text.length != 4) {
-      setState(() => _errorText = S.of(context).enterFullPin);
-      return;
-    }
-
-    if (_pinController.text == _confirmPinController.text) {
-      final cubit = context.read<SecurityCubit>();
-      cubit.setPinCode(pincode: _pinController.text);
-      Navigator.pop(context, true);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(S.of(context).pinSetSuccess)));
-    } else {
-      setState(() {
-        _errorText = S.of(context).pinMismatch;
-        _pinController.clear();
-        _isConfirming = false;
-      });
-      Future.delayed(Duration.zero, () {
-        _confirmPinController.clear();
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _pinController.dispose();
-    _confirmPinController.dispose();
-    super.dispose();
   }
 }

@@ -15,10 +15,14 @@ import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_repository.dart';
 import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
 import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_repository.dart';
+import 'package:meet_now_app/server/repository/report/report_interface.dart';
+import 'package:meet_now_app/server/repository/report/report_repository.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_repository.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_impl.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
+import 'package:meet_now_app/server/repository/stikers_parks/stikers_parks_interface.dart';
+import 'package:meet_now_app/server/repository/stikers_parks/stikers_parks_repository.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_repository.dart';
 import 'package:meet_now_app/server/repository/user/user_interface.dart';
@@ -42,10 +46,17 @@ import 'package:meet_now_app/theme/repository/theme_interface.dart';
 import 'package:meet_now_app/theme/repository/theme_repository.dart';
 
 class AppRepository extends StatelessWidget {
-  const AppRepository({super.key, required this.child, required this.config});
+  const AppRepository({
+    super.key,
+    required this.child,
+    required this.config,
+    required this.storageHive,
+  });
 
   final Widget child;
   final AppConfig config;
+  final StorageHiveRepository storageHive;
+
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -107,7 +118,10 @@ class AppRepository extends StatelessWidget {
               ),
         ),
         RepositoryProvider<UploadImageInterface>(
-          create: (context) => UploadImageRepository(),
+          create:
+              (context) => UploadImageRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
         ),
         RepositoryProvider<MessageInterface>(
           create:
@@ -141,9 +155,7 @@ class AppRepository extends StatelessWidget {
                 userModelAppInterface: context.read<UserModelAppInterface>(),
               ),
         ),
-        RepositoryProvider<StorageHiveInterface>(
-          create: (context) => StorageHiveRepository(),
-        ),
+        RepositoryProvider<StorageHiveInterface>.value(value: storageHive),
         RepositoryProvider<PurpAndInteresInterface>(
           create:
               (context) => PurpAndInteresRepository(
@@ -153,6 +165,18 @@ class AppRepository extends StatelessWidget {
         RepositoryProvider<FirstOpenAppInterface>(
           create:
               (context) => FirstOpenAppRepository(preferences: config.prefs),
+        ),
+        RepositoryProvider<ReportInterface>(
+          create:
+              (context) => ReportRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
+        ),
+        RepositoryProvider<StikersParksInterface>(
+          create:
+              (context) => StikersParksRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
         ),
       ],
       child: child,
