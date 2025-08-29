@@ -489,3 +489,19 @@ class ThemeRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [UploadsAvatarsScreen]
+class UploadsAvatarsRoute extends PageRouteInfo<void> {
+  const UploadsAvatarsRoute({List<PageRouteInfo>? children})
+    : super(UploadsAvatarsRoute.name, initialChildren: children);
+
+  static const String name = 'UploadsAvatarsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const UploadsAvatarsScreen();
+    },
+  );
+}

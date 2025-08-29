@@ -32,6 +32,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final _scrollController = ScrollController();
   late StreamSubscription<ChatMessageState> _subscription;
   late String _chatId;
+  bool _isModalShown = false;
 
   bool isTemporary = false;
   String senderID = '';
@@ -204,6 +205,33 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     );
   }
 
+  // void _showWaitingModal(BuildContext context) {
+  //   if (ModalRoute.of(context)?.isCurrent == false) return;
+
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) {
+  //       return BlocProvider.value(
+  //         value: _timerCubit,
+  //         child: BlocBuilder<ChatTimerCubit, ChatTimerState>(
+  //           bloc: _timerCubit,
+  //           builder: (context, state) {
+  //             final seconds = state.maybeWhen(
+  //               modalRunning: (s) => s,
+  //               orElse: () => 30,
+  //             );
+  //             return AlertDialog(
+  //               title: const Text("Ожидание собеседника"),
+  //               content: Text("Подождите $seconds секунд..."),
+  //             );
+  //           },
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -221,6 +249,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   listener: (context, state) {
                     state.maybeMap(
                       oneThirdReached: (_) => _showOneThirdModal(context),
+                      modalRunning: (modalState) {
+                        if (!_isModalShown) {
+                          _isModalShown = true;
+                          // _showWaitingModal(context);
+                        }
+                      },
+                      modalFinished: (_) {
+                        _isModalShown = false;
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
                       orElse: () {},
                     );
                   },

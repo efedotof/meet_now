@@ -164,6 +164,11 @@ class SettingsScreen extends StatelessWidget {
                         title: S.of(context).friendRequests,
                         onTap: () => context.pushRoute(FriendRequestsRoute()),
                       ),
+                       SettingsItem(
+                        icon: Icons.report_problem,
+                        title: "Мои жалобы",
+                        onTap: () => context.pushRoute(MyReportRoute()),
+                      ),
                       SettingsItem(
                         icon: Icons.language,
                         title: S.of(context).language,
@@ -180,7 +185,6 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 24),
                   Text(
                     S.of(context).appSettings,

@@ -1,7 +1,6 @@
 import 'package:encrypt/encrypt.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'pincode_storage_interface.dart';
 
 class PincondeStorageRepository implements PincodeStorageInterface {
@@ -20,13 +19,13 @@ class PincondeStorageRepository implements PincodeStorageInterface {
   String getPinCode() {
     final combined = preferences.getString(_passwordKey);
     if (combined == null) {
-      throw Exception('PinCode не установлен');
+      return '';
     }
 
     try {
       final parts = combined.split('::');
       if (parts.length != 2) {
-        throw Exception('Неверный формат сохранённого PinCode');
+        return '';
       }
 
       final iv = IV.fromBase64(parts[0]);
@@ -35,7 +34,7 @@ class PincondeStorageRepository implements PincodeStorageInterface {
       final decrypted = encrypter.decrypt(encrypted, iv: iv);
       return decrypted;
     } catch (e) {
-      throw Exception('Ошибка расшифровки PinCode: $e');
+      return '';
     }
   }
 

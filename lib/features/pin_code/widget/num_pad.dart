@@ -1,64 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
-import "digit_button.dart";
+import 'package:meet_now_app/features/security/widget/backspace_button.dart';
+import 'package:meet_now_app/features/security/widget/my_button.dart';
 
 class NumPad extends StatelessWidget {
-  const NumPad({super.key});
-  final List<List<String>> buttons = const [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-    ['', '0', '←'],
-  ];
+  final void Function(String) onKeyPressed;
+  final VoidCallback onBackspacePressed;
+
+  const NumPad({
+    super.key,
+    required this.onKeyPressed,
+    required this.onBackspacePressed,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PinCodeCubit, PinCodeState>(
-      builder: (context, state) {
-        final cubit = context.read<PinCodeCubit>();
-        final isProcessing = state.maybeWhen(
-          failure: (_) => true,
-          success: () => true,
-          orElse: () => false,
-        );
-
-        return Column(
-          children:
-              buttons.map((row) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children:
-                      row.map((digit) {
-                        return DigitButton(
-                          digit: digit,
-                          onPressed:
-                              isProcessing
-                                  ? null
-                                  : () {
-                                    if (digit == '←') {
-                                      cubit.backspace(
-                                        state.maybeWhen(
-                                          entering: (pin) => pin,
-                                          orElse: () => '',
-                                        ),
-                                      );
-                                    } else if (digit.isNotEmpty) {
-                                      cubit.addDigit(
-                                        context: context,
-                                        digit: digit,
-                                        currentPin: state.maybeWhen(
-                                          entering: (pin) => pin,
-                                          orElse: () => '',
-                                        ),
-                                      );
-                                    }
-                                  },
-                        );
-                      }).toList(),
-                );
-              }).toList(),
-        );
-      },
+    return GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: 3,
+      childAspectRatio: 1.5,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      children: [
+        MyButton(value: '1', onKeyPressed: onKeyPressed),
+        MyButton(value: '2', onKeyPressed: onKeyPressed),
+        MyButton(value: '3', onKeyPressed: onKeyPressed),
+        MyButton(value: '4', onKeyPressed: onKeyPressed),
+        MyButton(value: '5', onKeyPressed: onKeyPressed),
+        MyButton(value: '6', onKeyPressed: onKeyPressed),
+        MyButton(value: '7', onKeyPressed: onKeyPressed),
+        MyButton(value: '8', onKeyPressed: onKeyPressed),
+        MyButton(value: '9', onKeyPressed: onKeyPressed),
+        const SizedBox.shrink(),
+        MyButton(value: '0', onKeyPressed: onKeyPressed),
+        BackspaceButton(onBackspacePressed: onBackspacePressed),
+      ],
     );
   }
 }

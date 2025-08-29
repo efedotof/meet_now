@@ -3,3 +3,5 @@ export 'personal_info.dart';
 export 'interests_section.dart';
 export 'purposes_section.dart';
 export 'friends_section.dart';
+export 'account_info_section.dart';
+export 'profile_stats.dart';

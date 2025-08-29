@@ -11,18 +11,22 @@ import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
+import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
 import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
+import 'package:meet_now_app/features/setting_profile/cubit/setting_profile_cubit.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/games/games_interface.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
 import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
+import 'package:meet_now_app/server/repository/report/report_interface.dart';
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
@@ -165,6 +169,23 @@ class AppBloc extends StatelessWidget {
           create:
               (context) =>
                   FriendCubit(friendInterface: context.read<FriendInterface>()),
+        ),
+        BlocProvider(
+          create:
+              (context) => SettingProfileCubit(
+                userInterface: context.read<UserInterface>(),
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) => UploadsAvatarsCubit(
+                uploadImageInterface: context.read<UploadImageInterface>(),
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  ReportCubit(reportInterface: context.read<ReportInterface>()),
         ),
       ],
       child: child,

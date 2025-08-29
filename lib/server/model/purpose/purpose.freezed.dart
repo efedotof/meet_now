@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Purpose {
 
-@HiveField(0) String get id;@HiveField(1) String? get text;
+@HiveField(0) String get id;@HiveField(1) String? get title;
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PurposeCopyWith<Purpose> get copyWith => _$PurposeCopyWithImpl<Purpose>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Purpose&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Purpose&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text);
+int get hashCode => Object.hash(runtimeType,id,title);
 
 @override
 String toString() {
-  return 'Purpose(id: $id, text: $text)';
+  return 'Purpose(id: $id, title: $title)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PurposeCopyWith<$Res>  {
   factory $PurposeCopyWith(Purpose value, $Res Function(Purpose) _then) = _$PurposeCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? text
+@HiveField(0) String id,@HiveField(1) String? title
 });
 
 
@@ -65,10 +65,10 @@ class _$PurposeCopyWithImpl<$Res>
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -154,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? text)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? title)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Purpose() when $default != null:
-return $default(_that.id,_that.text);case _:
+return $default(_that.id,_that.title);case _:
   return orElse();
 
 }
@@ -175,10 +175,10 @@ return $default(_that.id,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? text)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? title)  $default,) {final _that = this;
 switch (_that) {
 case _Purpose():
-return $default(_that.id,_that.text);case _:
+return $default(_that.id,_that.title);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +195,10 @@ return $default(_that.id,_that.text);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? text)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? title)?  $default,) {final _that = this;
 switch (_that) {
 case _Purpose() when $default != null:
-return $default(_that.id,_that.text);case _:
+return $default(_that.id,_that.title);case _:
   return null;
 
 }
@@ -210,11 +210,11 @@ return $default(_that.id,_that.text);case _:
 @JsonSerializable()
 
 class _Purpose implements Purpose {
-   _Purpose({@HiveField(0) required this.id, @HiveField(1) required this.text});
+   _Purpose({@HiveField(0) required this.id, @HiveField(1) required this.title});
   factory _Purpose.fromJson(Map<String, dynamic> json) => _$PurposeFromJson(json);
 
 @override@HiveField(0) final  String id;
-@override@HiveField(1) final  String? text;
+@override@HiveField(1) final  String? title;
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +229,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Purpose&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Purpose&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text);
+int get hashCode => Object.hash(runtimeType,id,title);
 
 @override
 String toString() {
-  return 'Purpose(id: $id, text: $text)';
+  return 'Purpose(id: $id, title: $title)';
 }
 
 
@@ -249,7 +249,7 @@ abstract mixin class _$PurposeCopyWith<$Res> implements $PurposeCopyWith<$Res> {
   factory _$PurposeCopyWith(_Purpose value, $Res Function(_Purpose) _then) = __$PurposeCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? text
+@HiveField(0) String id,@HiveField(1) String? title
 });
 
 
@@ -266,10 +266,10 @@ class __$PurposeCopyWithImpl<$Res>
 
 /// Create a copy of Purpose
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = freezed,}) {
   return _then(_Purpose(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: freezed == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

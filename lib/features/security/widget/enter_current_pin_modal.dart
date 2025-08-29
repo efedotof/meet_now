@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
+
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+
+import 'num_pad.dart';
+import 'pin_display.dart';
 
 class EnterCurrentPinModal extends StatefulWidget {
   const EnterCurrentPinModal({super.key});
@@ -12,13 +15,40 @@ class EnterCurrentPinModal extends StatefulWidget {
 }
 
 class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
-  late final TextEditingController _pinController;
+  String _enteredPin = '';
   String _errorText = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _pinController = TextEditingController();
+  void _handleKeyPressed(String value) {
+    if (_enteredPin.length < 4) {
+      setState(() {
+        _enteredPin += value;
+        _errorText = '';
+      });
+      if (_enteredPin.length == 4) {
+        _validatePin();
+      }
+    }
+  }
+
+  void _handleBackspace() {
+    if (_enteredPin.isNotEmpty) {
+      setState(() {
+        _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
+        _errorText = '';
+      });
+    }
+  }
+
+  void _validatePin() {
+    final cubit = context.read<SecurityCubit>();
+    if (cubit.verifyPin(_enteredPin)) {
+      Navigator.pop(context, true);
+    } else {
+      setState(() {
+        _errorText = S.of(context).incorrectPin;
+        _enteredPin = '';
+      });
+    }
   }
 
   @override
@@ -37,23 +67,8 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
             S.of(context).enterCurrentPin,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 24),
-          PinCodeTextField(
-            appContext: context,
-            length: 4,
-            controller: _pinController,
-            obscureText: true,
-            animationType: AnimationType.fade,
-            pinTheme: PinTheme(
-              shape: PinCodeFieldShape.circle,
-              activeColor: Theme.of(context).colorScheme.primary,
-              inactiveColor: Colors.grey,
-              selectedColor: Theme.of(context).colorScheme.secondary,
-            ),
-            onChanged: (value) {
-              if (value.length == 4) _validatePin();
-            },
-          ),
+          const SizedBox(height: 32),
+          PinDisplay(pin: _enteredPin, length: 4),
           if (_errorText.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -62,37 +77,14 @@ class _EnterCurrentPinModalState extends State<EnterCurrentPinModal> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _validatePin,
-            child: Text(S.of(context).confirm),
-          ),
           const SizedBox(height: 32),
+          NumPad(
+            onKeyPressed: _handleKeyPressed,
+            onBackspacePressed: _handleBackspace,
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );
-  }
-
-  void _validatePin() {
-    if (_pinController.text.length != 4) {
-      if (mounted) setState(() => _errorText = S.of(context).enterFullPin);
-      return;
-    }
-
-    final cubit = context.read<SecurityCubit>();
-    if (cubit.verifyPin(_pinController.text)) {
-      Navigator.pop(context, true);
-    } else {
-      if (mounted) {
-        setState(() => _errorText = S.of(context).incorrectPin);
-        _pinController.clear();
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _pinController.dispose();
-    super.dispose();
   }
 }
