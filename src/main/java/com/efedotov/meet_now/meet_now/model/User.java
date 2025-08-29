@@ -84,4 +84,10 @@ public class User {
 
     @Column(name = "game_points")
     private int gamePoints = 0;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "image_url")
+    private List<String> images;
+
 }

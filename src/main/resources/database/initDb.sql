@@ -21,6 +21,11 @@ CREATE TABLE IF NOT EXISTS users (
     game_points INT DEFAULT 0 
 );
 
+CREATE TABLE IF NOT EXISTS user_images (
+    user_id UUID REFERENCES users(id),
+    image_url TEXT
+);
+
 
 CREATE TABLE IF NOT EXISTS user_purposes (
     user_id UUID NOT NULL,
@@ -70,13 +75,13 @@ CREATE TABLE IF NOT EXISTS messages (
 );
 
 
-
 CREATE TABLE IF NOT EXISTS reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     reporter_id UUID REFERENCES users(id),
     reported_id UUID REFERENCES users(id),
     reason TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'SENT'
 );
 
 

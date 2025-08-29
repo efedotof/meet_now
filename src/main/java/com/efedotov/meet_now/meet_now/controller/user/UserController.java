@@ -1,5 +1,6 @@
 package com.efedotov.meet_now.meet_now.controller.user;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,14 @@ public class UserController {
     public ResponseEntity<User> updateAvatar(@PathVariable UUID id, @RequestBody String avatar) {
         UserDto dto = new UserDto();
         dto.setAvatar(avatar);
+        return ResponseEntity.ok(userService.updateProfile(id, dto));
+    }
+
+    @PatchMapping("/{id}/images")
+    @Operation(summary = "Добавить изображения профиля")
+    public ResponseEntity<User> updateImages(@PathVariable UUID id, @RequestBody List<String> images) {
+        UserDto dto = new UserDto();
+        dto.setImages(images);
         return ResponseEntity.ok(userService.updateProfile(id, dto));
     }
 
@@ -131,7 +140,7 @@ public class UserController {
         UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
         userService.setUserSearching(userId, true);
     }
-    
+
     @Operation(summary = "Стоп поиск")
     @PostMapping("/stop-search")
     public void stopSearch(Authentication authentication) {
@@ -139,6 +148,4 @@ public class UserController {
         userService.setUserSearching(userId, false);
     }
 
-
 }
- 

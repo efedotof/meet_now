@@ -29,4 +29,5 @@ public class UserDto {
     private Boolean isOnline;
     private String floor;
     private int gamePoints;
+    private List<String> images;
 }

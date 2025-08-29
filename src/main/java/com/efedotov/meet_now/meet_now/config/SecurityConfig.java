@@ -35,7 +35,6 @@ public class SecurityConfig {
                                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
                                                                 "/swagger-resources/**", "/webjars/**")
                                                 .permitAll()
-                                                .requestMatchers("/uploads/**").permitAll()
                                                 .requestMatchers("/api/v1/auth/token/**").permitAll()
                                                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                                                 .requestMatchers("/api/v1/search/**").hasAnyRole("USER", "ADMIN")
