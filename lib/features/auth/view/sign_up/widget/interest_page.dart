@@ -70,15 +70,15 @@ class _InterestPageState extends State<InterestPage> {
                     runSpacing: 8,
                     children: rowItems.map((interest) {
                       final selected =
-                          widget.formData.interests.contains(interest.id);
+                          widget.formData.interests.contains(interest.title);
                       return ChoiceChip(
                         label: Text(interest.title ?? ''),
                         selected: selected,
                         onSelected: (val) => setState(() {
                           if (val) {
-                            widget.formData.interests.add(interest.id);
+                            widget.formData.interests.add(interest.title!);
                           } else {
-                            widget.formData.interests.remove(interest.id);
+                            widget.formData.interests.remove(interest.title);
                           }
                         }),
                       );
