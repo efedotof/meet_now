@@ -33,7 +33,7 @@ class _PurposePageState extends State<PurposePage> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 50) {
       setState(() {
-        _itemsToShow += 20; // подгружаем еще 20 элементов
+        _itemsToShow += 20; 
       });
     }
   }
@@ -71,7 +71,7 @@ class _PurposePageState extends State<PurposePage> {
                     children:
                         rowItems.map((purpose) {
                           final selected = widget.formData.purposes.contains(
-                            purpose.id,
+                            purpose.title,
                           );
                           return ChoiceChip(
                             label: Text(purpose.title ?? ''),
@@ -79,10 +79,10 @@ class _PurposePageState extends State<PurposePage> {
                             onSelected:
                                 (val) => setState(() {
                                   if (val) {
-                                    widget.formData.purposes.add(purpose.id);
+                                    widget.formData.purposes.add(purpose.title!);
                                   } else {
                                     widget.formData.purposes.remove(
-                                      purpose.id,
+                                      purpose.title,
                                     );
                                   }
                                 }),
