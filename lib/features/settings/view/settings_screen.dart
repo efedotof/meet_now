@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
@@ -30,24 +29,7 @@ class SettingsScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 32,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        backgroundImage:
-                            user.avatar != null
-                                ? NetworkImage(
-                                  "$uploadGetAddress${user.avatar}",
-                                )
-                                : null,
-                        child:
-                            user.avatar == null
-                                ? const Icon(
-                                  Icons.person,
-                                  size: 32,
-                                  color: Colors.white,
-                                )
-                                : null,
-                      ),
+                      UserAvatar(avatarKey: user.avatar, radius: 32),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -118,7 +100,9 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  S.of(context).friendsCount(user.friends?.length ?? 0),
+                                  S
+                                      .of(context)
+                                      .friendsCount(user.friends?.length ?? 0),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -164,7 +148,7 @@ class SettingsScreen extends StatelessWidget {
                         title: S.of(context).friendRequests,
                         onTap: () => context.pushRoute(FriendRequestsRoute()),
                       ),
-                       SettingsItem(
+                      SettingsItem(
                         icon: Icons.report_problem,
                         title: "Мои жалобы",
                         onTap: () => context.pushRoute(MyReportRoute()),
@@ -241,8 +225,8 @@ class SettingsScreen extends StatelessWidget {
                         titleColor: Colors.red,
                         onTap:
                             () => context.read<SettingsCubit>().exit(
-                                  context: context,
-                                ),
+                              context: context,
+                            ),
                       ),
                     ],
                   ),

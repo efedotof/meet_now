@@ -8,6 +8,7 @@ class ProfileStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -29,12 +30,19 @@ class ProfileStats extends StatelessWidget {
               count: user.interests.length,
               label: "Интересы",
             ),
+            if (user.images != null) 
+            _Stat(
+              icon: Icons.photo_library,
+              count: user.images!.length,
+              label: "Фото",
+            ),
           ],
         ),
       ),
     );
   }
 }
+
 
 class _Stat extends StatelessWidget {
   const _Stat({required this.icon, required this.count, required this.label});

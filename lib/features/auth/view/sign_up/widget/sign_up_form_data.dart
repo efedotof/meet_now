@@ -22,7 +22,6 @@ class SignUpFormData {
       firstname: firstname.trim(),
       subname: subname.trim(),
       description: description.trim(),
-      avatar: avatar.trim(),
       city: city.trim(),
       age: age,
       purposes: purposes,

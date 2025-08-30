@@ -10,7 +10,6 @@ abstract class Registration with _$Registration {
     required String firstname,
     required String subname,
     required String description,
-    required String avatar,
     required String city,
     required int age,
     required List<String> purposes,

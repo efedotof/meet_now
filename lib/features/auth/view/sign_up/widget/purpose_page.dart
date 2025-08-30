@@ -70,7 +70,7 @@ class _PurposePageState extends State<PurposePage> {
                     runSpacing: 8,
                     children:
                         rowItems.map((purpose) {
-                          final selected = widget.formData.interests.contains(
+                          final selected = widget.formData.purposes.contains(
                             purpose.id,
                           );
                           return ChoiceChip(
@@ -79,9 +79,9 @@ class _PurposePageState extends State<PurposePage> {
                             onSelected:
                                 (val) => setState(() {
                                   if (val) {
-                                    widget.formData.interests.add(purpose.id);
+                                    widget.formData.purposes.add(purpose.id);
                                   } else {
-                                    widget.formData.interests.remove(
+                                    widget.formData.purposes.remove(
                                       purpose.id,
                                     );
                                   }

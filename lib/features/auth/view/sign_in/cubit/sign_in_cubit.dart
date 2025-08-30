@@ -62,7 +62,7 @@ class SignInCubit extends Cubit<SignInState> {
     required User user,
     required BuildContext context,
   }) async {
-    if (user.avatar == null) {
+    if (user.avatar == null || user.avatar == "") {
       context.replaceRoute(UploadsAvatarsRoute());
     } else {
       context.router.replaceAll([MainHomeRoute()]);

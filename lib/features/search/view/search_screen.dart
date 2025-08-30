@@ -1,9 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
 import 'package:meet_now_app/features/search/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/server/model/interes/interest.dart';
+import 'package:meet_now_app/server/model/purpose/purpose.dart';
+import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
 
 @RoutePage()
 class SearchScreen extends StatelessWidget {
@@ -124,14 +128,46 @@ class SearchScreen extends StatelessWidget {
                       ],
                       if (state.gender.isNotEmpty && state.ageFrom != null) ...[
                         const SizedBox(height: 40),
-                        TextField(
-                          onChanged: (value) => cubit.setCity(value),
-                          decoration: InputDecoration(
-                            labelText: S.of(context).cityOptional,
-                            border: const OutlineInputBorder(),
-                            filled: true,
-                            fillColor: theme.cardTheme.color,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              onChanged: (value) => cubit.searchCities(value),
+                              decoration: InputDecoration(
+                                labelText: S.of(context).cityOptional,
+                                border: const OutlineInputBorder(),
+                                filled: true,
+                                fillColor: theme.cardTheme.color,
+                              ),
+                            ),
+                            if (state.cities.isNotEmpty)
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: theme.cardTheme.color,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 4,
+                                      color: Colors.black.withAlpha(1),
+                                    ),
+                                  ],
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: state.cities.length,
+                                  itemBuilder: (context, index) {
+                                    final city = state.cities[index];
+                                    return ListTile(
+                                      title: Text(city.nameCity),
+                                      onTap: () {
+                                        cubit.setCity(city.nameCity);
+                                        cubit.clearCities();
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(
@@ -144,76 +180,136 @@ class SearchScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        OutlinedButton(
-                          onPressed: () async {
-                            final result = await showDialog<List<String>>(
-                              context: context,
-                              builder:
-                                  (context) => MultiSelectDialog(
-                                    title: S.of(context).interests,
-                                    items: cubit.availableInterests,
-                                    selectedItems: state.interests,
-                                  ),
-                            );
-                            if (result != null) {
-                              cubit.setInterests(result);
-                            }
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${S.of(context).interests} (${state.interests.length})',
-                                style: theme.textTheme.bodyLarge,
+                        ValueListenableBuilder<Box>(
+                          valueListenable:
+                              context
+                                  .read<StorageHiveInterface>()
+                                  .listenableInterestBox,
+                          builder: (context, box, child) {
+                            final allInterests =
+                                box.values.cast<Interest>().toList();
+                            return OutlinedButton(
+                              onPressed: () async {
+                                final result = await showDialog<List<String>>(
+                                  context: context,
+                                  builder:
+                                      (context) => MultiSelectDialog(
+                                        title: S.of(context).interests,
+                                        items:
+                                            allInterests
+                                                .map((i) => i.title ?? '')
+                                                .toList(),
+                                        selectedItems:
+                                            allInterests
+                                                .where(
+                                                  (i) => state.interests
+                                                      .contains(i.id),
+                                                )
+                                                .map((i) => i.title ?? '')
+                                                .toList(),
+                                      ),
+                                );
+                                if (result != null) {
+                                  final selectedIds =
+                                      allInterests
+                                          .where(
+                                            (i) => result.contains(i.title),
+                                          )
+                                          .map((i) => i.id)
+                                          .toList();
+                                  cubit.setInterests(selectedIds);
+                                }
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                minimumSize: const Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_drop_down, size: 24),
-                            ],
-                          ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${S.of(context).interests} (${state.interests.length})',
+                                    style: theme.textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_drop_down, size: 24),
+                                ],
+                              ),
+                            );
+                          },
                         ),
+
                         const SizedBox(height: 16),
 
-                        OutlinedButton(
-                          onPressed: () async {
-                            final result = await showDialog<List<String>>(
-                              context: context,
-                              builder:
-                                  (context) => MultiSelectDialog(
-                                    title: S.of(context).purposes,
-                                    items: cubit.availablePurposes,
-                                    selectedItems: state.purposes,
-                                  ),
-                            );
-                            if (result != null) {
-                              cubit.setPurposes(result);
-                            }
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${S.of(context).purposes} (${state.purposes.length})',
-                                style: theme.textTheme.bodyLarge,
+                        ValueListenableBuilder<Box>(
+                          valueListenable:
+                              context
+                                  .read<StorageHiveInterface>()
+                                  .listenablePurposeBox,
+                          builder: (context, box, child) {
+                            final allPurpose =
+                                box.values.cast<Purpose>().toList();
+                            return OutlinedButton(
+                              onPressed: () async {
+                                final result = await showDialog<List<String>>(
+                                  context: context,
+                                  builder:
+                                      (context) => MultiSelectDialog(
+                                        title: S.of(context).purposes,
+                                        items:
+                                            allPurpose
+                                                .map((i) => i.title ?? '')
+                                                .toList(),
+                                        selectedItems:
+                                            allPurpose
+                                                .where(
+                                                  (i) => state.purposes
+                                                      .contains(i.id),
+                                                )
+                                                .map((i) => i.title ?? '')
+                                                .toList(),
+                                      ),
+                                );
+                                if (result != null) {
+                                  final selectedIds =
+                                      allPurpose
+                                          .where(
+                                            (i) => result.contains(i.title),
+                                          )
+                                          .map((i) => i.id)
+                                          .toList();
+                                  cubit.setPurposes(selectedIds);
+                                }
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                minimumSize: const Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_drop_down, size: 24),
-                            ],
-                          ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${S.of(context).purposes} (${state.purposes.length})',
+                                    style: theme.textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_drop_down, size: 24),
+                                ],
+                              ),
+                            );
+                          },
                         ),
+
                         const SizedBox(height: 40),
                       ],
                     ],
