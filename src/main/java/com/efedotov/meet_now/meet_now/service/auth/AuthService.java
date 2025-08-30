@@ -49,8 +49,8 @@ public class AuthService {
         user.setFirstname(dto.getFirstname());
         user.setSubname(dto.getSubname());
         user.setDescription(dto.getDescription());
-        user.setAvatar(dto.getAvatar());
         user.setCity(dto.getCity());
+        user.setAvatar("");
         user.setAge(dto.getAge());
         user.setPurposes(dto.getPurposes());
         user.setInterests(dto.getInterests());

@@ -30,7 +30,6 @@ public class AuthController {
         try {
             System.out.println("Password from DTO: " + dto.getPassword());
             UserDto userDto = authService.register(dto);
-            
             return ResponseEntity.ok(userDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(409).body(e.getMessage());

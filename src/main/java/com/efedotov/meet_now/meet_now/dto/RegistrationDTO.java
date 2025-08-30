@@ -11,7 +11,6 @@ public class RegistrationDTO {
     private String firstname;
     private String subname;
     private String description;
-    private String avatar;
     private String city;
     private Integer age;
     private List<String> purposes;

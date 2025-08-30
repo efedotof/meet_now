@@ -1,5 +1,8 @@
 package com.efedotov.meet_now.meet_now.service.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import com.efedotov.meet_now.meet_now.repository.RoleRepository;
 import com.efedotov.meet_now.meet_now.repository.UserRepository;
 import com.efedotov.meet_now.meet_now.until.EncryptionUtils;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,4 +124,108 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void setUserAvatar(UUID userId, String url) {
+        try {
+            log.info("Setting avatar for user {}: {}", userId, url);
+            User user = getById(userId);
+            user.setAvatar(url);
+            userRepository.save(user);
+            log.info("Avatar set successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error setting avatar for user {}", userId, e);
+            throw new RuntimeException("Failed to set avatar", e);
+        }
+    }
+
+    @Transactional
+    public void setUserImages(UUID userId, List<String> imageUrls) {
+        try {
+            log.info("Setting {} images for user {}", imageUrls.size(), userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            user.setImages(new ArrayList<>(imageUrls));
+            userRepository.save(user);
+            log.info("Images set successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error setting images for user {}", userId, e);
+            throw new RuntimeException("Failed to set images", e);
+        }
+    }
+
+    @Transactional
+    public void addUserImage(UUID userId, String imageUrl) {
+        try {
+            log.info("Adding image for user {}: {}", userId, imageUrl);
+            User user = getById(userId);
+            List<String> images = user.getImages();
+            if (images == null) {
+                images = new ArrayList<>();
+            }
+            images.add(imageUrl);
+            user.setImages(images);
+            userRepository.save(user);
+            log.info("Image added successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error adding image for user {}", userId, e);
+            throw new RuntimeException("Failed to add image", e);
+        }
+    }
+
+    public String getUserAvatar(UUID userId) {
+        User user = getById(userId);
+        return user.getAvatar();
+    }
+
+    public List<String> getUserImages(UUID userId) {
+        User user = getById(userId);
+        return user.getImages() != null ? user.getImages() : Collections.emptyList();
+    }
+
+    @Transactional
+    public void removeUserAvatar(UUID userId) {
+        try {
+            log.info("Removing avatar for user {}", userId);
+            User user = getById(userId);
+            user.setAvatar(null);
+            userRepository.save(user);
+            log.info("Avatar removed successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error removing avatar for user {}", userId, e);
+            throw new RuntimeException("Failed to remove avatar", e);
+        }
+    }
+
+    @Transactional
+    public void removeUserImage(UUID userId, String imageUrl) {
+        try {
+            log.info("Removing image for user {}: {}", userId, imageUrl);
+            User user = getById(userId);
+            List<String> images = user.getImages();
+            if (images != null) {
+                images.remove(imageUrl);
+                user.setImages(images);
+                userRepository.save(user);
+            }
+            log.info("Image removed successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error removing image for user {}", userId, e);
+            throw new RuntimeException("Failed to remove image", e);
+        }
+    }
+
+    @Transactional
+    public void removeAllUserImages(UUID userId) {
+        try {
+            log.info("Removing all images for user {}", userId);
+            User user = getById(userId);
+            user.setImages(new ArrayList<>());
+            userRepository.save(user);
+            log.info("All images removed successfully for user {}", userId);
+        } catch (Exception e) {
+            log.error("Error removing all images for user {}", userId, e);
+            throw new RuntimeException("Failed to remove all images", e);
+        }
+    }
 }
