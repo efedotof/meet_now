@@ -61,7 +61,6 @@ class AuthRepository implements AuthInterface {
           "firstname": registration.firstname,
           "subname": registration.subname,
           "description": registration.description,
-          "avatar": registration.avatar,
           "city": registration.city,
           "age": registration.age,
           "purposes": registration.purposes,

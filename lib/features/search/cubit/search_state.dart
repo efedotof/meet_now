@@ -11,5 +11,6 @@ abstract class SearchState with _$SearchState {
     @Default([]) List<String> purposes,
     @Default('') String city,
     @Default(false) bool verified,
+    @Default([]) List<City> cities,
   }) = _SearchState;
 }

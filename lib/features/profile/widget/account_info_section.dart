@@ -26,11 +26,11 @@ class AccountInfoSection extends StatelessWidget {
               title: "Дата регистрации:",
               value: user.createdAt.toLocal().toString().split(' ')[0],
             ),
-            _InfoRow(
-              icon: Icons.circle,
-              title: "Статус:",
-              value: user.isOnline ? "В сети" : "Не в сети",
-            ),
+            // _InfoRow(
+            //   icon: Icons.circle,
+            //   title: "Статус:",
+            //   value: user.isOnline ? "В сети" : "Не в сети",
+            // ),
             if (user.floor.isNotEmpty)
               _InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
             if (user.roles.isNotEmpty)

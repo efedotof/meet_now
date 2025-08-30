@@ -21,6 +21,7 @@ import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
+import 'package:meet_now_app/server/repository/city/city_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/games/games_interface.dart';
 import 'package:meet_now_app/server/repository/icebreaker/icebreaker_interface.dart';
@@ -67,6 +68,7 @@ class AppBloc extends StatelessWidget {
               (context) => SignUpCubit(
                 authInterface: context.read<AuthInterface>(),
                 uploadImageInterface: context.read<UploadImageInterface>(),
+                cityInterface: context.read<CityInterface>(),
               ),
         ),
         BlocProvider(
@@ -85,6 +87,7 @@ class AppBloc extends StatelessWidget {
               (context) => SearchCubit(
                 searchInterface: context.read<SearchInterface>(),
                 userInterface: context.read<UserInterface>(),
+                cityInterface: context.read<CityInterface>(),
               ),
         ),
         BlocProvider(

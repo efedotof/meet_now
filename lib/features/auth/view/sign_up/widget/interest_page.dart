@@ -33,7 +33,7 @@ class _InterestPageState extends State<InterestPage> {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 50) {
       setState(() {
-        _itemsToShow += 20; // подгружаем еще 20 элементов
+        _itemsToShow += 20; 
       });
     }
   }
@@ -60,7 +60,7 @@ class _InterestPageState extends State<InterestPage> {
               controller: _scrollController,
               padding: const EdgeInsets.all(24),
               shrinkWrap: true,
-              itemCount: (interests.length / 3).ceil(), // по 3 в ряду
+              itemCount: (interests.length / 3).ceil(),
               itemBuilder: (context, rowIndex) {
                 final rowItems = interests.skip(rowIndex * 3).take(3).toList();
                 return Padding(

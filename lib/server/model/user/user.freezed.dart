@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User {
 
- String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String>? get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles; bool get isOnline; String get floor; List<String> get images;
+ String get id; String get username; String get email; String? get firstname; String? get subname; String? get description; String? get avatar; List<String>? get friends; String? get city; int? get age; List<String> get purposes; List<String> get interests; DateTime get createdAt; bool get verified; bool get isSearchable; String? get token; Set<String> get roles; bool get isOnline; String get floor; List<String>? get images;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor, List<String> images
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor, List<String>? images
 });
 
 
@@ -65,7 +65,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,Object? images = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,Object? images = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -86,8 +86,8 @@ as bool,token: freezed == token ? _self.token : token // ignore: cast_nullable_t
 as String?,roles: null == roles ? _self.roles : roles // ignore: cast_nullable_to_non_nullable
 as Set<String>,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
 as bool,floor: null == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String,images: freezed == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
+as List<String>?,
   ));
 }
 
@@ -172,7 +172,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String> images)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String>? images)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor,_that.images);case _:
@@ -193,7 +193,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String> images)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String>? images)  $default,) {final _that = this;
 switch (_that) {
 case _User():
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor,_that.images);case _:
@@ -213,7 +213,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String> images)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String username,  String email,  String? firstname,  String? subname,  String? description,  String? avatar,  List<String>? friends,  String? city,  int? age,  List<String> purposes,  List<String> interests,  DateTime createdAt,  bool verified,  bool isSearchable,  String? token,  Set<String> roles,  bool isOnline,  String floor,  List<String>? images)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
 return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subname,_that.description,_that.avatar,_that.friends,_that.city,_that.age,_that.purposes,_that.interests,_that.createdAt,_that.verified,_that.isSearchable,_that.token,_that.roles,_that.isOnline,_that.floor,_that.images);case _:
@@ -228,7 +228,7 @@ return $default(_that.id,_that.username,_that.email,_that.firstname,_that.subnam
 @JsonSerializable()
 
 class _User implements User {
-  const _User({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String>? friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles, required this.isOnline, required this.floor, required final  List<String> images}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles,_images = images;
+  const _User({required this.id, required this.username, required this.email, this.firstname, this.subname, this.description, this.avatar, required final  List<String>? friends, this.city, this.age, required final  List<String> purposes, required final  List<String> interests, required this.createdAt, required this.verified, required this.isSearchable, this.token, required final  Set<String> roles, required this.isOnline, required this.floor, final  List<String>? images}): _friends = friends,_purposes = purposes,_interests = interests,_roles = roles,_images = images;
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  String id;
@@ -276,11 +276,13 @@ class _User implements User {
 
 @override final  bool isOnline;
 @override final  String floor;
- final  List<String> _images;
-@override List<String> get images {
+ final  List<String>? _images;
+@override List<String>? get images {
+  final value = _images;
+  if (value == null) return null;
   if (_images is EqualUnmodifiableListView) return _images;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_images);
+  return EqualUnmodifiableListView(value);
 }
 
 
@@ -317,7 +319,7 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor, List<String> images
+ String id, String username, String email, String? firstname, String? subname, String? description, String? avatar, List<String>? friends, String? city, int? age, List<String> purposes, List<String> interests, DateTime createdAt, bool verified, bool isSearchable, String? token, Set<String> roles, bool isOnline, String floor, List<String>? images
 });
 
 
@@ -334,7 +336,7 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,Object? images = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? username = null,Object? email = null,Object? firstname = freezed,Object? subname = freezed,Object? description = freezed,Object? avatar = freezed,Object? friends = freezed,Object? city = freezed,Object? age = freezed,Object? purposes = null,Object? interests = null,Object? createdAt = null,Object? verified = null,Object? isSearchable = null,Object? token = freezed,Object? roles = null,Object? isOnline = null,Object? floor = null,Object? images = freezed,}) {
   return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -355,8 +357,8 @@ as bool,token: freezed == token ? _self.token : token // ignore: cast_nullable_t
 as String?,roles: null == roles ? _self._roles : roles // ignore: cast_nullable_to_non_nullable
 as Set<String>,isOnline: null == isOnline ? _self.isOnline : isOnline // ignore: cast_nullable_to_non_nullable
 as bool,floor: null == floor ? _self.floor : floor // ignore: cast_nullable_to_non_nullable
-as String,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as String,images: freezed == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
+as List<String>?,
   ));
 }
 

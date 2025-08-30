@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SearchState {
 
- String get gender; int? get ageFrom; bool get isLoading; bool get isSearching; List<String> get interests; List<String> get purposes; String get city; bool get verified;
+ String get gender; int? get ageFrom; bool get isLoading; bool get isSearching; List<String> get interests; List<String> get purposes; String get city; bool get verified; List<City> get cities;
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SearchStateCopyWith<SearchState> get copyWith => _$SearchStateCopyWithImpl<Sear
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other.cities, cities));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),city,verified);
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),city,verified,const DeepCollectionEquality().hash(cities));
 
 @override
 String toString() {
-  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, interests: $interests, purposes: $purposes, city: $city, verified: $verified)';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SearchStateCopyWith<$Res>  {
   factory $SearchStateCopyWith(SearchState value, $Res Function(SearchState) _then) = _$SearchStateCopyWithImpl;
 @useResult
 $Res call({
- String gender, int? ageFrom, bool isLoading, bool isSearching, List<String> interests, List<String> purposes, String city, bool verified
+ String gender, int? ageFrom, bool isLoading, bool isSearching, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities
 });
 
 
@@ -62,7 +62,7 @@ class _$SearchStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,}) {
   return _then(_self.copyWith(
 gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
@@ -72,7 +72,8 @@ as bool,interests: null == interests ? _self.interests : interests // ignore: ca
 as List<String>,purposes: null == purposes ? _self.purposes : purposes // ignore: cast_nullable_to_non_nullable
 as List<String>,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,verified: null == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,cities: null == cities ? _self.cities : cities // ignore: cast_nullable_to_non_nullable
+as List<City>,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SearchState() when $default != null:
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities)  $default,) {final _that = this;
 switch (_that) {
 case _SearchState():
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities)?  $default,) {final _that = this;
 switch (_that) {
 case _SearchState() when $default != null:
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 
 
 class _SearchState implements SearchState {
-  const _SearchState({this.gender = '', this.ageFrom, this.isLoading = false, this.isSearching = false, final  List<String> interests = const [], final  List<String> purposes = const [], this.city = '', this.verified = false}): _interests = interests,_purposes = purposes;
+  const _SearchState({this.gender = '', this.ageFrom, this.isLoading = false, this.isSearching = false, final  List<String> interests = const [], final  List<String> purposes = const [], this.city = '', this.verified = false, final  List<City> cities = const []}): _interests = interests,_purposes = purposes,_cities = cities;
   
 
 @override@JsonKey() final  String gender;
@@ -236,6 +237,13 @@ class _SearchState implements SearchState {
 
 @override@JsonKey() final  String city;
 @override@JsonKey() final  bool verified;
+ final  List<City> _cities;
+@override@JsonKey() List<City> get cities {
+  if (_cities is EqualUnmodifiableListView) return _cities;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_cities);
+}
+
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -247,16 +255,16 @@ _$SearchStateCopyWith<_SearchState> get copyWith => __$SearchStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other._cities, _cities));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),city,verified);
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),city,verified,const DeepCollectionEquality().hash(_cities));
 
 @override
 String toString() {
-  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, interests: $interests, purposes: $purposes, city: $city, verified: $verified)';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities)';
 }
 
 
@@ -267,7 +275,7 @@ abstract mixin class _$SearchStateCopyWith<$Res> implements $SearchStateCopyWith
   factory _$SearchStateCopyWith(_SearchState value, $Res Function(_SearchState) _then) = __$SearchStateCopyWithImpl;
 @override @useResult
 $Res call({
- String gender, int? ageFrom, bool isLoading, bool isSearching, List<String> interests, List<String> purposes, String city, bool verified
+ String gender, int? ageFrom, bool isLoading, bool isSearching, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities
 });
 
 
@@ -284,7 +292,7 @@ class __$SearchStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,}) {
   return _then(_SearchState(
 gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
@@ -294,7 +302,8 @@ as bool,interests: null == interests ? _self._interests : interests // ignore: c
 as List<String>,purposes: null == purposes ? _self._purposes : purposes // ignore: cast_nullable_to_non_nullable
 as List<String>,city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,verified: null == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,cities: null == cities ? _self._cities : cities // ignore: cast_nullable_to_non_nullable
+as List<City>,
   ));
 }
 

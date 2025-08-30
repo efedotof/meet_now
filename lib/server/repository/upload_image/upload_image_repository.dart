@@ -39,9 +39,11 @@ class UploadImageRepository implements UploadImageInterface {
         debugPrint(response.data.toString());
         return response.data;
       } else {
+        debugPrint('Ошибка загрузки: ${response.statusCode}');
         throw Exception("Ошибка загрузки: ${response.statusCode}");
       }
     } catch (e) {
+      debugPrint('Произошла ошибка: $e');
       throw Exception("Ошибка при загрузке: $e");
     }
   }
@@ -50,7 +52,6 @@ class UploadImageRepository implements UploadImageInterface {
   Future<List<String>> uploadsImages(List<String> filesPath) async {
     try {
       _setAuthHeader();
-
       List<MultipartFile> files = [];
       for (var path in filesPath) {
         final fileName = path.split('/').last;
@@ -59,10 +60,11 @@ class UploadImageRepository implements UploadImageInterface {
 
       FormData formData = FormData.fromMap({"files": files});
 
-      final response = await _dio.post("/upload-images", data: formData);
+      final response = await _dio.post("/upload-images", data: formData,options: Options(headers: {'Content-Type': 'multipart/form-data'}),);
 
       if (response.statusCode == 200) {
         List<dynamic> urls = response.data;
+        debugPrint("Изображения загружены:${urls.toString()}");
         return urls.map((e) => e.toString()).toList();
       } else {
         debugPrint("Ошибка сервера: ${response.statusCode}");
@@ -72,5 +74,15 @@ class UploadImageRepository implements UploadImageInterface {
       debugPrint("Произошла ошибка загрузки изображений: $e");
       return [];
     }
+  }
+
+  @override
+  Future<String> getPresignedUrl(String fileUrl) async {
+    _setAuthHeader();
+    final response = await _dio.get(
+      '/presigned-url',
+      queryParameters: {'fileUrl': fileUrl},
+    );
+    return response.data;
   }
 }

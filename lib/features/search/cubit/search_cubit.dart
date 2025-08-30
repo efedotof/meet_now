@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app/server/model/city/city.dart';
 import 'package:meet_now_app/server/model/search/search_random_model.dart';
+import 'package:meet_now_app/server/repository/city/city_interface.dart'
+    show CityInterface;
 import 'package:meet_now_app/server/repository/search/search_interface.dart';
 import 'package:meet_now_app/server/repository/user/user_interface.dart';
 
@@ -12,33 +17,22 @@ part 'search_cubit.freezed.dart';
 
 class SearchCubit extends Cubit<SearchState> {
   SearchCubit({
+    required CityInterface cityInterface,
     required UserInterface userInterface,
     required SearchInterface searchInterface,
-  }) : _userInterface = userInterface,
+  }) : _cityInterface = cityInterface,
+       _userInterface = userInterface,
        _searchInterface = searchInterface,
        super(const SearchState());
 
   final SearchInterface _searchInterface;
   final UserInterface _userInterface;
+  final CityInterface _cityInterface;
+  Timer? _debounceTimer;
   bool _shouldStopSearch = false;
 
   final List<String> genders = const ['М', 'Ж'];
   final List<int> ageFromList = [for (int i = 0; i < 15; i++) 18 + i * 3];
-
-  final List<String> availableInterests = const [
-    'Спорт',
-    'Музыка',
-    'Искусство',
-    'Технологии',
-    'Путешествия',
-  ];
-
-  final List<String> availablePurposes = const [
-    'Дружба',
-    'Общение',
-    'Свидания',
-    'Серьезные отношения',
-  ];
 
   void selectGender(String gender) {
     emit(state.copyWith(gender: gender, ageFrom: null));
@@ -136,8 +130,32 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
+  Future<void> searchCities(String query) async {
+    _debounceTimer?.cancel();
+    if (query.isEmpty) {
+      emit(state.copyWith(cities: []));
+      return;
+    }
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      try {
+        final cities = await _cityInterface.searchCities(query);
+        emit(state.copyWith(cities: cities));
+      } catch (e) {
+        debugPrint("Ошибка поиска городов: $e");
+        emit(state.copyWith(cities: []));
+      }
+    });
+  }
+
+  void clearCities() {
+    emit(state.copyWith(cities: []));
+  }
+
+
   @override
   Future<void> close() {
+    _debounceTimer?.cancel();
     _shouldStopSearch = true;
     return super.close();
   }

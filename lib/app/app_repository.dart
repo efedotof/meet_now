@@ -5,6 +5,8 @@ import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app/server/repository/auth/auth_repository.dart';
 import 'package:meet_now_app/server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app/server/repository/chat/chat_repository.dart';
+import 'package:meet_now_app/server/repository/city/city_interface.dart';
+import 'package:meet_now_app/server/repository/city/city_repository.dart';
 import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
 import 'package:meet_now_app/server/repository/friend/friend_repository.dart';
 import 'package:meet_now_app/server/repository/games/games_interface.dart';
@@ -177,6 +179,9 @@ class AppRepository extends StatelessWidget {
               (context) => StikersParksRepository(
                 userModelAppInterface: context.read<UserModelAppInterface>(),
               ),
+        ),
+        RepositoryProvider<CityInterface>(
+          create: (context) => CityRepository(),
         ),
       ],
       child: child,

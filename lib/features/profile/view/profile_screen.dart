@@ -14,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final user = context.read<SettingsCubit>().userModelAppInterface.user!;
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).myProfile),
@@ -31,22 +32,20 @@ class ProfileScreen extends StatelessWidget {
           children: [
             ProfileHeader(user: user),
             const SizedBox(height: 24),
-
+            if (user.images != null && user.images!.isNotEmpty) ...[
+              UserPhotosSection(images: user.images!),
+              const SizedBox(height: 24),
+            ],
             ProfileStats(user: user),
             const SizedBox(height: 24),
-
             PersonalInfo(theme: theme, user: user),
             const SizedBox(height: 24),
-
             InterestsSection(theme: theme, user: user),
             const SizedBox(height: 24),
-
             PurposesSection(theme: theme, user: user),
             const SizedBox(height: 24),
-
             FriendsSection(theme: theme, user: user),
             const SizedBox(height: 24),
-
             AccountInfoSection(theme: theme, user: user),
           ],
         ),

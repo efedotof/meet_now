@@ -25,7 +25,7 @@ abstract class User with _$User {
     required Set<String> roles,
     required bool isOnline,
     required String floor,
-    required List<String> images,
+    List<String>? images,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

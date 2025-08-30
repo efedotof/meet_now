@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:meet_now_app/config.dart';
+import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 
@@ -118,25 +118,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        widget.user.avatar != null
-                            ? NetworkImage(
-                              "$uploadGetAddress${widget.user.avatar!}",
-                            )
-                            : null,
-                    backgroundColor:
-                        isDark ? Colors.grey[800] : Colors.grey[300],
-                    child:
-                        widget.user.avatar == null
-                            ? const Icon(
-                              Icons.person,
-                              size: 60,
-                              color: Colors.white70,
-                            )
-                            : null,
-                  ),
+                  UserAvatar(radius: 60, avatarKey: widget.user.avatar!),
                   Container(
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary,
@@ -291,7 +273,10 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(S.of(context).myInterests, style: theme.textTheme.titleLarge),
+                    Text(
+                      S.of(context).myInterests,
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -354,7 +339,10 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(S.of(context).datingGoals, style: theme.textTheme.titleLarge),
+                    Text(
+                      S.of(context).datingGoals,
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
