@@ -156,6 +156,66 @@ class FriendsRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [FullImageScreen]
+class FullImageRoute extends PageRouteInfo<FullImageRouteArgs> {
+  FullImageRoute({
+    Key? key,
+    required String imageUrl,
+    String? heroTag,
+    List<PageRouteInfo>? children,
+  }) : super(
+         FullImageRoute.name,
+         args: FullImageRouteArgs(
+           key: key,
+           imageUrl: imageUrl,
+           heroTag: heroTag,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'FullImageRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<FullImageRouteArgs>();
+      return FullImageScreen(
+        key: args.key,
+        imageUrl: args.imageUrl,
+        heroTag: args.heroTag,
+      );
+    },
+  );
+}
+
+class FullImageRouteArgs {
+  const FullImageRouteArgs({this.key, required this.imageUrl, this.heroTag});
+
+  final Key? key;
+
+  final String imageUrl;
+
+  final String? heroTag;
+
+  @override
+  String toString() {
+    return 'FullImageRouteArgs{key: $key, imageUrl: $imageUrl, heroTag: $heroTag}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! FullImageRouteArgs) return false;
+    return key == other.key &&
+        imageUrl == other.imageUrl &&
+        heroTag == other.heroTag;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ imageUrl.hashCode ^ heroTag.hashCode;
+}
+
+/// generated route for
 /// [GameChatScreen]
 class GameChatRoute extends PageRouteInfo<void> {
   const GameChatRoute({List<PageRouteInfo>? children})

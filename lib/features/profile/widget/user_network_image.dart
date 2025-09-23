@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/route/app_route.dart';
 
 class UserNetworkImage extends StatefulWidget {
   const UserNetworkImage({
@@ -72,20 +74,23 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
         ),
       );
     } else {
-      child = ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          _presignedUrl!,
-          fit: widget.fit,
-          errorBuilder:
-              (context, error, stackTrace) => Center(
-                child: IconButton(
-                  icon: const Icon(Icons.broken_image, color: Colors.grey),
-                  tooltip:
-                      'Не удалось загрузить изображение. Нажмите для повтора',
-                  onPressed: _loadPresignedUrl,
+      child = GestureDetector(
+        onTap: () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.network(
+            _presignedUrl!,
+            fit: widget.fit,
+            errorBuilder:
+                (context, error, stackTrace) => Center(
+                  child: IconButton(
+                    icon: const Icon(Icons.broken_image, color: Colors.grey),
+                    tooltip:
+                        'Не удалось загрузить изображение. Нажмите для повтора',
+                    onPressed: _loadPresignedUrl,
+                  ),
                 ),
-              ),
+          ),
         ),
       );
     }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
+import 'package:meet_now_app/server/repository/user/user_interface.dart';
 import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
 
 part 'main_home_state.dart';
@@ -14,14 +15,18 @@ part 'main_home_cubit.freezed.dart';
 
 class MainHomeCubit extends Cubit<MainHomeState> {
   MainHomeCubit({
+    required UserInterface userInterface,
     required StorageHiveInterface storageHiveInterface,
     required SocketServiceInterface socketServiceInterface,
-  }) : _storageHiveInterface = storageHiveInterface, _socketServiceInterface = socketServiceInterface,
+  }) : _userInterface = userInterface,
+       _storageHiveInterface = storageHiveInterface,
+       _socketServiceInterface = socketServiceInterface,
        super(MainHomeState.initial()) {
     connect();
   }
   final SocketServiceInterface _socketServiceInterface;
   final StorageHiveInterface _storageHiveInterface;
+  final UserInterface _userInterface;
   StreamSubscription? _newTempChatSubscription;
   StreamSubscription? _tempChatSubscription;
   StreamSubscription? _permChatSubscription;
@@ -41,6 +46,8 @@ class MainHomeCubit extends Cubit<MainHomeState> {
       _socketServiceInterface.connect();
       _socketServiceInterface.getActiveTemporary();
       _socketServiceInterface.getPermanent();
+
+      await _userInterface.getUser();
     } catch (e) {
       debugPrint("error to connect: $e");
     }
