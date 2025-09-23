@@ -30,9 +30,14 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
 
 class _AppBarWidgetState extends State<AppBarWidget> {
   String _formatTime(int seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$remainingSeconds';
+    try {
+      final safeSeconds = seconds < 0 ? 0 : seconds;
+      final minutes = (safeSeconds ~/ 60).toString().padLeft(2, '0');
+      final remainingSeconds = (safeSeconds % 60).toString().padLeft(2, '0');
+      return '$minutes:$remainingSeconds';
+    } catch (e) {
+      return '00:00';
+    }
   }
 
   @override
@@ -63,9 +68,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isOnline
-                            ? Colors.green
-                            : theme.colorScheme.outlineVariant,
+                        color:
+                            isOnline
+                                ? Colors.green
+                                : theme.colorScheme.outlineVariant,
                         width: 2,
                       ),
                     ),
@@ -95,56 +101,64 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 ],
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.chatModel != null
-                        ? "${widget.chatModel!.user1.firstname} ${widget.chatModel!.user1.subname}"
-                        : S.of(context).anonymousUser,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: activityState.when(
-                      initial: () => Text(
-                        S.of(context).connecting,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.chatModel != null
+                          ? "${widget.chatModel!.user1.firstname} ${widget.chatModel!.user1.subname}"
+                          : S.of(context).anonymousUser,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      activity: (UserActivity activity) {
-                        if (activity.userId == widget.userId) {
-                          return const SizedBox();
-                        }
-
-                        final statusText = switch (activity.activityType) {
-                          ActivityType.TYPING => S.of(context).typing,
-                          ActivityType.OFFLINE => S.of(context).offline,
-                          ActivityType.SENDING_FILE =>
-                            S.of(context).sendingFile,
-                          ActivityType.SENDING_IMAGE =>
-                            S.of(context).sendingImage,
-                          ActivityType.ONLINE => S.of(context).online,
-                        };
-
-                        return Text(
-                          statusText,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: activity.activityType == ActivityType.ONLINE
-                                ? Colors.green
-                                : theme.colorScheme.outline,
-                          ),
-                        );
-                      },
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: activityState.when(
+                        initial:
+                            () => Text(
+                              S.of(context).connecting,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.outline,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        activity: (UserActivity activity) {
+                          if (activity.userId == widget.userId) {
+                            return const SizedBox();
+                          }
+
+                          final statusText = switch (activity.activityType) {
+                            ActivityType.TYPING => S.of(context).typing,
+                            ActivityType.OFFLINE => S.of(context).offline,
+                            ActivityType.SENDING_FILE =>
+                              S.of(context).sendingFile,
+                            ActivityType.SENDING_IMAGE =>
+                              S.of(context).sendingImage,
+                            ActivityType.ONLINE => S.of(context).online,
+                          };
+
+                          return Text(
+                            statusText,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color:
+                                  activity.activityType == ActivityType.ONLINE
+                                      ? Colors.green
+                                      : theme.colorScheme.outline,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -156,15 +170,25 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               ),
             if (widget.isTemporary && widget.remainingSeconds != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Center(
-                  child: Text(
-                    _formatTime(widget.remainingSeconds!),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: widget.remainingSeconds! < 60
-                          ? Colors.red
-                          : theme.colorScheme.onSurface,
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      minWidth: 50,
+                      maxWidth: 70,
+                    ),
+                    child: Text(
+                      _formatTime(widget.remainingSeconds!),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            widget.remainingSeconds! < 60
+                                ? Colors.red
+                                : theme.colorScheme.onSurface,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.clip,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

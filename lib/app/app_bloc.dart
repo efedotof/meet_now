@@ -131,6 +131,7 @@ class AppBloc extends StatelessWidget {
               (context) => MainHomeCubit(
                 socketServiceInterface: context.read<SocketServiceInterface>(),
                 storageHiveInterface: context.read<StorageHiveInterface>(),
+                userInterface: context.read<UserInterface>(),
               ),
         ),
         BlocProvider(

@@ -20,3 +20,4 @@ export 'settings/settings.dart';
 export 'splash/splash.dart';
 export 'support/support.dart';
 export 'theme/theme.dart';
+export 'full_image/full_image.dart';

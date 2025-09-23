@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/route/app_route.dart';
 
 class UserAvatar extends StatefulWidget {
   const UserAvatar({super.key, this.avatarKey, required this.radius});
@@ -45,15 +47,18 @@ class _UserAvatarState extends State<UserAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: widget.radius,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      backgroundImage:
-          _presignedUrl != null ? NetworkImage(_presignedUrl!) : null,
-      child:
-          _presignedUrl == null
-              ? Icon(Icons.person, size: widget.radius, color: Colors.white)
-              : null,
+    return GestureDetector(
+      onTap: () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
+      child: CircleAvatar(
+        radius: widget.radius,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundImage:
+            _presignedUrl != null ? NetworkImage(_presignedUrl!) : null,
+        child:
+            _presignedUrl == null
+                ? Icon(Icons.person, size: widget.radius, color: Colors.white)
+                : null,
+      ),
     );
   }
 }
