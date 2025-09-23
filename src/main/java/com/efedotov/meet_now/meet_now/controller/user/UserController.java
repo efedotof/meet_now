@@ -1,8 +1,11 @@
 package com.efedotov.meet_now.meet_now.controller.user;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.efedotov.meet_now.meet_now.dto.UserDto;
+import com.efedotov.meet_now.meet_now.model.Role;
 import com.efedotov.meet_now.meet_now.model.User;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.user.UserService;
@@ -36,8 +40,8 @@ public class UserController {
 
     @Operation(summary = "Получение профиля по ID")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getProfile(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getById(id));
+    public ResponseEntity<UserDto> getProfile(@PathVariable UUID id) {
+        return ResponseEntity.ok(mapToDto(userService.getById(id)));
     }
 
     @Operation(summary = "Обновление анкеты пользователя")
@@ -146,6 +150,20 @@ public class UserController {
     public void stopSearch(Authentication authentication) {
         UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
         userService.setUserSearching(userId, false);
+    }
+
+    private UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        BeanUtils.copyProperties(user, dto);
+
+        if (user.getRoles() != null) {
+            Set<String> roles = user.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRoles(roles);
+        }
+
+        return dto;
     }
 
 }

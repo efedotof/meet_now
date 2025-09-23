@@ -228,4 +228,5 @@ public class UserService {
             throw new RuntimeException("Failed to remove all images", e);
         }
     }
+
 }
