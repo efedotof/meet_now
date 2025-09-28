@@ -25,6 +25,8 @@ import 'package:meet_now_app/server/repository/socket/socket_service_impl.dart';
 import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app/server/repository/stikers_parks/stikers_parks_interface.dart';
 import 'package:meet_now_app/server/repository/stikers_parks/stikers_parks_repository.dart';
+import 'package:meet_now_app/server/repository/timer/timer_repository.dart';
+import 'package:meet_now_app/server/repository/timer/timer_repository_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app/server/repository/upload_image/upload_image_repository.dart';
 import 'package:meet_now_app/server/repository/user/user_interface.dart';
@@ -182,6 +184,10 @@ class AppRepository extends StatelessWidget {
         ),
         RepositoryProvider<CityInterface>(
           create: (context) => CityRepository(),
+        ),
+
+        RepositoryProvider<TimerRepositoryInterface>(
+          create: (context) => TimerRepository(),
         ),
       ],
       child: child,

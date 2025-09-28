@@ -12,14 +12,14 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     required this.userId,
     required this.onBackPressed,
     required this.isTemporary,
-    this.remainingSeconds,
+    this.timerText,
   });
 
   final Chat? chatModel;
   final String userId;
   final VoidCallback onBackPressed;
   final bool isTemporary;
-  final int? remainingSeconds;
+  final String? timerText;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -29,17 +29,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarWidgetState extends State<AppBarWidget> {
-  String _formatTime(int seconds) {
-    try {
-      final safeSeconds = seconds < 0 ? 0 : seconds;
-      final minutes = (safeSeconds ~/ 60).toString().padLeft(2, '0');
-      final remainingSeconds = (safeSeconds % 60).toString().padLeft(2, '0');
-      return '$minutes:$remainingSeconds';
-    } catch (e) {
-      return '00:00';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -68,10 +57,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color:
-                            isOnline
-                                ? Colors.green
-                                : theme.colorScheme.outlineVariant,
+                        color: isOnline
+                            ? Colors.green
+                            : theme.colorScheme.outlineVariant,
                         width: 2,
                       ),
                     ),
@@ -119,15 +107,14 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: activityState.when(
-                        initial:
-                            () => Text(
-                              S.of(context).connecting,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.outline,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        initial: () => Text(
+                          S.of(context).connecting,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         activity: (UserActivity activity) {
                           if (activity.userId == widget.userId) {
                             return const SizedBox();
@@ -146,10 +133,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                           return Text(
                             statusText,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color:
-                                  activity.activityType == ActivityType.ONLINE
-                                      ? Colors.green
-                                      : theme.colorScheme.outline,
+                              color: activity.activityType == ActivityType.ONLINE
+                                  ? Colors.green
+                                  : theme.colorScheme.outline,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -168,7 +154,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 icon: Icon(Icons.more_vert, color: theme.colorScheme.onSurface),
                 onPressed: () {},
               ),
-            if (widget.isTemporary && widget.remainingSeconds != null)
+            if (widget.isTemporary && widget.timerText != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Center(
@@ -178,13 +164,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       maxWidth: 70,
                     ),
                     child: Text(
-                      _formatTime(widget.remainingSeconds!),
+                      widget.timerText!,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color:
-                            widget.remainingSeconds! < 60
-                                ? Colors.red
-                                : theme.colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.clip,

@@ -55,11 +55,12 @@ extension StickerStatePatterns on StickerState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Hidden value)?  hidden,TResult Function( _Visible value)?  visible,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _:
+case _Hidden() when hidden != null:
+return hidden(_that);case _Visible() when visible != null:
+return visible(_that);case _:
   return orElse();
 
 }
@@ -77,11 +78,12 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Hidden value)  hidden,required TResult Function( _Visible value)  visible,}){
 final _that = this;
 switch (_that) {
-case _Initial():
-return initial(_that);case _:
+case _Hidden():
+return hidden(_that);case _Visible():
+return visible(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -98,11 +100,12 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Hidden value)?  hidden,TResult? Function( _Visible value)?  visible,}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial(_that);case _:
+case _Hidden() when hidden != null:
+return hidden(_that);case _Visible() when visible != null:
+return visible(_that);case _:
   return null;
 
 }
@@ -119,10 +122,11 @@ return initial(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  hidden,TResult Function()?  visible,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _:
+case _Hidden() when hidden != null:
+return hidden();case _Visible() when visible != null:
+return visible();case _:
   return orElse();
 
 }
@@ -140,10 +144,11 @@ return initial();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  hidden,required TResult Function()  visible,}) {final _that = this;
 switch (_that) {
-case _Initial():
-return initial();case _:
+case _Hidden():
+return hidden();case _Visible():
+return visible();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -160,10 +165,11 @@ return initial();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  hidden,TResult? Function()?  visible,}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
-return initial();case _:
+case _Hidden() when hidden != null:
+return hidden();case _Visible() when visible != null:
+return visible();case _:
   return null;
 
 }
@@ -174,8 +180,8 @@ return initial();case _:
 /// @nodoc
 
 
-class _Initial implements StickerState {
-  const _Initial();
+class _Hidden implements StickerState {
+  const _Hidden();
   
 
 
@@ -185,7 +191,7 @@ class _Initial implements StickerState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Initial);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Hidden);
 }
 
 
@@ -194,7 +200,39 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'StickerState.initial()';
+  return 'StickerState.hidden()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _Visible implements StickerState {
+  const _Visible();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Visible);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'StickerState.visible()';
 }
 
 

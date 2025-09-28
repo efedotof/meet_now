@@ -29,6 +29,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
        _messageInterface = messageInterface,
        super(const ChatMessageState.initial());
 
+
+
+  //инициализация, получение сообщений, и отправка сообщений.
   void initialize({
     required BuildContext context,
     required bool isTemporary,
@@ -63,6 +66,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _messageInterface.requestMessages(chatId);
   }
 
+
+  //метод отправки текстовых сообщений
   void sendTextMessage(String text) {
     if (text.isEmpty) return;
 
@@ -85,6 +90,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
   }
 
+
+  //функция переподключения
   void reconnect({
     required BuildContext context,
     required bool isTemporary,
@@ -118,11 +125,14 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     return super.close();
   }
 
+
+  //функция отправки приглащения в друзья.
   Future<void> friendRequest({
     required BuildContext context,
     required String toUserId,
   }) async {
     if (toUserId == "") return;
+
 
     try {
       final result = await _friendInterface.sendFriendRequest(

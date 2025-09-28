@@ -1,15 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
-import 'package:meet_now_app/features/chat_message/cubit/chat_timer/chat_timer_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app/server/repository/timer/timer_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
@@ -32,12 +32,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final _scrollController = ScrollController();
   late StreamSubscription<ChatMessageState> _subscription;
   late String _chatId;
-  bool _isModalShown = false;
 
   bool isTemporary = false;
   String senderID = '';
   String recipientId = '';
-  late ChatTimerCubit _timerCubit;
+  late SyncTimerCubit _timerCubit;
 
   @override
   void initState() {
@@ -73,9 +72,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     });
 
     if (isTemporary) {
-      _timerCubit = ChatTimerCubit(
-        durationMinutes: widget.temporaryChatModel!.durationMinutes,
-        onTimerFinished: () => Navigator.maybePop(context),
+      _timerCubit = SyncTimerCubit(
+        timerRepository: TimerRepository(),
+        tempChatId: _chatId,
+        userId: senderID,
+        otherUserId: recipientId,
       );
     }
   }
@@ -92,14 +93,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _checkForModal(BuildContext context, ChatMessageState state) {
-    state.maybeWhen(
-      loaded: (messages, isLoadingMore) {
-        if (isTemporary && messages.isEmpty) {
-          _timerCubit.startModalTimer();
-        }
-      },
-      orElse: () {},
-    );
+    // Убрана логика старого модального таймера
   }
 
   String _getChatRecipient({required String currentUserId}) {
@@ -169,35 +163,33 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
-  void _showOneThirdModal(BuildContext context) {
+  void _showAddTimeProposalDialog(
+    BuildContext context,
+    int additionalMinutes,
+    String fromUserId,
+  ) {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: Text(S.of(context).chatTimeEnding),
-          content: Text(S.of(context).extendOrQuestionnaire),
+          title: const Text('Предложение добавить время'),
+          content: Text(
+            'Собеседник предлагает добавить $additionalMinutes минут к чату.',
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                _timerCubit.addTime(3 * 60);
+                _timerCubit.respondToProposal(false, additionalMinutes);
                 Navigator.of(context).pop();
               },
-              child: Text(S.of(context).add3Minutes),
+              child: const Text('Отклонить'),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
-                context.read<ChatMessageCubit>().friendRequest(
-                  context: context,
-                  toUserId: recipientId,
-                );
+                _timerCubit.respondToProposal(true, additionalMinutes);
                 Navigator.of(context).pop();
               },
-              child: Text(S.of(context).openQuestionnaire),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(S.of(context).close),
+              child: const Text('Принять'),
             ),
           ],
         );
@@ -205,32 +197,44 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     );
   }
 
-  // void _showWaitingModal(BuildContext context) {
-  //   if (ModalRoute.of(context)?.isCurrent == false) return;
+  void _showTimeAddedDialog(BuildContext context, int additionalMinutes) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Добавлено $additionalMinutes минут к чату'),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) {
-  //       return BlocProvider.value(
-  //         value: _timerCubit,
-  //         child: BlocBuilder<ChatTimerCubit, ChatTimerState>(
-  //           bloc: _timerCubit,
-  //           builder: (context, state) {
-  //             final seconds = state.maybeWhen(
-  //               modalRunning: (s) => s,
-  //               orElse: () => 30,
-  //             );
-  //             return AlertDialog(
-  //               title: const Text("Ожидание собеседника"),
-  //               content: Text("Подождите $seconds секунд..."),
-  //             );
-  //           },
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  void _showTimeRejectedDialog(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Предложение добавления времени отклонено'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _showTimerFinishedDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Время вышло'),
+            content: const Text('Время чата истекло. Чат будет завершен.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.router.pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,21 +249,30 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           isTemporary
               ? BlocProvider.value(
                 value: _timerCubit,
-                child: BlocListener<ChatTimerCubit, ChatTimerState>(
+                child: BlocListener<SyncTimerCubit, SyncTimerState>(
                   listener: (context, state) {
-                    state.maybeMap(
-                      oneThirdReached: (_) => _showOneThirdModal(context),
-                      modalRunning: (modalState) {
-                        if (!_isModalShown) {
-                          _isModalShown = true;
-                          // _showWaitingModal(context);
-                        }
+                    state.whenOrNull(
+                      addTimeProposed: (
+                        remainingTime,
+                        formattedTime,
+                        additionalMinutes,
+                        fromUserId,
+                      ) {
+                        _showAddTimeProposalDialog(
+                          context,
+                          additionalMinutes,
+                          fromUserId,
+                        );
                       },
-                      modalFinished: (_) {
-                        _isModalShown = false;
-                        Navigator.of(context, rootNavigator: true).pop();
+                      timeAdded: (additionalMinutes) {
+                        _showTimeAddedDialog(context, additionalMinutes);
                       },
-                      orElse: () {},
+                      timeRejected: () {
+                        _showTimeRejectedDialog(context);
+                      },
+                      finished: () {
+                        _showTimerFinishedDialog(context);
+                      },
                     );
                   },
                   child: BuildScaffold(
@@ -273,6 +286,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     messageController: _messageController,
                     sendMessage: _sendMessage,
                     scrollController: _scrollController,
+                    chatModel: widget.chatModel,
                   ),
                 ),
               )
@@ -287,6 +301,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 messageController: _messageController,
                 sendMessage: _sendMessage,
                 scrollController: _scrollController,
+                chatModel: widget.chatModel,
               ),
     );
   }

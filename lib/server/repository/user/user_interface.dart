@@ -24,3 +24,6 @@ abstract interface class UserInterface {
   Future<void> startSearch();
   Future<void> stopSearch();
 }
+
+
+
