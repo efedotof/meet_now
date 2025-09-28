@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
-import 'package:meet_now_app/features/chat_message/cubit/chat_timer/chat_timer_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/app_bar_widget.dart';
 import 'package:meet_now_app/server/model/chat/chat.dart';
 
@@ -11,20 +11,32 @@ import 'loading_messages.dart';
 import 'messages_list.dart';
 
 class BuildScaffold extends StatelessWidget {
-  const BuildScaffold({super.key, required this.theme, required String currentUserId, this.chatModel, required this.onBackPressed, required this.isTemporary, required String chatId, required String senderID, required String recipientId, required TextEditingController messageController, required void Function() sendMessage, required ScrollController scrollController}) : _currentUserId = currentUserId, _recipientId = recipientId, _senderID = senderID, _chatId = chatId, _sendMessage = sendMessage, _scrollController = scrollController, _messageController = messageController;
+  const BuildScaffold({
+    super.key,
+    required this.theme,
+    required this.currentUserId,
+    this.chatModel,
+    required this.onBackPressed,
+    required this.isTemporary,
+    required this.chatId,
+    required this.senderID,
+    required this.recipientId,
+    required this.messageController,
+    required this.sendMessage,
+    required this.scrollController,
+  });
 
   final ThemeData theme;
-  final String _currentUserId;
+  final String currentUserId;
   final Chat? chatModel;
   final VoidCallback onBackPressed;
   final bool isTemporary;
-  final String _chatId;
-  final String _senderID;
-  final String _recipientId;
-  final TextEditingController _messageController;
-  final VoidCallback _sendMessage;
-  final ScrollController _scrollController;
-
+  final String chatId;
+  final String senderID;
+  final String recipientId;
+  final TextEditingController messageController;
+  final VoidCallback sendMessage;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +44,15 @@ class BuildScaffold extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBarWidget(
         chatModel: chatModel,
-        userId: _currentUserId,
+        userId: currentUserId,
         onBackPressed: onBackPressed,
         isTemporary: isTemporary,
-        remainingSeconds: isTemporary
-            ? context.select(
-                (ChatTimerCubit cubit) => cubit.state.maybeMap(
-                  running: (state) => state.remainingSeconds,
-                  orElse: () => null,
-                ),
-              )
-            : null,
+        timerText:
+            isTemporary
+                ? context.select(
+                  (SyncTimerCubit cubit) => cubit.state.formattedTime,
+                )
+                : null,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -56,6 +66,86 @@ class BuildScaffold extends StatelessWidget {
         ),
         child: Column(
           children: [
+            // Кнопки добавления времени для временного чата
+            if (isTemporary)
+              BlocBuilder<SyncTimerCubit, SyncTimerState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => const SizedBox.shrink(),
+                    running:
+                        (remainingTime, formattedTime) => Container(
+                          padding: const EdgeInsets.all(8),
+                          color: Colors.grey[100],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    1,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('1 мин'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    3,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('3 мин'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    5,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('5 мин'),
+                              ),
+                            ],
+                          ),
+                        ),
+                    finished: () => const SizedBox.shrink(),
+                    addTimeProposed:
+                        (
+                          remainingTime,
+                          formattedTime,
+                          additionalMinutes,
+                          fromUserId,
+                        ) => const SizedBox.shrink(),
+                    waitingForResponse:
+                        (remainingTime, formattedTime, additionalMinutes) =>
+                            const SizedBox.shrink(),
+                    timeAdded: (additionalMinutes) => const SizedBox.shrink(),
+                    timeRejected: () => const SizedBox.shrink(),
+                  );
+                },
+              ),
             Expanded(
               child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
                 builder: (context, state) {
@@ -66,44 +156,47 @@ class BuildScaffold extends StatelessWidget {
                     child: state.when(
                       initial: () => const LoadingMessages(),
                       loading: () => const LoadingMessages(),
-                      error: (message) => ErrorMessage(
-                        message: message,
-                        onRetry: () => cubit.reconnect(
-                          context: context,
-                          isTemporary: isTemporary,
-                          chatId: _chatId,
-                          senderId: _senderID,
-                          recipientId: _recipientId,
-                        ),
-                      ),
-                      loaded: (messages, isLoadingMore) => Column(
-                        children: [
-                          if (isLoadingMore)
-                            const LinearProgressIndicator(
-                              minHeight: 2,
-                              color: Colors.blueAccent,
-                            ),
-                          Expanded(
-                            child: MessagesList(
-                              messages: messages,
-                              scrollController: _scrollController,
-                              currentUserId: _currentUserId,
-                            ),
+                      error:
+                          (message) => ErrorMessage(
+                            message: message,
+                            onRetry:
+                                () => cubit.reconnect(
+                                  context: context,
+                                  isTemporary: isTemporary,
+                                  chatId: chatId,
+                                  senderId: senderID,
+                                  recipientId: recipientId,
+                                ),
                           ),
-                        ],
-                      ),
+                      loaded:
+                          (messages, isLoadingMore) => Column(
+                            children: [
+                              if (isLoadingMore)
+                                const LinearProgressIndicator(
+                                  minHeight: 2,
+                                  color: Colors.blueAccent,
+                                ),
+                              Expanded(
+                                child: MessagesList(
+                                  messages: messages,
+                                  scrollController: scrollController,
+                                  currentUserId: currentUserId,
+                                ),
+                              ),
+                            ],
+                          ),
                     ),
                   );
                 },
               ),
             ),
             InputArea(
-              controller: _messageController,
-              onSend: _sendMessage,
+              controller: messageController,
+              onSend: sendMessage,
               onCommandResult: (result) {
                 context.read<ChatMessageCubit>().sendTextMessage(result);
               },
-              chatId: _chatId,
+              chatId: chatId,
             ),
           ],
         ),

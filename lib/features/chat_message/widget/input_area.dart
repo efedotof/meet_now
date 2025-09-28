@@ -1,6 +1,8 @@
+// features/chat_message/widget/input_area.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/server/model/commands/commands_chat.dart';
@@ -8,6 +10,7 @@ import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
 import 'command_suggestions_widget.dart';
 import 'send_button.dart';
+import 'sticker_picker_widget.dart'; 
 
 class InputArea extends StatefulWidget {
   const InputArea({
@@ -29,11 +32,13 @@ class InputArea extends StatefulWidget {
 
 class _InputAreaState extends State<InputArea> {
   late final CommandSuggestionsCubit _suggestionsCubit;
+  late final StickerCubit _stickerCubit;
 
   @override
   void initState() {
     super.initState();
     _suggestionsCubit = context.read<CommandSuggestionsCubit>();
+    _stickerCubit = context.read<StickerCubit>();
     widget.controller.addListener(_onTextChanged);
   }
 
@@ -61,6 +66,11 @@ class _InputAreaState extends State<InputArea> {
     widget.controller.clear();
   }
 
+  void _handleStickerSelected(String sticker) {
+    widget.controller.text = sticker;
+    _handleSend();
+  }
+
   @override
   void dispose() {
     widget.controller.removeListener(_onTextChanged);
@@ -78,6 +88,7 @@ class _InputAreaState extends State<InputArea> {
         child: Column(
           children: [
             CommandSuggestionsWidget(controller: widget.controller),
+            StickerPickerWidget(onStickerSelected: _handleStickerSelected),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -128,12 +139,26 @@ class _InputAreaState extends State<InputArea> {
                             horizontal: 20,
                             vertical: 16,
                           ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              Icons.emoji_emotions_outlined,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            onPressed: () {},
+                          suffixIcon: BlocBuilder<StickerCubit, StickerState>(
+                            builder: (context, stickerState) {
+                              return IconButton(
+                                icon: Icon(
+                                  Icons.emoji_emotions_outlined,
+                                  color: stickerState.maybeWhen(
+                                    visible: () => theme.colorScheme.primary,
+                                    orElse:
+                                        () =>
+                                            theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _stickerCubit.toggleStickers();
+                                  if (stickerState is! StickerState) {
+                                    FocusScope.of(context).unfocus();
+                                  }
+                                },
+                              );
+                            },
                           ),
                         ),
                         onChanged: (value) {
