@@ -17,7 +17,9 @@ public class UserSpecifications {
             if (interests == null || interests.isEmpty())
                 return criteriaBuilder.conjunction();
 
-            query.distinct(true);
+            if (query != null) {
+                query.distinct(true);
+            }
             Join<User, String> join = root.join("interests", JoinType.INNER);
             return join.in(interests);
         };
@@ -28,7 +30,9 @@ public class UserSpecifications {
             if (purposes == null || purposes.isEmpty())
                 return criteriaBuilder.conjunction();
 
-            query.distinct(true);
+            if (query != null) {
+                query.distinct(true);
+            }
             Join<User, String> join = root.join("purposes", JoinType.INNER);
             return join.in(purposes);
         };

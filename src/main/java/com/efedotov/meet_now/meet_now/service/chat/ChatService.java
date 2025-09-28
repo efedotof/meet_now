@@ -1,22 +1,13 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.dto.TimerUpdateDto;
 import com.efedotov.meet_now.meet_now.model.Chat;
 import com.efedotov.meet_now.meet_now.model.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.ChatGame;
@@ -41,11 +32,7 @@ public class ChatService {
     private final ChatConstraintRepository chatConstraintRepository;
     private final ChatGameRepository chatGameRepository;
     private final UserRepository userRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-
-    private final TaskScheduler taskScheduler;
-    private final Map<UUID, ScheduledFuture<?>> tempChatTimers = new ConcurrentHashMap<>();
-    private final Map<UUID, ScheduledFuture<?>> tempChatUpdateTimers = new ConcurrentHashMap<>();
+    private final ChatTimerManagementService chatTimerManagementService;
 
     /**
      * Создать временный чат между двумя пользователями.
@@ -63,69 +50,20 @@ public class ChatService {
 
         temporaryChatRepository.save(tempChat);
 
-        // Создаем ограничение (constraint) с начальным временем ожидания (например, 30
-        // сек)
+        // Создаем ограничение (constraint)
         ChatConstraint constraint = new ChatConstraint();
         constraint.setTemporaryChat(tempChat);
         constraint.setWaitSeconds(30);
         constraint.setCanStart(false);
         chatConstraintRepository.save(constraint);
+
         sender.setIsSearchable(false);
         recipient.setIsSearchable(false);
-        scheduleTempChatTimeout(tempChat);
-        scheduleTimerUpdates(tempChat);
+
+        // Запускаем синхронизированный таймер через management service
+        chatTimerManagementService.startSynchronizedTimer(tempChat.getTempChatId());
+
         return tempChat;
-    }
-
-    private void scheduleTimerUpdates(TemporaryChat tempChat) {
-        UUID tempChatId = tempChat.getTempChatId();
-        long durationMillis = tempChat.getDurationMinutes() * 60 * 1000L;
-        Instant endTime = tempChat.getCreatedAt()
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .plusMillis(durationMillis);
-
-        ScheduledFuture<?> updateTask = taskScheduler.scheduleAtFixedRate(() -> {
-            long remaining = Duration.between(Instant.now(), endTime).toMillis();
-            boolean finished = remaining <= 0;
-
-            TimerUpdateDto updateDto = new TimerUpdateDto();
-            updateDto.setTempChatId(tempChatId);
-            updateDto.setRemainingTime(Math.max(0, remaining));
-            updateDto.setFinished(finished);
-
-            // Отправляем обоим участникам
-            messagingTemplate.convertAndSend(
-                    "/topic/temporary-chat/" + tempChatId + "/timer",
-                    updateDto);
-
-            if (finished) {
-                finishTemporaryChat(tempChatId);
-                ScheduledFuture<?> task = tempChatUpdateTimers.remove(tempChatId);
-                if (task != null)
-                    task.cancel(false);
-            }
-        }, Duration.ofSeconds(1)); // Обновляем каждую секунду
-
-        tempChatUpdateTimers.put(tempChatId, updateTask);
-    }
-
-    /**
-     * Запускает таймер, который по окончании durationMinutes завершит временный
-     * чат.
-     */
-    private void scheduleTempChatTimeout(TemporaryChat tempChat) {
-        Runnable task = () -> finishTemporaryChat(tempChat.getTempChatId());
-
-        Instant scheduledInstant = tempChat.getCreatedAt()
-                .plusMinutes(tempChat.getDurationMinutes())
-                .atZone(ZoneId.systemDefault())
-                .toInstant();
-
-        ScheduledFuture<?> scheduledTask = taskScheduler.schedule(task, scheduledInstant);
-        tempChatTimers.put(tempChat.getTempChatId(), scheduledTask);
-        log.info("Таймер для TemporaryChat {} установлен на {} минут", tempChat.getTempChatId(),
-                tempChat.getDurationMinutes());
     }
 
     /**
@@ -138,6 +76,7 @@ public class ChatService {
             if (!tempChat.getIsFinished()) {
                 tempChat.setIsFinished(true);
                 temporaryChatRepository.save(tempChat);
+
                 User sender = tempChat.getSender();
                 User recipient = tempChat.getRecipient();
 
@@ -145,21 +84,15 @@ public class ChatService {
                 recipient.setIsSearchable(true);
                 userRepository.save(sender);
                 userRepository.save(recipient);
+
+                // Останавливаем таймер через management service
+                chatTimerManagementService.stopTimer(tempChatId);
+
                 log.info("TemporaryChat {} завершен", tempChatId);
 
-                // Удаляем таймер
-                ScheduledFuture<?> scheduledTask = tempChatTimers.remove(tempChatId);
-                if (scheduledTask != null) {
-                    scheduledTask.cancel(false);
-                }
-
-                // Если оба согласны, создаем постоянный чат и открываем анкеты
+                // Если оба согласны, создаем постоянный чат
                 if (Boolean.TRUE.equals(tempChat.getBothAgreed())) {
                     createPermanentChatFromTemporary(tempChat);
-                }
-                ScheduledFuture<?> updateTask = tempChatUpdateTimers.remove(tempChatId);
-                if (updateTask != null) {
-                    updateTask.cancel(false);
                 }
             }
         });

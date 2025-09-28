@@ -1,6 +1,8 @@
 package com.efedotov.meet_now.meet_now.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -25,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
+    public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
                         "https://mnapp.ru",
@@ -36,23 +38,27 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
+    public void configureMessageBroker(@NonNull MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
-
     }
 
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
+    public void configureClientInboundChannel(@NonNull ChannelRegistration registration) {
         registration.interceptors(webSocketAuthInterceptor);
     }
 
     @Override
-    public void configureClientOutboundChannel(ChannelRegistration registration) {
+    public void configureClientOutboundChannel(@NonNull ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
-            public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
+            public void afterSendCompletion(
+                @NonNull Message<?> message, 
+                @NonNull MessageChannel channel, 
+                boolean sent, 
+                @Nullable Exception ex) {
+                
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 if (accessor.getMessageType() != null) {
                     log.info("Outgoing message");
@@ -63,5 +69,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
-
 }
