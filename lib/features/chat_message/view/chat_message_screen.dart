@@ -73,7 +73,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
     if (isTemporary) {
       _timerCubit = SyncTimerCubit(
-        timerRepository: TimerRepository(),
+        timerRepository: TimerRepository(userModelAppInterface: context.read<UserModelAppInterface>()),
         tempChatId: _chatId,
         userId: senderID,
         otherUserId: recipientId,
@@ -93,7 +93,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _checkForModal(BuildContext context, ChatMessageState state) {
-    // Убрана логика старого модального таймера
   }
 
   String _getChatRecipient({required String currentUserId}) {

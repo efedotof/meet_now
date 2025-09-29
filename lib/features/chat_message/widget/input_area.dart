@@ -10,7 +10,7 @@ import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
 import 'command_suggestions_widget.dart';
 import 'send_button.dart';
-import 'sticker_picker_widget.dart'; 
+import 'sticker_picker_widget.dart';
 
 class InputArea extends StatefulWidget {
   const InputArea({
@@ -153,9 +153,7 @@ class _InputAreaState extends State<InputArea> {
                                 ),
                                 onPressed: () {
                                   _stickerCubit.toggleStickers();
-                                  if (stickerState is! StickerState) {
-                                    FocusScope.of(context).unfocus();
-                                  }
+                                  FocusScope.of(context).unfocus();
                                 },
                               );
                             },
