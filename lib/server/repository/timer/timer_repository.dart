@@ -5,11 +5,13 @@ import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/timer/add_time_proposal_dto.dart';
 import 'package:meet_now_app/server/model/timer/add_time_response_dto.dart';
 import 'package:meet_now_app/server/model/timer/timer_update_dto.dart';
+import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import 'timer_repository_interface.dart';
 
 class TimerRepository implements TimerRepositoryInterface {
+  final UserModelAppInterface _userModelAppInterface;
   late StompClient _stompClient;
   final StreamController<TimerUpdateDto> _timerController =
       StreamController.broadcast();
@@ -19,8 +21,10 @@ class TimerRepository implements TimerRepositoryInterface {
       StreamController.broadcast();
 
   String? _tempChatId;
-  String? _userId;
   bool _isConnected = false;
+
+  TimerRepository({required UserModelAppInterface userModelAppInterface})
+    : _userModelAppInterface = userModelAppInterface;
 
   @override
   Stream<TimerUpdateDto> get timerUpdates => _timerController.stream;
@@ -37,7 +41,7 @@ class TimerRepository implements TimerRepositoryInterface {
   @override
   void connect(String tempChatId, String userId) {
     _tempChatId = tempChatId;
-    _userId = userId;
+    final token = _userModelAppInterface.user?.token;
 
     _stompClient = StompClient(
       config: StompConfig.sockJS(
@@ -56,6 +60,7 @@ class TimerRepository implements TimerRepositoryInterface {
           debugPrint('[TimerRepository] WebSocket connection closed.');
           _isConnected = false;
         },
+        stompConnectHeaders: {'Authorization': 'Bearer $token'},
       ),
     );
 

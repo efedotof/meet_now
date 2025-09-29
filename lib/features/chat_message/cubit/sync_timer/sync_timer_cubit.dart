@@ -13,8 +13,7 @@ class SyncTimerCubit extends Cubit<SyncTimerState> {
   final TimerRepositoryInterface _timerRepository;
   final String _tempChatId;
   final String _userId;
-  final String _otherUserId;
-  
+
   StreamSubscription<TimerUpdateDto>? _timerSubscription;
   StreamSubscription<AddTimeProposalDto>? _proposalSubscription;
   StreamSubscription<AddTimeResponseDto>? _responseSubscription;
@@ -24,53 +23,60 @@ class SyncTimerCubit extends Cubit<SyncTimerState> {
     required String tempChatId,
     required String userId,
     required String otherUserId,
-  })  : _timerRepository = timerRepository,
-        _tempChatId = tempChatId,
-        _userId = userId,
-        _otherUserId = otherUserId,
-        super(const SyncTimerState.initial()) {
+  }) : _timerRepository = timerRepository,
+       _tempChatId = tempChatId,
+       _userId = userId,
+       super(const SyncTimerState.initial()) {
     _initialize();
   }
 
   void _initialize() {
     _timerRepository.connect(_tempChatId, _userId);
     _timerSubscription = _timerRepository.timerUpdates.listen(_onTimerUpdate);
-    _proposalSubscription = _timerRepository.addTimeProposals.listen(_onAddTimeProposal);
-    _responseSubscription = _timerRepository.addTimeResponses.listen(_onAddTimeResponse);
+    _proposalSubscription = _timerRepository.addTimeProposals.listen(
+      _onAddTimeProposal,
+    );
+    _responseSubscription = _timerRepository.addTimeResponses.listen(
+      _onAddTimeResponse,
+    );
   }
 
   void _onTimerUpdate(TimerUpdateDto update) {
     if (update.tempChatId != _tempChatId) return;
-    
+
     if (update.finished) {
       emit(SyncTimerState.finished());
     } else {
-      emit(SyncTimerState.running(
-        remainingTime: update.remainingTime,
-        formattedTime: update.formattedTime,
-      ));
+      emit(
+        SyncTimerState.running(
+          remainingTime: update.remainingTime,
+          formattedTime: update.formattedTime,
+        ),
+      );
     }
   }
 
   void _onAddTimeProposal(AddTimeProposalDto proposal) {
     if (proposal.tempChatId != _tempChatId) return;
     if (proposal.fromUserId != _userId) {
-      emit(SyncTimerState.addTimeProposed(
-        remainingTime: state.remainingTime,
-        formattedTime: state.formattedTime,
-        additionalMinutes: proposal.additionalMinutes,
-        fromUserId: proposal.fromUserId,
-      ));
+      emit(
+        SyncTimerState.addTimeProposed(
+          remainingTime: state.remainingTime,
+          formattedTime: state.formattedTime,
+          additionalMinutes: proposal.additionalMinutes,
+          fromUserId: proposal.fromUserId,
+        ),
+      );
     }
   }
 
   void _onAddTimeResponse(AddTimeResponseDto response) {
     if (response.tempChatId != _tempChatId) return;
-    
+
     if (response.accepted) {
-      emit(SyncTimerState.timeAdded(
-        additionalMinutes: response.additionalMinutes,
-      ));
+      emit(
+        SyncTimerState.timeAdded(additionalMinutes: response.additionalMinutes),
+      );
     } else {
       emit(SyncTimerState.timeRejected());
     }
@@ -78,35 +84,48 @@ class SyncTimerCubit extends Cubit<SyncTimerState> {
 
   void proposeAddTime(int additionalMinutes) {
     _timerRepository.proposeAddTime(_tempChatId, _userId, additionalMinutes);
-    
-    emit(SyncTimerState.waitingForResponse(
-      remainingTime: state.remainingTime,
-      formattedTime: state.formattedTime,
-      additionalMinutes: additionalMinutes,
-    ));
+
+    emit(
+      SyncTimerState.waitingForResponse(
+        remainingTime: state.remainingTime,
+        formattedTime: state.formattedTime,
+        additionalMinutes: additionalMinutes,
+      ),
+    );
   }
 
   void respondToProposal(bool accepted, int additionalMinutes) {
-    _timerRepository.respondToAddTime(_tempChatId, _userId, accepted, additionalMinutes);
-    
+    _timerRepository.respondToAddTime(
+      _tempChatId,
+      _userId,
+      accepted,
+      additionalMinutes,
+    );
+
     if (accepted) {
-      emit(SyncTimerState.running(
-        remainingTime: state.remainingTime,
-        formattedTime: state.formattedTime,
-      ));
+      emit(
+        SyncTimerState.running(
+          remainingTime: state.remainingTime,
+          formattedTime: state.formattedTime,
+        ),
+      );
     } else {
-      emit(SyncTimerState.running(
-        remainingTime: state.remainingTime,
-        formattedTime: state.formattedTime,
-      ));
+      emit(
+        SyncTimerState.running(
+          remainingTime: state.remainingTime,
+          formattedTime: state.formattedTime,
+        ),
+      );
     }
   }
 
   void clearProposal() {
-    emit(SyncTimerState.running(
-      remainingTime: state.remainingTime,
-      formattedTime: state.formattedTime,
-    ));
+    emit(
+      SyncTimerState.running(
+        remainingTime: state.remainingTime,
+        formattedTime: state.formattedTime,
+      ),
+    );
   }
 
   @override

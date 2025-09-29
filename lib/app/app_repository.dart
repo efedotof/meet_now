@@ -187,7 +187,10 @@ class AppRepository extends StatelessWidget {
         ),
 
         RepositoryProvider<TimerRepositoryInterface>(
-          create: (context) => TimerRepository(),
+          create:
+              (context) => TimerRepository(
+                userModelAppInterface: context.read<UserModelAppInterface>(),
+              ),
         ),
       ],
       child: child,
