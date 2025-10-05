@@ -1,21 +1,23 @@
 package com.efedotov.meet_now.meet_now.controller.friend;
 
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.service.user.FriendService;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
-import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.efedotov.meet_now.meet_now.controller.social.FriendController;
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.service.social.FriendService;
 
 @WebMvcTest(FriendController.class)
 public class FriendControllerTest {

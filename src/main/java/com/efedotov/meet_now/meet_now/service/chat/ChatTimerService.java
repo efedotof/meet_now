@@ -13,8 +13,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
-import com.efedotov.meet_now.meet_now.dto.TimerUpdateDto;
-import com.efedotov.meet_now.meet_now.model.TemporaryChat;
+import com.efedotov.meet_now.meet_now.dto.response.chat.TimerUpdateDto;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

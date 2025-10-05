@@ -1,7 +1,7 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import com.efedotov.meet_now.meet_now.dto.MessageDto;
-import com.efedotov.meet_now.meet_now.model.Message;
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.model.chat.Message;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;

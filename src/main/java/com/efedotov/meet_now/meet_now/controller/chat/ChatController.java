@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.dto.TemporaryChatDto;
-import com.efedotov.meet_now.meet_now.dto.request.AgreeChatRequest;
-import com.efedotov.meet_now.meet_now.dto.request.CreateTemporaryChatRequest;
-import com.efedotov.meet_now.meet_now.dto.request.UpdateConstraintRequest;
-import com.efedotov.meet_now.meet_now.model.Chat;
-import com.efedotov.meet_now.meet_now.model.ChatConstraint;
-import com.efedotov.meet_now.meet_now.model.TemporaryChat;
-import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.CreateTemporaryChatRequest;
+import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
+import com.efedotov.meet_now.meet_now.model.chat.Chat;
+import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 
 import io.swagger.v3.oas.annotations.Operation;

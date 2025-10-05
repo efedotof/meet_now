@@ -10,8 +10,8 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
-import com.efedotov.meet_now.meet_now.service.user.UserService;
-import com.efedotov.meet_now.meet_now.service.websocket.WebSocketSessionService;
+import com.efedotov.meet_now.meet_now.service.chat.WebSocketSessionService;
+import com.efedotov.meet_now.meet_now.service.social.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

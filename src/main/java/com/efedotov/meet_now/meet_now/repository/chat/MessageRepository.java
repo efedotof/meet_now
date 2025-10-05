@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.efedotov.meet_now.meet_now.model.ChatGame;
-import com.efedotov.meet_now.meet_now.model.Message;
+import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
+import com.efedotov.meet_now.meet_now.model.chat.Message;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {

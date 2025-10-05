@@ -1,20 +1,20 @@
 package com.efedotov.meet_now.meet_now.controller.icebreaker;
 
-import com.efedotov.meet_now.meet_now.model.IcebreakerTopec;
-import com.efedotov.meet_now.meet_now.service.chat.IcebreakerService;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.efedotov.meet_now.meet_now.controller.content.IcebreakerController;
+import com.efedotov.meet_now.meet_now.model.content.IcebreakerTopec;
+import com.efedotov.meet_now.meet_now.service.content.IcebreakerService;
 
 @WebMvcTest(IcebreakerController.class)
 public class IcebreakerControllerTest {

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.efedotov.meet_now.meet_now.model.Message;
+import com.efedotov.meet_now.meet_now.model.chat.Message;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 
 import lombok.RequiredArgsConstructor;

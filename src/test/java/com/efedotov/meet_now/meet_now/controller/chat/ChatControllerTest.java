@@ -1,18 +1,26 @@
 package com.efedotov.meet_now.meet_now.controller.chat;
 
-import com.efedotov.meet_now.meet_now.model.*;
-import com.efedotov.meet_now.meet_now.service.chat.ChatService;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 
 @WebMvcTest(ChatController.class)
 public class ChatControllerTest {

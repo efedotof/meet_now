@@ -9,8 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.efedotov.meet_now.meet_now.model.Role;
-import com.efedotov.meet_now.meet_now.model.User;
+import com.efedotov.meet_now.meet_now.model.user.Role;
+import com.efedotov.meet_now.meet_now.model.user.User;
 
 public class CustomUserDetails implements UserDetails {
     private final User user;

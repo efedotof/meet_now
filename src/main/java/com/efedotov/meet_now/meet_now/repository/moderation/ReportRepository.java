@@ -1,0 +1,16 @@
+package com.efedotov.meet_now.meet_now.repository.moderation;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.efedotov.meet_now.meet_now.model.moderation.Report;
+
+@Repository
+public interface ReportRepository extends JpaRepository<Report, UUID> {
+    List<Report> findByReporter_Id(UUID reporterId);
+    List<Report> findByReported_Id(UUID reportedId);
+    List<Report> findByReporter_IdOrReported_Id(UUID reporterId, UUID reportedId);
+}

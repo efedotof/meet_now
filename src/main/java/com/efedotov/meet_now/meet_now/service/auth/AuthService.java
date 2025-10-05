@@ -7,15 +7,15 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import com.efedotov.meet_now.meet_now.dto.LoginDTO;
-import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
-import com.efedotov.meet_now.meet_now.dto.UserDto;
-import com.efedotov.meet_now.meet_now.model.Role;
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.model.UserSession;
-import com.efedotov.meet_now.meet_now.repository.RoleRepository;
-import com.efedotov.meet_now.meet_now.repository.UserRepository;
-import com.efedotov.meet_now.meet_now.until.EncryptionUtils;
+import com.efedotov.meet_now.meet_now.dto.request.auth.LoginDTO;
+import com.efedotov.meet_now.meet_now.dto.request.auth.RegistrationDTO;
+import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
+import com.efedotov.meet_now.meet_now.model.user.Role;
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.model.user.UserSession;
+import com.efedotov.meet_now.meet_now.repository.moderation.RoleRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.service.util.EncryptionUtils;
 
 import lombok.RequiredArgsConstructor;
 

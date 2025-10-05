@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.efedotov.meet_now.meet_now.dto.LoginDTO;
-import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
-import com.efedotov.meet_now.meet_now.dto.UserDto;
+import com.efedotov.meet_now.meet_now.dto.request.auth.LoginDTO;
+import com.efedotov.meet_now.meet_now.dto.request.auth.RegistrationDTO;
+import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

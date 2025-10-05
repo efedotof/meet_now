@@ -1,11 +1,14 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import com.efedotov.meet_now.meet_now.dto.MessageDto;
-import com.efedotov.meet_now.meet_now.model.*;
-import com.efedotov.meet_now.meet_now.repository.*;
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.model.chat.Chat;
+import com.efedotov.meet_now.meet_now.model.chat.Message;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

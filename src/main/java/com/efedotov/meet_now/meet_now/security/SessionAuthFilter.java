@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.efedotov.meet_now.meet_now.model.UserSession;
+import com.efedotov.meet_now.meet_now.model.user.UserSession;
 import com.efedotov.meet_now.meet_now.service.auth.SessionService;
 import com.efedotov.meet_now.meet_now.service.auth.UserDetailsServiceImpl;
 

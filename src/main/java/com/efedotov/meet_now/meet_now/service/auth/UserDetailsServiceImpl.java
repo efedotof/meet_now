@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.repository.UserRepository;
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;

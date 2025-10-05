@@ -10,8 +10,8 @@ import java.util.UUID;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.efedotov.meet_now.meet_now.model.UserSession;
-import com.efedotov.meet_now.meet_now.repository.UserSessionRepository;
+import com.efedotov.meet_now.meet_now.model.user.UserSession;
+import com.efedotov.meet_now.meet_now.repository.user.UserSessionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

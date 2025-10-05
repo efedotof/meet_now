@@ -8,8 +8,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import com.efedotov.meet_now.meet_now.dto.AddTimeProposalDto;
-import com.efedotov.meet_now.meet_now.dto.AddTimeResponseDto;
+import com.efedotov.meet_now.meet_now.dto.request.chat.AddTimeProposalDto;
+import com.efedotov.meet_now.meet_now.dto.request.chat.AddTimeResponseDto;
 import com.efedotov.meet_now.meet_now.service.chat.ChatTimerManagementService;
 
 import lombok.RequiredArgsConstructor;

@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.efedotov.meet_now.meet_now.model.UserSession;
+import com.efedotov.meet_now.meet_now.model.user.UserSession;
 import com.efedotov.meet_now.meet_now.service.auth.SessionService;
 import com.efedotov.meet_now.meet_now.service.auth.UserDetailsServiceImpl;
 

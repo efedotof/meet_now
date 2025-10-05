@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.efedotov.meet_now.meet_now.model.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 
 @Repository
 public interface TemporaryChatRepository extends JpaRepository<TemporaryChat, UUID> {

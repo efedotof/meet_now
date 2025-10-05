@@ -1,4 +1,5 @@
 
+
 package com.efedotov.meet_now.meet_now.repository.chat;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.efedotov.meet_now.meet_now.model.Chat;
+import com.efedotov.meet_now.meet_now.model.chat.Chat;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, UUID> {

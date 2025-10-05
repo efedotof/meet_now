@@ -1,10 +1,11 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import com.efedotov.meet_now.meet_now.model.Chat;
-import com.efedotov.meet_now.meet_now.model.TemporaryChat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import com.efedotov.meet_now.meet_now.model.chat.Chat;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 
 import java.util.List;
 import java.util.UUID;

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.dto.LoginDTO;
-import com.efedotov.meet_now.meet_now.dto.RegistrationDTO;
-import com.efedotov.meet_now.meet_now.dto.UserDto;
+import com.efedotov.meet_now.meet_now.dto.request.auth.LoginDTO;
+import com.efedotov.meet_now.meet_now.dto.request.auth.RegistrationDTO;
+import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.service.auth.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;

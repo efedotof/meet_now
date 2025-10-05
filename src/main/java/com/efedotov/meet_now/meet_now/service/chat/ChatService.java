@@ -8,16 +8,16 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.model.Chat;
-import com.efedotov.meet_now.meet_now.model.ChatConstraint;
-import com.efedotov.meet_now.meet_now.model.ChatGame;
-import com.efedotov.meet_now.meet_now.model.TemporaryChat;
-import com.efedotov.meet_now.meet_now.model.User;
-import com.efedotov.meet_now.meet_now.repository.UserRepository;
+import com.efedotov.meet_now.meet_now.model.chat.Chat;
+import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
+import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
+import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatConstraintRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatGameRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

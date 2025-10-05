@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.dto.GameInfoResponse;
-import com.efedotov.meet_now.meet_now.dto.request.AddGameRequest;
-import com.efedotov.meet_now.meet_now.dto.request.GameCompletionRequest;
-import com.efedotov.meet_now.meet_now.dto.request.UpdateGameStateRequest;
-import com.efedotov.meet_now.meet_now.model.ChatGame;
-import com.efedotov.meet_now.meet_now.service.chat.GamesService;
+import com.efedotov.meet_now.meet_now.dto.request.game.AddGameRequest;
+import com.efedotov.meet_now.meet_now.dto.request.game.GameCompletionRequest;
+import com.efedotov.meet_now.meet_now.dto.request.game.UpdateGameStateRequest;
+import com.efedotov.meet_now.meet_now.dto.response.game.GameInfoResponse;
+import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
+import com.efedotov.meet_now.meet_now.service.game.GamesService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
