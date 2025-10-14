@@ -37,7 +37,7 @@ class _UserAvatarState extends State<UserAvatar> {
         setState(() => _presignedUrl = url);
       }
     } catch (e) {
-      // Обработка ошибок
+      debugPrint("Произошла ошибка: $e");
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

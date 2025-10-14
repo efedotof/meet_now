@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 
 import 'chat_tile.dart';
 import 'temporary_chats_banner.dart';
@@ -26,6 +27,7 @@ class MyBody extends StatelessWidget {
         child: Text("${S.of(context).errorPrefix}: ${state.error}"),
       );
     }
+
     return RefreshIndicator(
       onRefresh: () => context.read<ChatCubit>().refresh(),
       color: Theme.of(context).colorScheme.primary,
@@ -90,12 +92,16 @@ class MyBody extends StatelessWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final chat = state.permanentChat[index];
+                final currentUserId = state.currentUserId;
+
+                final (name, avatar) = _getChatDisplayData(chat, currentUserId);
+
                 return ChatTile(
-                  name:
-                      "${chat.user1.firstname ?? S.of(context).anonymous} ${chat.user1.subname ?? ''}",
-                  lastMessage: "lastMessage",
+                  name: name,
+                  lastMessage: chat.lastMessage ?? "Начните общение",
                   unreadCount: 3,
-                  avatar: chat.user1.avatar,
+                  avatar: avatar,
+                  chat: chat,
                 );
               }, childCount: state.permanentChat.length),
             ),
@@ -103,5 +109,19 @@ class MyBody extends StatelessWidget {
       ),
     );
   }
-}
 
+  (String name, String? avatar) _getChatDisplayData(
+    PermanentChatResponseDto chat,
+    String? currentUserId,
+  ) {
+    if (currentUserId == null) {
+      return ('Unknown User', null);
+    }
+
+    if (currentUserId == chat.user1Id) {
+      return ('${chat.user2Firstname} ${chat.user2Subname}', chat.user2Avatar);
+    } else {
+      return ('${chat.user1Firstname} ${chat.user1Subname}', chat.user1Avatar);
+    }
+  }
+}

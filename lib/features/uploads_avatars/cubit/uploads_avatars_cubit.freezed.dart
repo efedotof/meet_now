@@ -55,13 +55,16 @@ extension UploadsAvatarsStatePatterns on UploadsAvatarsState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _AvatarUploadSuccess value)?  avatarUploadSuccess,TResult Function( _ImagesUploadSuccess value)?  imagesUploadSuccess,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _AvatarSelected value)?  avatarSelected,TResult Function( _AvatarLoading value)?  avatarLoading,TResult Function( _ImagesLoading value)?  imagesLoading,TResult Function( _AvatarUploadSuccess value)?  avatarUploadSuccess,TResult Function( _GallerySelected value)?  gallerySelected,TResult Function( _ImagesUploadSuccess value)?  imagesUploadSuccess,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _AvatarUploadSuccess() when avatarUploadSuccess != null:
-return avatarUploadSuccess(_that);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
+return initial(_that);case _AvatarSelected() when avatarSelected != null:
+return avatarSelected(_that);case _AvatarLoading() when avatarLoading != null:
+return avatarLoading(_that);case _ImagesLoading() when imagesLoading != null:
+return imagesLoading(_that);case _AvatarUploadSuccess() when avatarUploadSuccess != null:
+return avatarUploadSuccess(_that);case _GallerySelected() when gallerySelected != null:
+return gallerySelected(_that);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that);case _Error() when error != null:
 return error(_that);case _:
   return orElse();
@@ -81,13 +84,16 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _AvatarUploadSuccess value)  avatarUploadSuccess,required TResult Function( _ImagesUploadSuccess value)  imagesUploadSuccess,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _AvatarSelected value)  avatarSelected,required TResult Function( _AvatarLoading value)  avatarLoading,required TResult Function( _ImagesLoading value)  imagesLoading,required TResult Function( _AvatarUploadSuccess value)  avatarUploadSuccess,required TResult Function( _GallerySelected value)  gallerySelected,required TResult Function( _ImagesUploadSuccess value)  imagesUploadSuccess,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
-return initial(_that);case _Loading():
-return loading(_that);case _AvatarUploadSuccess():
-return avatarUploadSuccess(_that);case _ImagesUploadSuccess():
+return initial(_that);case _AvatarSelected():
+return avatarSelected(_that);case _AvatarLoading():
+return avatarLoading(_that);case _ImagesLoading():
+return imagesLoading(_that);case _AvatarUploadSuccess():
+return avatarUploadSuccess(_that);case _GallerySelected():
+return gallerySelected(_that);case _ImagesUploadSuccess():
 return imagesUploadSuccess(_that);case _Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
@@ -106,13 +112,16 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _AvatarUploadSuccess value)?  avatarUploadSuccess,TResult? Function( _ImagesUploadSuccess value)?  imagesUploadSuccess,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _AvatarSelected value)?  avatarSelected,TResult? Function( _AvatarLoading value)?  avatarLoading,TResult? Function( _ImagesLoading value)?  imagesLoading,TResult? Function( _AvatarUploadSuccess value)?  avatarUploadSuccess,TResult? Function( _GallerySelected value)?  gallerySelected,TResult? Function( _ImagesUploadSuccess value)?  imagesUploadSuccess,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _AvatarUploadSuccess() when avatarUploadSuccess != null:
-return avatarUploadSuccess(_that);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
+return initial(_that);case _AvatarSelected() when avatarSelected != null:
+return avatarSelected(_that);case _AvatarLoading() when avatarLoading != null:
+return avatarLoading(_that);case _ImagesLoading() when imagesLoading != null:
+return imagesLoading(_that);case _AvatarUploadSuccess() when avatarUploadSuccess != null:
+return avatarUploadSuccess(_that);case _GallerySelected() when gallerySelected != null:
+return gallerySelected(_that);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that);case _Error() when error != null:
 return error(_that);case _:
   return null;
@@ -131,12 +140,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String url)?  avatarUploadSuccess,TResult Function( List<String> urls)?  imagesUploadSuccess,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String filePath)?  avatarSelected,TResult Function()?  avatarLoading,TResult Function()?  imagesLoading,TResult Function( String url)?  avatarUploadSuccess,TResult Function( List<String> paths)?  gallerySelected,TResult Function( List<String> urls)?  imagesUploadSuccess,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _AvatarUploadSuccess() when avatarUploadSuccess != null:
-return avatarUploadSuccess(_that.url);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
+return initial();case _AvatarSelected() when avatarSelected != null:
+return avatarSelected(_that.filePath);case _AvatarLoading() when avatarLoading != null:
+return avatarLoading();case _ImagesLoading() when imagesLoading != null:
+return imagesLoading();case _AvatarUploadSuccess() when avatarUploadSuccess != null:
+return avatarUploadSuccess(_that.url);case _GallerySelected() when gallerySelected != null:
+return gallerySelected(_that.paths);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that.urls);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
@@ -156,12 +168,15 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String url)  avatarUploadSuccess,required TResult Function( List<String> urls)  imagesUploadSuccess,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String filePath)  avatarSelected,required TResult Function()  avatarLoading,required TResult Function()  imagesLoading,required TResult Function( String url)  avatarUploadSuccess,required TResult Function( List<String> paths)  gallerySelected,required TResult Function( List<String> urls)  imagesUploadSuccess,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
-return initial();case _Loading():
-return loading();case _AvatarUploadSuccess():
-return avatarUploadSuccess(_that.url);case _ImagesUploadSuccess():
+return initial();case _AvatarSelected():
+return avatarSelected(_that.filePath);case _AvatarLoading():
+return avatarLoading();case _ImagesLoading():
+return imagesLoading();case _AvatarUploadSuccess():
+return avatarUploadSuccess(_that.url);case _GallerySelected():
+return gallerySelected(_that.paths);case _ImagesUploadSuccess():
 return imagesUploadSuccess(_that.urls);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
@@ -180,12 +195,15 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String url)?  avatarUploadSuccess,TResult? Function( List<String> urls)?  imagesUploadSuccess,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String filePath)?  avatarSelected,TResult? Function()?  avatarLoading,TResult? Function()?  imagesLoading,TResult? Function( String url)?  avatarUploadSuccess,TResult? Function( List<String> paths)?  gallerySelected,TResult? Function( List<String> urls)?  imagesUploadSuccess,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _AvatarUploadSuccess() when avatarUploadSuccess != null:
-return avatarUploadSuccess(_that.url);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
+return initial();case _AvatarSelected() when avatarSelected != null:
+return avatarSelected(_that.filePath);case _AvatarLoading() when avatarLoading != null:
+return avatarLoading();case _ImagesLoading() when imagesLoading != null:
+return imagesLoading();case _AvatarUploadSuccess() when avatarUploadSuccess != null:
+return avatarUploadSuccess(_that.url);case _GallerySelected() when gallerySelected != null:
+return gallerySelected(_that.paths);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that.urls);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
@@ -230,8 +248,74 @@ String toString() {
 /// @nodoc
 
 
-class _Loading implements UploadsAvatarsState {
-  const _Loading();
+class _AvatarSelected implements UploadsAvatarsState {
+  const _AvatarSelected(this.filePath);
+  
+
+ final  String filePath;
+
+/// Create a copy of UploadsAvatarsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AvatarSelectedCopyWith<_AvatarSelected> get copyWith => __$AvatarSelectedCopyWithImpl<_AvatarSelected>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvatarSelected&&(identical(other.filePath, filePath) || other.filePath == filePath));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,filePath);
+
+@override
+String toString() {
+  return 'UploadsAvatarsState.avatarSelected(filePath: $filePath)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AvatarSelectedCopyWith<$Res> implements $UploadsAvatarsStateCopyWith<$Res> {
+  factory _$AvatarSelectedCopyWith(_AvatarSelected value, $Res Function(_AvatarSelected) _then) = __$AvatarSelectedCopyWithImpl;
+@useResult
+$Res call({
+ String filePath
+});
+
+
+
+
+}
+/// @nodoc
+class __$AvatarSelectedCopyWithImpl<$Res>
+    implements _$AvatarSelectedCopyWith<$Res> {
+  __$AvatarSelectedCopyWithImpl(this._self, this._then);
+
+  final _AvatarSelected _self;
+  final $Res Function(_AvatarSelected) _then;
+
+/// Create a copy of UploadsAvatarsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? filePath = null,}) {
+  return _then(_AvatarSelected(
+null == filePath ? _self.filePath : filePath // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _AvatarLoading implements UploadsAvatarsState {
+  const _AvatarLoading();
   
 
 
@@ -241,7 +325,7 @@ class _Loading implements UploadsAvatarsState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loading);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvatarLoading);
 }
 
 
@@ -250,7 +334,39 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'UploadsAvatarsState.loading()';
+  return 'UploadsAvatarsState.avatarLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _ImagesLoading implements UploadsAvatarsState {
+  const _ImagesLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ImagesLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'UploadsAvatarsState.imagesLoading()';
 }
 
 
@@ -319,6 +435,78 @@ class __$AvatarUploadSuccessCopyWithImpl<$Res>
   return _then(_AvatarUploadSuccess(
 null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _GallerySelected implements UploadsAvatarsState {
+  const _GallerySelected(final  List<String> paths): _paths = paths;
+  
+
+ final  List<String> _paths;
+ List<String> get paths {
+  if (_paths is EqualUnmodifiableListView) return _paths;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_paths);
+}
+
+
+/// Create a copy of UploadsAvatarsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$GallerySelectedCopyWith<_GallerySelected> get copyWith => __$GallerySelectedCopyWithImpl<_GallerySelected>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GallerySelected&&const DeepCollectionEquality().equals(other._paths, _paths));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_paths));
+
+@override
+String toString() {
+  return 'UploadsAvatarsState.gallerySelected(paths: $paths)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$GallerySelectedCopyWith<$Res> implements $UploadsAvatarsStateCopyWith<$Res> {
+  factory _$GallerySelectedCopyWith(_GallerySelected value, $Res Function(_GallerySelected) _then) = __$GallerySelectedCopyWithImpl;
+@useResult
+$Res call({
+ List<String> paths
+});
+
+
+
+
+}
+/// @nodoc
+class __$GallerySelectedCopyWithImpl<$Res>
+    implements _$GallerySelectedCopyWith<$Res> {
+  __$GallerySelectedCopyWithImpl(this._self, this._then);
+
+  final _GallerySelected _self;
+  final $Res Function(_GallerySelected) _then;
+
+/// Create a copy of UploadsAvatarsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? paths = null,}) {
+  return _then(_GallerySelected(
+null == paths ? _self._paths : paths // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

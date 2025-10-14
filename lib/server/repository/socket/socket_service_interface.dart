@@ -1,5 +1,5 @@
-import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/message/message.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
@@ -15,7 +15,7 @@ abstract interface class SocketServiceInterface {
 
   Stream<List<Message>> get messagesStream;
   Stream<Message> get singleMessageStream;
-  Stream<List<Chat>> get permanentChatsStream;
+  Stream<List<PermanentChatResponseDto>> get permanentChatsStream;
   Stream<List<TemporaryChat>> get temporaryChatsStream;
   Stream<UserActivity> get userActivityStream;
   Stream<TemporaryChat> get temporaryChatNewStream;

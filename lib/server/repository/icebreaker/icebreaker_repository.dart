@@ -1,9 +1,8 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/icebreaker_topec/icebreaker_topec.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
-
 import 'icebreaker_interface.dart';
 
 class IcebreakerRepository implements IcebreakerInterface {
@@ -21,9 +20,11 @@ class IcebreakerRepository implements IcebreakerInterface {
   void _setAuthHeader() {
     final token = userModelAppInterface.user?.token;
     if (token == null || token.isEmpty) {
+      log('❌ Отсутствует токен авторизации', name: 'IcebreakerRepository');
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
+    log('🔑 Токен авторизации установлен', name: 'IcebreakerRepository');
   }
 
   @override
@@ -31,25 +32,37 @@ class IcebreakerRepository implements IcebreakerInterface {
     try {
       _setAuthHeader();
       if (text.trim().isEmpty) {
-        debugPrint("Search text is empty");
+        log('⚠️ Пустой текст для поиска', name: 'IcebreakerRepository');
         return [];
       }
-
       final response = await _dio.get(
         '/search',
         queryParameters: {'text': text},
       );
       if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data
-            .map((e) => IcebreakerTopec.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final list =
+            (response.data as List)
+                .map((e) => IcebreakerTopec.fromJson(e as Map<String, dynamic>))
+                .toList();
+        log(
+          '✅ Найдено ${list.length} топиков по тексту: "$text"',
+          name: 'IcebreakerRepository',
+        );
+        return list;
       } else {
-        debugPrint("Request failed with status: ${response.statusCode}");
+        log(
+          '❌ Ошибка поиска топиков, статус: ${response.statusCode}',
+          name: 'IcebreakerRepository',
+        );
         return [];
       }
-    } catch (e) {
-      debugPrint("Unknown error: $e");
+    } catch (e, s) {
+      log(
+        '❌ Ошибка textSearch: $e',
+        name: 'IcebreakerRepository',
+        error: e,
+        stackTrace: s,
+      );
       return [];
     }
   }
@@ -60,16 +73,29 @@ class IcebreakerRepository implements IcebreakerInterface {
       _setAuthHeader();
       final response = await _dio.get('/get_all_ice');
       if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data
-            .map((e) => IcebreakerTopec.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final list =
+            (response.data as List)
+                .map((e) => IcebreakerTopec.fromJson(e as Map<String, dynamic>))
+                .toList();
+        log(
+          '✅ Получено ${list.length} всех топиков',
+          name: 'IcebreakerRepository',
+        );
+        return list;
       } else {
-        debugPrint("Request failed with status: ${response.statusCode}");
+        log(
+          '❌ Ошибка получения всех топиков, статус: ${response.statusCode}',
+          name: 'IcebreakerRepository',
+        );
         return [];
       }
-    } catch (e) {
-      debugPrint("Unknown error: $e");
+    } catch (e, s) {
+      log(
+        '❌ Ошибка getAllIce: $e',
+        name: 'IcebreakerRepository',
+        error: e,
+        stackTrace: s,
+      );
       return [];
     }
   }
@@ -80,16 +106,25 @@ class IcebreakerRepository implements IcebreakerInterface {
       _setAuthHeader();
       final response = await _dio.get('/random');
       if (response.statusCode == 200) {
-        final data = response.data as IcebreakerTopec;
+        final data = IcebreakerTopec.fromJson(
+          response.data as Map<String, dynamic>,
+        );
+        log('✅ Получен случайный топик', name: 'IcebreakerRepository');
         return data;
       } else {
-        debugPrint(
-          "Request getRandomIce failed with status: ${response.statusCode}",
+        log(
+          '❌ Ошибка получения случайного топика, статус: ${response.statusCode}',
+          name: 'IcebreakerRepository',
         );
         return null;
       }
-    } catch (e) {
-      debugPrint("Unknown error: $e");
+    } catch (e, s) {
+      log(
+        '❌ Ошибка getRandomIce: $e',
+        name: 'IcebreakerRepository',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }

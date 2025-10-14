@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,20 +14,64 @@ class UserStorageRepository implements UserStorageInterface {
 
   @override
   Future<void> saveUser(User user) async {
-    final jsonString = jsonEncode(user.toJson());
-    await preferences.setString(_userKey, jsonString);
+    try {
+      final jsonString = jsonEncode(user.toJson());
+      await preferences.setString(_userKey, jsonString);
+      log(
+        '✅ User saved successfully: ${user.username}',
+        name: 'UserStorageRepository',
+      );
+    } catch (e, s) {
+      log(
+        '❌ Failed to save user: $e',
+        name: 'UserStorageRepository',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
   }
 
   @override
   Future<User?> getUser() async {
-    final jsonString = preferences.getString(_userKey);
-    if (jsonString == null) return null;
-    final jsonMap = jsonDecode(jsonString);
-    return User.fromJson(jsonMap);
+    try {
+      final jsonString = preferences.getString(_userKey);
+      if (jsonString == null) {
+        log('ℹ️ No saved user found', name: 'UserStorageRepository');
+        return null;
+      }
+
+      final jsonMap = jsonDecode(jsonString);
+      final user = User.fromJson(jsonMap);
+      log(
+        '✅ User loaded successfully: ${user.username}',
+        name: 'UserStorageRepository',
+      );
+      return user;
+    } catch (e, s) {
+      log(
+        '❌ Failed to load user: $e',
+        name: 'UserStorageRepository',
+        error: e,
+        stackTrace: s,
+      );
+      return null;
+    }
   }
 
   @override
   Future<void> clearUser() async {
-    await preferences.remove(_userKey);
+    try {
+      await preferences.remove(_userKey);
+      log('🗑️ User data cleared successfully', name: 'UserStorageRepository');
+    } catch (e, s) {
+      log(
+        '❌ Failed to clear user data: $e',
+        name: 'UserStorageRepository',
+        error: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
   }
 }

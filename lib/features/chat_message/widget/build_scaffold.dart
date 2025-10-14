@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/app_bar_widget.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 
 import 'error_message.dart';
 import 'input_area.dart';
@@ -24,11 +24,12 @@ class BuildScaffold extends StatelessWidget {
     required this.messageController,
     required this.sendMessage,
     required this.scrollController,
+    required this.onAddAttach,
   });
 
   final ThemeData theme;
   final String currentUserId;
-  final Chat? chatModel;
+  final PermanentChatResponseDto? chatModel;
   final VoidCallback onBackPressed;
   final bool isTemporary;
   final String chatId;
@@ -37,6 +38,7 @@ class BuildScaffold extends StatelessWidget {
   final TextEditingController messageController;
   final VoidCallback sendMessage;
   final ScrollController scrollController;
+  final VoidCallback onAddAttach;
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +49,11 @@ class BuildScaffold extends StatelessWidget {
         userId: currentUserId,
         onBackPressed: onBackPressed,
         isTemporary: isTemporary,
-        timerText:
-            isTemporary
-                ? context.select(
-                  (SyncTimerCubit cubit) => cubit.state.formattedTime,
-                )
-                : null,
+        timerText: isTemporary
+            ? context.select(
+                (SyncTimerCubit cubit) => cubit.state.formattedTime,
+              )
+            : null,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -66,81 +67,76 @@ class BuildScaffold extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // Кнопки добавления времени для временного чата
             if (isTemporary)
               BlocBuilder<SyncTimerCubit, SyncTimerState>(
                 builder: (context, state) {
                   return state.when(
                     initial: () => const SizedBox.shrink(),
-                    running:
-                        (remainingTime, formattedTime) => Container(
-                          padding: const EdgeInsets.all(8),
-                          color: Colors.grey[100],
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<SyncTimerCubit>().proposeAddTime(
-                                    1,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                ),
-                                child: const Text('1 мин'),
+                    running: (remainingTime, formattedTime) => Container(
+                      padding: const EdgeInsets.all(8),
+                      color: Colors.grey[100],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<SyncTimerCubit>().proposeAddTime(1);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<SyncTimerCubit>().proposeAddTime(
-                                    3,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                ),
-                                child: const Text('3 мин'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<SyncTimerCubit>().proposeAddTime(
-                                    5,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                ),
-                                child: const Text('5 мин'),
-                              ),
-                            ],
+                            ),
+                            child: const Text('1 мин'),
                           ),
-                        ),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<SyncTimerCubit>().proposeAddTime(3);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                            ),
+                            child: const Text('3 мин'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<SyncTimerCubit>().proposeAddTime(5);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                            ),
+                            child: const Text('5 мин'),
+                          ),
+                        ],
+                      ),
+                    ),
                     finished: () => const SizedBox.shrink(),
-                    addTimeProposed:
-                        (
-                          remainingTime,
-                          formattedTime,
-                          additionalMinutes,
-                          fromUserId,
-                        ) => const SizedBox.shrink(),
-                    waitingForResponse:
-                        (remainingTime, formattedTime, additionalMinutes) =>
-                            const SizedBox.shrink(),
+                    addTimeProposed: (
+                      remainingTime,
+                      formattedTime,
+                      additionalMinutes,
+                      fromUserId,
+                    ) =>
+                        const SizedBox.shrink(),
+                    waitingForResponse: (
+                      remainingTime,
+                      formattedTime,
+                      additionalMinutes,
+                    ) =>
+                        const SizedBox.shrink(),
                     timeAdded: (additionalMinutes) => const SizedBox.shrink(),
                     timeRejected: () => const SizedBox.shrink(),
                   );
@@ -156,35 +152,32 @@ class BuildScaffold extends StatelessWidget {
                     child: state.when(
                       initial: () => const LoadingMessages(),
                       loading: () => const LoadingMessages(),
-                      error:
-                          (message) => ErrorMessage(
-                            message: message,
-                            onRetry:
-                                () => cubit.reconnect(
-                                  context: context,
-                                  isTemporary: isTemporary,
-                                  chatId: chatId,
-                                  senderId: senderID,
-                                  recipientId: recipientId,
-                                ),
+                      error: (message) => ErrorMessage(
+                        message: message,
+                        onRetry: () => cubit.reconnect(
+                          context: context,
+                          isTemporary: isTemporary,
+                          chatId: chatId,
+                          senderId: senderID,
+                          recipientId: recipientId,
+                        ),
+                      ),
+                      loaded: (messages, isLoadingMore) => Column(
+                        children: [
+                          if (isLoadingMore)
+                            const LinearProgressIndicator(
+                              minHeight: 2,
+                              color: Colors.blueAccent,
+                            ),
+                          Expanded(
+                            child: MessagesList(
+                              messages: messages,
+                              scrollController: scrollController,
+                              currentUserId: currentUserId,
+                            ),
                           ),
-                      loaded:
-                          (messages, isLoadingMore) => Column(
-                            children: [
-                              if (isLoadingMore)
-                                const LinearProgressIndicator(
-                                  minHeight: 2,
-                                  color: Colors.blueAccent,
-                                ),
-                              Expanded(
-                                child: MessagesList(
-                                  messages: messages,
-                                  scrollController: scrollController,
-                                  currentUserId: currentUserId,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -197,6 +190,7 @@ class BuildScaffold extends StatelessWidget {
                 context.read<ChatMessageCubit>().sendTextMessage(result);
               },
               chatId: chatId,
+              onAddAttach: onAddAttach,
             ),
           ],
         ),

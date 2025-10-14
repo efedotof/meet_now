@@ -1,7 +1,7 @@
 import 'package:meet_now_app/server/model/user/user.dart';
 
 abstract interface class UserInterface {
-  Future<void> putUserProfile();
+  Future<void> putUserProfile({required User user});
   Future<void> patchUserUsername({required String username});
   Future<void> patchUserSearchable({required bool isSearchable});
   Future<void> patchUserPurposes({required User dto});
@@ -20,9 +20,11 @@ abstract interface class UserInterface {
   Future<void> patchUserAvatar({required String avatar});
   Future<void> patchUserAge({required int age});
   Future<User> getUser();
+  
 
   Future<void> startSearch();
   Future<void> stopSearch();
+
 }
 
 

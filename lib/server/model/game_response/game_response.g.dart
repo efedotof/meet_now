@@ -7,7 +7,19 @@ part of 'game_response.dart';
 // **************************************************************************
 
 _GameResponse _$GameResponseFromJson(Map<String, dynamic> json) =>
-    _GameResponse(type: json['type'] as String, url: json['url'] as String);
+    _GameResponse(
+      gameType: json['gameType'] as String,
+      gameUrl: json['gameUrl'] as String,
+      gameName: json['gameName'] as String,
+      gameDescription: json['gameDescription'] as String,
+      thumbnailUrl: json['thumbnailUrl'] as String,
+    );
 
 Map<String, dynamic> _$GameResponseToJson(_GameResponse instance) =>
-    <String, dynamic>{'type': instance.type, 'url': instance.url};
+    <String, dynamic>{
+      'gameType': instance.gameType,
+      'gameUrl': instance.gameUrl,
+      'gameName': instance.gameName,
+      'gameDescription': instance.gameDescription,
+      'thumbnailUrl': instance.thumbnailUrl,
+    };

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Chat {
 
-@HiveField(0) String get chatId;@HiveField(1) User get user1;@HiveField(2) User get user2;@HiveField(3) DateTime get createdAt;@HiveField(4) bool get isOpened;@HiveField(5) String get lastMessage;
+ String get chatId; User get user1; User get user2; DateTime get createdAt; bool get isOpened; String get lastMessage;
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $ChatCopyWith<$Res>  {
   factory $ChatCopyWith(Chat value, $Res Function(Chat) _then) = _$ChatCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String chatId,@HiveField(1) User user1,@HiveField(2) User user2,@HiveField(3) DateTime createdAt,@HiveField(4) bool isOpened,@HiveField(5) String lastMessage
+ String chatId, User user1, User user2, DateTime createdAt, bool isOpened, String lastMessage
 });
 
 
@@ -176,7 +176,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String chatId, @HiveField(1)  User user1, @HiveField(2)  User user2, @HiveField(3)  DateTime createdAt, @HiveField(4)  bool isOpened, @HiveField(5)  String lastMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Chat() when $default != null:
 return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
@@ -197,7 +197,7 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String chatId, @HiveField(1)  User user1, @HiveField(2)  User user2, @HiveField(3)  DateTime createdAt, @HiveField(4)  bool isOpened, @HiveField(5)  String lastMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)  $default,) {final _that = this;
 switch (_that) {
 case _Chat():
 return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
@@ -217,7 +217,7 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String chatId, @HiveField(1)  User user1, @HiveField(2)  User user2, @HiveField(3)  DateTime createdAt, @HiveField(4)  bool isOpened, @HiveField(5)  String lastMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  User user1,  User user2,  DateTime createdAt,  bool isOpened,  String lastMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _Chat() when $default != null:
 return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpened,_that.lastMessage);case _:
@@ -232,15 +232,15 @@ return $default(_that.chatId,_that.user1,_that.user2,_that.createdAt,_that.isOpe
 @JsonSerializable()
 
 class _Chat implements Chat {
-  const _Chat({@HiveField(0) required this.chatId, @HiveField(1) required this.user1, @HiveField(2) required this.user2, @HiveField(3) required this.createdAt, @HiveField(4) required this.isOpened, @HiveField(5) required this.lastMessage});
+  const _Chat({required this.chatId, required this.user1, required this.user2, required this.createdAt, required this.isOpened, required this.lastMessage});
   factory _Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
 
-@override@HiveField(0) final  String chatId;
-@override@HiveField(1) final  User user1;
-@override@HiveField(2) final  User user2;
-@override@HiveField(3) final  DateTime createdAt;
-@override@HiveField(4) final  bool isOpened;
-@override@HiveField(5) final  String lastMessage;
+@override final  String chatId;
+@override final  User user1;
+@override final  User user2;
+@override final  DateTime createdAt;
+@override final  bool isOpened;
+@override final  String lastMessage;
 
 /// Create a copy of Chat
 /// with the given fields replaced by the non-null parameter values.
@@ -275,7 +275,7 @@ abstract mixin class _$ChatCopyWith<$Res> implements $ChatCopyWith<$Res> {
   factory _$ChatCopyWith(_Chat value, $Res Function(_Chat) _then) = __$ChatCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String chatId,@HiveField(1) User user1,@HiveField(2) User user2,@HiveField(3) DateTime createdAt,@HiveField(4) bool isOpened,@HiveField(5) String lastMessage
+ String chatId, User user1, User user2, DateTime createdAt, bool isOpened, String lastMessage
 });
 
 

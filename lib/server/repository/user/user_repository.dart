@@ -1,11 +1,11 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_interface.dart';
+import 'package:meet_now_app/storage/token/token_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
-
 import 'user_interface.dart';
 
 class UserRepository implements UserInterface {
@@ -13,8 +13,10 @@ class UserRepository implements UserInterface {
   final Dio _dio;
   final PasswordStorageInterface passwordStorageInterface;
   final UserStorageInterface userStorageInterface;
+  final TokenInterface tokenInterface;
 
   UserRepository({
+    required this.tokenInterface,
     required this.userModelAppInterface,
     required this.passwordStorageInterface,
     required this.userStorageInterface,
@@ -23,11 +25,12 @@ class UserRepository implements UserInterface {
        );
 
   void _setAuthHeader() {
-    final token = userModelAppInterface.user?.token;
-    if (token == null || token.isEmpty) {
+    final token = tokenInterface.getToken();
+    if (token == "" || token.isEmpty) {
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
+    log('Authorization header set', name: 'UserRepository');
   }
 
   String _getUserId() {
@@ -35,6 +38,7 @@ class UserRepository implements UserInterface {
     if (uuid == null || uuid.isEmpty) {
       throw Exception('Отсутствует id пользователя');
     }
+    log('User ID: $uuid', name: 'UserRepository');
     return uuid;
   }
 
@@ -48,9 +52,13 @@ class UserRepository implements UserInterface {
       final user = User.fromJson(response.data);
       userModelAppInterface.user = user;
       await userStorageInterface.saveUser(user);
-      debugPrint("user: $user");
+      log('Fetched user: $user', name: 'UserRepository');
       return user;
     } else {
+      log(
+        'Unexpected response status: ${response.statusCode}',
+        name: 'UserRepository',
+      );
       throw Exception('Unexpected response: ${response.statusCode}');
     }
   }
@@ -60,6 +68,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/age', data: {'age': age});
+    log('Updated user age: $age', name: 'UserRepository');
   }
 
   @override
@@ -67,6 +76,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/avatar', data: {'avatar': avatar});
+    log('Updated user avatar: $avatar', name: 'UserRepository');
   }
 
   @override
@@ -74,6 +84,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/city', data: {'city': city});
+    log('Updated user city: $city', name: 'UserRepository');
   }
 
   @override
@@ -81,6 +92,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/description', data: {'description': description});
+    log('Updated user description: $description', name: 'UserRepository');
   }
 
   @override
@@ -88,6 +100,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/email', data: {'email': email});
+    log('Updated user email: $email', name: 'UserRepository');
   }
 
   @override
@@ -101,6 +114,7 @@ class UserRepository implements UserInterface {
     );
     dios.options.headers['Authorization'] = 'Bearer $token';
     await dios.patch('/$uuid/online', queryParameters: {'isOnline': isOnline});
+    log('Updated user online: $isOnline', name: 'UserRepository');
   }
 
   @override
@@ -114,6 +128,7 @@ class UserRepository implements UserInterface {
       '/user/$uuid/password',
       data: {'oldPassword': oldPassword, 'newPassword': newPassword},
     );
+    log('Updated user password', name: 'UserRepository');
   }
 
   @override
@@ -121,6 +136,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/purposes', data: {'purposes': dto.purposes});
+    log('Updated user purposes: ${dto.purposes}', name: 'UserRepository');
   }
 
   @override
@@ -128,6 +144,7 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/searchable', data: {'isSearchable': isSearchable});
+    log('Updated user searchable: $isSearchable', name: 'UserRepository');
   }
 
   @override
@@ -135,17 +152,15 @@ class UserRepository implements UserInterface {
     _setAuthHeader();
     final uuid = _getUserId();
     await _dio.patch('/$uuid/username', data: {'username': username});
+    log('Updated user username: $username', name: 'UserRepository');
   }
 
   @override
-  Future<void> putUserProfile() async {
+  Future<void> putUserProfile({required User user}) async {
     _setAuthHeader();
     final uuid = _getUserId();
-    final user = userModelAppInterface.user;
-    if (user == null) {
-      throw Exception('Пользователь не найден для обновления профиля');
-    }
     await _dio.put('/$uuid/profile', data: user.toJson());
+    log('Updated full user profile: $user', name: 'UserRepository');
   }
 
   @override
@@ -153,8 +168,9 @@ class UserRepository implements UserInterface {
     try {
       _setAuthHeader();
       await _dio.post("/start-search");
+      log('Started search', name: 'UserRepository');
     } catch (e) {
-      debugPrint("Произошла ошибка старта поиска: $e");
+      log('Error starting search: $e', name: 'UserRepository');
     }
   }
 
@@ -163,8 +179,9 @@ class UserRepository implements UserInterface {
     try {
       _setAuthHeader();
       await _dio.post("/stop-search");
+      log('Stopped search', name: 'UserRepository');
     } catch (e) {
-      debugPrint("Произошла ошибка остановки поиска: $e");
+      log('Error stopping search: $e', name: 'UserRepository');
     }
   }
 }

@@ -25,6 +25,7 @@ abstract class User with _$User {
     required Set<String> roles,
     required bool isOnline,
     required String floor,
+    required int gamePoints,
     List<String>? images,
   }) = _User;
 

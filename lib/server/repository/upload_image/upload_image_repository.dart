@@ -1,22 +1,23 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
-import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app/storage/token/token_interface.dart';
 import 'upload_image_interface.dart';
 
 class UploadImageRepository implements UploadImageInterface {
   final Dio _dio = Dio(BaseOptions(baseUrl: uploadsAddress));
-  final UserModelAppInterface _userModelAppInterface;
-
-  UploadImageRepository({required UserModelAppInterface userModelAppInterface})
-    : _userModelAppInterface = userModelAppInterface;
+  final TokenInterface _tokenInterface;
+  UploadImageRepository({
+    required TokenInterface tokenInterface,
+  }) : _tokenInterface = tokenInterface;
 
   void _setAuthHeader() {
-    final token = _userModelAppInterface.user?.token;
-    if (token == null || token.isEmpty) {
+    final token = _tokenInterface.getToken();
+    if (token == "" || token.isEmpty) {
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
+    log('Authorization header set', name: 'UploadImageRepository');
   }
 
   @override
@@ -24,6 +25,7 @@ class UploadImageRepository implements UploadImageInterface {
     try {
       _setAuthHeader();
       final fileName = filePath.split('/').last;
+      log('Uploading avatar: $fileName', name: 'UploadImageRepository');
 
       FormData formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(filePath, filename: fileName),
@@ -36,14 +38,17 @@ class UploadImageRepository implements UploadImageInterface {
       );
 
       if (response.statusCode == 200) {
-        debugPrint(response.data.toString());
+        log('Avatar uploaded: ${response.data}', name: 'UploadImageRepository');
         return response.data;
       } else {
-        debugPrint('Ошибка загрузки: ${response.statusCode}');
+        log(
+          'Upload avatar failed: ${response.statusCode}',
+          name: 'UploadImageRepository',
+        );
         throw Exception("Ошибка загрузки: ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint('Произошла ошибка: $e');
+      log('Error uploading avatar: $e', name: 'UploadImageRepository');
       throw Exception("Ошибка при загрузке: $e");
     }
   }
@@ -56,22 +61,35 @@ class UploadImageRepository implements UploadImageInterface {
       for (var path in filesPath) {
         final fileName = path.split('/').last;
         files.add(await MultipartFile.fromFile(path, filename: fileName));
+        log(
+          'Prepared file for upload: $fileName',
+          name: 'UploadImageRepository',
+        );
       }
 
       FormData formData = FormData.fromMap({"files": files});
-
-      final response = await _dio.post("/upload-images", data: formData,options: Options(headers: {'Content-Type': 'multipart/form-data'}),);
+      final response = await _dio.post(
+        "/upload-images",
+        data: formData,
+        options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> urls = response.data;
-        debugPrint("Изображения загружены:${urls.toString()}");
+        log(
+          'Images uploaded: ${urls.toString()}',
+          name: 'UploadImageRepository',
+        );
         return urls.map((e) => e.toString()).toList();
       } else {
-        debugPrint("Ошибка сервера: ${response.statusCode}");
+        log(
+          'Upload images failed: ${response.statusCode}',
+          name: 'UploadImageRepository',
+        );
         return [];
       }
     } catch (e) {
-      debugPrint("Произошла ошибка загрузки изображений: $e");
+      log('Error uploading images: $e', name: 'UploadImageRepository');
       return [];
     }
   }
@@ -79,9 +97,14 @@ class UploadImageRepository implements UploadImageInterface {
   @override
   Future<String> getPresignedUrl(String fileUrl) async {
     _setAuthHeader();
+    log('Getting presigned URL for: $fileUrl', name: 'UploadImageRepository');
     final response = await _dio.get(
       '/presigned-url',
       queryParameters: {'fileUrl': fileUrl},
+    );
+    log(
+      'Received presigned URL: ${response.data}',
+      name: 'UploadImageRepository',
     );
     return response.data;
   }

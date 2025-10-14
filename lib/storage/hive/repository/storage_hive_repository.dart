@@ -5,6 +5,7 @@ import "package:hive_ce_flutter/hive_flutter.dart";
 import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/friends_request/friend_request.dart';
 import 'package:meet_now_app/server/model/interes/interest.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/purpose/purpose.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'storage_hive_interface.dart';
@@ -12,7 +13,7 @@ import 'storage_hive_interface.dart';
 class StorageHiveRepository implements StorageHiveInterface {
   Box<Interest>? _interestBox;
   Box<Purpose>? _purposeBox;
-  Box<Chat>? _permChatBox;
+  Box<PermanentChatResponseDto>? _permChatBox;
   Box<TemporaryChat>? _tempChatBox;
   Box<FriendRequest>? _friendRequestBox;
 
@@ -35,7 +36,7 @@ class StorageHiveRepository implements StorageHiveInterface {
   }
 
   @override
-  Box<Chat> get permChatBox {
+  Box<PermanentChatResponseDto> get permChatBox {
     if (_permChatBox == null || !_permChatBox!.isOpen) {
       throw Exception("Permanent chat box is not initialized or open");
     }
@@ -76,7 +77,7 @@ class StorageHiveRepository implements StorageHiveInterface {
   }
 
   @override
-  ValueListenable<Box<Chat>> get listenablePermChatBox {
+  ValueListenable<Box<PermanentChatResponseDto>> get listenablePermChatBox {
     if (_permChatBox == null || !_permChatBox!.isOpen) {
       throw Exception("Permanent chat box is not initialized or open");
     }
@@ -107,7 +108,7 @@ class StorageHiveRepository implements StorageHiveInterface {
     try {
       _interestBox = await Hive.openBox<Interest>('interest_box');
       _purposeBox = await Hive.openBox<Purpose>('purpose_box');
-      _permChatBox = await Hive.openBox<Chat>('perm_chat_box');
+      _permChatBox = await Hive.openBox<PermanentChatResponseDto>('perm_chat_response_dto_box');
       _tempChatBox = await Hive.openBox<TemporaryChat>('temp_chat_box');
       _friendRequestBox = await Hive.openBox<FriendRequest>('friend_request');
 
@@ -245,14 +246,14 @@ class StorageHiveRepository implements StorageHiveInterface {
   }
 
   @override
-  Future<void> addPermChat({required Chat chat}) async {
+  Future<void> addPermChat({required PermanentChatResponseDto chat}) async {
     await _ensureInitialized();
     await _permChatBox!.add(chat);
     debugPrint('Added permanent chat: $chat');
   }
 
   @override
-  Future<void> addAllPermChat({required List<Chat> chats}) async {
+  Future<void> addAllPermChat({required List<PermanentChatResponseDto> chats}) async {
     await _ensureInitialized();
     await _permChatBox!.addAll(chats);
     debugPrint('Added ${chats.length} permanent chats');

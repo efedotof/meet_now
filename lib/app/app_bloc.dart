@@ -6,9 +6,12 @@ import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/icebreaker/icebreaker_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
+import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
@@ -118,6 +121,7 @@ class AppBloc extends StatelessWidget {
                 messageInterface: context.read<MessageInterface>(),
                 gamesInterface: context.read<GamesInterface>(),
                 friendInterface: context.read<FriendInterface>(),
+                uploadImageInterface: context.read<UploadImageInterface>(),
               ),
         ),
         BlocProvider(
@@ -191,6 +195,14 @@ class AppBloc extends StatelessWidget {
               (context) =>
                   ReportCubit(reportInterface: context.read<ReportInterface>()),
         ),
+        BlocProvider(create: (context) => StickerCubit()),
+        BlocProvider(
+          create:
+              (context) => GameChatCubit(
+                gamesRepository: context.read<GamesInterface>(),
+              ),
+        ),
+        BlocProvider(create: (context) => MediaSelectionCubit()),
       ],
       child: child,
     );

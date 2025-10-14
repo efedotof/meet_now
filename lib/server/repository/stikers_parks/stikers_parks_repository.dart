@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/model/sticker/sticker.dart';
 import 'package:meet_now_app/server/model/sticker_pack/sticker_pack.dart';
@@ -16,9 +16,11 @@ class StikersParksRepository implements StikersParksInterface {
   void _setAuthHeader() {
     final token = _userModelAppInterface.user?.token;
     if (token == null || token.isEmpty) {
+      log('❌ Отсутствует токен авторизации', name: 'StikersParksRepository');
       throw Exception('Отсутствует токен авторизации');
     }
     _dio.options.headers['Authorization'] = 'Bearer $token';
+    log('✅ Заголовок авторизации установлен', name: 'StikersParksRepository');
   }
 
   @override
@@ -26,19 +28,26 @@ class StikersParksRepository implements StikersParksInterface {
     try {
       _setAuthHeader();
       final response = await _dio.get('/packs');
+      log(
+        '🔹 Получен ответ на запрос всех стикерпаков: ${response.statusCode}',
+        name: 'StikersParksRepository',
+      );
 
       if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((e) => StickerPack.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final packs =
+            (response.data as List)
+                .map((e) => StickerPack.fromJson(e as Map<String, dynamic>))
+                .toList();
+        log(
+          '✅ Загружено стикерпаков: ${packs.length}',
+          name: 'StikersParksRepository',
+        );
+        return packs;
       } else {
         throw Exception('Ошибка сервера: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      debugPrint("Ошибка сети: $e");
-      throw Exception('Не удалось загрузить стикерпаки');
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      log('❌ Ошибка getAllStickerPacks: $e', name: 'StikersParksRepository');
       rethrow;
     }
   }
@@ -48,17 +57,19 @@ class StikersParksRepository implements StikersParksInterface {
     try {
       _setAuthHeader();
       final response = await _dio.get('/packs/$packId');
+      log(
+        '🔹 Получен ответ на запрос стикерпак $packId: ${response.statusCode}',
+        name: 'StikersParksRepository',
+      );
 
       if (response.statusCode == 200) {
+        log('✅ Стикерпак $packId загружен', name: 'StikersParksRepository');
         return StickerPack.fromJson(response.data as Map<String, dynamic>);
       } else {
         throw Exception('Ошибка сервера: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      debugPrint("Ошибка сети: $e");
-      throw Exception('Не удалось загрузить стикерпак');
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      log('❌ Ошибка getStickerPack: $e', name: 'StikersParksRepository');
       rethrow;
     }
   }
@@ -68,19 +79,26 @@ class StikersParksRepository implements StikersParksInterface {
     try {
       _setAuthHeader();
       final response = await _dio.get('/packs/$packId/stickers');
+      log(
+        '🔹 Получен ответ на запрос стикеров пакета $packId: ${response.statusCode}',
+        name: 'StikersParksRepository',
+      );
 
       if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((e) => Sticker.fromJson(e as Map<String, dynamic>))
-            .toList();
+        final stickers =
+            (response.data as List)
+                .map((e) => Sticker.fromJson(e as Map<String, dynamic>))
+                .toList();
+        log(
+          '✅ Загружено стикеров: ${stickers.length} для пакета $packId',
+          name: 'StikersParksRepository',
+        );
+        return stickers;
       } else {
         throw Exception('Ошибка сервера: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      debugPrint("Ошибка сети: $e");
-      throw Exception('Не удалось загрузить стикеры');
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      log('❌ Ошибка getStickersByPack: $e', name: 'StikersParksRepository');
       rethrow;
     }
   }
@@ -90,17 +108,19 @@ class StikersParksRepository implements StikersParksInterface {
     try {
       _setAuthHeader();
       final response = await _dio.get('/$stickerId');
+      log(
+        '🔹 Получен ответ на запрос стикера $stickerId: ${response.statusCode}',
+        name: 'StikersParksRepository',
+      );
 
       if (response.statusCode == 200) {
+        log('✅ Стикер $stickerId загружен', name: 'StikersParksRepository');
         return Sticker.fromJson(response.data as Map<String, dynamic>);
       } else {
         throw Exception('Ошибка сервера: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      debugPrint("Ошибка сети: $e");
-      throw Exception('Не удалось загрузить стикер');
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      log('❌ Ошибка getSticker: $e', name: 'StikersParksRepository');
       rethrow;
     }
   }

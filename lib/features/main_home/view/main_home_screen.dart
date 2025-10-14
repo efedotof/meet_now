@@ -12,7 +12,7 @@ class MainHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsRouter(
-      routes: [SearchRoute(), ChatRoute(), FriendsRoute(), SettingsRoute()],
+      routes: [SearchRoute(), ChatRoute(), GameChatRoute(), SettingsRoute()],
       transitionBuilder:
           (context, child, animation) =>
               FadeTransition(opacity: animation, child: child),
@@ -42,8 +42,8 @@ class MainHomeScreen extends StatelessWidget {
                                 label: Text(S.of(context).chat),
                               ),
                               NavigationRailDestination(
-                                icon: Icon(Icons.group),
-                                label: Text(S.of(context).friends),
+                                icon: Icon(Icons.gamepad),
+                                label: Text("Game"),
                               ),
                               NavigationRailDestination(
                                 icon: Icon(Icons.settings),
@@ -72,8 +72,8 @@ class MainHomeScreen extends StatelessWidget {
                             icon: Icon(Icons.message),
                           ),
                           BottomNavigationBarItem(
-                            label: S.of(context).friends,
-                            icon: Icon(Icons.group),
+                            label: "Game",
+                            icon: Icon(Icons.gamepad),
                           ),
                           BottomNavigationBarItem(
                             label: S.of(context).settings,

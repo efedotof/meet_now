@@ -23,6 +23,7 @@ class ReportCubit extends Cubit<ReportState> {
     }
   }
 
+
   Future<void> withdrawReport(String reportId) async {
     try {
       await _reportInterface.withdrawReport(reportId: reportId);

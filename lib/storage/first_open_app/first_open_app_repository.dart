@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'first_open_app_interface.dart';
 
 class FirstOpenAppRepository implements FirstOpenAppInterface {
@@ -12,11 +12,20 @@ class FirstOpenAppRepository implements FirstOpenAppInterface {
 
   @override
   bool isFirstOpenApp() {
-    return _preferences.getBool(_isFirstOpenApp) ?? true;
+    final value = _preferences.getBool(_isFirstOpenApp) ?? true;
+    log(
+      '🚀 Первая установка приложения: $value',
+      name: 'FirstOpenAppRepository',
+    );
+    return value;
   }
 
   @override
   Future<void> setValue({required bool value}) async {
     await _preferences.setBool(_isFirstOpenApp, value);
+    log(
+      '✅ Значение first_open_app установлено: $value',
+      name: 'FirstOpenAppRepository',
+    );
   }
 }
