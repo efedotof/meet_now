@@ -89,9 +89,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       createdAt: DateTime.now(),
       chatId: _isTemporary ? null : _currentChatId,
       tempChatId: _isTemporary ? _currentChatId : null,
-      read: false, // Исправлено: было null
-      contentType: 'text', // Исправлено: добавлено значение
-      media: [], // Исправлено: добавлен пустой список
+      read: false,
+      contentType: 'text',
+      media: [],
     );
 
     state.maybeMap(
@@ -169,15 +169,22 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   ) async {
     final uploadedMedia = <MessageMedia>[];
 
-    for (final mediaItem in mediaItems) {
-      try {
-        final fileUrls = await _uploadImageInterface.uploadsImages([
-          mediaItem.uri,
-        ]);
+    try {
+      // Собираем все URI медиа-файлов
+      final uris = mediaItems.map((item) => item.uri).toList();
 
-        if (fileUrls.isNotEmpty) {
-          final mediaUrl = fileUrls.first;
+      debugPrint('Uploading ${uris.length} media files using uploadsMedia');
 
+      // Используем новый метод uploadsMedia для загрузки всех файлов
+      final fileUrls = await _uploadImageInterface.uploadsMedia(uris);
+
+      debugPrint('Received ${fileUrls.length} URLs from uploadsMedia');
+
+      for (int i = 0; i < mediaItems.length; i++) {
+        final mediaItem = mediaItems[i];
+        final mediaUrl = i < fileUrls.length ? fileUrls[i] : '';
+
+        if (mediaUrl.isNotEmpty) {
           String? thumbnailUrl;
           if (mediaItem.type == 'video') {
             thumbnailUrl = await _generateVideoThumbnail(mediaItem, mediaUrl);
@@ -190,18 +197,38 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               thumbnailUrl: thumbnailUrl,
               fileSize: mediaItem.size,
               mimeType: mediaItem.type,
-              sortOrder: mediaItems.indexOf(mediaItem),
+              sortOrder: i,
+            ),
+          );
+
+          debugPrint(
+            'Successfully uploaded media: ${mediaItem.name} -> $mediaUrl',
+          );
+        } else {
+          debugPrint('Failed to upload media: ${mediaItem.name}');
+          uploadedMedia.add(
+            MessageMedia(
+              contentType: _mapMediaTypeToContentType(mediaItem.type),
+              mediaUrl: null,
+              fileSize: mediaItem.size,
+              mimeType: mediaItem.type,
+              sortOrder: i,
             ),
           );
         }
-      } catch (e) {
-        debugPrint('Failed to upload media item: $e');
+      }
+    } catch (e) {
+      debugPrint('Error in _uploadMediaFiles: $e');
+      // В случае ошибки создаем Media с null URL
+      for (int i = 0; i < mediaItems.length; i++) {
+        final mediaItem = mediaItems[i];
         uploadedMedia.add(
           MessageMedia(
             contentType: _mapMediaTypeToContentType(mediaItem.type),
             mediaUrl: null,
             fileSize: mediaItem.size,
             mimeType: mediaItem.type,
+            sortOrder: i,
           ),
         );
       }
