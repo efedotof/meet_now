@@ -44,6 +44,8 @@ import 'package:meet_now_app/storage/password/password_storage_interface.dart';
 import 'package:meet_now_app/storage/password/password_storage_repository.dart';
 import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
 import 'package:meet_now_app/storage/pincode/pinconde_storage_repository.dart';
+import 'package:meet_now_app/storage/token/token_interface.dart';
+import 'package:meet_now_app/storage/token/token_repository.dart';
 import 'package:meet_now_app/storage/user/user_storage_interface.dart';
 import 'package:meet_now_app/storage/user/user_storage_repository.dart';
 import 'package:meet_now_app/theme/repository/theme_interface.dart';
@@ -68,6 +70,9 @@ class AppRepository extends StatelessWidget {
         RepositoryProvider<ThemeInterface>(
           create: (context) => ThemeRepository(preferences: config.prefs),
         ),
+        RepositoryProvider<TokenInterface>(
+          create: (context) => TokenRepository(preferences: config.prefs),
+        ),
 
         RepositoryProvider<UserStorageInterface>(
           create: (context) => UserStorageRepository(preferences: config.prefs),
@@ -88,18 +93,21 @@ class AppRepository extends StatelessWidget {
         RepositoryProvider<SocketServiceInterface>(
           create:
               (context) => SocketServiceImpl(
+                tokenInterface: context.read<TokenInterface>(),
                 userModelAppInterface: context.read<UserModelAppInterface>(),
               ),
         ),
         RepositoryProvider<ChatInterface>(
           create:
               (context) => ChatRepository(
+                tokenInterface: context.read<TokenInterface>(),
                 userModelAppInterface: context.read<UserModelAppInterface>(),
               ),
         ),
         RepositoryProvider<FriendInterface>(
           create:
               (context) => FriendRepository(
+                tokenInterface: context.read<TokenInterface>(),
                 userModelAppInterface: context.read<UserModelAppInterface>(),
               ),
         ),
@@ -110,6 +118,7 @@ class AppRepository extends StatelessWidget {
                 passwordStorageInterface:
                     context.read<PasswordStorageInterface>(),
                 userStorageInterface: context.read<UserStorageInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         RepositoryProvider<AuthInterface>(
@@ -119,12 +128,13 @@ class AppRepository extends StatelessWidget {
                     context.read<PasswordStorageInterface>(),
                 userModelAppInterface: context.read<UserModelAppInterface>(),
                 userStorageInterface: context.read<UserStorageInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         RepositoryProvider<UploadImageInterface>(
           create:
               (context) => UploadImageRepository(
-                userModelAppInterface: context.read<UserModelAppInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         RepositoryProvider<MessageInterface>(
@@ -156,7 +166,7 @@ class AppRepository extends StatelessWidget {
         RepositoryProvider<GamesInterface>(
           create:
               (context) => GamesRepository(
-                userModelAppInterface: context.read<UserModelAppInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         RepositoryProvider<StorageHiveInterface>.value(value: storageHive),
@@ -174,6 +184,7 @@ class AppRepository extends StatelessWidget {
           create:
               (context) => ReportRepository(
                 userModelAppInterface: context.read<UserModelAppInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         RepositoryProvider<StikersParksInterface>(

@@ -17,7 +17,12 @@ _Message _$MessageFromJson(Map<String, dynamic> json) => _Message(
       json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
-  isRead: json['isRead'] as bool?,
+  read: json['read'] as bool,
+  contentType: json['contentType'] as String,
+  media:
+      (json['media'] as List<dynamic>)
+          .map((e) => MessageMedia.fromJson(e as Map<String, dynamic>))
+          .toList(),
 );
 
 Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
@@ -28,5 +33,7 @@ Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
   'recipientId': instance.recipientId,
   'text': instance.text,
   'createdAt': instance.createdAt?.toIso8601String(),
-  'isRead': instance.isRead,
+  'read': instance.read,
+  'contentType': instance.contentType,
+  'media': instance.media,
 };

@@ -21,7 +21,11 @@ class PurposePage extends StatefulWidget {
 
 class _PurposePageState extends State<PurposePage> {
   final ScrollController _scrollController = ScrollController();
-  int _itemsToShow = 20;
+  final int _pageSize = 30;
+  int _currentPage = 0;
+  List<Purpose> _allPurposes = [];
+  bool _hasMore = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,11 +35,43 @@ class _PurposePageState extends State<PurposePage> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 50) {
-      setState(() {
-        _itemsToShow += 20; 
-      });
+            _scrollController.position.maxScrollExtent - 100 &&
+        !_isLoading &&
+        _hasMore) {
+      _loadMore();
     }
+  }
+
+  void _loadMore() {
+    if (_isLoading || !_hasMore) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      final nextPage = _currentPage + 1;
+      final startIndex = nextPage * _pageSize;
+
+      if (startIndex >= _allPurposes.length) {
+        setState(() {
+          _isLoading = false;
+          _hasMore = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _currentPage = nextPage;
+        _isLoading = false;
+        _hasMore = (_currentPage + 1) * _pageSize < _allPurposes.length;
+      });
+    });
+  }
+
+  List<Purpose> get _visiblePurposes {
+    final endIndex = (_currentPage + 1) * _pageSize;
+    return _allPurposes.take(endIndex).toList();
   }
 
   @override
@@ -53,44 +89,58 @@ class _PurposePageState extends State<PurposePage> {
           valueListenable:
               context.read<StorageHiveInterface>().listenablePurposeBox,
           builder: (context, box, child) {
-            final allPurposes = box.values.cast<Purpose>().toList();
-            final purposes = allPurposes.take(_itemsToShow).toList();
+            _allPurposes = box.values.cast<Purpose>().toList();
+            _hasMore = _allPurposes.length > _pageSize;
 
-            return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(24),
-              shrinkWrap: true,
-              itemCount: (purposes.length / 3).ceil(),
-              itemBuilder: (context, rowIndex) {
-                final rowItems = purposes.skip(rowIndex * 3).take(3).toList();
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children:
-                        rowItems.map((purpose) {
+            final purposes = _visiblePurposes;
+
+            return Column(
+              children: [
+                Text("Укажите свои Цели:"),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(24),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ...purposes.map((purpose) {
                           final selected = widget.formData.purposes.contains(
                             purpose.title,
                           );
                           return ChoiceChip(
                             label: Text(purpose.title ?? ''),
                             selected: selected,
-                            onSelected:
-                                (val) => setState(() {
-                                  if (val) {
-                                    widget.formData.purposes.add(purpose.title!);
-                                  } else {
-                                    widget.formData.purposes.remove(
-                                      purpose.title,
-                                    );
-                                  }
-                                }),
+                            onSelected: (val) {
+                              setState(() {
+                                if (val) {
+                                  widget.formData.purposes.add(purpose.title!);
+                                } else {
+                                  widget.formData.purposes.remove(
+                                    purpose.title,
+                                  );
+                                }
+                              });
+                            },
                           );
-                        }).toList(),
+                        }),
+
+                        if (_isLoading)
+                          const SizedBox(
+                            width: double.infinity,
+                            child: Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                ),
+              ],
             );
           },
         ),

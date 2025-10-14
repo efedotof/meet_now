@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/features.dart';
 import 'package:meet_now_app/features/uploads_avatars/uploads_avatars.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user/user.dart';
 part 'app_route.gr.dart';
@@ -21,7 +21,8 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: SearchRoute.page, path: "search"),
         AutoRoute(page: ChatRoute.page, path: "chat"),
-        AutoRoute(page: FriendsRoute.page, path: "friends"),
+        // AutoRoute(page: FriendsRoute.page, path: "friends"),
+        AutoRoute(page: GameChatRoute.page, path: "game_chat"),
         AutoRoute(page: SettingsRoute.page, path: "settings"),
       ],
     ),
@@ -37,14 +38,14 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(page: ChatMessageRoute.page, path: "/chat_message"),
     AutoRoute(page: AboutAppRoute.page, path: "/about_app"),
-    AutoRoute(page: GameChatRoute.page, path: "/game_chat"),
+
     AutoRoute(page: MyReportRoute.page, path: "/my_report"),
     AutoRoute(page: SupportRoute.page, path: "/support"),
     AutoRoute(page: FriendRequestsRoute.page, path: "/friend_requests"),
     AutoRoute(page: PinCodeRoute.page, path: "/pin_code"),
     AutoRoute(page: QrCodeRoute.page, path: "/qr_code"),
     AutoRoute(page: TemporaryChatRoute.page, path: "/temporary_chat"),
-    AutoRoute(page: UploadsAvatarsRoute.page , path: "/uploads_avatars"),
-    AutoRoute(page: FullImageRoute.page, path: "/full_image")
+    AutoRoute(page: UploadsAvatarsRoute.page, path: "/uploads_avatars"),
+    AutoRoute(page: FullImageRoute.page, path: "/full_image"),
   ];
 }

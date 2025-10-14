@@ -47,7 +47,7 @@ class AuthRoute extends PageRouteInfo<void> {
 class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
   ChatMessageRoute({
     required TemporaryChat? temporaryChatModel,
-    Chat? chatModel,
+    PermanentChatResponseDto? chatModel,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
@@ -84,7 +84,7 @@ class ChatMessageRouteArgs {
 
   final TemporaryChat? temporaryChatModel;
 
-  final Chat? chatModel;
+  final PermanentChatResponseDto? chatModel;
 
   final Key? key;
 

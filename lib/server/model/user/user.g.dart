@@ -29,6 +29,7 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
   roles: (json['roles'] as List<dynamic>).map((e) => e as String).toSet(),
   isOnline: json['isOnline'] as bool,
   floor: json['floor'] as String,
+  gamePoints: (json['gamePoints'] as num).toInt(),
   images: (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
 );
 
@@ -52,5 +53,6 @@ Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'roles': instance.roles.toList(),
   'isOnline': instance.isOnline,
   'floor': instance.floor,
+  'gamePoints': instance.gamePoints,
   'images': instance.images,
 };

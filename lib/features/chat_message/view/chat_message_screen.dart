@@ -2,12 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
+import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart'; // Добавляем импорт
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/repository/timer/timer_repository.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
@@ -21,7 +24,7 @@ class ChatMessageScreen extends StatefulWidget {
   });
 
   final TemporaryChat? temporaryChatModel;
-  final Chat? chatModel;
+  final PermanentChatResponseDto? chatModel;
 
   @override
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
@@ -37,6 +40,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   String senderID = '';
   String recipientId = '';
   late SyncTimerCubit _timerCubit;
+  late MediaSelectionCubit _mediaSelectionCubit;
 
   @override
   void initState() {
@@ -67,13 +71,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       recipientId: recipientId,
     );
 
+    // Инициализируем MediaSelectionCubit
+    _mediaSelectionCubit = MediaSelectionCubit();
+
     _subscription = cubit.stream.listen((state) {
       state.maybeMap(loaded: (_) => _scrollToBottom(), orElse: () {});
     });
 
     if (isTemporary) {
       _timerCubit = SyncTimerCubit(
-        timerRepository: TimerRepository(userModelAppInterface: context.read<UserModelAppInterface>()),
+        timerRepository: TimerRepository(
+          userModelAppInterface: context.read<UserModelAppInterface>(),
+        ),
         tempChatId: _chatId,
         userId: senderID,
         otherUserId: recipientId,
@@ -86,6 +95,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     _subscription.cancel();
     _messageController.dispose();
     _scrollController.dispose();
+    _mediaSelectionCubit.close(); // Закрываем MediaSelectionCubit
     if (isTemporary) {
       _timerCubit.close();
     }
@@ -93,11 +103,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _checkForModal(BuildContext context, ChatMessageState state) {
+    // Добавьте логику для проверки модальных окон при необходимости
   }
 
   String _getChatRecipient({required String currentUserId}) {
     final chat = widget.chatModel!;
-    return chat.user1.id == currentUserId ? chat.user2.id : chat.user1.id;
+    return chat.user1Id == currentUserId ? chat.user2Id : chat.user1Id;
   }
 
   String _getTemporaryChatRecipient({required String currentUserId}) {
@@ -121,45 +132,64 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
   void _sendMessage() {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    final hasSelectedMedia = _mediaSelectionCubit.hasSelectedMedia;
 
-    context.read<ChatMessageCubit>().sendTextMessage(text);
+    if (text.isEmpty && !hasSelectedMedia) return;
+
+    if (text.isNotEmpty) {
+      context.read<ChatMessageCubit>().sendTextMessage(text);
+    }
+
+    // Отправляем выбранные медиа, если они есть
+    if (hasSelectedMedia) {
+      // TODO: Реализовать отправку медиа через ChatMessageCubit
+      final selectedMedia = _mediaSelectionCubit.state.selectedMedia;
+      debugPrint('Sending ${selectedMedia.length} media files');
+      // context.read<ChatMessageCubit>().sendMediaMessage(selectedMedia);
+    }
+
+    context.read<StickerCubit>().hideStickers();
     _messageController.clear();
+    _mediaSelectionCubit.clearMedia(); // Очищаем выбранные медиа после отправки
   }
 
   void _onBackPressed() {
     if (isTemporary) {
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: Text(S.of(context).finishTemporaryChat),
-              content: Text(S.of(context).finishOrClose),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.router.pop();
-                  },
-                  child: Text(S.of(context).finish),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.router.pop();
-                  },
-                  child: Text(S.of(context).close),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(S.of(context).cancel),
-                ),
-              ],
-            ),
-      );
+      _showExitConfirmationDialog();
     } else {
       context.router.pop();
     }
+  }
+
+  void _showExitConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(S.of(context).finishTemporaryChat),
+            content: Text(S.of(context).finishOrClose),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.router.pop();
+                },
+                child: Text(S.of(context).finish),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.router.pop();
+                },
+                child: Text(S.of(context).close),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(S.of(context).cancel),
+              ),
+            ],
+          ),
+    );
   }
 
   void _showAddTimeProposalDialog(
@@ -214,7 +244,42 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     );
   }
 
-  void _showTimerFinishedDialog(BuildContext context) {
+  void _showMediaPickerBottomSheet() {
+    _mediaSelectionCubit.setPickerOpen(true);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => MediaPickerBottomSheet(
+            initialSelection: _mediaSelectionCubit.state.selectedMedia,
+            maxSelection: 10,
+            allowMultiple: true,
+            showVideos: true,
+            initialChildSize: 0.7,
+            minChildSize: 0.4,
+            showSelectionIndicators: true,
+            maxChildSize: 0.9,
+            onSelectionChanged: (selectedItems) {
+              _mediaSelectionCubit.clearMedia();
+              _mediaSelectionCubit.addMedia(selectedItems);
+            },
+            onConfirmed: (selectedItems) {
+              _mediaSelectionCubit.clearMedia();
+              _mediaSelectionCubit.addMedia(selectedItems);
+              _mediaSelectionCubit.setPickerOpen(false);
+              debugPrint(
+                'Bottom sheet selection: ${selectedItems.length} items',
+              );
+            },
+          ),
+    ).whenComplete(() {
+      _mediaSelectionCubit.setPickerOpen(false);
+    });
+  }
+
+  void _showTimerFinishedDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -240,68 +305,70 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     final theme = Theme.of(context);
     final currentUserId = context.read<UserModelAppInterface>().user!.id;
 
-    return BlocListener<ChatMessageCubit, ChatMessageState>(
-      listener: (context, state) {
-        _checkForModal(context, state);
-      },
-      child:
-          isTemporary
-              ? BlocProvider.value(
-                value: _timerCubit,
-                child: BlocListener<SyncTimerCubit, SyncTimerState>(
-                  listener: (context, state) {
-                    state.whenOrNull(
-                      addTimeProposed: (
-                        remainingTime,
-                        formattedTime,
-                        additionalMinutes,
-                        fromUserId,
-                      ) {
-                        _showAddTimeProposalDialog(
-                          context,
+    return BlocProvider.value(
+      value: _mediaSelectionCubit,
+      child: BlocListener<ChatMessageCubit, ChatMessageState>(
+        listener: (context, state) {
+          _checkForModal(context, state);
+        },
+        child:
+            isTemporary
+                ? BlocProvider.value(
+                  value: _timerCubit,
+                  child: BlocListener<SyncTimerCubit, SyncTimerState>(
+                    listener: (context, state) {
+                      state.whenOrNull(
+                        addTimeProposed: (
+                          remainingTime,
+                          formattedTime,
                           additionalMinutes,
                           fromUserId,
-                        );
-                      },
-                      timeAdded: (additionalMinutes) {
-                        _showTimeAddedDialog(context, additionalMinutes);
-                      },
-                      timeRejected: () {
-                        _showTimeRejectedDialog(context);
-                      },
-                      finished: () {
-                        _showTimerFinishedDialog(context);
-                      },
-                    );
-                  },
-                  child: BuildScaffold(
-                    theme: theme,
-                    currentUserId: currentUserId,
-                    onBackPressed: _onBackPressed,
-                    isTemporary: isTemporary,
-                    chatId: _chatId,
-                    senderID: senderID,
-                    recipientId: recipientId,
-                    messageController: _messageController,
-                    sendMessage: _sendMessage,
-                    scrollController: _scrollController,
-                    chatModel: widget.chatModel,
+                        ) {
+                          _showAddTimeProposalDialog(
+                            context,
+                            additionalMinutes,
+                            fromUserId,
+                          );
+                        },
+                        timeAdded: (additionalMinutes) {
+                          _showTimeAddedDialog(context, additionalMinutes);
+                        },
+                        timeRejected: () {
+                          _showTimeRejectedDialog(context);
+                        },
+                        finished: () {
+                          _showTimerFinishedDialog();
+                        },
+                      );
+                    },
+                    child: _buildScaffold(
+                      theme: theme,
+                      currentUserId: currentUserId,
+                    ),
                   ),
-                ),
-              )
-              : BuildScaffold(
-                theme: theme,
-                currentUserId: currentUserId,
-                onBackPressed: _onBackPressed,
-                isTemporary: isTemporary,
-                chatId: _chatId,
-                senderID: senderID,
-                recipientId: recipientId,
-                messageController: _messageController,
-                sendMessage: _sendMessage,
-                scrollController: _scrollController,
-                chatModel: widget.chatModel,
-              ),
+                )
+                : _buildScaffold(theme: theme, currentUserId: currentUserId),
+      ),
+    );
+  }
+
+  Widget _buildScaffold({
+    required ThemeData theme,
+    required String currentUserId,
+  }) {
+    return BuildScaffold(
+      theme: theme,
+      currentUserId: currentUserId,
+      onBackPressed: _onBackPressed,
+      isTemporary: isTemporary,
+      chatId: _chatId,
+      senderID: senderID,
+      recipientId: recipientId,
+      messageController: _messageController,
+      sendMessage: _sendMessage,
+      scrollController: _scrollController,
+      chatModel: widget.chatModel,
+      onAddAttach: _showMediaPickerBottomSheet,
     );
   }
 }

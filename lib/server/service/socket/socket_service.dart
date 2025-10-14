@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
 import 'package:meet_now_app/server/model/message/message.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app/storage/token/token_interface.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 typedef MessageCallback = void Function(List<Message> messages);
 typedef SingleMessageCallback = void Function(Message message);
-typedef ChatListCallback = void Function(List<Chat> chats);
+typedef ChatListCallback = void Function(List<PermanentChatResponseDto> chats);
 typedef TemporaryChatListCallback = void Function(List<TemporaryChat> chats);
 typedef UserActivityCallback = void Function(UserActivity activity);
 typedef TemporaryChatNewCallback = void Function(TemporaryChat chat);
 
 class SocketService {
   late final StompClient _stompClient;
-  final UserModelAppInterface userModelAppInterface;
-
+  final UserModelAppInterface _userModelAppInterface;
+  final TokenInterface _tokenInterface;
   final MessageCallback? onMessagesReceived;
   final SingleMessageCallback? onSingleMessageReceived;
   final ChatListCallback? onPermanentChatsReceived;
@@ -30,23 +31,25 @@ class SocketService {
   final List<void Function()> _pendingActions = [];
 
   SocketService({
-    required this.userModelAppInterface,
+    required TokenInterface tokenInterface,
+    required UserModelAppInterface userModelAppInterface,
     required this.onMessagesReceived,
     required this.onSingleMessageReceived,
     required this.onPermanentChatsReceived,
     required this.onTemporaryChatsReceived,
     required this.onUserActivity,
     required this.onTemporaryChatNewCallback,
-  }) {
+  }) : _userModelAppInterface = userModelAppInterface,
+       _tokenInterface = tokenInterface {
     connect();
   }
 
   void connect() {
-    final user = userModelAppInterface.user;
+    final user = _userModelAppInterface.user;
     final userId = user?.id;
-    final token = user?.token;
+    final token = _tokenInterface.getToken();
 
-    if (user == null || userId == null || token == null || token.isEmpty) {
+    if (user == null || userId == null || token == "" || token.isEmpty) {
       throw Exception('Пользователь не авторизован или данные неполные');
     }
 
@@ -87,7 +90,8 @@ class SocketService {
 
     _subscribe('/user/queue/chat.permanent', (frame) {
       final raw = json.decode(frame.body!) as List;
-      final chats = raw.map((e) => Chat.fromJson(e)).toList();
+      final chats =
+          raw.map((e) => PermanentChatResponseDto.fromJson(e)).toList();
       onPermanentChatsReceived?.call(chats);
     });
 
@@ -124,7 +128,7 @@ class SocketService {
         onMessagesReceived?.call(messages);
       });
 
-      final user = userModelAppInterface.user;
+      final user = _userModelAppInterface.user;
       final userId = user?.id;
 
       if (user == null || userId == null) {

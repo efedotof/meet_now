@@ -159,26 +159,27 @@ class AuthScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      iconSize: 48,
-                      onPressed: () {},
-                      icon: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              isDark
-                                  ? Colors.grey.shade900
-                                  : Colors.grey.shade200,
+                if (!isDesktop)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        iconSize: 48,
+                        onPressed: () => context.pushRoute(QrCodeRoute()),
+                        icon: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color:
+                                isDark
+                                    ? Colors.grey.shade900
+                                    : Colors.grey.shade200,
+                          ),
+                          child: const Icon(Icons.qr_code, size: 30),
                         ),
-                        child: const Icon(Icons.qr_code, size: 30),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

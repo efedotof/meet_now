@@ -8,14 +8,16 @@ part of 'sticker.dart';
 
 _Sticker _$StickerFromJson(Map<String, dynamic> json) => _Sticker(
   id: json['id'] as String,
-  pack: StickerPack.fromJson(json['pack'] as Map<String, dynamic>),
   emoji: json['emoji'] as String,
   imageUrl: json['imageUrl'] as String,
+  packId: json['packId'] as String,
+  packTitle: json['packTitle'] as String,
 );
 
 Map<String, dynamic> _$StickerToJson(_Sticker instance) => <String, dynamic>{
   'id': instance.id,
-  'pack': instance.pack,
   'emoji': instance.emoji,
   'imageUrl': instance.imageUrl,
+  'packId': instance.packId,
+  'packTitle': instance.packTitle,
 };

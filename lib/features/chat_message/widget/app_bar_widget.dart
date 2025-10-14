@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/chat/chat.dart';
+import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
@@ -15,7 +15,7 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.timerText,
   });
 
-  final Chat? chatModel;
+  final PermanentChatResponseDto? chatModel;
   final String userId;
   final VoidCallback onBackPressed;
   final bool isTemporary;
@@ -29,6 +29,18 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarWidgetState extends State<AppBarWidget> {
+  String _getOtherUserName() {
+    if (widget.chatModel == null) {
+      return S.of(context).anonymousUser;
+    }
+
+    if (widget.userId == widget.chatModel!.user1Id) {
+      return "${widget.chatModel!.user2Firstname} ${widget.chatModel!.user2Subname}";
+    } else {
+      return "${widget.chatModel!.user1Firstname} ${widget.chatModel!.user1Subname}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -57,9 +69,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isOnline
-                            ? Colors.green
-                            : theme.colorScheme.outlineVariant,
+                        color:
+                            isOnline
+                                ? Colors.green
+                                : theme.colorScheme.outlineVariant,
                         width: 2,
                       ),
                     ),
@@ -94,9 +107,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.chatModel != null
-                          ? "${widget.chatModel!.user1.firstname} ${widget.chatModel!.user1.subname}"
-                          : S.of(context).anonymousUser,
+                      _getOtherUserName(),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -107,14 +118,19 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: activityState.when(
-                        initial: () => Text(
-                          S.of(context).connecting,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.outline,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        initial: () {
+                          if (!widget.isTemporary) {
+                            return const SizedBox();
+                          }
+                          return Text(
+                            S.of(context).connecting,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
                         activity: (UserActivity activity) {
                           if (activity.userId == widget.userId) {
                             return const SizedBox();
@@ -133,9 +149,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                           return Text(
                             statusText,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: activity.activityType == ActivityType.ONLINE
-                                  ? Colors.green
-                                  : theme.colorScheme.outline,
+                              color:
+                                  activity.activityType == ActivityType.ONLINE
+                                      ? Colors.green
+                                      : theme.colorScheme.outline,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -182,3 +199,4 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     );
   }
 }
+

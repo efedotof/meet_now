@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Sticker {
 
- String get id; StickerPack get pack; String get emoji; String get imageUrl;
+ String get id; String get emoji; String get imageUrl; String get packId; String get packTitle;
 /// Create a copy of Sticker
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $StickerCopyWith<Sticker> get copyWith => _$StickerCopyWithImpl<Sticker>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Sticker&&(identical(other.id, id) || other.id == id)&&(identical(other.pack, pack) || other.pack == pack)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Sticker&&(identical(other.id, id) || other.id == id)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.packId, packId) || other.packId == packId)&&(identical(other.packTitle, packTitle) || other.packTitle == packTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,pack,emoji,imageUrl);
+int get hashCode => Object.hash(runtimeType,id,emoji,imageUrl,packId,packTitle);
 
 @override
 String toString() {
-  return 'Sticker(id: $id, pack: $pack, emoji: $emoji, imageUrl: $imageUrl)';
+  return 'Sticker(id: $id, emoji: $emoji, imageUrl: $imageUrl, packId: $packId, packTitle: $packTitle)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $StickerCopyWith<$Res>  {
   factory $StickerCopyWith(Sticker value, $Res Function(Sticker) _then) = _$StickerCopyWithImpl;
 @useResult
 $Res call({
- String id, StickerPack pack, String emoji, String imageUrl
+ String id, String emoji, String imageUrl, String packId, String packTitle
 });
 
 
-$StickerPackCopyWith<$Res> get pack;
+
 
 }
 /// @nodoc
@@ -65,25 +65,17 @@ class _$StickerCopyWithImpl<$Res>
 
 /// Create a copy of Sticker
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? pack = null,Object? emoji = null,Object? imageUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? emoji = null,Object? imageUrl = null,Object? packId = null,Object? packTitle = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,pack: null == pack ? _self.pack : pack // ignore: cast_nullable_to_non_nullable
-as StickerPack,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
+as String,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,packId: null == packId ? _self.packId : packId // ignore: cast_nullable_to_non_nullable
+as String,packTitle: null == packTitle ? _self.packTitle : packTitle // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
-/// Create a copy of Sticker
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$StickerPackCopyWith<$Res> get pack {
-  
-  return $StickerPackCopyWith<$Res>(_self.pack, (value) {
-    return _then(_self.copyWith(pack: value));
-  });
-}
+
 }
 
 
@@ -165,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  StickerPack pack,  String emoji,  String imageUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String emoji,  String imageUrl,  String packId,  String packTitle)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Sticker() when $default != null:
-return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
+return $default(_that.id,_that.emoji,_that.imageUrl,_that.packId,_that.packTitle);case _:
   return orElse();
 
 }
@@ -186,10 +178,10 @@ return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  StickerPack pack,  String emoji,  String imageUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String emoji,  String imageUrl,  String packId,  String packTitle)  $default,) {final _that = this;
 switch (_that) {
 case _Sticker():
-return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
+return $default(_that.id,_that.emoji,_that.imageUrl,_that.packId,_that.packTitle);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +198,10 @@ return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  StickerPack pack,  String emoji,  String imageUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String emoji,  String imageUrl,  String packId,  String packTitle)?  $default,) {final _that = this;
 switch (_that) {
 case _Sticker() when $default != null:
-return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
+return $default(_that.id,_that.emoji,_that.imageUrl,_that.packId,_that.packTitle);case _:
   return null;
 
 }
@@ -221,13 +213,14 @@ return $default(_that.id,_that.pack,_that.emoji,_that.imageUrl);case _:
 @JsonSerializable()
 
 class _Sticker implements Sticker {
-  const _Sticker({required this.id, required this.pack, required this.emoji, required this.imageUrl});
+  const _Sticker({required this.id, required this.emoji, required this.imageUrl, required this.packId, required this.packTitle});
   factory _Sticker.fromJson(Map<String, dynamic> json) => _$StickerFromJson(json);
 
 @override final  String id;
-@override final  StickerPack pack;
 @override final  String emoji;
 @override final  String imageUrl;
+@override final  String packId;
+@override final  String packTitle;
 
 /// Create a copy of Sticker
 /// with the given fields replaced by the non-null parameter values.
@@ -242,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Sticker&&(identical(other.id, id) || other.id == id)&&(identical(other.pack, pack) || other.pack == pack)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Sticker&&(identical(other.id, id) || other.id == id)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.packId, packId) || other.packId == packId)&&(identical(other.packTitle, packTitle) || other.packTitle == packTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,pack,emoji,imageUrl);
+int get hashCode => Object.hash(runtimeType,id,emoji,imageUrl,packId,packTitle);
 
 @override
 String toString() {
-  return 'Sticker(id: $id, pack: $pack, emoji: $emoji, imageUrl: $imageUrl)';
+  return 'Sticker(id: $id, emoji: $emoji, imageUrl: $imageUrl, packId: $packId, packTitle: $packTitle)';
 }
 
 
@@ -262,11 +255,11 @@ abstract mixin class _$StickerCopyWith<$Res> implements $StickerCopyWith<$Res> {
   factory _$StickerCopyWith(_Sticker value, $Res Function(_Sticker) _then) = __$StickerCopyWithImpl;
 @override @useResult
 $Res call({
- String id, StickerPack pack, String emoji, String imageUrl
+ String id, String emoji, String imageUrl, String packId, String packTitle
 });
 
 
-@override $StickerPackCopyWith<$Res> get pack;
+
 
 }
 /// @nodoc
@@ -279,26 +272,18 @@ class __$StickerCopyWithImpl<$Res>
 
 /// Create a copy of Sticker
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? pack = null,Object? emoji = null,Object? imageUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? emoji = null,Object? imageUrl = null,Object? packId = null,Object? packTitle = null,}) {
   return _then(_Sticker(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,pack: null == pack ? _self.pack : pack // ignore: cast_nullable_to_non_nullable
-as StickerPack,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
+as String,emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,packId: null == packId ? _self.packId : packId // ignore: cast_nullable_to_non_nullable
+as String,packTitle: null == packTitle ? _self.packTitle : packTitle // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
 
-/// Create a copy of Sticker
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$StickerPackCopyWith<$Res> get pack {
-  
-  return $StickerPackCopyWith<$Res>(_self.pack, (value) {
-    return _then(_self.copyWith(pack: value));
-  });
-}
+
 }
 
 // dart format on

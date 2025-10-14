@@ -1,11 +1,10 @@
+import 'dart:developer';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/server/exception/users_not_found_exception.dart';
 import 'package:meet_now_app/server/model/search/search_random_model.dart';
 import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
 import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
-
 import 'search_interface.dart';
 
 class SearchRepository implements SearchInterface {
@@ -28,6 +27,7 @@ class SearchRepository implements SearchInterface {
   }) async {
     final user = userModelAppInterface.user;
     if (user == null) {
+      log('❌ Пользователь не авторизован', name: 'SearchRepository');
       throw Exception('Ошибка: пользователь не авторизован');
     }
 
@@ -35,10 +35,12 @@ class SearchRepository implements SearchInterface {
     final userId = user.id;
 
     if (token == null || token.isEmpty) {
+      log('❌ Отсутствует токен авторизации', name: 'SearchRepository');
       throw Exception('Отсутствует токен авторизации');
     }
 
     if (userId.isEmpty) {
+      log('❌ Отсутствует ID пользователя', name: 'SearchRepository');
       throw Exception('Отсутствует ID пользователя');
     }
 
@@ -49,16 +51,33 @@ class SearchRepository implements SearchInterface {
         options: Options(headers: {"Authorization": "Bearer $token"}),
       );
 
-      debugPrint('Ответ от /filtered: ${response.data}');
+      log('🔹 Ответ от /filtered: ${response.data}', name: 'SearchRepository');
 
       if (response.statusCode == 200 && response.data != null) {
-        return TemporaryChat.fromJson(response.data!);
+        final tempChat = TemporaryChat.fromJson(response.data!);
+        log(
+          '✅ Найден временный чат: ${tempChat.tempChatId}',
+          name: 'SearchRepository',
+        );
+        return tempChat;
       } else {
         throw _handleUnexpectedResponse(response);
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e); 
-    } catch (e) {
+    } on DioException catch (e, s) {
+      log(
+        '❌ Ошибка Dio при поиске: $e',
+        name: 'SearchRepository',
+        error: e,
+        stackTrace: s,
+      );
+      throw _handleDioError(e);
+    } catch (e, s) {
+      log(
+        '❌ Неизвестная ошибка при поиске: $e',
+        name: 'SearchRepository',
+        error: e,
+        stackTrace: s,
+      );
       throw Exception('Неизвестная ошибка: $e');
     }
   }
@@ -76,20 +95,23 @@ class SearchRepository implements SearchInterface {
       'city': request.city,
       'floor': request.floor,
     };
-
     params.removeWhere(
       (key, value) =>
           value == null ||
           (value is List && value.isEmpty) ||
           (value is String && value.isEmpty),
     );
-
+    log('📤 Параметры запроса: $params', name: 'SearchRepository');
     return params;
   }
 
   Exception _handleDioError(DioException e) {
     final response = e.response;
     if (response != null) {
+      log(
+        '⚠️ Ошибка сервера ${response.statusCode}: ${response.data ?? e.message}',
+        name: 'SearchRepository',
+      );
       if (response.statusCode == 404) {
         return UsersNotFoundException();
       }
@@ -97,10 +119,15 @@ class SearchRepository implements SearchInterface {
         'Ошибка сервера ${response.statusCode}: ${response.data ?? e.message}',
       );
     }
+    log('⚠️ Сетевая ошибка: ${e.message}', name: 'SearchRepository');
     return Exception('Сетевая ошибка: ${e.message}');
   }
 
   Exception _handleUnexpectedResponse(Response<Map<String, dynamic>> response) {
+    log(
+      '⚠️ Неожиданный ответ ${response.statusCode}: ${response.data}',
+      name: 'SearchRepository',
+    );
     return Exception(
       'Неожиданный ответ ${response.statusCode}: ${response.data}',
     );

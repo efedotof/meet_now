@@ -27,4 +27,17 @@ class FriendsCubit extends Cubit<FriendsState> {
       debugPrint("getFriendsList error: $e");
     }
   }
+
+  Future<void> refreshFriend() async {
+    try {
+      final friends = await _friendInterface.getFriends();
+      if (friends.isNotEmpty) {
+        emit(FriendsState.friendsList(friends: friends));
+      } else {
+        emit(FriendsState.friendsList(friends: []));
+      }
+    } catch (e) {
+      debugPrint("getFriendsList error: $e");
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:meet_now_app/server/model/message/message.dart';
 import 'package:meet_now_app/server/repository/message/message_interface.dart';
@@ -13,8 +14,20 @@ class MessageRepository implements MessageInterface {
 
   MessageRepository({required SocketServiceInterface socketService})
     : _socketService = socketService {
-    _socketService.messagesStream.listen(_messagesController.add);
-    _socketService.singleMessageStream.listen(_singleMessageController.add);
+    _socketService.messagesStream.listen((messages) {
+      log(
+        '🔹 Получено ${messages.length} сообщений',
+        name: 'MessageRepository',
+      );
+      _messagesController.add(messages);
+    });
+    _socketService.singleMessageStream.listen((message) {
+      log(
+        '🔹 Получено сообщение от ${message.senderId}',
+        name: 'MessageRepository',
+      );
+      _singleMessageController.add(message);
+    });
   }
 
   @override
@@ -25,16 +38,19 @@ class MessageRepository implements MessageInterface {
 
   @override
   void requestMessages(String chatId) {
+    log('📤 Запрос сообщений для чата $chatId', name: 'MessageRepository');
     _socketService.requestMessages(chatId);
   }
 
   @override
   void sendMessage(Message message) {
+    log('📤 Отправка сообщения: ${message.text}', name: 'MessageRepository');
     _socketService.sendMessage(message);
   }
 
   @override
   void dispose() {
+    log('🛑 Закрытие потоков сообщений', name: 'MessageRepository');
     _messagesController.close();
     _singleMessageController.close();
   }

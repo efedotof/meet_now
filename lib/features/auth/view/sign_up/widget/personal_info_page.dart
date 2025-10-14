@@ -28,8 +28,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   bool _showDropdown = false;
   bool _citySelected = false;
 
-  // Добавляем ScrollController для управления прокруткой
-  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _cityFieldKey = GlobalKey();
 
   @override
   void initState() {
@@ -39,17 +38,21 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   }
 
   void _handleFocusChange() {
-    if (_cityFocusNode.hasFocus && _cityController.text.length >= 2 && !_citySelected) {
+    if (_cityFocusNode.hasFocus &&
+        _cityController.text.length >= 2 &&
+        !_citySelected) {
       setState(() {
         _showDropdown = true;
       });
-      // Прокручиваем к полю города при фокусе
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        final context = _cityFieldKey.currentContext;
+        if (context != null) {
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
       });
     } else if (!_cityFocusNode.hasFocus) {
       setState(() {
@@ -63,7 +66,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _cityController.dispose();
     _cityFocusNode.removeListener(_handleFocusChange);
     _cityFocusNode.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -111,139 +113,98 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       child: Form(
         key: widget.formKey,
         child: SingleChildScrollView(
-          controller: _scrollController, // Добавляем контроллер прокрутки
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: _showDropdown
-                    ? const SizedBox()
-                    : Text(
-                        S.of(context).personalInfo,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blueGrey[800],
-                            ),
-                      ),
+              Text(
+                S.of(context).personalInfo,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blueGrey[800],
+                ),
               ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                child: _showDropdown
-                    ? Column(
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-                            child: TextFormField(
-                              controller: _cityController,
-                              focusNode: _cityFocusNode,
-                              autofocus: true, // Автоматически фокусируемся на поле
-                              decoration: InputDecoration(
-                                labelText: 'Город',
-                                hintText: 'Начните вводить название города',
-                                prefixIcon: const Icon(Icons.location_city_outlined),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 24),
+
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+                child: TextFormField(
+                  key: _cityFieldKey,
+                  controller: _cityController,
+                  focusNode: _cityFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'Город',
+                    hintText: 'Начните вводить название города',
+                    prefixIcon: const Icon(Icons.location_city_outlined),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  onChanged: _searchCities,
+                  validator: (value) => value!.isEmpty ? 'Введите город' : null,
+                ),
+              ),
+
+              if (_showDropdown) ...[
+                const SizedBox(height: 8),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Material(
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child:
+                          _isSearching
+                              ? const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: CircularProgressIndicator(),
                                 ),
-                                filled: true,
-                                fillColor: Colors.grey[50],
-                              ),
-                              onChanged: _searchCities,
-                              validator: (value) => value!.isEmpty ? 'Введите город' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: _showDropdown
-                                ? Material(
-                                    elevation: 2,
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      constraints: const BoxConstraints(maxHeight: 200),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: _isSearching
-                                          ? const Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(16),
-                                                child: CircularProgressIndicator(),
-                                              ),
-                                            )
-                                          : _foundCities.isEmpty
-                                              ? Padding(
-                                                  padding: const EdgeInsets.all(16),
-                                                  child: Text(
-                                                    'Города не найдены',
-                                                    style: TextStyle(
-                                                      color: Colors.grey[600],
-                                                    ),
-                                                  ),
-                                                )
-                                              : ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics: const NeverScrollableScrollPhysics(),
-                                                  itemCount: _foundCities.length,
-                                                  itemBuilder: (context, index) {
-                                                    final city = _foundCities[index];
-                                                    return ListTile(
-                                                      leading: const Icon(
-                                                        Icons.location_on,
-                                                        color: Colors.blue,
-                                                      ),
-                                                      title: Text(
-                                                        city.nameCity,
-                                                        style: const TextStyle(fontSize: 16),
-                                                      ),
-                                                      onTap: () => _onCitySelected(city),
-                                                    );
-                                                  },
-                                                ),
+                              )
+                              : _foundCities.isEmpty
+                              ? Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'Города не найдены',
+                                  style: TextStyle(color: Colors.grey[600]),
+                                ),
+                              )
+                              : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const ClampingScrollPhysics(),
+                                itemCount: _foundCities.length,
+                                itemBuilder: (context, index) {
+                                  final city = _foundCities[index];
+                                  return ListTile(
+                                    leading: const Icon(
+                                      Icons.location_on,
+                                      color: Colors.blue,
                                     ),
-                                  )
-                                : const SizedBox(),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildFirstNameField(context),
-                          const SizedBox(height: 16),
-                          _buildLastNameField(context),
-                          const SizedBox(height: 16),
-                          _buildAgeField(context),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          const SizedBox(height: 24),
-                          _buildFirstNameField(context),
-                          const SizedBox(height: 16),
-                          _buildLastNameField(context),
-                          const SizedBox(height: 16),
-                          _buildAgeField(context),
-                          const SizedBox(height: 16),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-                            child: TextFormField(
-                              controller: _cityController,
-                              focusNode: _cityFocusNode,
-                              decoration: InputDecoration(
-                                labelText: 'Город',
-                                hintText: 'Начните вводить название города',
-                                prefixIcon: const Icon(Icons.location_city_outlined),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[50],
+                                    title: Text(
+                                      city.nameCity,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    onTap: () => _onCitySelected(city),
+                                  );
+                                },
                               ),
-                              onChanged: _searchCities,
-                              validator: (value) => value!.isEmpty ? 'Введите город' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 16),
+              _buildFirstNameField(context),
+              const SizedBox(height: 16),
+              _buildLastNameField(context),
+              const SizedBox(height: 16),
+              _buildAgeField(context),
             ],
           ),
         ),
@@ -263,7 +224,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           filled: true,
           fillColor: Colors.grey[50],
         ),
-        validator: (value) => value!.isEmpty ? S.of(context).enterFirstName : null,
+        validator:
+            (value) => value!.isEmpty ? S.of(context).enterFirstName : null,
         onChanged: (value) => widget.formData.firstname = value,
       ),
     );
@@ -281,7 +243,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           filled: true,
           fillColor: Colors.grey[50],
         ),
-        validator: (value) => value!.isEmpty ? S.of(context).enterLastName : null,
+        validator:
+            (value) => value!.isEmpty ? S.of(context).enterLastName : null,
         onChanged: (value) => widget.formData.subname = value,
       ),
     );
@@ -291,7 +254,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: widget.buttonWidth),
       child: TextFormField(
-        initialValue: widget.formData.age > 0 ? widget.formData.age.toString() : '',
+        initialValue:
+            widget.formData.age > 0 ? widget.formData.age.toString() : '',
         decoration: InputDecoration(
           labelText: S.of(context).age,
           prefixIcon: const Icon(Icons.cake_outlined),

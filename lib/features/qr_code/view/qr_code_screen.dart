@@ -54,9 +54,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
       body: Stack(
         children: [
           MobileScanner(controller: controller, onDetect: _handleBarcode),
-
           Center(child: CustomPaint(painter: QrScannerOverlay(ratio: 0.75))),
-
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

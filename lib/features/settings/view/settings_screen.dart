@@ -5,6 +5,7 @@ import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget {
@@ -14,7 +15,18 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.read<SettingsCubit>().userModelAppInterface.user!;
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).settings), elevation: 0),
+      appBar: AppBar(
+        title: Text(S.of(context).settings),
+        elevation: 0,
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              "${context.read<UserModelAppInterface>().user!.gamePoints} points",
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

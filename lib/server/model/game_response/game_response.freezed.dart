@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GameResponse {
 
- String get type; String get url;
+ String get gameType; String get gameUrl; String get gameName; String get gameDescription; String get thumbnailUrl;
 /// Create a copy of GameResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $GameResponseCopyWith<GameResponse> get copyWith => _$GameResponseCopyWithImpl<G
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameResponse&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameResponse&&(identical(other.gameType, gameType) || other.gameType == gameType)&&(identical(other.gameUrl, gameUrl) || other.gameUrl == gameUrl)&&(identical(other.gameName, gameName) || other.gameName == gameName)&&(identical(other.gameDescription, gameDescription) || other.gameDescription == gameDescription)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,url);
+int get hashCode => Object.hash(runtimeType,gameType,gameUrl,gameName,gameDescription,thumbnailUrl);
 
 @override
 String toString() {
-  return 'GameResponse(type: $type, url: $url)';
+  return 'GameResponse(gameType: $gameType, gameUrl: $gameUrl, gameName: $gameName, gameDescription: $gameDescription, thumbnailUrl: $thumbnailUrl)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $GameResponseCopyWith<$Res>  {
   factory $GameResponseCopyWith(GameResponse value, $Res Function(GameResponse) _then) = _$GameResponseCopyWithImpl;
 @useResult
 $Res call({
- String type, String url
+ String gameType, String gameUrl, String gameName, String gameDescription, String thumbnailUrl
 });
 
 
@@ -65,10 +65,13 @@ class _$GameResponseCopyWithImpl<$Res>
 
 /// Create a copy of GameResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? url = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? gameType = null,Object? gameUrl = null,Object? gameName = null,Object? gameDescription = null,Object? thumbnailUrl = null,}) {
   return _then(_self.copyWith(
-type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+gameType: null == gameType ? _self.gameType : gameType // ignore: cast_nullable_to_non_nullable
+as String,gameUrl: null == gameUrl ? _self.gameUrl : gameUrl // ignore: cast_nullable_to_non_nullable
+as String,gameName: null == gameName ? _self.gameName : gameName // ignore: cast_nullable_to_non_nullable
+as String,gameDescription: null == gameDescription ? _self.gameDescription : gameDescription // ignore: cast_nullable_to_non_nullable
+as String,thumbnailUrl: null == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -154,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String url)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gameType,  String gameUrl,  String gameName,  String gameDescription,  String thumbnailUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameResponse() when $default != null:
-return $default(_that.type,_that.url);case _:
+return $default(_that.gameType,_that.gameUrl,_that.gameName,_that.gameDescription,_that.thumbnailUrl);case _:
   return orElse();
 
 }
@@ -175,10 +178,10 @@ return $default(_that.type,_that.url);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String url)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gameType,  String gameUrl,  String gameName,  String gameDescription,  String thumbnailUrl)  $default,) {final _that = this;
 switch (_that) {
 case _GameResponse():
-return $default(_that.type,_that.url);case _:
+return $default(_that.gameType,_that.gameUrl,_that.gameName,_that.gameDescription,_that.thumbnailUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +198,10 @@ return $default(_that.type,_that.url);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String url)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gameType,  String gameUrl,  String gameName,  String gameDescription,  String thumbnailUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _GameResponse() when $default != null:
-return $default(_that.type,_that.url);case _:
+return $default(_that.gameType,_that.gameUrl,_that.gameName,_that.gameDescription,_that.thumbnailUrl);case _:
   return null;
 
 }
@@ -210,11 +213,14 @@ return $default(_that.type,_that.url);case _:
 @JsonSerializable()
 
 class _GameResponse implements GameResponse {
-  const _GameResponse({required this.type, required this.url});
+  const _GameResponse({required this.gameType, required this.gameUrl, required this.gameName, required this.gameDescription, required this.thumbnailUrl});
   factory _GameResponse.fromJson(Map<String, dynamic> json) => _$GameResponseFromJson(json);
 
-@override final  String type;
-@override final  String url;
+@override final  String gameType;
+@override final  String gameUrl;
+@override final  String gameName;
+@override final  String gameDescription;
+@override final  String thumbnailUrl;
 
 /// Create a copy of GameResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameResponse&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameResponse&&(identical(other.gameType, gameType) || other.gameType == gameType)&&(identical(other.gameUrl, gameUrl) || other.gameUrl == gameUrl)&&(identical(other.gameName, gameName) || other.gameName == gameName)&&(identical(other.gameDescription, gameDescription) || other.gameDescription == gameDescription)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,url);
+int get hashCode => Object.hash(runtimeType,gameType,gameUrl,gameName,gameDescription,thumbnailUrl);
 
 @override
 String toString() {
-  return 'GameResponse(type: $type, url: $url)';
+  return 'GameResponse(gameType: $gameType, gameUrl: $gameUrl, gameName: $gameName, gameDescription: $gameDescription, thumbnailUrl: $thumbnailUrl)';
 }
 
 
@@ -249,7 +255,7 @@ abstract mixin class _$GameResponseCopyWith<$Res> implements $GameResponseCopyWi
   factory _$GameResponseCopyWith(_GameResponse value, $Res Function(_GameResponse) _then) = __$GameResponseCopyWithImpl;
 @override @useResult
 $Res call({
- String type, String url
+ String gameType, String gameUrl, String gameName, String gameDescription, String thumbnailUrl
 });
 
 
@@ -266,10 +272,13 @@ class __$GameResponseCopyWithImpl<$Res>
 
 /// Create a copy of GameResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? url = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? gameType = null,Object? gameUrl = null,Object? gameName = null,Object? gameDescription = null,Object? thumbnailUrl = null,}) {
   return _then(_GameResponse(
-type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+gameType: null == gameType ? _self.gameType : gameType // ignore: cast_nullable_to_non_nullable
+as String,gameUrl: null == gameUrl ? _self.gameUrl : gameUrl // ignore: cast_nullable_to_non_nullable
+as String,gameName: null == gameName ? _self.gameName : gameName // ignore: cast_nullable_to_non_nullable
+as String,gameDescription: null == gameDescription ? _self.gameDescription : gameDescription // ignore: cast_nullable_to_non_nullable
+as String,thumbnailUrl: null == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
