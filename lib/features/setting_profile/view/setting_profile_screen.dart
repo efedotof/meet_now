@@ -5,7 +5,7 @@ import 'package:meet_now_app/features/setting_profile/cubit/setting_profile_cubi
 import 'package:meet_now_app/features/setting_profile/widget/widget.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/user/user.dart';
+import 'package:meet_now_app_server/model/user/user.dart';
 
 @RoutePage()
 class SettingProfileScreen extends StatefulWidget {

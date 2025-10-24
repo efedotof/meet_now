@@ -3,12 +3,12 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:media_ui_package/media_ui_package.dart';
-import 'package:meet_now_app/server/model/message/message.dart';
-import 'package:meet_now_app/server/model/message_media/message_media.dart';
-import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
-import 'package:meet_now_app/server/repository/games/games_interface.dart';
-import 'package:meet_now_app/server/repository/message/message_interface.dart';
-import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app_server/model/message/message.dart';
+import 'package:meet_now_app_server/model/message_media/message_media.dart';
+import 'package:meet_now_app_server/repository/friend/friend_interface.dart';
+import 'package:meet_now_app_server/repository/games/games_interface.dart';
+import 'package:meet_now_app_server/repository/message/message_interface.dart';
+import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
 part 'chat_message_state.dart';
 part 'chat_message_cubit.freezed.dart';
@@ -107,6 +107,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void sendMediaMessage(List<MediaItem> mediaItems, {String text = ''}) {
     if (mediaItems.isEmpty) return;
 
+    debugPrint('🔄 ChatMessageCubit: Начало отправки медиа-сообщения с ${mediaItems.length} файлами');
+
     // Создаем временное сообщение без ссылок на медиа
     final tempMessage = Message(
       id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
@@ -135,12 +137,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               .toList(),
     );
 
+    debugPrint('📝 ChatMessageCubit: Создано временное сообщение: ${tempMessage.id}');
+
     state.maybeMap(
       loaded: (state) {
         emit(state.copyWith(messages: [...state.messages, tempMessage]));
+        debugPrint('📱 ChatMessageCubit: Временное сообщение добавлено в UI');
       },
       orElse: () {
         emit(ChatMessageState.loaded(messages: [tempMessage]));
+        debugPrint('📱 ChatMessageCubit: Временное сообщение установлено как начальное состояние');
       },
     );
 
@@ -153,14 +159,49 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     String text,
   ) async {
     try {
+      debugPrint('🔄 ChatMessageCubit: Начало загрузки медиафайлов для временного сообщения: ${tempMessage.id}');
+      
+      // ЖДЕМ завершения загрузки медиафайлов
       final uploadedMedia = await _uploadMediaFiles(mediaItems);
 
-      final finalMessage = tempMessage.copyWith(id: null, media: uploadedMedia);
+      debugPrint('✅ ChatMessageCubit: Загрузка медиафайлов завершена, получено ${uploadedMedia.length} медиа');
 
+      // Проверяем, что все медиафайлы были успешно загружены
+      final failedUploads = uploadedMedia.where((media) => media.mediaUrl == null).toList();
+      if (failedUploads.isNotEmpty) {
+        debugPrint('❌ ChatMessageCubit: Не все медиафайлы загружены успешно. Провалено: ${failedUploads.length}');
+        _updateTempMessageWithError(tempMessage.id!, 'Не удалось загрузить ${failedUploads.length} файлов');
+        return;
+      }
+
+      debugPrint('✅ ChatMessageCubit: Все медиафайлы загружены успешно, создаем финальное сообщение');
+
+      // Создаем финальное сообщение с загруженными медиа
+      final finalMessage = Message(
+        senderId: _senderId,
+        recipientId: _recipientId,
+        text: text,
+        createdAt: DateTime.now(),
+        chatId: _isTemporary ? null : _currentChatId,
+        tempChatId: _isTemporary ? _currentChatId : null,
+        read: false,
+        contentType: _determineContentType(mediaItems),
+        media: uploadedMedia,
+      );
+
+      debugPrint('📤 ChatMessageCubit: Отправка финального сообщения с загруженными медиа через messageInterface');
+      
+      // ОТПРАВЛЯЕМ сообщение только после того как все медиа загружены
       _messageInterface.sendMessage(finalMessage);
+      
+      debugPrint('✅ ChatMessageCubit: Финальное сообщение отправлено успешно через messageInterface');
+
+      // Обновляем UI - заменяем временное сообщение на финальное
+      _replaceTempMessage(tempMessage.id!, finalMessage);
+
     } catch (e) {
+      debugPrint('❌ ChatMessageCubit: Ошибка при загрузке медиа: $e');
       _updateTempMessageWithError(tempMessage.id!, e.toString());
-      debugPrint('Error uploading media: $e');
     }
   }
 
@@ -170,15 +211,13 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     final uploadedMedia = <MessageMedia>[];
 
     try {
-      // Собираем все URI медиа-файлов
       final uris = mediaItems.map((item) => item.uri).toList();
 
-      debugPrint('Uploading ${uris.length} media files using uploadsMedia');
+      debugPrint('📤 ChatMessageCubit: Загрузка ${uris.length} медиафайлов через uploadMultipleMedia');
 
-      // Используем новый метод uploadsMedia для загрузки всех файлов
-      final fileUrls = await _uploadImageInterface.uploadsMedia(uris);
+      final fileUrls = await _uploadImageInterface.uploadMultipleMedia(uris);
 
-      debugPrint('Received ${fileUrls.length} URLs from uploadsMedia');
+      debugPrint('✅ ChatMessageCubit: Получено ${fileUrls.length} URL от uploadMultipleMedia');
 
       for (int i = 0; i < mediaItems.length; i++) {
         final mediaItem = mediaItems[i];
@@ -201,11 +240,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
             ),
           );
 
-          debugPrint(
-            'Successfully uploaded media: ${mediaItem.name} -> $mediaUrl',
-          );
+          debugPrint('✅ ChatMessageCubit: Медиа успешно загружено: ${mediaItem.name} -> $mediaUrl');
         } else {
-          debugPrint('Failed to upload media: ${mediaItem.name}');
+          debugPrint('❌ ChatMessageCubit: Не удалось загрузить медиа: ${mediaItem.name}');
           uploadedMedia.add(
             MessageMedia(
               contentType: _mapMediaTypeToContentType(mediaItem.type),
@@ -218,7 +255,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         }
       }
     } catch (e) {
-      debugPrint('Error in _uploadMediaFiles: $e');
+      debugPrint('❌ ChatMessageCubit: Ошибка в _uploadMediaFiles: $e');
       // В случае ошибки создаем Media с null URL
       for (int i = 0; i < mediaItems.length; i++) {
         final mediaItem = mediaItems[i];
@@ -234,7 +271,28 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       }
     }
 
+    debugPrint('📊 ChatMessageCubit: _uploadMediaFiles завершен. Успешно загружено: ${uploadedMedia.where((m) => m.mediaUrl != null).length}/${mediaItems.length}');
     return uploadedMedia;
+  }
+
+  void _replaceTempMessage(String tempMessageId, Message finalMessage) {
+    state.maybeMap(
+      loaded: (state) {
+        final updatedMessages = state.messages.map((message) {
+          if (message.id == tempMessageId) {
+            debugPrint('🔄 ChatMessageCubit: Заменяем временное сообщение $tempMessageId на финальное');
+            return finalMessage;
+          }
+          return message;
+        }).toList();
+
+        emit(state.copyWith(messages: updatedMessages));
+      },
+      orElse: () {
+        debugPrint('🔄 ChatMessageCubit: Устанавливаем финальное сообщение как начальное состояние');
+        emit(ChatMessageState.loaded(messages: [finalMessage]));
+      },
+    );
   }
 
   void _updateTempMessageWithError(String tempMessageId, String error) {
@@ -243,6 +301,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         final updatedMessages =
             state.messages.map((message) {
               if (message.id == tempMessageId) {
+                debugPrint('❌ ChatMessageCubit: Обновляем временное сообщение $tempMessageId с ошибкой: $error');
                 return message.copyWith(text: 'Ошибка загрузки: $error');
               }
               return message;

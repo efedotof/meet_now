@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/game_response/game_response.dart';
-import 'package:meet_now_app/server/repository/games/games_interface.dart';
+import 'package:meet_now_app_server/model/game_response/game_response.dart';
+import 'package:meet_now_app_server/repository/games/games_interface.dart';
 
 part 'game_chat_state.dart';
 part 'game_chat_cubit.freezed.dart';

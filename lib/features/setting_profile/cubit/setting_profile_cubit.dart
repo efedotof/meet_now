@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/repository/user/user_interface.dart';
-import 'package:meet_now_app/server/model/user/user.dart';
+import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/repository/user/user_interface.dart';
 
 part 'setting_profile_state.dart';
 part 'setting_profile_cubit.freezed.dart';

@@ -19,10 +19,8 @@ class MainHomeScreen extends StatelessWidget {
       builder: (context, child) {
         final tabsRouter = AutoTabsRouter.of(context);
         final bool isWideScreen = MediaQuery.of(context).size.width >= 600;
-
         return BlocBuilder<MainHomeCubit, MainHomeState>(
           builder: (context, state) {
-            context.read<MainHomeCubit>().getNewTempChat(context: context);
             return Scaffold(
               body:
                   isWideScreen
@@ -32,7 +30,7 @@ class MainHomeScreen extends StatelessWidget {
                             selectedIndex: tabsRouter.activeIndex,
                             onDestinationSelected: tabsRouter.setActiveIndex,
                             labelType: NavigationRailLabelType.all,
-                            destinations:  [
+                            destinations: [
                               NavigationRailDestination(
                                 icon: Icon(Icons.search),
                                 label: Text(S.of(context).search),
@@ -62,7 +60,7 @@ class MainHomeScreen extends StatelessWidget {
                       : BottomNavigationBar(
                         currentIndex: tabsRouter.activeIndex,
                         onTap: tabsRouter.setActiveIndex,
-                        items:  [
+                        items: [
                           BottomNavigationBarItem(
                             label: S.of(context).search,
                             icon: Icon(Icons.search),

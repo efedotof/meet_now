@@ -5,15 +5,16 @@ import 'package:meet_now_app/app/app_config.dart';
 import 'package:meet_now_app/app/app_initializer.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/hive_registrar.g.dart';
+// import 'package:meet_now_app/hive_registrar.g.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_repository.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/theme.dart';
 import "package:hive_ce/hive.dart";
 import 'package:path_provider/path_provider.dart';
+import 'package:meet_now_app_server/hive_registrar.g.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,7 @@ void main() async {
   final appConfig = AppConfig(prefs: await SharedPreferences.getInstance());
   final storageHive = StorageHiveRepository();
   await storageHive.init();
+
   runApp(
     AppInitializer(
       config: appConfig,
@@ -61,9 +63,10 @@ class _MeetNowAppState extends State<MeetNowApp> {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
-          ],
+          ], 
         );
       },
+      
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/theme/repository/theme_interface.dart';
+import 'package:meet_now_app_server/theme/theme_interface.dart';
 
 part 'theme_state.dart';
 part 'theme_cubit.freezed.dart';

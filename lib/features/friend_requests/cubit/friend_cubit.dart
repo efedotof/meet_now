@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/friends_request/friend_request.dart';
-import 'package:meet_now_app/server/repository/friend/friend_interface.dart';
+import 'package:meet_now_app_server/model/friends_request/friend_request.dart';
+import 'package:meet_now_app_server/repository/friend/friend_interface.dart';
 
 part 'friend_state.dart';
 part 'friend_cubit.freezed.dart';

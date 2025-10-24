@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/report/report.dart';
-import 'package:meet_now_app/server/repository/report/report_interface.dart';
+import 'package:meet_now_app_server/model/report/report.dart';
+import 'package:meet_now_app_server/repository/report/report_interface.dart';
 
 part 'report_state.dart';
 part 'report_cubit.freezed.dart';

@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/chat/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
-import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
+import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
 class ChatScreen extends StatelessWidget {

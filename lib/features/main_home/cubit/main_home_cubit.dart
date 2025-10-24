@@ -6,9 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
-import 'package:meet_now_app/server/repository/user/user_interface.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
+import 'package:meet_now_app_server/repository/user/user_interface.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 part 'main_home_state.dart';
 part 'main_home_cubit.freezed.dart';
@@ -42,10 +42,6 @@ class MainHomeCubit extends Cubit<MainHomeState> {
           .listen((perms) {
             _storageHiveInterface.addAllPermChat(chats: perms);
           });
-
-      _socketServiceInterface.connect();
-      _socketServiceInterface.getActiveTemporary();
-      _socketServiceInterface.getPermanent();
 
       await _userInterface.getUser();
     } catch (e) {

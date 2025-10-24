@@ -1,4 +1,4 @@
-import 'package:meet_now_app/server/model/registration/registration.dart';
+import 'package:meet_now_app_server/model/registration/registration.dart';
 
 class SignUpFormData {
   String username = '';

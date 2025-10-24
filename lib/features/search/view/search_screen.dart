@@ -5,9 +5,9 @@ import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
 import 'package:meet_now_app/features/search/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/interes/interest.dart';
-import 'package:meet_now_app/server/model/purpose/purpose.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app_server/model/interes/interest.dart';
+import 'package:meet_now_app_server/model/purpose/purpose.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 @RoutePage()
 class SearchScreen extends StatelessWidget {

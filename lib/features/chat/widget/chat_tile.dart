@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/temporary/temporary_chat.dart';
 
 class ChatTile extends StatelessWidget {
   final String name;

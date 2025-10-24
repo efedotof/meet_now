@@ -5,12 +5,11 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app/server/model/city/city.dart';
-import 'package:meet_now_app/server/model/search/search_random_model.dart';
-import 'package:meet_now_app/server/repository/city/city_interface.dart'
-    show CityInterface;
-import 'package:meet_now_app/server/repository/search/search_interface.dart';
-import 'package:meet_now_app/server/repository/user/user_interface.dart';
+import 'package:meet_now_app_server/model/city/city.dart';
+import 'package:meet_now_app_server/model/search/search_random_model.dart';
+import 'package:meet_now_app_server/repository/city/city_interface.dart';
+import 'package:meet_now_app_server/repository/search/search_interface.dart';
+import 'package:meet_now_app_server/repository/user/user_interface.dart';
 
 part 'search_state.dart';
 part 'search_cubit.freezed.dart';
@@ -151,7 +150,6 @@ class SearchCubit extends Cubit<SearchState> {
   void clearCities() {
     emit(state.copyWith(cities: []));
   }
-
 
   @override
   Future<void> close() {

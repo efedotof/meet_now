@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
-import 'package:meet_now_app/server/model/game_response/game_response.dart';
+import 'package:meet_now_app_server/model/game_response/game_response.dart';
 
 import 'game_web_view_screen.dart';
 

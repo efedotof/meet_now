@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
-import 'package:meet_now_app/server/repository/socket/socket_service_interface.dart';
-import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
+import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
 part 'chat_state.dart';
 part 'chat_cubit.freezed.dart';
@@ -18,7 +18,8 @@ class ChatCubit extends Cubit<ChatState> {
   ChatCubit({
     required SocketServiceInterface socketServiceInterface,
     required UserModelAppInterface userModelAppInterface,
-  }) : _userModelAppInterface = userModelAppInterface, _socketServiceInterface = socketServiceInterface,
+  }) : _userModelAppInterface = userModelAppInterface,
+       _socketServiceInterface = socketServiceInterface,
        super(
          const ChatState(permanentChat: [], temporaryChat: [], isLoading: true),
        ) {

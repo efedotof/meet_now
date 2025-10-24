@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_repository.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_repository.dart';
 import 'app_config.dart';
 import 'app_repository.dart';
 import 'app_bloc.dart';

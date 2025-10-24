@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/storage/language/language_storage_interface.dart';
+import 'package:meet_now_app_server/storage/language/language_storage_interface.dart';
 
 part 'language_state.dart';
 part 'language_cubit.freezed.dart';

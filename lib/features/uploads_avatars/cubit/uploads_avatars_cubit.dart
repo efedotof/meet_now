@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
 part 'uploads_avatars_state.dart';
 part 'uploads_avatars_cubit.freezed.dart';

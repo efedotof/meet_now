@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
-import 'package:meet_now_app/server/model/interes/interest.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app_server/model/interes/interest.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 class InterestPage extends StatefulWidget {
   final SignUpFormData formData;

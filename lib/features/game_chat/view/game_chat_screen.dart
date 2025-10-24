@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/widget/widget.dart';
-import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
 

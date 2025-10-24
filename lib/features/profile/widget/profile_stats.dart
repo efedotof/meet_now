@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/server/model/user/user.dart';
+import 'package:meet_now_app_server/model/user/user.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({super.key, required this.user});
