@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_ui_package/media_ui_package.dart';
+import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
@@ -10,10 +11,10 @@ import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_c
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart'; // Добавляем импорт
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
-import 'package:meet_now_app/server/repository/timer/timer_repository.dart';
-import 'package:meet_now_app/server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/repository/timer/timer_repository.dart';
+import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
 class ChatMessageScreen extends StatefulWidget {
@@ -71,7 +72,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       recipientId: recipientId,
     );
 
-    // Инициализируем MediaSelectionCubit
     _mediaSelectionCubit = MediaSelectionCubit();
 
     _subscription = cubit.stream.listen((state) {
@@ -82,6 +82,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       _timerCubit = SyncTimerCubit(
         timerRepository: TimerRepository(
           userModelAppInterface: context.read<UserModelAppInterface>(),
+          socketAddress: socketAddress,
         ),
         tempChatId: _chatId,
         userId: senderID,
@@ -95,7 +96,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     _subscription.cancel();
     _messageController.dispose();
     _scrollController.dispose();
-    _mediaSelectionCubit.close(); // Закрываем MediaSelectionCubit
+    _mediaSelectionCubit.close();
     if (isTemporary) {
       _timerCubit.close();
     }
@@ -139,18 +140,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     if (text.isNotEmpty) {
       context.read<ChatMessageCubit>().sendTextMessage(text);
     }
-
-    // Отправляем выбранные медиа, если они есть
     if (hasSelectedMedia) {
-      // TODO: Реализовать отправку медиа через ChatMessageCubit
       final selectedMedia = _mediaSelectionCubit.state.selectedMedia;
       debugPrint('Sending ${selectedMedia.length} media files');
-      // context.read<ChatMessageCubit>().sendMediaMessage(selectedMedia);
     }
 
     context.read<StickerCubit>().hideStickers();
     _messageController.clear();
-    _mediaSelectionCubit.clearMedia(); // Очищаем выбранные медиа после отправки
+    _mediaSelectionCubit.clearMedia();
   }
 
   void _onBackPressed() {
@@ -341,34 +338,37 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         },
                       );
                     },
-                    child: _buildScaffold(
+                    child: BuildScaffold(
                       theme: theme,
                       currentUserId: currentUserId,
+                      onBackPressed: _onBackPressed,
+                      isTemporary: isTemporary,
+                      chatId: _chatId,
+                      senderID: senderID,
+                      recipientId: recipientId,
+                      messageController: _messageController,
+                      sendMessage: _sendMessage,
+                      scrollController: _scrollController,
+                      chatModel: widget.chatModel,
+                      onAddAttach: _showMediaPickerBottomSheet,
                     ),
                   ),
                 )
-                : _buildScaffold(theme: theme, currentUserId: currentUserId),
+                : BuildScaffold(
+                  theme: theme,
+                  currentUserId: currentUserId,
+                  onBackPressed: _onBackPressed,
+                  isTemporary: isTemporary,
+                  chatId: _chatId,
+                  senderID: senderID,
+                  recipientId: recipientId,
+                  messageController: _messageController,
+                  sendMessage: _sendMessage,
+                  scrollController: _scrollController,
+                  chatModel: widget.chatModel,
+                  onAddAttach: _showMediaPickerBottomSheet,
+                ),
       ),
-    );
-  }
-
-  Widget _buildScaffold({
-    required ThemeData theme,
-    required String currentUserId,
-  }) {
-    return BuildScaffold(
-      theme: theme,
-      currentUserId: currentUserId,
-      onBackPressed: _onBackPressed,
-      isTemporary: isTemporary,
-      chatId: _chatId,
-      senderID: senderID,
-      recipientId: recipientId,
-      messageController: _messageController,
-      sendMessage: _sendMessage,
-      scrollController: _scrollController,
-      chatModel: widget.chatModel,
-      onAddAttach: _showMediaPickerBottomSheet,
     );
   }
 }

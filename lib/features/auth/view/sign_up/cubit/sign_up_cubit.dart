@@ -3,11 +3,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
-import 'package:meet_now_app/server/model/city/city.dart';
-import 'package:meet_now_app/server/model/registration/registration.dart';
-import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
-import 'package:meet_now_app/server/repository/city/city_interface.dart';
-import 'package:meet_now_app/server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app_server/model/city/city.dart';
+import 'package:meet_now_app_server/model/registration/registration.dart';
+import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
+import 'package:meet_now_app_server/repository/city/city_interface.dart';
+import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
 part 'sign_up_state.dart';
 part 'sign_up_cubit.freezed.dart';

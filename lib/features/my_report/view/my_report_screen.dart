@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
-import 'package:meet_now_app/server/model/report/report.dart';
+import 'package:meet_now_app_server/model/report/report.dart';
 
 @RoutePage()
 class MyReportScreen extends StatelessWidget {

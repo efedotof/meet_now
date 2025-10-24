@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/user/user.dart';
+import 'package:meet_now_app_server/model/user/user.dart';
 
 class PurposesSection extends StatelessWidget {
   const PurposesSection({super.key, required this.theme, required this.user});

@@ -3,10 +3,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
-import 'package:meet_now_app/server/repository/purp_and_int/purp_and_interes_interface.dart';
-import 'package:meet_now_app/storage/first_open_app/first_open_app_interface.dart';
-import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
+import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
+import 'package:meet_now_app_server/repository/purp_and_int/purp_and_interes_interface.dart';
+import 'package:meet_now_app_server/storage/first_open_app/first_open_app_interface.dart';
+import 'package:meet_now_app_server/storage/pincode/pincode_storage_interface.dart';
 
 part 'splash_state.dart';
 part 'splash_cubit.freezed.dart';
@@ -89,4 +89,3 @@ class SplashCubit extends Cubit<SplashState> {
     }
   }
 }
-

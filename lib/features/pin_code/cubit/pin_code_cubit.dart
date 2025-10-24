@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app/server/repository/auth/auth_interface.dart';
-import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
+import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
+import 'package:meet_now_app_server/storage/pincode/pincode_storage_interface.dart';
+
 
 part 'pin_code_state.dart';
 part 'pin_code_cubit.freezed.dart';

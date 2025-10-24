@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/commands/commands_chat.dart';
-import 'package:meet_now_app/server/service/command_executor/command_executor_service.dart';
+import 'package:meet_now_app_server/model/commands/commands_chat.dart';
+import 'package:meet_now_app_server/service/command_executor/command_executor_service.dart';
 
 part 'command_suggestions_state.dart';
 part 'command_suggestions_cubit.freezed.dart';

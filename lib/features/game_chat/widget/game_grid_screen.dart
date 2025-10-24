@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/friends/widget/empty_state.dart';
-import 'package:meet_now_app/server/model/game_response/game_response.dart';
+import 'package:meet_now_app_server/model/game_response/game_response.dart';
 
 import 'game_card.dart';
 

@@ -1,7 +1,6 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/storage/pincode/pincode_storage_interface.dart';
+import 'package:meet_now_app_server/storage/pincode/pincode_storage_interface.dart';
 
 part 'security_state.dart';
 part 'security_cubit.freezed.dart';

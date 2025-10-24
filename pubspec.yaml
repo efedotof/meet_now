@@ -17,7 +17,13 @@ dependencies:
     git:
       url: https://github.com/efedotof/media_ui_package.git
       path: .
-      ref: 07146ea5d0bce636d2672f1128d18507eeb8368d
+      ref: b16469970c95c60c806bb8a094b23fe2349a090c
+
+  meet_now_app_server:
+    git:
+      url: https://github.com/efedotof/meet_now_app_server.git
+      path: .
+      ref: ba118ec7953a955145a8d774450726690399a9b5
 
 
   cupertino_icons: ^1.0.8
@@ -46,6 +52,7 @@ dependencies:
   webview_flutter: ^4.13.0
   webview_flutter_android: ^4.10.3
   webview_flutter_wkwebview: ^3.23.1
+  mime: ^2.0.0
   # charset_converter: ^2.3.0
 
 dev_dependencies:

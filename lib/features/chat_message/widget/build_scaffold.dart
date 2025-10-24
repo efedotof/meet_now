@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/app_bar_widget.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 
 import 'error_message.dart';
-import 'input_area.dart';
+import 'input/input_area.dart';
 import 'loading_messages.dart';
 import 'messages_list.dart';
 

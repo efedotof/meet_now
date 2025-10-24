@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:meet_now_app/server/model/interes/interest.dart';
-import 'package:meet_now_app/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app_server/model/interes/interest.dart';
+import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 class InterestsSearchDialog extends StatefulWidget {
   final List<String> selectedInterests;
@@ -34,10 +34,11 @@ class _InterestsSearchDialogState extends State<InterestsSearchDialog> {
   void _filterInterests() {
     final query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredInterests = _allInterests.where((interest) {
-        final title = interest.title?.toLowerCase() ?? '';
-        return title.contains(query);
-      }).toList();
+      _filteredInterests =
+          _allInterests.where((interest) {
+            final title = interest.title?.toLowerCase() ?? '';
+            return title.contains(query);
+          }).toList();
     });
   }
 
@@ -85,20 +86,22 @@ class _InterestsSearchDialogState extends State<InterestsSearchDialog> {
             const SizedBox(height: 16),
             Expanded(
               child: ValueListenableBuilder<Box>(
-                valueListenable: 
+                valueListenable:
                     context.read<StorageHiveInterface>().listenableInterestBox,
                 builder: (context, box, child) {
                   _allInterests = box.values.cast<Interest>().toList();
                   if (_filteredInterests.isEmpty) {
                     _filteredInterests = _allInterests;
                   }
-                  
+
                   return ListView.builder(
                     itemCount: _filteredInterests.length,
                     itemBuilder: (context, index) {
                       final interest = _filteredInterests[index];
-                      final isSelected = _tempSelectedInterests.contains(interest.title);
-                      
+                      final isSelected = _tempSelectedInterests.contains(
+                        interest.title,
+                      );
+
                       return CheckboxListTile(
                         title: Text(interest.title ?? ''),
                         value: isSelected,

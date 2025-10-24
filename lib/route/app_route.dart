@@ -2,9 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/features.dart';
 import 'package:meet_now_app/features/uploads_avatars/uploads_avatars.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app/server/model/temporary/temporary_chat.dart';
-import 'package:meet_now_app/server/model/user/user.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 part 'app_route.gr.dart';
 
 @AutoRouterConfig()

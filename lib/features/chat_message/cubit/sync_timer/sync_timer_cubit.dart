@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/server/model/timer/add_time_proposal_dto.dart';
-import 'package:meet_now_app/server/model/timer/add_time_response_dto.dart';
-import 'package:meet_now_app/server/model/timer/timer_update_dto.dart';
-import 'package:meet_now_app/server/repository/timer/timer_repository_interface.dart';
+import 'package:meet_now_app_server/model/timer/add_time_proposal_dto.dart';
+import 'package:meet_now_app_server/model/timer/add_time_response_dto.dart';
+import 'package:meet_now_app_server/model/timer/timer_update_dto.dart';
+import 'package:meet_now_app_server/repository/timer/timer_repository_interface.dart';
 
 part 'sync_timer_state.dart';
 part 'sync_timer_cubit.freezed.dart';

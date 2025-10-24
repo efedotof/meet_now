@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app/server/model/user_activity/user_activity.dart';
+import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/user_activity/user_activity.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   const AppBarWidget({
