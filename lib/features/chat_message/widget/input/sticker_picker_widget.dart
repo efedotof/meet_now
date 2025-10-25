@@ -1,118 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
+import 'package:meet_now_app_server/model/sticker/sticker.dart';
 
-class StickerPickerWidget extends StatelessWidget {
-  final Function(String) onStickerSelected;
+class StickerPickerWidget extends StatefulWidget {
+  final Function(Sticker) onStickerSelected;
 
   const StickerPickerWidget({super.key, required this.onStickerSelected});
 
-  final List<String> _stickers = const [
-    '😀',
-    '😃',
-    '😄',
-    '😁',
-    '😆',
-    '😅',
-    '😂',
-    '🤣',
-    '😊',
-    '😇',
-    '🙂',
-    '🙃',
-    '😉',
-    '😌',
-    '😍',
-    '🥰',
-    '😘',
-    '😗',
-    '😙',
-    '😚',
-    '😋',
-    '😛',
-    '😝',
-    '😜',
-    '🤪',
-    '🤨',
-    '🧐',
-    '🤓',
-    '😎',
-    '🤩',
-    '🥳',
-    '😏',
-    '😒',
-    '😞',
-    '😔',
-    '😟',
-    '😕',
-    '🙁',
-    '☹️',
-    '😣',
-    '😖',
-    '😫',
-    '😩',
-    '🥺',
-    '😢',
-    '😭',
-    '😤',
-    '😠',
-    '😡',
-    '🤬',
-    '🤯',
-    '😳',
-    '🥵',
-    '🥶',
-    '😱',
-    '😨',
-    '😰',
-    '😥',
-    '😓',
-    '🤗',
-    '🤔',
-    '🤭',
-    '🤫',
-    '🤥',
-    '😶',
-    '😐',
-    '😑',
-    '😬',
-    '🙄',
-    '😯',
-    '😦',
-    '😧',
-    '😮',
-    '😲',
-    '🥱',
-    '😴',
-    '🤤',
-    '😪',
-    '😵',
-    '🤐',
-    '🥴',
-    '🤢',
-    '🤮',
-    '🤧',
-    '😷',
-    '🤒',
-    '🤕',
-    '🤑',
-    '🤠',
-    '😈',
-    '👿',
-    '👹',
-    '👺',
-    '🤡',
-    '💩',
-    '👻',
-    '💀',
-    '☠️',
-    '👽',
-    '👾',
-    '🤖',
-    '🎃',
-    '😺',
-    '😸',
-  ];
+  @override
+  State<StickerPickerWidget> createState() => _StickerPickerWidgetState();
+}
+
+class _StickerPickerWidgetState extends State<StickerPickerWidget> {
+  List<Sticker> _stickers = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStickers();
+  }
+
+  Future<void> _loadStickers() async {
+    try {
+      final cubit = context.read<StickerCubit>();
+      final stickers = await cubit.getAllStickers();
+      setState(() {
+        _stickers = stickers;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,40 +82,108 @@ class StickerPickerWidget extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: GridView.builder(
-                          padding: const EdgeInsets.all(8),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 8,
-                                mainAxisSpacing: 4,
-                                crossAxisSpacing: 4,
-                                childAspectRatio: 1,
-                              ),
-                          itemCount: _stickers.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                onStickerSelected(_stickers[index]);
-
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.surfaceContainerHighest,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    _stickers[index],
-                                    style: const TextStyle(fontSize: 20),
+                        child:
+                            _isLoading
+                                ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                                : _error != null
+                                ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Ошибка загрузки стикеров: $_error'),
+                                      const SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: _loadStickers,
+                                        child: const Text('Повторить'),
+                                      ),
+                                    ],
                                   ),
+                                )
+                                : _stickers.isEmpty
+                                ? const Center(
+                                  child: Text('Стикеры не найдены'),
+                                )
+                                : GridView.builder(
+                                  padding: const EdgeInsets.all(8),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 4,
+                                        mainAxisSpacing: 8,
+                                        crossAxisSpacing: 8,
+                                        childAspectRatio: 1,
+                                      ),
+                                  itemCount: _stickers.length,
+                                  itemBuilder: (context, index) {
+                                    final sticker = _stickers[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        widget.onStickerSelected(sticker);
+                                        context
+                                            .read<StickerCubit>()
+                                            .hideStickers();
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          color:
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Image.network(
+                                            sticker.imageUrl,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (
+                                              context,
+                                              child,
+                                              loadingProgress,
+                                            ) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  value:
+                                                      loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                          : null,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              return Center(
+                                                child: Icon(
+                                                  Icons.error_outline,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.error,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              ),
-                            );
-                          },
-                        ),
                       ),
                     ],
                   ),

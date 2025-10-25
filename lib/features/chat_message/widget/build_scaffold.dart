@@ -49,11 +49,12 @@ class BuildScaffold extends StatelessWidget {
         userId: currentUserId,
         onBackPressed: onBackPressed,
         isTemporary: isTemporary,
-        timerText: isTemporary
-            ? context.select(
-                (SyncTimerCubit cubit) => cubit.state.formattedTime,
-              )
-            : null,
+        timerText:
+            isTemporary
+                ? context.select(
+                  (SyncTimerCubit cubit) => cubit.state.formattedTime,
+                )
+                : null,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -72,71 +73,75 @@ class BuildScaffold extends StatelessWidget {
                 builder: (context, state) {
                   return state.when(
                     initial: () => const SizedBox.shrink(),
-                    running: (remainingTime, formattedTime) => Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.grey[100],
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<SyncTimerCubit>().proposeAddTime(1);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                    running:
+                        (remainingTime, formattedTime) => Container(
+                          padding: const EdgeInsets.all(8),
+                          color: Colors.grey[100],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    1,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('1 мин'),
                               ),
-                            ),
-                            child: const Text('1 мин'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<SyncTimerCubit>().proposeAddTime(3);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    3,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('3 мин'),
                               ),
-                            ),
-                            child: const Text('3 мин'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<SyncTimerCubit>().proposeAddTime(5);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<SyncTimerCubit>().proposeAddTime(
+                                    5,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: const Text('5 мин'),
                               ),
-                            ),
-                            child: const Text('5 мин'),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
                     finished: () => const SizedBox.shrink(),
-                    addTimeProposed: (
-                      remainingTime,
-                      formattedTime,
-                      additionalMinutes,
-                      fromUserId,
-                    ) =>
-                        const SizedBox.shrink(),
-                    waitingForResponse: (
-                      remainingTime,
-                      formattedTime,
-                      additionalMinutes,
-                    ) =>
-                        const SizedBox.shrink(),
+                    addTimeProposed:
+                        (
+                          remainingTime,
+                          formattedTime,
+                          additionalMinutes,
+                          fromUserId,
+                        ) => const SizedBox.shrink(),
+                    waitingForResponse:
+                        (remainingTime, formattedTime, additionalMinutes) =>
+                            const SizedBox.shrink(),
                     timeAdded: (additionalMinutes) => const SizedBox.shrink(),
                     timeRejected: () => const SizedBox.shrink(),
                   );
@@ -152,32 +157,35 @@ class BuildScaffold extends StatelessWidget {
                     child: state.when(
                       initial: () => const LoadingMessages(),
                       loading: () => const LoadingMessages(),
-                      error: (message) => ErrorMessage(
-                        message: message,
-                        onRetry: () => cubit.reconnect(
-                          context: context,
-                          isTemporary: isTemporary,
-                          chatId: chatId,
-                          senderId: senderID,
-                          recipientId: recipientId,
-                        ),
-                      ),
-                      loaded: (messages, isLoadingMore) => Column(
-                        children: [
-                          if (isLoadingMore)
-                            const LinearProgressIndicator(
-                              minHeight: 2,
-                              color: Colors.blueAccent,
-                            ),
-                          Expanded(
-                            child: MessagesList(
-                              messages: messages,
-                              scrollController: scrollController,
-                              currentUserId: currentUserId,
-                            ),
+                      error:
+                          (message) => ErrorMessage(
+                            message: message,
+                            onRetry:
+                                () => cubit.reconnect(
+                                  context: context,
+                                  isTemporary: isTemporary,
+                                  chatId: chatId,
+                                  senderId: senderID,
+                                  recipientId: recipientId,
+                                ),
                           ),
-                        ],
-                      ),
+                      loaded:
+                          (messages, isLoadingMore) => Column(
+                            children: [
+                              if (isLoadingMore)
+                                const LinearProgressIndicator(
+                                  minHeight: 2,
+                                  color: Colors.blueAccent,
+                                ),
+                              Expanded(
+                                child: MessagesList(
+                                  messages: messages,
+                                  scrollController: scrollController,
+                                  currentUserId: currentUserId,
+                                ),
+                              ),
+                            ],
+                          ),
                     ),
                   );
                 },
@@ -191,6 +199,9 @@ class BuildScaffold extends StatelessWidget {
               },
               chatId: chatId,
               onAddAttach: onAddAttach,
+              onStickerSelected: (sticker) {
+                context.read<ChatMessageCubit>().sendStickerMessage(sticker);
+              },
             ),
           ],
         ),
