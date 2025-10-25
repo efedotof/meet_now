@@ -7,6 +7,7 @@ import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/com
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 import 'package:meet_now_app_server/model/commands/commands_chat.dart';
+import 'package:meet_now_app_server/model/sticker/sticker.dart';
 import '../suggestions/command_suggestions_widget.dart';
 import 'sticker_picker_widget.dart';
 import 'input_bottom_bar.dart';
@@ -19,6 +20,7 @@ class InputArea extends StatefulWidget {
     required this.onCommandResult,
     required this.chatId,
     required this.onAddAttach,
+    required this.onStickerSelected,
     super.key,
   });
 
@@ -26,6 +28,7 @@ class InputArea extends StatefulWidget {
   final VoidCallback onSend;
   final VoidCallback onAddAttach;
   final Function(String) onCommandResult;
+  final Function(Sticker) onStickerSelected;
   final String chatId;
 
   @override
@@ -81,19 +84,8 @@ class _InputAreaState extends State<InputArea> {
     if (text.isNotEmpty && !text.startsWith('/')) widget.controller.clear();
   }
 
-  void _handleStickerSelected(String sticker) {
-    final text = widget.controller.text;
-    final selection = widget.controller.selection;
-    final start = selection.start >= 0 ? selection.start : text.length;
-    final end = selection.end >= 0 ? selection.end : text.length;
-    final safeStart = start.clamp(0, text.length);
-    final safeEnd = end.clamp(0, text.length);
-    final newText = text.replaceRange(safeStart, safeEnd, sticker);
-    widget.controller.text = newText;
-    widget.controller.selection = TextSelection.collapsed(
-      offset: safeStart + sticker.length,
-    );
-    FocusScope.of(context).requestFocus(_textFieldFocusNode);
+  void _handleStickerSelected(Sticker sticker) {
+    widget.onStickerSelected(sticker);
   }
 
   @override

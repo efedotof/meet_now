@@ -175,7 +175,12 @@ class AppBloc extends StatelessWidget {
               (context) =>
                   ReportCubit(reportInterface: context.read<ReportInterface>()),
         ),
-        BlocProvider(create: (context) => StickerCubit()),
+        BlocProvider(
+          create:
+              (context) => StickerCubit(
+                stickerParksInterface: context.read<StikersParksInterface>(),
+              ),
+        ),
         BlocProvider(
           create:
               (context) => GameChatCubit(
