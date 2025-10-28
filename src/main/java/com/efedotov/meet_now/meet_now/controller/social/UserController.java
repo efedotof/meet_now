@@ -46,32 +46,36 @@ public class UserController {
 
     @Operation(summary = "Обновление анкеты пользователя")
     @PutMapping("/{id}/profile")
-    public ResponseEntity<User> updateProfile(@PathVariable UUID id, @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.updateProfile(id, userDto));
+    public ResponseEntity<UserDto> updateProfile(@PathVariable UUID id, @RequestBody UserDto userDto) {
+        User updatedUser = userService.updateProfile(id, userDto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление описания пользователя")
     @PatchMapping("/{id}/description")
-    public ResponseEntity<User> updateDescription(@PathVariable UUID id, @RequestBody String description) {
+    public ResponseEntity<UserDto> updateDescription(@PathVariable UUID id, @RequestBody String description) {
         UserDto dto = new UserDto();
         dto.setDescription(description);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление аватара пользователя")
     @PatchMapping("/{id}/avatar")
-    public ResponseEntity<User> updateAvatar(@PathVariable UUID id, @RequestBody String avatar) {
+    public ResponseEntity<UserDto> updateAvatar(@PathVariable UUID id, @RequestBody String avatar) {
         UserDto dto = new UserDto();
         dto.setAvatar(avatar);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @PatchMapping("/{id}/images")
     @Operation(summary = "Добавить изображения профиля")
-    public ResponseEntity<User> updateImages(@PathVariable UUID id, @RequestBody List<String> images) {
+    public ResponseEntity<UserDto> updateImages(@PathVariable UUID id, @RequestBody List<String> images) {
         UserDto dto = new UserDto();
         dto.setImages(images);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление настройки isSearchable")
@@ -83,40 +87,45 @@ public class UserController {
 
     @Operation(summary = "Обновление целей пользователя")
     @PatchMapping("/{id}/purposes")
-    public ResponseEntity<User> updatePurposes(@PathVariable UUID id, @RequestBody UserDto dto) {
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+    public ResponseEntity<UserDto> updatePurposes(@PathVariable UUID id, @RequestBody UserDto dto) {
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление города пользователя")
     @PatchMapping("/{id}/city")
-    public ResponseEntity<User> updateCity(@PathVariable UUID id, @RequestBody String city) {
+    public ResponseEntity<UserDto> updateCity(@PathVariable UUID id, @RequestBody String city) {
         UserDto dto = new UserDto();
         dto.setCity(city);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление возраста пользователя")
     @PatchMapping("/{id}/age")
-    public ResponseEntity<User> updateAge(@PathVariable UUID id, @RequestBody Integer age) {
+    public ResponseEntity<UserDto> updateAge(@PathVariable UUID id, @RequestBody Integer age) {
         UserDto dto = new UserDto();
         dto.setAge(age);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление email пользователя")
     @PatchMapping("/{id}/email")
-    public ResponseEntity<User> updateEmail(@PathVariable UUID id, @RequestBody String email) {
+    public ResponseEntity<UserDto> updateEmail(@PathVariable UUID id, @RequestBody String email) {
         UserDto dto = new UserDto();
         dto.setEmail(email);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление имени пользователя (username)")
     @PatchMapping("/{id}/username")
-    public ResponseEntity<User> updateUsername(@PathVariable UUID id, @RequestBody String username) {
+    public ResponseEntity<UserDto> updateUsername(@PathVariable UUID id, @RequestBody String username) {
         UserDto dto = new UserDto();
         dto.setUsername(username);
-        return ResponseEntity.ok(userService.updateProfile(id, dto));
+        User updatedUser = userService.updateProfile(id, dto);
+        return ResponseEntity.ok(mapToDto(updatedUser));
     }
 
     @Operation(summary = "Обновление пароля пользователя")
@@ -165,5 +174,4 @@ public class UserController {
 
         return dto;
     }
-
 }

@@ -36,23 +36,17 @@ public class ChatTimerService {
         public boolean isFinished;
     }
 
-    /**
-     * Запускает синхронизированный таймер для временного чата
-     */
     public void startSynchronizedTimer(TemporaryChat tempChat) {
         UUID tempChatId = tempChat.getTempChatId();
-        
-        // Вычисляем время окончания
+
         LocalDateTime endTime = tempChat.getCreatedAt()
                 .plusMinutes(tempChat.getDurationMinutes());
-        
-        // Сохраняем состояние таймера
+
         TimerState state = new TimerState();
         state.endTime = endTime;
         state.isFinished = false;
         timerStates.put(tempChatId, state);
-        
-        // Запускаем периодическое обновление
+
         scheduleTimerUpdates(tempChatId, endTime);
     }
 
@@ -61,7 +55,8 @@ public class ChatTimerService {
 
         ScheduledFuture<?> updateTask = taskScheduler.scheduleAtFixedRate(() -> {
             TimerState state = timerStates.get(tempChatId);
-            if (state == null) return;
+            if (state == null)
+                return;
 
             long remaining = Duration.between(Instant.now(), endInstant).toMillis();
             boolean finished = remaining <= 0;
@@ -74,14 +69,11 @@ public class ChatTimerService {
             updateDto.setRemainingTime(state.remainingMillis);
             updateDto.setFinished(finished);
 
-            // Отправляем обновление обоим пользователям
             messagingTemplate.convertAndSend(
-                "/topic/chat/" + tempChatId + "/timer", 
-                updateDto
-            );
+                    "/topic/chat/" + tempChatId + "/timer",
+                    updateDto);
 
             if (finished) {
-                // Останавливаем таймер
                 ScheduledFuture<?> task = updateTasks.remove(tempChatId);
                 if (task != null) {
                     task.cancel(false);
@@ -93,9 +85,6 @@ public class ChatTimerService {
         updateTasks.put(tempChatId, updateTask);
     }
 
-    /**
-     * Добавляет время к таймеру
-     */
     public void addTimeToTimer(UUID tempChatId, int additionalMinutes) {
         TimerState state = timerStates.get(tempChatId);
         if (state == null || state.isFinished) {
@@ -103,23 +92,18 @@ public class ChatTimerService {
             return;
         }
 
-        // Обновляем время окончания
         state.endTime = state.endTime.plusMinutes(additionalMinutes);
-        
-        // Перезапускаем таймер с новым временем
+
         ScheduledFuture<?> oldTask = updateTasks.remove(tempChatId);
         if (oldTask != null) {
             oldTask.cancel(false);
         }
-        
+
         scheduleTimerUpdates(tempChatId, state.endTime);
-        
+
         log.info("Добавлено {} минут к таймеру чата {}", additionalMinutes, tempChatId);
     }
 
-    /**
-     * Останавливает таймер
-     */
     public void stopTimer(UUID tempChatId) {
         ScheduledFuture<?> task = updateTasks.remove(tempChatId);
         if (task != null) {
@@ -129,9 +113,6 @@ public class ChatTimerService {
         log.info("Таймер остановлен для чата {}", tempChatId);
     }
 
-    /**
-     * Получает текущее состояние таймера
-     */
     public TimerState getTimerState(UUID tempChatId) {
         return timerStates.get(tempChatId);
     }

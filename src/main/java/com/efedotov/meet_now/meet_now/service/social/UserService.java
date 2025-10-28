@@ -55,25 +55,36 @@ public class UserService {
             user.setEmail(dto.getEmail());
         }
 
-        if (dto.getFirstname() != null)
+        if (dto.getFirstname() != null) {
             user.setFirstname(dto.getFirstname());
-        if (dto.getSubname() != null)
+        }
+        if (dto.getSubname() != null) {
             user.setSubname(dto.getSubname());
-        if (dto.getDescription() != null)
+        }
+        if (dto.getDescription() != null) {
             user.setDescription(dto.getDescription());
-        if (dto.getAvatar() != null)
+        }
+        if (dto.getAvatar() != null) {
             user.setAvatar(dto.getAvatar());
-        if (dto.getCity() != null)
+        }
+        if (dto.getCity() != null) {
             user.setCity(dto.getCity());
-        if (dto.getAge() != null)
+        }
+        if (dto.getAge() != null) {
             user.setAge(dto.getAge());
-        if (dto.getPurposes() != null)
-            user.setPurposes(dto.getPurposes());
-        if (dto.getInterests() != null)
-            user.setInterests(dto.getInterests());
-        if (dto.getIsSearchable() != null)
+        }
+        if (dto.getPurposes() != null) {
+            user.setPurposes(new ArrayList<>(dto.getPurposes()));
+        }
+        if (dto.getInterests() != null) {
+            user.setInterests(new ArrayList<>(dto.getInterests()));
+        }
+        if (dto.getIsSearchable() != null) {
             user.setIsSearchable(dto.getIsSearchable());
-
+        }
+        if (dto.getImages() != null) {
+            user.setImages(new ArrayList<>(dto.getImages()));
+        }
         return userRepository.save(user);
     }
 
@@ -145,7 +156,7 @@ public class UserService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-            user.setImages(new ArrayList<>(imageUrls));
+            user.setImages(Collections.synchronizedList(new ArrayList<>(imageUrls)));
             userRepository.save(user);
             log.info("Images set successfully for user {}", userId);
         } catch (Exception e) {
@@ -161,10 +172,12 @@ public class UserService {
             User user = getById(userId);
             List<String> images = user.getImages();
             if (images == null) {
-                images = new ArrayList<>();
+                images = Collections.synchronizedList(new ArrayList<>());
+            } else {
+                images = new ArrayList<>(images);
             }
             images.add(imageUrl);
-            user.setImages(images);
+            user.setImages(Collections.synchronizedList(images));
             userRepository.save(user);
             log.info("Image added successfully for user {}", userId);
         } catch (Exception e) {

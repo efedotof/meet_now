@@ -1,0 +1,3 @@
+ALTER TABLE gift_rarities 
+ALTER COLUMN multiplier TYPE DECIMAL(5,2),
+ALTER COLUMN probability TYPE DECIMAL(5,2);

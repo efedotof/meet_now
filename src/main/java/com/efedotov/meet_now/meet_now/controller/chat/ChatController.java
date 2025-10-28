@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreateTemporaryChatRequest;
+import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
@@ -36,7 +37,6 @@ import lombok.RequiredArgsConstructor;
 public class ChatController {
 
     private final ChatService chatService;
-
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
@@ -77,11 +77,32 @@ public class ChatController {
 
     @Operation(summary = "Получить постоянные чаты пользователя")
     @GetMapping("/permanent")
-    public ResponseEntity<List<Chat>> getPermanentChats(@RequestParam UUID userId) {
-        List<Chat> chats = chatService.getPermanentChatsForUser(userId);
-        return ResponseEntity.ok(chats);
+    public ResponseEntity<List<PermanentChatResponseDto>> getPermanentChats(@RequestParam UUID userId) {
+        List<PermanentChatResponseDto> chatDtos = chatService.getPermanentChatsForUser(userId).stream()
+                .map(this::mapToPermanentChatDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(chatDtos);
     }
 
+    private PermanentChatResponseDto mapToPermanentChatDto(Chat chat) {
+        PermanentChatResponseDto dto = new PermanentChatResponseDto();
+        dto.setChatId(chat.getChatId());
+        dto.setUser1Id(chat.getUser1().getId());
+        dto.setUser1Username(chat.getUser1().getUsername());
+        dto.setUser1Firstname(chat.getUser1().getFirstname());
+        dto.setUser1Subname(chat.getUser1().getSubname());
+        dto.setUser1Avatar(chat.getUser1().getAvatar());
+        dto.setUser2Id(chat.getUser2().getId());
+        dto.setUser2Username(chat.getUser2().getUsername());
+        dto.setUser2Firstname(chat.getUser2().getFirstname());
+        dto.setUser2Subname(chat.getUser2().getSubname());
+        dto.setUser2Avatar(chat.getUser2().getAvatar());
+        dto.setCreatedAt(chat.getCreatedAt());
+        dto.setIsOpened(chat.getIsOpened());
+        dto.setLastMessage(chat.getLastMessage());
+        return dto;
+    }
+    
     @Operation(summary = "Получить ограничения временного чата")
     @GetMapping("/temporary/{tempChatId}/constraint")
     public ResponseEntity<ChatConstraint> getChatConstraint(@PathVariable UUID tempChatId) {

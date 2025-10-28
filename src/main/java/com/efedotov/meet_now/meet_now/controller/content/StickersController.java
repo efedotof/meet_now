@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.model.content.Sticker;
-import com.efedotov.meet_now.meet_now.model.content.StickerPack;
+import com.efedotov.meet_now.meet_now.dto.response.content.StickerDto;
+import com.efedotov.meet_now.meet_now.dto.response.content.StickerPackDto;
 import com.efedotov.meet_now.meet_now.service.content.StickersService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,22 +24,22 @@ public class StickersController {
     private final StickersService stickersService;
 
     @GetMapping("/packs")
-    public List<StickerPack> getAllStickerPacks() {
+    public List<StickerPackDto> getAllStickerPacks() {
         return stickersService.getAllStickerPacks();
     }
 
     @GetMapping("/packs/{packId}")
-    public StickerPack getStickerPack(@PathVariable UUID packId) {
+    public StickerPackDto getStickerPack(@PathVariable UUID packId) {
         return stickersService.getStickerPack(packId);
     }
 
     @GetMapping("/packs/{packId}/stickers")
-    public List<Sticker> getStickersByPack(@PathVariable UUID packId) {
+    public List<StickerDto> getStickersByPack(@PathVariable UUID packId) {
         return stickersService.getStickersByPack(packId);
     }
 
     @GetMapping("/{stickerId}")
-    public Sticker getSticker(@PathVariable UUID stickerId) {
+    public StickerDto getSticker(@PathVariable UUID stickerId) {
         return stickersService.getSticker(stickerId);
     }
 }

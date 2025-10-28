@@ -14,9 +14,6 @@ public class ChatTimerManagementService {
     private final ChatTimerService chatTimerService;
     private final TemporaryChatService temporaryChatService;
 
-    /**
-     * Запускает синхронизированный таймер для временного чата
-     */
     public void startSynchronizedTimer(UUID tempChatId) {
         var tempChat = temporaryChatService.findById(tempChatId);
         if (tempChat.isPresent()) {
@@ -26,16 +23,10 @@ public class ChatTimerManagementService {
         }
     }
 
-    /**
-     * Добавляет время к таймеру
-     */
     public void addTimeToTimer(UUID tempChatId, int additionalMinutes) {
         chatTimerService.addTimeToTimer(tempChatId, additionalMinutes);
     }
 
-    /**
-     * Останавливает таймер
-     */
     public void stopTimer(UUID tempChatId) {
         chatTimerService.stopTimer(tempChatId);
     }

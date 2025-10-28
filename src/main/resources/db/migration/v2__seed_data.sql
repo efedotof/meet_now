@@ -4,6 +4,9 @@ INSERT INTO roles (role_name) VALUES
 ('USER')
 ON CONFLICT (role_name) DO NOTHING; 
 
+INSERT INTO message_content_types (type_name) VALUES 
+('text'), ('image'), ('video'), ('sticker'), ('file')
+ON CONFLICT (type_name) DO NOTHING;
 
 INSERT INTO citys (name_city) VALUES
 ('Абаза (Хакасия)'),

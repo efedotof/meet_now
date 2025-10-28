@@ -1,6 +1,8 @@
 package com.efedotov.meet_now.meet_now.model.user;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -62,12 +64,12 @@ public class User {
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "user_purposes", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "purpose")
-    private List<String> purposes;
+    private List<String> purposes = Collections.synchronizedList(new ArrayList<>());
 
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "interest")
-    private List<String> interests;
+    private List<String> interests = Collections.synchronizedList(new ArrayList<>());
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -88,6 +90,6 @@ public class User {
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_url")
-    private List<String> images;
+    private List<String> images = Collections.synchronizedList(new ArrayList<>());
 
 }

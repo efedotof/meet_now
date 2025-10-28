@@ -14,9 +14,9 @@ import org.springframework.stereotype.Controller;
 import com.efedotov.meet_now.meet_now.dto.request.chat.ChatMessagesRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.MarkMessagesReadRequest;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserActivityDto;
-import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.chat.ActivityNotificationService;
@@ -87,13 +87,14 @@ public class ChatWebSocketController {
         String username = principal.getName();
 
         log.info("Received getPermanent request from userId={}", userId);
-        List<Chat> chats = chatQueryService.getPermanentChats(userId);
-        log.info("Returning {} permanent chats to username={}", chats.size(), username);
+        
+        List<PermanentChatResponseDto> chatDtos = chatQueryService.getPermanentChatsAsDto(userId);
+        log.info("Returning {} permanent chats to username={}", chatDtos.size(), username);
 
         messagingTemplate.convertAndSendToUser(
                 username,
                 "queue/chat.permanent",
-                chats);
+                chatDtos);
     }
 
     @MessageMapping("/chat.activity")

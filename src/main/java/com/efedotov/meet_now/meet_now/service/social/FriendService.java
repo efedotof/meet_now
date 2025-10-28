@@ -57,7 +57,6 @@ public class FriendService {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));
 
-        // Добавляем друг друга в сет друзей
         currentUser.getFriends().add(requester);
         requester.getFriends().add(currentUser);
 

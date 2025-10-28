@@ -1,25 +1,34 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
+import com.efedotov.meet_now.meet_now.dto.response.content.StickerDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.Message;
+import com.efedotov.meet_now.meet_now.model.chat.MessageMedia;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.content.MessageContentType;
+import com.efedotov.meet_now.meet_now.model.content.Sticker;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.repository.content.MessageContentTypeRepository;
+import com.efedotov.meet_now.meet_now.repository.content.StickerRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -31,7 +40,10 @@ public class MessageProcessingService {
     private final TemporaryChatRepository temporaryChatRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MessageContentTypeRepository contentTypeRepository;
+    private final StickerRepository stickerRepository;
 
+    @Transactional
     public MessageDto processMessageDto(MessageDto messageDto) {
         UUID chatId = messageDto.getChatId();
         UUID tempChatId = messageDto.getTempChatId();
@@ -39,7 +51,23 @@ public class MessageProcessingService {
         UUID recipientId = messageDto.getRecipientId();
         String text = messageDto.getText();
 
-        log.info("Пользователь отправил сообщение: от {} к {}, текст: {}", senderId, recipientId, text);
+        log.info("🔍 ПРИНЯТО СООБЩЕНИЕ: chatId={}, tempChatId={}, senderId={}, recipientId={}",
+                chatId, tempChatId, senderId, recipientId);
+        log.info("🔍 ТИП КОНТЕНТА: {}, медиафайлов: {}",
+                messageDto.getContentType(),
+                messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
+
+        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
+            for (int i = 0; i < messageDto.getMedia().size(); i++) {
+                MessageMediaDto media = messageDto.getMedia().get(i);
+                log.info("🔍 МЕДИА [{}]: contentType={}, mimeType={}, mediaUrl={}",
+                        i, media.getContentType(), media.getMimeType(), media.getMediaUrl());
+            }
+        }
+
+        log.info("Пользователь отправил сообщение: от {} к {}, тип: {}, медиафайлов: {}",
+                senderId, recipientId, messageDto.getContentType(),
+                messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
 
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -63,7 +91,7 @@ public class MessageProcessingService {
                 isTemporary = true;
             }
         } else {
-            chat = findOrCreateChat(sender, recipient, text);
+            chat = findOrCreateChat(sender, recipient, text, messageDto.getMedia());
             if (chat != null) {
                 finalChatId = chat.getChatId();
             } else {
@@ -73,22 +101,93 @@ public class MessageProcessingService {
             }
         }
 
-        Message message = createMessage(sender, recipient, text, chat, tempChat);
+        Message message = createMessage(sender, recipient, messageDto, chat, tempChat);
         message = messageRepository.save(message);
 
+        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
+            saveMessageMedia(message, messageDto.getMedia());
+        }
+
         MessageDto responseDto = createResponseDto(message, finalChatId, isTemporary);
+
         messagingTemplate.convertAndSendToUser(
                 recipient.getUsername(),
                 "/queue/messages",
                 responseDto);
 
-        log.info("Отправляем сообщение пользователю как оповещение {} от {} сообщение {}",
-                recipient.getUsername(), sender.getUsername(), responseDto.getText());
+        log.info("Отправлено сообщение пользователю {}: тип {}, текст {}, медиафайлов {}",
+                recipient.getUsername(), responseDto.getContentType(),
+                responseDto.getText() != null ? responseDto.getText() : "нет",
+                responseDto.getMedia() != null ? responseDto.getMedia().size() : 0);
 
         return responseDto;
     }
 
-    private Chat findOrCreateChat(User sender, User recipient, String text) {
+    private void saveMessageMedia(Message message, List<MessageMediaDto> mediaDtos) {
+        for (int i = 0; i < mediaDtos.size(); i++) {
+            MessageMediaDto mediaDto = mediaDtos.get(i);
+            MessageMedia media = new MessageMedia();
+
+            if (mediaDto.getContentType() != null) {
+                MessageContentType contentType = contentTypeRepository.findByTypeName(mediaDto.getContentType())
+                        .orElseThrow(
+                                () -> new RuntimeException("Content type not found: " + mediaDto.getContentType()));
+                media.setContentType(contentType);
+            } else {
+                MessageContentType contentType = determineContentType(mediaDto);
+                media.setContentType(contentType);
+            }
+
+            media.setMediaUrl(mediaDto.getMediaUrl());
+            media.setFileSize(mediaDto.getFileSize());
+            media.setMimeType(mediaDto.getMimeType());
+            media.setThumbnailUrl(mediaDto.getThumbnailUrl());
+            media.setSortOrder(i);
+
+            if (mediaDto.getStickerId() != null) {
+                Sticker sticker = stickerRepository.findById(mediaDto.getStickerId())
+                        .orElseThrow(() -> new RuntimeException("Sticker not found"));
+                media.setSticker(sticker);
+            }
+
+            message.addMedia(media);
+        }
+
+        messageRepository.save(message);
+    }
+
+    private MessageContentType determineContentType(MessageMediaDto mediaDto) {
+        log.info("🔍 MESSAGE_PROCESSING_SERVICE: DETERMINE_CONTENT_TYPE: media contentType={}, mimeType={}",
+                mediaDto.getContentType(), mediaDto.getMimeType());
+
+        if (mediaDto.getStickerId() != null) {
+            return contentTypeRepository.findByTypeName("sticker")
+                    .orElseThrow(() -> new RuntimeException("Sticker content type not found"));
+        } else if (mediaDto.getMediaUrl() != null) {
+            String mimeType = mediaDto.getMimeType();
+            if (mimeType != null) {
+                if ("image".equals(mimeType) || mimeType.startsWith("image/")) {
+                    log.info("🔍 MESSAGE_PROCESSING_SERVICE: Определен тип IMAGE для mimeType: {}", mimeType);
+                    return contentTypeRepository.findByTypeName("image")
+                            .orElseThrow(() -> new RuntimeException("Image content type not found"));
+                } else if ("video".equals(mimeType) || mimeType.startsWith("video/")) {
+                    log.info("🔍 MESSAGE_PROCESSING_SERVICE: Определен тип VIDEO для mimeType: {}", mimeType);
+                    return contentTypeRepository.findByTypeName("video")
+                            .orElseThrow(() -> new RuntimeException("Video content type not found"));
+                } else {
+                    log.info("🔍 MESSAGE_PROCESSING_SERVICE: Определен тип FILE для mimeType: {}", mimeType);
+                    return contentTypeRepository.findByTypeName("file")
+                            .orElseThrow(() -> new RuntimeException("File content type not found"));
+                }
+            }
+        }
+
+        log.info("🔍 MESSAGE_PROCESSING_SERVICE: Тип по умолчанию: FILE");
+        return contentTypeRepository.findByTypeName("file")
+                .orElseThrow(() -> new RuntimeException("Default file content type not found"));
+    }
+
+    private Chat findOrCreateChat(User sender, User recipient, String text, List<MessageMediaDto> media) {
         UUID senderId = sender.getId();
         UUID recipientId = recipient.getId();
 
@@ -97,11 +196,162 @@ public class MessageProcessingService {
 
         if (existingChat.isPresent()) {
             Chat chat = existingChat.get();
-            chat.setLastMessage(text);
+            chat.setLastMessage(generateLastMessagePreview(text, media));
             chatRepository.save(chat);
             return chat;
         }
         return null;
+    }
+
+    private String generateLastMessagePreview(String text, List<MessageMediaDto> media) {
+        if (media != null && !media.isEmpty()) {
+            if (media.stream().anyMatch(m -> m.getStickerId() != null)) {
+                return "Стикер";
+            } else if (media.stream().anyMatch(m -> "image".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Фотографии (" + media.size() + ")" : "Фото";
+            } else if (media.stream().anyMatch(m -> "video".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Видео (" + media.size() + ")" : "Видео";
+            } else if (media.stream().anyMatch(m -> "file".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Файлы (" + media.size() + ")" : "Файл";
+            }
+        }
+        return text;
+    }
+
+    private Message createMessage(User sender, User recipient, MessageDto messageDto,
+            Chat chat, TemporaryChat tempChat) {
+        Message message = new Message();
+        message.setSender(sender);
+        message.setRecipient(recipient);
+        message.setText(messageDto.getText());
+        message.setCreatedAt(LocalDateTime.now());
+        message.setRead(false);
+
+        MessageContentType contentType = determineMessageContentType(messageDto);
+        message.setContentType(contentType);
+
+        if (chat != null) {
+            message.setChat(chat);
+        } else if (tempChat != null) {
+            message.setTemporaryChat(tempChat);
+        }
+
+        return message;
+    }
+
+    private MessageContentType determineMessageContentType(MessageDto messageDto) {
+        log.info(
+                "🔍 MESSAGE_PROCESSING_SERVICE: DETERMINE_MESSAGE_CONTENT_TYPE: message contentType={}, media count={}",
+                messageDto.getContentType(),
+                messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
+
+        if (messageDto.getContentType() != null && !messageDto.getContentType().equals("text")) {
+            String contentType = messageDto.getContentType().toLowerCase();
+            log.info("🔍 MESSAGE_PROCESSING_SERVICE: Используем явный тип сообщения: {}", contentType);
+
+            switch (contentType) {
+                case "image" -> {
+                    return contentTypeRepository.findByTypeName("image")
+                            .orElseThrow(() -> new RuntimeException("Image content type not found"));
+                }
+                case "video" -> {
+                    return contentTypeRepository.findByTypeName("video")
+                            .orElseThrow(() -> new RuntimeException("Video content type not found"));
+                }
+                case "file" -> {
+                    return contentTypeRepository.findByTypeName("file")
+                            .orElseThrow(() -> new RuntimeException("File content type not found"));
+                }
+            }
+        }
+
+        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
+            MessageMediaDto firstMedia = messageDto.getMedia().get(0);
+            MessageContentType mediaContentType = determineContentType(firstMedia);
+            log.info("🔍 MESSAGE_PROCESSING_SERVICE: Тип сообщения определен по первому медиа: {}",
+                    mediaContentType != null ? mediaContentType.getTypeName() : "null");
+            return mediaContentType;
+        }
+
+        log.info("🔍 MESSAGE_PROCESSING_SERVICE: Тип сообщения по умолчанию: text");
+        return contentTypeRepository.findByTypeName("text")
+                .orElseThrow(() -> new RuntimeException("Default text content type not found"));
+    }
+
+    private MessageDto createResponseDto(Message message, UUID finalChatId, boolean isTemporary) {
+        MessageDto dto = new MessageDto();
+        dto.setId(message.getId());
+        dto.setText(message.getText());
+        dto.setCreatedAt(message.getCreatedAt());
+        dto.setSenderId(message.getSender().getId());
+        dto.setRecipientId(message.getRecipient().getId());
+        dto.setRead(message.isRead());
+
+        if (message.getContentType() != null) {
+            dto.setContentType(message.getContentType().getTypeName());
+        }
+
+        if (message.getMedia() != null && !message.getMedia().isEmpty()) {
+            dto.setMedia(message.getMedia().stream()
+                    .map(this::convertMediaToDto)
+                    .collect(Collectors.toList()));
+        }
+
+        if (isTemporary) {
+            dto.setTempChatId(finalChatId);
+        } else {
+            dto.setChatId(finalChatId);
+        }
+
+        return dto;
+    }
+
+    private MessageMediaDto convertMediaToDto(MessageMedia media) {
+        MessageMediaDto dto = new MessageMediaDto();
+        dto.setId(media.getId());
+
+        if (media.getContentType() != null) {
+            dto.setContentType(media.getContentType().getTypeName());
+        } else {
+            dto.setContentType("file");
+        }
+
+        dto.setMediaUrl(media.getMediaUrl());
+        dto.setFileSize(media.getFileSize());
+        dto.setMimeType(media.getMimeType());
+        dto.setThumbnailUrl(media.getThumbnailUrl());
+        dto.setSortOrder(media.getSortOrder());
+
+        if (media.getSticker() != null) {
+            dto.setStickerId(media.getSticker().getId());
+            dto.setSticker(mapStickerToDto(media.getSticker()));
+        }
+
+        return dto;
+    }
+
+    private StickerDto mapStickerToDto(Sticker sticker) {
+        StickerDto dto = new StickerDto();
+        dto.setId(sticker.getId());
+        dto.setEmoji(sticker.getEmoji());
+        dto.setImageUrl(sticker.getImageUrl());
+        return dto;
+    }
+
+    @Transactional
+    public void markMessagesAsRead(List<UUID> messageIds, UUID userId) {
+        List<Message> messages = messageRepository.findAllById(messageIds);
+
+        messages.stream()
+                .filter(msg -> msg.getRecipient().getId().equals(userId))
+                .forEach(msg -> {
+                    if (!msg.isRead()) {
+                        msg.setRead(true);
+                        messageRepository.save(msg);
+                    }
+                });
+
+        log.info("Marked {} messages as read for user {}", messages.size(), userId);
     }
 
     private TemporaryChat findOrCreateTemporaryChat(User sender, User recipient) {
@@ -124,55 +374,6 @@ public class MessageProcessingService {
         tempChat.setIsFinished(false);
         tempChat.setBothAgreed(false);
         return temporaryChatRepository.save(tempChat);
-    }
-
-    private Message createMessage(User sender, User recipient, String text, Chat chat, TemporaryChat tempChat) {
-        Message message = new Message();
-        message.setSender(sender);
-        message.setRecipient(recipient);
-        message.setText(text);
-        message.setCreatedAt(LocalDateTime.now());
-        message.setRead(false);
-        if (chat != null) {
-            message.setChat(chat);
-        } else if (tempChat != null) {
-            message.setTemporaryChat(tempChat);
-        }
-
-        return message;
-    }
-
-    private MessageDto createResponseDto(Message message, UUID finalChatId, boolean isTemporary) {
-        MessageDto dto = new MessageDto();
-        dto.setId(message.getId());
-        dto.setText(message.getText());
-        dto.setCreatedAt(message.getCreatedAt());
-        dto.setSenderId(message.getSender().getId());
-        dto.setRecipientId(message.getRecipient().getId());
-        dto.setRead(message.isRead());
-        if (isTemporary) {
-            dto.setTempChatId(finalChatId);
-        } else {
-            dto.setChatId(finalChatId);
-        }
-
-        return dto;
-    }
-
-    @Transactional
-    public void markMessagesAsRead(List<UUID> messageIds, UUID userId) {
-        List<Message> messages = messageRepository.findAllById(messageIds);
-
-        messages.stream()
-                .filter(msg -> msg.getRecipient().getId().equals(userId))
-                .forEach(msg -> {
-                    if (!msg.isRead()) {
-                        msg.setRead(true);
-                        messageRepository.save(msg);
-                    }
-                });
-
-        log.info("Marked {} messages as read for user {}", messages.size(), userId);
     }
 
 }

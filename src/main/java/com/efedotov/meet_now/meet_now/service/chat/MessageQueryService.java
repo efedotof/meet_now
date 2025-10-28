@@ -1,7 +1,9 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
 import com.efedotov.meet_now.meet_now.model.chat.Message;
+import com.efedotov.meet_now.meet_now.model.chat.MessageMedia;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
@@ -10,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +29,7 @@ public class MessageQueryService {
     private final TemporaryChatRepository temporaryChatRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
+    @Transactional(readOnly = true)
     public void sendMessagesForChatToUser(UUID chatId, String username) {
         List<Message> messages;
         log.info("Запрос пользователя {} на получение сообщений чата {}", username, chatId);
@@ -44,12 +49,15 @@ public class MessageQueryService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
+        log.info("Отправлено {} сообщений пользователю {}", dtos.size(), username);
+
         messagingTemplate.convertAndSendToUser(
                 username,
                 "queue/chat.messages",
                 dtos);
     }
 
+    @Transactional(readOnly = true)
     private MessageDto convertToDto(Message message) {
         MessageDto dto = new MessageDto();
         dto.setId(message.getId());
@@ -58,11 +66,58 @@ public class MessageQueryService {
         dto.setSenderId(message.getSender().getId());
         dto.setRecipientId(message.getRecipient().getId());
         dto.setRead(message.isRead());
+
+        if (message.getContentType() != null) {
+            dto.setContentType(message.getContentType().getTypeName());
+            log.info("🔍 MESSAGE_QUERY_SERVICE: Сообщение {} имеет тип контента: {}",
+                    message.getId(), message.getContentType().getTypeName());
+        } else {
+            dto.setContentType("text");
+            log.info("🔍 MESSAGE_QUERY_SERVICE: Сообщение {} имеет тип контента по умолчанию: text",
+                    message.getId());
+        }
+
+        if (message.getMedia() != null && !message.getMedia().isEmpty()) {
+            dto.setMedia(message.getMedia().stream()
+                    .map(this::convertMediaToDto)
+                    .collect(Collectors.toList()));
+            log.info("🔍 MESSAGE_QUERY_SERVICE: Сообщение {} имеет {} медиафайлов",
+                    message.getId(), message.getMedia().size());
+        } else {
+            dto.setMedia(new ArrayList<>());
+            log.info("🔍 MESSAGE_QUERY_SERVICE: Сообщение {} не имеет медиафайлов",
+                    message.getId());
+        }
+
         if (message.getChat() != null) {
             dto.setChatId(message.getChat().getChatId());
         }
         if (message.getTemporaryChat() != null) {
             dto.setTempChatId(message.getTemporaryChat().getTempChatId());
+        }
+
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    private MessageMediaDto convertMediaToDto(MessageMedia media) {
+        MessageMediaDto dto = new MessageMediaDto();
+        dto.setId(media.getId());
+
+        if (media.getContentType() != null) {
+            dto.setContentType(media.getContentType().getTypeName());
+        } else {
+            dto.setContentType("file");
+        }
+
+        dto.setMediaUrl(media.getMediaUrl());
+        dto.setFileSize(media.getFileSize());
+        dto.setMimeType(media.getMimeType());
+        dto.setThumbnailUrl(media.getThumbnailUrl());
+        dto.setSortOrder(media.getSortOrder());
+
+        if (media.getSticker() != null) {
+            dto.setStickerId(media.getSticker().getId());
         }
 
         return dto;

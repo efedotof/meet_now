@@ -34,10 +34,6 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ChatTimerManagementService chatTimerManagementService;
 
-    /**
-     * Создать временный чат между двумя пользователями.
-     * Запускает таймер на ограниченную длительность.
-     */
     @Transactional
     public TemporaryChat createTemporaryChat(User sender, User recipient, int durationMinutes) {
         TemporaryChat tempChat = new TemporaryChat();
@@ -50,7 +46,6 @@ public class ChatService {
 
         temporaryChatRepository.save(tempChat);
 
-        // Создаем ограничение (constraint)
         ChatConstraint constraint = new ChatConstraint();
         constraint.setTemporaryChat(tempChat);
         constraint.setWaitSeconds(30);
@@ -60,16 +55,11 @@ public class ChatService {
         sender.setIsSearchable(false);
         recipient.setIsSearchable(false);
 
-        // Запускаем синхронизированный таймер через management service
         chatTimerManagementService.startSynchronizedTimer(tempChat.getTempChatId());
 
         return tempChat;
     }
 
-    /**
-     * Завершить временный чат: выставить флаг isFinished = true, удалить таймер.
-     * Если оба участника согласны, создается постоянный чат.
-     */
     @Transactional
     public void finishTemporaryChat(UUID tempChatId) {
         temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
@@ -85,12 +75,10 @@ public class ChatService {
                 userRepository.save(sender);
                 userRepository.save(recipient);
 
-                // Останавливаем таймер через management service
                 chatTimerManagementService.stopTimer(tempChatId);
 
                 log.info("TemporaryChat {} завершен", tempChatId);
 
-                // Если оба согласны, создаем постоянный чат
                 if (Boolean.TRUE.equals(tempChat.getBothAgreed())) {
                     createPermanentChatFromTemporary(tempChat);
                 }
@@ -98,7 +86,6 @@ public class ChatService {
         });
     }
 
-    // Создает постоянный чат из временного и открывает анкеты (isOpened = true)
     @Transactional
     protected void createPermanentChatFromTemporary(TemporaryChat tempChat) {
         Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
@@ -115,7 +102,6 @@ public class ChatService {
             log.info("Создан постоянный чат между {} и {}",
                     tempChat.getSender().getId(), tempChat.getRecipient().getId());
         } else {
-            // Если чат уже существует — обновляем флаг isOpened
             Chat chat = existingChat.get();
             if (!Boolean.TRUE.equals(chat.getIsOpened())) {
                 chat.setIsOpened(true);
@@ -125,17 +111,11 @@ public class ChatService {
         }
     }
 
-    /**
-     * Пользователь соглашается на продолжение общения.
-     * Если оба согласны, отмечаем это в TemporaryChat.
-     */
     @Transactional
     public void agreeToContinue(UUID tempChatId, UUID userId) {
         temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
             boolean changed = false;
             if (tempChat.getSender().getId().equals(userId) && !Boolean.TRUE.equals(tempChat.getBothAgreed())) {
-                // Для простоты считаем, что оба согласны если вызвали метод дважды от двух
-                // разных юзеров
                 if (tempChat.getBothAgreed() == null || !tempChat.getBothAgreed()) {
                     tempChat.setBothAgreed(true);
                     changed = true;
@@ -153,14 +133,12 @@ public class ChatService {
         });
     }
 
-    // Получить все активные (не завершённые) временные чаты для пользователя
     public List<TemporaryChat> getActiveTemporaryChatsForUser(UUID userId) {
         return temporaryChatRepository.findByIsFinishedFalse().stream()
                 .filter(tc -> tc.getSender().getId().equals(userId) || tc.getRecipient().getId().equals(userId))
                 .toList();
     }
 
-    // Получить все постоянные чаты пользователя.
     public List<Chat> getPermanentChatsForUser(UUID userId) {
         return chatRepository.findByUser1IdOrUser2Id(userId, userId);
     }
@@ -175,12 +153,10 @@ public class ChatService {
         });
     }
 
-    // Получить ограничения для временного чата
     public Optional<ChatConstraint> getChatConstraint(UUID tempChatId) {
         return chatConstraintRepository.findByTemporaryChat_TempChatId(tempChatId);
     }
 
-    // Добавить или получить игры для чата
     public List<ChatGame> getChatGames(UUID chatId) {
         return chatGameRepository.findByChat_ChatId(chatId);
     }

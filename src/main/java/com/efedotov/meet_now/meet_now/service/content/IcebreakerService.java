@@ -21,12 +21,10 @@ public class IcebreakerService {
     private final IcebreakerTopicRepository icebreakerTopecRepository;
     private final Random random = new Random();
 
-    // Получить список всех тем.
     public List<IcebreakerTopec> getAllTopics() {
         return icebreakerTopecRepository.findAll();
     }
 
-    // Получить случайную тему из всех доступных.
     public IcebreakerTopec getRandomTopic() {
         List<IcebreakerTopec> allTopics = icebreakerTopecRepository.findAll();
         if (allTopics.isEmpty()) {
@@ -36,7 +34,6 @@ public class IcebreakerService {
         return allTopics.get(index);
     }
 
-    // Добавить новую тему.
     @Transactional
     public IcebreakerTopec addTopic(String text) {
         IcebreakerTopec topic = new IcebreakerTopec();
@@ -44,7 +41,6 @@ public class IcebreakerService {
         return icebreakerTopecRepository.save(topic);
     }
 
-    // Обновить существующую тему по id.
     @Transactional
     public IcebreakerTopec updateTopic(Long id, String newText) {
         IcebreakerTopec topic = icebreakerTopecRepository.findById(id)
@@ -53,7 +49,6 @@ public class IcebreakerService {
         return icebreakerTopecRepository.save(topic);
     }
 
-    // Удалить тему по id.
     @Transactional
     public void deleteTopic(Long id) {
         if (!icebreakerTopecRepository.existsById(id)) {

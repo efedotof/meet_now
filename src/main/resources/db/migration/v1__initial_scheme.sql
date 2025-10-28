@@ -1,5 +1,22 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE TABLE IF NOT EXISTS message_content_types (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    type_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sticker_pack (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sticker (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    pack_id UUID NOT NULL REFERENCES sticker_pack(id) ON DELETE CASCADE,
+    emoji VARCHAR(100) NOT NULL,
+    image_url TEXT NOT NULL,
+    UNIQUE (pack_id, emoji) 
+);
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -26,7 +43,6 @@ CREATE TABLE IF NOT EXISTS user_images (
     image_url TEXT
 );
 
-
 CREATE TABLE IF NOT EXISTS user_purposes (
     user_id UUID NOT NULL,
     purpose VARCHAR(255) NOT NULL,
@@ -34,14 +50,12 @@ CREATE TABLE IF NOT EXISTS user_purposes (
     CONSTRAINT fk_user_purposes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE IF NOT EXISTS user_interests (
     user_id UUID NOT NULL,
     interest VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id, interest),
     CONSTRAINT fk_user_interests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS chats (
     chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -51,7 +65,6 @@ CREATE TABLE IF NOT EXISTS chats (
     is_opened BOOLEAN DEFAULT FALSE,
     last_message TEXT
 );
-
 
 CREATE TABLE IF NOT EXISTS temporary_chats (
     temp_chat_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -63,6 +76,7 @@ CREATE TABLE IF NOT EXISTS temporary_chats (
     both_agreed BOOLEAN DEFAULT FALSE 
 );
 
+
 CREATE TABLE IF NOT EXISTS messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
@@ -71,9 +85,26 @@ CREATE TABLE IF NOT EXISTS messages (
     temp_chat_id UUID REFERENCES temporary_chats(temp_chat_id) ON DELETE CASCADE,
     text TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_read BOOLEAN NOT NULL DEFAULT false
+    is_read BOOLEAN NOT NULL DEFAULT false,
+    content_type UUID NOT NULL REFERENCES message_content_types(id)
 );
 
+CREATE TABLE IF NOT EXISTS message_media (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    message_id UUID NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    media_url TEXT NOT NULL,
+    file_size BIGINT,
+    mime_type VARCHAR(100),
+    thumbnail_url TEXT,
+    sticker_id UUID REFERENCES sticker(id),
+    content_type UUID NOT NULL REFERENCES message_content_types(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    sort_order INT DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_message_media_message_id ON message_media(message_id);
+CREATE INDEX IF NOT EXISTS idx_message_media_content_type ON message_media(content_type);
+CREATE INDEX IF NOT EXISTS idx_messages_content_type ON messages(content_type);
 
 CREATE TABLE IF NOT EXISTS reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -84,22 +115,16 @@ CREATE TABLE IF NOT EXISTS reports (
     status VARCHAR(20) NOT NULL DEFAULT 'SENT'
 );
 
-
-
-
-
 CREATE TABLE IF NOT EXISTS icebreakers (
     id BIGSERIAL PRIMARY KEY,
     text TEXT NOT NULL
 );
-
 
 CREATE TABLE IF NOT EXISTS question_of_day (
     id BIGSERIAL PRIMARY KEY,
     question TEXT NOT NULL,
     date DATE UNIQUE NOT NULL
 );
-
 
 CREATE TABLE IF NOT EXISTS chat_constraints (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -108,15 +133,12 @@ CREATE TABLE IF NOT EXISTS chat_constraints (
     can_start BOOLEAN DEFAULT FALSE
 );
 
-
 CREATE TABLE IF NOT EXISTS chat_games (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id UUID REFERENCES chats(chat_id) ON DELETE CASCADE,
     game_type VARCHAR(100), 
     state TEXT 
 );
-
-
 
 CREATE TABLE IF NOT EXISTS second_chance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -127,13 +149,11 @@ CREATE TABLE IF NOT EXISTS second_chance (
     processed BOOLEAN DEFAULT FALSE
 );
 
-
 CREATE TABLE IF NOT EXISTS user_friends (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     friend_id UUID REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, friend_id)
 );
-
 
 CREATE TABLE IF NOT EXISTS global_interests(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -152,7 +172,6 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-
 CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
     role_name VARCHAR(50) UNIQUE NOT NULL
@@ -165,21 +184,8 @@ CREATE TABLE IF NOT EXISTS user_roles (
 );
 
 
-CREATE TABLE IF NOT EXISTS sticker_pack (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(100) UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS sticker (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    pack_id UUID NOT NULL REFERENCES sticker_pack(id) ON DELETE CASCADE,
-    emoji VARCHAR(100) NOT NULL,
-    image_url TEXT NOT NULL,
-    UNIQUE (pack_id, emoji) 
-);
 
 CREATE TABLE IF NOT EXISTS citys(
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name_city VARCHAR(100) UNIQUE NOT NULL
 );
-

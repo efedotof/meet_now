@@ -9,4 +9,5 @@ import com.efedotov.meet_now.meet_now.model.content.Sticker;
 
 public interface StickerRepository extends JpaRepository<Sticker, UUID> {
     List<Sticker> findByPackId(UUID packId);
+    List<Sticker> findByPackTitle(String packTitle);
 }

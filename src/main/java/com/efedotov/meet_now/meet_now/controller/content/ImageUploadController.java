@@ -3,6 +3,7 @@ package com.efedotov.meet_now.meet_now.controller.content;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +37,117 @@ public class ImageUploadController {
 
     private final S3Service s3Service;
     private final UserService userService;
+
+    @PostMapping("/upload-media")
+    @Operation(summary = "Загрузить один медиафайл (изображение, видео, документ)")
+    public ResponseEntity<String> uploadMedia(@RequestParam("file") MultipartFile file, Principal principal) {
+        try {
+            log.info("Uploading media file: {}, size: {}, type: {}",
+                    file.getOriginalFilename(), file.getSize(), file.getContentType());
+
+            if (file.getSize() > 50 * 1024 * 1024) {
+                log.error("Media file too large: {} bytes", file.getSize());
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                        .body("Размер файла не должен превышать 50MB");
+            }
+
+            if (file.isEmpty()) {
+                log.error("Empty media file received: {}", file.getOriginalFilename());
+                return ResponseEntity.badRequest().body("Файл не должен быть пустым");
+            }
+
+            String fileUrl = s3Service.uploadFile(file);
+            log.info("Media file uploaded to S3: {}", fileUrl);
+
+            return ResponseEntity.ok(fileUrl);
+        } catch (IOException e) {
+            log.error("Error uploading media file", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ошибка загрузки медиафайла: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error uploading media file", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Неожиданная ошибка: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/upload-media-multiple")
+    @Operation(summary = "Загрузить несколько медиафайлов")
+    public ResponseEntity<List<String>> uploadMultipleMedia(@RequestParam("files") List<MultipartFile> files,
+            Principal principal) {
+        try {
+            log.info("Received {} media files for upload", files.size());
+
+            if (files.isEmpty()) {
+                log.warn("No media files received for upload");
+                return ResponseEntity.badRequest().body(Collections.emptyList());
+            }
+
+            for (MultipartFile file : files) {
+                if (file.getSize() > 50 * 1024 * 1024) {
+                    log.error("Media file too large: {} bytes, name: {}", file.getSize(), file.getOriginalFilename());
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(Collections.emptyList());
+                }
+
+                if (file.isEmpty()) {
+                    log.error("Empty media file received: {}", file.getOriginalFilename());
+                    return ResponseEntity.badRequest().body(Collections.emptyList());
+                }
+            }
+
+            List<String> fileUrls = new ArrayList<>();
+            List<String> errors = new ArrayList<>();
+
+            for (MultipartFile file : files) {
+                try {
+                    log.info("Uploading media file: {}, size: {}, type: {}",
+                            file.getOriginalFilename(), file.getSize(), file.getContentType());
+                    String url = s3Service.uploadFile(file);
+                    log.info("Media file uploaded successfully: {}", url);
+                    fileUrls.add(url);
+                } catch (IOException e) {
+                    String errorMsg = "Error uploading media file: " + file.getOriginalFilename() + " - "
+                            + e.getMessage();
+                    log.error(errorMsg, e);
+                    errors.add(errorMsg);
+                    fileUrls.add(null);
+                }
+            }
+
+            long successfulUploads = fileUrls.stream().filter(Objects::nonNull).count();
+
+            if (successfulUploads == 0) {
+                log.error("All media file uploads failed. Errors: {}", errors);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Collections.emptyList());
+            }
+
+            log.info("Successfully uploaded {}/{} media files", successfulUploads, files.size());
+            return ResponseEntity.ok(fileUrls);
+
+        } catch (Exception e) {
+            log.error("Error uploading media files", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
+    }
+
+    @DeleteMapping("/media")
+    @Operation(summary = "Удалить медиафайл")
+    public ResponseEntity<String> deleteMedia(@RequestParam("fileUrl") String fileUrl, Principal principal) {
+        try {
+            log.info("Deleting media file: {}", fileUrl);
+
+            s3Service.deleteFile(fileUrl);
+            log.info("Media file successfully deleted from S3: {}", fileUrl);
+
+            return ResponseEntity.ok("Медиафайл успешно удален");
+        } catch (Exception e) {
+            log.error("Error deleting media file: {}", fileUrl, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ошибка удаления медиафайла: " + e.getMessage());
+        }
+    }
 
     @GetMapping("/presigned-url")
     @Operation(summary = "Получить временный URL для доступа к изображению")
@@ -93,49 +205,61 @@ public class ImageUploadController {
         try {
             log.info("Received {} images for upload", files.size());
 
-            // Check for empty list (null check removed as Spring ensures non-null)
             if (files.isEmpty()) {
                 log.warn("No files received for upload");
                 return ResponseEntity.badRequest().body(Collections.emptyList());
             }
 
-            // Validate file sizes before processing
             for (MultipartFile file : files) {
                 if (file.getSize() > 10 * 1024 * 1024) {
                     log.error("File too large: {} bytes", file.getSize());
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(Collections.emptyList());
+                }
+
+                if (file.isEmpty()) {
+                    log.error("Empty file received: {}", file.getOriginalFilename());
+                    return ResponseEntity.badRequest().body(Collections.emptyList());
                 }
             }
 
             CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             UUID senderId = userDetails.getUserId();
 
-            List<String> fileUrls = files.stream()
-                    .map(file -> {
-                        try {
-                            log.info("Uploading file: {}, size: {}", file.getOriginalFilename(), file.getSize());
-                            String url = s3Service.uploadFile(file);
-                            log.info("File uploaded successfully: {}", url);
-                            return url;
-                        } catch (IOException e) {
-                            log.error("Error uploading file: {}", file.getOriginalFilename(), e);
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            List<String> fileUrls = new ArrayList<>();
+            List<String> errors = new ArrayList<>();
 
-            if (fileUrls.isEmpty()) {
-                log.error("All file uploads failed");
+            for (MultipartFile file : files) {
+                try {
+                    log.info("Uploading file: {}, size: {}", file.getOriginalFilename(), file.getSize());
+                    String url = s3Service.uploadFile(file);
+                    log.info("File uploaded successfully: {}", url);
+                    fileUrls.add(url);
+                } catch (IOException e) {
+                    String errorMsg = "Error uploading file: " + file.getOriginalFilename() + " - " + e.getMessage();
+                    log.error(errorMsg, e);
+                    errors.add(errorMsg);
+                    fileUrls.add(null);
+                }
+            }
+
+            long successfulUploads = fileUrls.stream().filter(Objects::nonNull).count();
+
+            if (successfulUploads == 0) {
+                log.error("All file uploads failed. Errors: {}", errors);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(Collections.emptyList());
             }
 
-            log.info("Saving {} image URLs to database for user: {}", fileUrls.size(), senderId);
-            userService.setUserImages(senderId, fileUrls);
+            List<String> successfulUrls = fileUrls.stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            log.info("Saving {} image URLs to database for user: {}", successfulUrls.size(), senderId);
+            userService.setUserImages(senderId, successfulUrls);
             log.info("Image URLs saved successfully");
 
             return ResponseEntity.ok(fileUrls);
+
         } catch (Exception e) {
             log.error("Error uploading images", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

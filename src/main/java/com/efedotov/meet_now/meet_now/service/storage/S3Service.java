@@ -39,11 +39,11 @@ public class S3Service {
 
     public String uploadFile(MultipartFile file) throws IOException {
         try {
-            log.info("Uploading file: {}, size: {}", file.getOriginalFilename(), file.getSize());
+            log.info("Uploading file: {}, size: {}, type: {}",
+                    file.getOriginalFilename(), file.getSize(), file.getContentType());
             String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf('.'))
-                    : ".bin";
 
+            String extension = getFileExtension(originalFilename, file.getContentType());
             String fileName = UUID.randomUUID() + extension;
 
             byte[] fileBytes = file.getBytes();
@@ -51,6 +51,7 @@ public class S3Service {
             Map<String, String> metadata = new HashMap<>();
             metadata.put("Content-Type", file.getContentType());
             metadata.put("Content-Length", String.valueOf(fileBytes.length));
+            metadata.put("Original-Filename", originalFilename);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -73,6 +74,100 @@ public class S3Service {
             log.error("Unexpected error during S3 upload", e);
             throw new IOException("Upload failed", e);
         }
+    }
+
+    private String getFileExtension(String filename, String mimeType) {
+        if (filename != null && !filename.isEmpty()) {
+            int lastDotIndex = filename.lastIndexOf('.');
+            if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
+                String ext = filename.substring(lastDotIndex).toLowerCase();
+                if (isValidExtension(ext)) {
+                    return ext;
+                }
+            }
+        }
+
+        if (mimeType != null) {
+            switch (mimeType) {
+                case "image/jpeg", "image/jpg" -> {
+                    return ".jpg";
+                }
+                case "image/png" -> {
+                    return ".png";
+                }
+                case "image/gif" -> {
+                    return ".gif";
+                }
+                case "image/bmp" -> {
+                    return ".bmp";
+                }
+                case "image/webp" -> {
+                    return ".webp";
+                }
+                case "image/svg+xml" -> {
+                    return ".svg";
+                }
+                case "video/mp4" -> {
+                    return ".mp4";
+                }
+                case "video/avi" -> {
+                    return ".avi";
+                }
+                case "video/quicktime" -> {
+                    return ".mov";
+                }
+                case "video/x-msvideo" -> {
+                    return ".avi";
+                }
+                case "video/mpeg" -> {
+                    return ".mpeg";
+                }
+                case "video/webm" -> {
+                    return ".webm";
+                }
+                case "application/pdf" -> {
+                    return ".pdf";
+                }
+                case "application/msword" -> {
+                    return ".doc";
+                }
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> {
+                    return ".docx";
+                }
+                case "application/vnd.ms-excel" -> {
+                    return ".xls";
+                }
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> {
+                    return ".xlsx";
+                }
+                case "text/plain" -> {
+                    return ".txt";
+                }
+                default -> {
+                    log.warn("Unknown MIME type: {}, using .bin extension", mimeType);
+                    return ".bin";
+                }
+            }
+        }
+
+        log.warn("Cannot determine file extension for filename: {} and MIME type: {}, using .bin", filename, mimeType);
+        return ".bin";
+    }
+
+    private boolean isValidExtension(String extension) {
+        String[] validExtensions = {
+                ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg",
+                ".mp4", ".avi", ".mov", ".mpeg", ".webm", ".mkv",
+                ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".txt",
+                ".zip", ".rar", ".7z"
+        };
+
+        for (String validExt : validExtensions) {
+            if (validExt.equals(extension.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String generatePresignedUrl(String objectKey, Duration duration) {
@@ -123,5 +218,4 @@ public class S3Service {
             throw new RuntimeException("Delete failed", e);
         }
     }
-
 }
