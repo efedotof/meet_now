@@ -2,10 +2,14 @@ package com.efedotov.meet_now.meet_now.controller.gift;
 
 import com.efedotov.meet_now.meet_now.dto.request.gift.SendGiftRequest;
 import com.efedotov.meet_now.meet_now.dto.response.gift.*;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.gift.GiftService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/gifts")
 @RequiredArgsConstructor
@@ -68,8 +73,14 @@ public class GiftController {
     @PostMapping("/send")
     @Operation(summary = "Отправить подарок")
     public ResponseEntity<SentGiftDto> sendGift(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody SendGiftRequest request) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         SentGiftDto sentGift = giftService.sendGift(userId, request);
         return ResponseEntity.ok(sentGift);
     }
@@ -77,8 +88,14 @@ public class GiftController {
     @GetMapping("/sent")
     @Operation(summary = "Получить отправленные подарки")
     public ResponseEntity<List<SentGiftDto>> getSentGifts(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "20") int limit) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         List<SentGiftDto> sentGifts = giftService.getSentGifts(userId, limit);
         return ResponseEntity.ok(sentGifts);
     }
@@ -86,43 +103,79 @@ public class GiftController {
     @GetMapping("/received")
     @Operation(summary = "Получить полученные подарки")
     public ResponseEntity<List<SentGiftDto>> getReceivedGifts(
-            @AuthenticationPrincipal UUID userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "20") int limit) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         List<SentGiftDto> receivedGifts = giftService.getReceivedGifts(userId, limit);
         return ResponseEntity.ok(receivedGifts);
     }
 
     @GetMapping("/inventory")
     @Operation(summary = "Получить инвентарь пользователя")
-    public ResponseEntity<List<UserInventoryDto>> getInventory(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<List<UserInventoryDto>> getInventory(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         List<UserInventoryDto> inventory = giftService.getUserInventory(userId);
         return ResponseEntity.ok(inventory);
     }
 
     @PostMapping("/daily")
     @Operation(summary = "Получить ежедневный подарок")
-    public ResponseEntity<GiftDto> claimDailyGift(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<GiftDto> claimDailyGift(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         GiftDto dailyGift = giftService.claimDailyGift(userId);
         return ResponseEntity.ok(dailyGift);
     }
 
     @GetMapping("/daily/available")
     @Operation(summary = "Проверить доступность ежедневного подарка")
-    public ResponseEntity<Boolean> isDailyGiftAvailable(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<Boolean> isDailyGiftAvailable(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         boolean isAvailable = giftService.isDailyGiftAvailable(userId);
         return ResponseEntity.ok(isAvailable);
     }
 
     @GetMapping("/daily/streak")
     @Operation(summary = "Получить текущую серию ежедневных подарков")
-    public ResponseEntity<Integer> getCurrentStreak(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<Integer> getCurrentStreak(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         Integer streak = giftService.getCurrentStreak(userId);
         return ResponseEntity.ok(streak);
     }
 
     @GetMapping("/stats")
     @Operation(summary = "Получить статистику по подаркам")
-    public ResponseEntity<GiftStatsDto> getGiftStats(@AuthenticationPrincipal UUID userId) {
+    public ResponseEntity<GiftStatsDto> getGiftStats(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
         GiftStatsDto stats = giftService.getGiftStats(userId);
         return ResponseEntity.ok(stats);
     }
