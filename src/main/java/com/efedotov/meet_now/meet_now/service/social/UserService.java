@@ -148,6 +148,7 @@ public class UserService {
         if (user.getIsOnline() != isOnline) {
             user.setIsOnline(isOnline);
             userRepository.save(user);
+
             log.info("Статус онлайн пользователя {} изменен на: {}", userId, isOnline);
         } else {
             log.debug("Статус онлайн пользователя {} уже установлен в: {}", userId, isOnline);
@@ -166,6 +167,7 @@ public class UserService {
             }
 
             userRepository.save(user);
+
             log.info("Статус поиска пользователя {} изменен на: {}", userId, isSearching);
         }
     }
@@ -176,6 +178,7 @@ public class UserService {
         user.setIsSearchable(true);
         user.setIsSearching(true);
         userRepository.save(user);
+
         log.info("Пользователь {} начал поиск", userId);
     }
 
@@ -185,6 +188,7 @@ public class UserService {
         user.setIsSearchable(false);
         user.setIsSearching(false);
         userRepository.save(user);
+
         log.info("Пользователь {} остановил поиск", userId);
     }
 

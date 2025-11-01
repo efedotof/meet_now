@@ -11,6 +11,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.chat.WebSocketSessionService;
+import com.efedotov.meet_now.meet_now.service.social.StatisticsService;
 import com.efedotov.meet_now.meet_now.service.social.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,9 @@ public class WebSocketEventListener {
 
     private final UserService userService;
     private final WebSocketSessionService sessionService;
+    private final StatisticsService statisticsService;
 
-   @EventListener
+    @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
@@ -40,12 +42,14 @@ public class WebSocketEventListener {
                 userService.setUserOnline(userId, true);
                 log.info("УСТАНОВКА ONLINE: Пользователь {} переведён в онлайн (первая сессия)", userId);
             } else {
-                log.debug("Пользователь {} остаётся онлайн (активных сессий: {})", 
-                          userId, sessionService.getActiveSessionCount(userId));
+                log.debug("Пользователь {} остаётся онлайн (активных сессий: {})",
+                        userId, sessionService.getActiveSessionCount(userId));
             }
 
-            log.info("Подключение: sessionId={}, userId={}, активных сессий={}", 
-                     sessionId, userId, sessionService.getActiveSessionCount(userId));
+            statisticsService.broadcastUserStats();
+
+            log.info("Подключение: sessionId={}, userId={}, активных сессий={}",
+                    sessionId, userId, sessionService.getActiveSessionCount(userId));
         } else {
             log.warn("Не удалось получить аутентификацию, sessionId={}", sessionId);
         }
@@ -60,16 +64,18 @@ public class WebSocketEventListener {
         if (userId != null) {
             sessionService.removeSession(sessionId);
             int remainingSessions = sessionService.getActiveSessionCount(userId);
-            
+
             if (remainingSessions == 0) {
                 userService.setUserOnline(userId, false);
-                log.info("УСТАНОВКА OFFLINE: Пользователь {} переведён в оффлайн", userId); 
+                log.info("УСТАНОВКА OFFLINE: Пользователь {} переведён в оффлайн", userId);
             } else {
                 log.debug("Пользователь {} остаётся онлайн (осталось сессий: {})", userId, remainingSessions);
             }
 
-            log.info("Отключение: sessionId={}, userId={}, осталось сессий={}", 
-                     sessionId, userId, remainingSessions);
+            statisticsService.broadcastUserStats();
+
+            log.info("Отключение: sessionId={}, userId={}, осталось сессий={}",
+                    sessionId, userId, remainingSessions);
         } else {
             log.warn("Не найден userId для сессии {}", sessionId);
         }
