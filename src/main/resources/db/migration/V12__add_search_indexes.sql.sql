@@ -1,0 +1,10 @@
+CREATE INDEX IF NOT EXISTS idx_user_online_searchable_searching ON users(is_online, is_searchable, is_searching);
+CREATE INDEX IF NOT EXISTS idx_user_city_online_searchable ON users(city, is_online, is_searchable);
+CREATE INDEX IF NOT EXISTS idx_user_age_online_searchable ON users(age, is_online, is_searchable);
+CREATE INDEX IF NOT EXISTS idx_user_floor_online_searchable ON users(floor, is_online, is_searchable);
+CREATE INDEX IF NOT EXISTS idx_user_verified_online_searchable ON users(verified, is_online, is_searchable);
+CREATE INDEX IF NOT EXISTS idx_user_search_status ON users(is_online, is_searchable, is_searching, city, age, verified);
+CREATE INDEX IF NOT EXISTS idx_user_interests_user_id ON user_interests(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_interests_interest ON user_interests(interest);
+CREATE INDEX IF NOT EXISTS idx_user_purposes_user_id ON user_purposes(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_purposes_purpose ON user_purposes(purpose);

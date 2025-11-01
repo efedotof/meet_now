@@ -86,6 +86,10 @@ public class ChatService {
         });
     }
 
+    public Optional<Chat> getPermanentChatById(UUID chatId) {
+        return chatRepository.findById(chatId);
+    }
+
     @Transactional
     protected void createPermanentChatFromTemporary(TemporaryChat tempChat) {
         Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(

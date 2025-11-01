@@ -18,8 +18,15 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     List<Message> findByRecipient_Id(UUID recipientId);
 
     List<Message> findByChat_ChatIdOrderByCreatedAtAsc(UUID chatId);
+
     List<Message> findByTemporaryChat_TempChatIdOrderByCreatedAtAsc(UUID tempChatId);
 
     @Query("SELECT m FROM Message m WHERE m.id IN :messageIds")
     List<Message> findAllByIds(@Param("messageIds") List<UUID> messageIds);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.chat.chatId = :chatId AND m.recipient.id = :userId AND m.isRead = false")
+    Long countUnreadMessagesInChat(@Param("chatId") UUID chatId, @Param("userId") UUID userId);
+
+    Long countByChat_ChatId(UUID chatId);
+
 }

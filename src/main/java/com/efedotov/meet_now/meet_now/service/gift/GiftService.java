@@ -21,7 +21,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -194,17 +197,25 @@ public class GiftService {
 
     @Transactional
     public GiftDto claimDailyGift(UUID userId) {
+        log.info("🎁 Попытка получения ежедневного подарка для пользователя: {}", userId);
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден"));
+                .orElseThrow(() -> {
+                    log.error("Пользователь не найден: {}", userId);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден");
+                });
 
         Optional<DailyGift> todayGift = dailyGiftRepository.findTodayByUserId(userId);
         if (todayGift.isPresent()) {
+            log.warn("Пользователь {} уже получил подарок сегодня", userId);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вы уже получили ежедневный подарок сегодня");
         }
 
         Gift dailyGift = getRandomDailyGift();
         if (dailyGift == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Нет доступных подарков");
+            log.error("Нет доступных подарков в системе");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "В настоящее время нет доступных подарков. Пожалуйста, попробуйте позже.");
         }
 
         int streakCount = calculateCurrentStreak(userId);
@@ -225,20 +236,48 @@ public class GiftService {
 
     private Gift getRandomDailyGift() {
         List<GiftRarity> activeRarities = giftRarityRepository.findActiveByProbability();
+        log.info("Найдено активных редкостей: {}", activeRarities.size());
 
-        double randomValue = Math.random();
-        double cumulativeProbability = 0.0;
-        GiftRarity selectedRarity = null;
+        if (activeRarities.isEmpty()) {
+            log.error("Нет активных редкостей подарков");
+            return null;
+        }
 
-        double totalProbability = activeRarities.stream()
+        List<GiftRarity> raritiesWithGifts = new ArrayList<>();
+        Map<GiftRarity, List<Gift>> giftsByRarity = new HashMap<>();
+
+        for (GiftRarity rarity : activeRarities) {
+            List<Gift> gifts = giftRepository.findByRarityAndIsActiveTrue(rarity);
+            if (!gifts.isEmpty()) {
+                raritiesWithGifts.add(rarity);
+                giftsByRarity.put(rarity, gifts);
+                log.info("Для редкости {} найдено подарков: {}", rarity.getName(), gifts.size());
+            } else {
+                log.warn("Для редкости {} нет активных подарков", rarity.getName());
+            }
+        }
+
+        if (raritiesWithGifts.isEmpty()) {
+            log.error("Нет активных подарков ни для одной редкости");
+            return null;
+        }
+
+        double totalProbability = raritiesWithGifts.stream()
                 .mapToDouble(GiftRarity::getProbability)
                 .sum();
 
-        if (totalProbability > 0) {
-            randomValue = randomValue * totalProbability;
+        log.info("Общая вероятность для редкостей с подарками: {}", totalProbability);
+
+        if (totalProbability <= 0) {
+            log.error("Общая вероятность редкостей с подарками <= 0");
+            return null;
         }
 
-        for (GiftRarity rarity : activeRarities) {
+        double randomValue = Math.random() * totalProbability;
+        double cumulativeProbability = 0.0;
+        GiftRarity selectedRarity = null;
+
+        for (GiftRarity rarity : raritiesWithGifts) {
             cumulativeProbability += rarity.getProbability();
             if (randomValue <= cumulativeProbability) {
                 selectedRarity = rarity;
@@ -246,20 +285,29 @@ public class GiftService {
             }
         }
 
-        if (selectedRarity == null && !activeRarities.isEmpty()) {
-            selectedRarity = activeRarities.get(0);
+        if (selectedRarity == null && !raritiesWithGifts.isEmpty()) {
+            selectedRarity = raritiesWithGifts.get(0);
         }
 
         if (selectedRarity == null) {
+            log.error("Не удалось выбрать редкость");
             return null;
         }
 
-        List<Gift> gifts = giftRepository.findByRarityAndIsActiveTrue(selectedRarity);
+        log.info("🎲 Выбрана редкость: {}", selectedRarity.getName());
+
+        List<Gift> gifts = giftsByRarity.get(selectedRarity);
+        log.info("Найдено подарков для редкости {}: {}", selectedRarity.getName(), gifts.size());
+
         if (gifts.isEmpty()) {
+            log.error("Нет активных подарков для выбранной редкости: {}", selectedRarity.getName());
             return null;
         }
 
-        return gifts.get((int) (Math.random() * gifts.size()));
+        Gift selectedGift = gifts.get((int) (Math.random() * gifts.size()));
+        log.info("Выбран подарок: {}", selectedGift.getName());
+
+        return selectedGift;
     }
 
     private int calculateCurrentStreak(UUID userId) {

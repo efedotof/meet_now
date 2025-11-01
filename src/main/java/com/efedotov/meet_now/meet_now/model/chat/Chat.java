@@ -40,5 +40,6 @@ public class Chat {
     @Column(name = "last_message", columnDefinition = "TEXT")
     private String lastMessage;
 
-
+    @Column(name = "last_message_at")
+    private LocalDateTime lastMessageAt;
 }

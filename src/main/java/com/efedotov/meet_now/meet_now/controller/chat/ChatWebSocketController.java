@@ -23,6 +23,7 @@ import com.efedotov.meet_now.meet_now.service.chat.ActivityNotificationService;
 import com.efedotov.meet_now.meet_now.service.chat.ChatQueryService;
 import com.efedotov.meet_now.meet_now.service.chat.MessageProcessingService;
 import com.efedotov.meet_now.meet_now.service.chat.MessageQueryService;
+import com.efedotov.meet_now.meet_now.service.chat.PermanentChatUpdateService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class ChatWebSocketController {
     private final ChatQueryService chatQueryService;
     private final ActivityNotificationService activityNotificationService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final PermanentChatUpdateService permanentChatUpdateService;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload MessageDto messageDto, Principal principal) {
@@ -44,6 +46,7 @@ public class ChatWebSocketController {
 
         UUID senderId = userDetails.getUserId();
         messageDto.setSenderId(senderId);
+
         log.info("Received sendMessage request from userId={} to chatId={}, message={}",
                 senderId, messageDto.getChatId(), messageDto.getText());
         messageProcessingService.processMessageDto(messageDto);
@@ -71,7 +74,7 @@ public class ChatWebSocketController {
 
         log.info("Received getActiveTemporary request from userId={}", userId);
         List<TemporaryChatDto> chats = chatQueryService.getActiveTemporaryChats(userId).stream()
-                .map(this::mapToDto)
+                .map(this::mapTemporaryToDto)
                 .collect(Collectors.toList());
         log.info("Returning {} active temporary chats to username={}", chats.size(), username);
         messagingTemplate.convertAndSendToUser(
@@ -87,7 +90,7 @@ public class ChatWebSocketController {
         String username = principal.getName();
 
         log.info("Received getPermanent request from userId={}", userId);
-        
+
         List<PermanentChatResponseDto> chatDtos = chatQueryService.getPermanentChatsAsDto(userId);
         log.info("Returning {} permanent chats to username={}", chatDtos.size(), username);
 
@@ -102,7 +105,7 @@ public class ChatWebSocketController {
         activityNotificationService.sendActivityNotification(activityDto);
     }
 
-    private TemporaryChatDto mapToDto(TemporaryChat chat) {
+    private TemporaryChatDto mapTemporaryToDto(TemporaryChat chat) {
         TemporaryChatDto dto = new TemporaryChatDto();
         dto.setTempChatId(chat.getTempChatId());
         dto.setSenderId(chat.getSender().getId());
@@ -131,6 +134,17 @@ public class ChatWebSocketController {
     public void subscribeToNewTemporaryChats(Principal principal) {
         String username = principal.getName();
         log.info("Пользователь {} подписался на получение новых временных чатов", username);
+    }
+
+    @MessageMapping("/chat.subscribePermanent")
+    public void subscribeToPermanentChats(Principal principal) {
+        String username = principal.getName();
+        log.info("Пользователь {} подписался на получение обновлений постоянных чатов", username);
+
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID userId = userDetails.getUserId();
+
+        permanentChatUpdateService.sendUpdatedPermanentChats(userId);
     }
 
 }

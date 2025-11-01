@@ -39,6 +39,10 @@ public class ChatTimerService {
     public void startSynchronizedTimer(TemporaryChat tempChat) {
         UUID tempChatId = tempChat.getTempChatId();
 
+        if (timerStates.containsKey(tempChatId)) {
+            stopTimer(tempChatId);
+        }
+
         LocalDateTime endTime = tempChat.getCreatedAt()
                 .plusMinutes(tempChat.getDurationMinutes());
 
@@ -48,6 +52,7 @@ public class ChatTimerService {
         timerStates.put(tempChatId, state);
 
         scheduleTimerUpdates(tempChatId, endTime);
+        log.info("Таймер запущен для чата {}, время окончания: {}", tempChatId, endTime);
     }
 
     private void scheduleTimerUpdates(UUID tempChatId, LocalDateTime endTime) {

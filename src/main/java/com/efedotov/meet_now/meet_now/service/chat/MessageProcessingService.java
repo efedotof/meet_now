@@ -42,6 +42,7 @@ public class MessageProcessingService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageContentTypeRepository contentTypeRepository;
     private final StickerRepository stickerRepository;
+    private final PermanentChatUpdateService permanentChatUpdateService;
 
     @Transactional
     public MessageDto processMessageDto(MessageDto messageDto) {
@@ -53,21 +54,6 @@ public class MessageProcessingService {
 
         log.info("🔍 ПРИНЯТО СООБЩЕНИЕ: chatId={}, tempChatId={}, senderId={}, recipientId={}",
                 chatId, tempChatId, senderId, recipientId);
-        log.info("🔍 ТИП КОНТЕНТА: {}, медиафайлов: {}",
-                messageDto.getContentType(),
-                messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
-
-        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
-            for (int i = 0; i < messageDto.getMedia().size(); i++) {
-                MessageMediaDto media = messageDto.getMedia().get(i);
-                log.info("🔍 МЕДИА [{}]: contentType={}, mimeType={}, mediaUrl={}",
-                        i, media.getContentType(), media.getMimeType(), media.getMediaUrl());
-            }
-        }
-
-        log.info("Пользователь отправил сообщение: от {} к {}, тип: {}, медиафайлов: {}",
-                senderId, recipientId, messageDto.getContentType(),
-                messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
 
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -108,6 +94,10 @@ public class MessageProcessingService {
             saveMessageMedia(message, messageDto.getMedia());
         }
 
+        if (chat != null) {
+            updateLastMessageInChat(chat, message);
+        }
+
         MessageDto responseDto = createResponseDto(message, finalChatId, isTemporary);
 
         messagingTemplate.convertAndSendToUser(
@@ -115,12 +105,45 @@ public class MessageProcessingService {
                 "/queue/messages",
                 responseDto);
 
+        if (chat != null) {
+            permanentChatUpdateService.notifyNewMessageInPermanentChat(
+                    chat.getChatId(),
+                    sender.getId(),
+                    recipient.getId());
+        }
+
         log.info("Отправлено сообщение пользователю {}: тип {}, текст {}, медиафайлов {}",
                 recipient.getUsername(), responseDto.getContentType(),
                 responseDto.getText() != null ? responseDto.getText() : "нет",
                 responseDto.getMedia() != null ? responseDto.getMedia().size() : 0);
 
         return responseDto;
+
+    }
+
+    private void updateLastMessageInChat(Chat chat, Message message) {
+        String lastMessagePreview = generateLastMessagePreview(message.getText(),
+                message.getMedia() != null ? message.getMedia().stream()
+                        .map(this::convertMediaToPreviewDto)
+                        .collect(Collectors.toList())
+                        : null);
+
+        chat.setLastMessage(lastMessagePreview);
+        chat.setLastMessageAt(message.getCreatedAt());
+        chatRepository.save(chat);
+
+        log.info("Обновлено последнее сообщение в чате {}: {}", chat.getChatId(), lastMessagePreview);
+    }
+
+    private MessageMediaDto convertMediaToPreviewDto(MessageMedia media) {
+        MessageMediaDto dto = new MessageMediaDto();
+        if (media.getContentType() != null) {
+            dto.setContentType(media.getContentType().getTypeName());
+        }
+        if (media.getSticker() != null) {
+            dto.setStickerId(media.getSticker().getId());
+        }
+        return dto;
     }
 
     private void saveMessageMedia(Message message, List<MessageMediaDto> mediaDtos) {
@@ -201,21 +224,6 @@ public class MessageProcessingService {
             return chat;
         }
         return null;
-    }
-
-    private String generateLastMessagePreview(String text, List<MessageMediaDto> media) {
-        if (media != null && !media.isEmpty()) {
-            if (media.stream().anyMatch(m -> m.getStickerId() != null)) {
-                return "Стикер";
-            } else if (media.stream().anyMatch(m -> "image".equals(m.getContentType()))) {
-                return media.size() > 1 ? "Фотографии (" + media.size() + ")" : "Фото";
-            } else if (media.stream().anyMatch(m -> "video".equals(m.getContentType()))) {
-                return media.size() > 1 ? "Видео (" + media.size() + ")" : "Видео";
-            } else if (media.stream().anyMatch(m -> "file".equals(m.getContentType()))) {
-                return media.size() > 1 ? "Файлы (" + media.size() + ")" : "Файл";
-            }
-        }
-        return text;
     }
 
     private Message createMessage(User sender, User recipient, MessageDto messageDto,
@@ -342,6 +350,8 @@ public class MessageProcessingService {
     public void markMessagesAsRead(List<UUID> messageIds, UUID userId) {
         List<Message> messages = messageRepository.findAllById(messageIds);
 
+        UUID chatId = null;
+
         messages.stream()
                 .filter(msg -> msg.getRecipient().getId().equals(userId))
                 .forEach(msg -> {
@@ -350,6 +360,14 @@ public class MessageProcessingService {
                         messageRepository.save(msg);
                     }
                 });
+
+        if (!messages.isEmpty() && messages.get(0).getChat() != null) {
+            chatId = messages.get(0).getChat().getChatId();
+        }
+
+        if (chatId != null) {
+            permanentChatUpdateService.notifyMessagesRead(chatId, userId);
+        }
 
         log.info("Marked {} messages as read for user {}", messages.size(), userId);
     }
@@ -374,6 +392,21 @@ public class MessageProcessingService {
         tempChat.setIsFinished(false);
         tempChat.setBothAgreed(false);
         return temporaryChatRepository.save(tempChat);
+    }
+
+    private String generateLastMessagePreview(String text, List<MessageMediaDto> media) {
+        if (media != null && !media.isEmpty()) {
+            if (media.stream().anyMatch(m -> m.getStickerId() != null)) {
+                return "Стикер";
+            } else if (media.stream().anyMatch(m -> "image".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Фотографии (" + media.size() + ")" : "Фото";
+            } else if (media.stream().anyMatch(m -> "video".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Видео (" + media.size() + ")" : "Видео";
+            } else if (media.stream().anyMatch(m -> "file".equals(m.getContentType()))) {
+                return media.size() > 1 ? "Файлы (" + media.size() + ")" : "Файл";
+            }
+        }
+        return text != null && text.length() > 50 ? text.substring(0, 47) + "..." : text;
     }
 
 }

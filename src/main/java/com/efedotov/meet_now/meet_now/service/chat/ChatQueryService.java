@@ -1,16 +1,16 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
-
+import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -18,10 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatQueryService {
 
     private final ChatService chatService;
+    private final MessageRepository messageRepository;
 
     public List<TemporaryChat> getActiveTemporaryChats(UUID userId) {
         log.info("Пользователь: {} запросил список активных временных чатов", userId);
         return chatService.getActiveTemporaryChatsForUser(userId);
+    }
+
+    public Optional<Chat> getPermanentChatById(UUID chatId) {
+        return chatService.getPermanentChatById(chatId);
     }
 
     public List<Chat> getPermanentChats(UUID userId) {
@@ -33,11 +38,11 @@ public class ChatQueryService {
         log.info("Пользователь: {} запросил список активных постоянных чатов как DTO", userId);
         List<Chat> chats = chatService.getPermanentChatsForUser(userId);
         return chats.stream()
-                .map(this::convertToPermanentChatDto)
+                .map(chat -> convertToPermanentChatDto(chat, userId))
                 .toList();
     }
 
-    private PermanentChatResponseDto convertToPermanentChatDto(Chat chat) {
+    private PermanentChatResponseDto convertToPermanentChatDto(Chat chat, UUID userId) {
         PermanentChatResponseDto dto = new PermanentChatResponseDto();
         dto.setChatId(chat.getChatId());
         dto.setUser1Id(chat.getUser1().getId());
@@ -53,6 +58,15 @@ public class ChatQueryService {
         dto.setCreatedAt(chat.getCreatedAt());
         dto.setIsOpened(chat.getIsOpened());
         dto.setLastMessage(chat.getLastMessage());
+        dto.setLastMessageAt(chat.getLastMessageAt());
+
+        Long unreadCount = messageRepository.countUnreadMessagesInChat(chat.getChatId(), userId);
+        Long totalMessages = messageRepository.countByChat_ChatId(chat.getChatId());
+
+        dto.setUnreadCount(unreadCount);
+        dto.setTotalMessages(totalMessages);
+
         return dto;
     }
+
 }

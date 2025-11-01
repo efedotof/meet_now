@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -130,15 +131,23 @@ public class GiftController {
 
     @PostMapping("/daily")
     @Operation(summary = "Получить ежедневный подарок")
-    public ResponseEntity<GiftDto> claimDailyGift(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> claimDailyGift(@AuthenticationPrincipal CustomUserDetails userDetails) {
         if (userDetails == null) {
             log.error("UserDetails is null - authentication failed");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        UUID userId = userDetails.getUserId();
-        GiftDto dailyGift = giftService.claimDailyGift(userId);
-        return ResponseEntity.ok(dailyGift);
+        try {
+            UUID userId = userDetails.getUserId();
+            GiftDto dailyGift = giftService.claimDailyGift(userId);
+            return ResponseEntity.ok(dailyGift);
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при получении ежедневного подарка: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Произошла непредвиденная ошибка при получении подарка");
+        }
     }
 
     @GetMapping("/daily/available")

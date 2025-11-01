@@ -23,6 +23,7 @@ import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatController {
 
     private final ChatService chatService;
+    private final MessageRepository messageRepository;
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
@@ -79,12 +81,12 @@ public class ChatController {
     @GetMapping("/permanent")
     public ResponseEntity<List<PermanentChatResponseDto>> getPermanentChats(@RequestParam UUID userId) {
         List<PermanentChatResponseDto> chatDtos = chatService.getPermanentChatsForUser(userId).stream()
-                .map(this::mapToPermanentChatDto)
+                .map(chat -> mapToPermanentChatDto(chat, userId))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(chatDtos);
     }
 
-    private PermanentChatResponseDto mapToPermanentChatDto(Chat chat) {
+    private PermanentChatResponseDto mapToPermanentChatDto(Chat chat, UUID userId) {
         PermanentChatResponseDto dto = new PermanentChatResponseDto();
         dto.setChatId(chat.getChatId());
         dto.setUser1Id(chat.getUser1().getId());
@@ -100,9 +102,17 @@ public class ChatController {
         dto.setCreatedAt(chat.getCreatedAt());
         dto.setIsOpened(chat.getIsOpened());
         dto.setLastMessage(chat.getLastMessage());
+        dto.setLastMessageAt(chat.getLastMessageAt());
+
+        Long unreadCount = messageRepository.countUnreadMessagesInChat(chat.getChatId(), userId);
+        Long totalMessages = messageRepository.countByChat_ChatId(chat.getChatId());
+
+        dto.setUnreadCount(unreadCount);
+        dto.setTotalMessages(totalMessages);
+
         return dto;
     }
-    
+
     @Operation(summary = "Получить ограничения временного чата")
     @GetMapping("/temporary/{tempChatId}/constraint")
     public ResponseEntity<ChatConstraint> getChatConstraint(@PathVariable UUID tempChatId) {

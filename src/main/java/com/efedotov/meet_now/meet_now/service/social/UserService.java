@@ -3,6 +3,7 @@ package com.efedotov.meet_now.meet_now.service.social;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +32,30 @@ public class UserService {
     public User getById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Transactional
+    public boolean tryLockUserForSearch(UUID userId) {
+        try {
+            int updated = userRepository.setUserSearchingStatus(userId, false, true);
+            return updated > 0;
+        } catch (Exception e) {
+            log.error("Ошибка при блокировке пользователя для поиска: {}", userId, e);
+            return false;
+        }
+    }
+
+    @Transactional
+    public void unlockUserForSearch(UUID userId) {
+        try {
+            userRepository.setUserSearchingStatus(userId, true, false);
+        } catch (Exception e) {
+            log.error("Ошибка при разблокировке пользователя для поиска: {}", userId, e);
+        }
     }
 
     @Transactional
@@ -129,10 +154,42 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void setUserSearching(UUID userId, boolean isSearching) {
         User user = getById(userId);
-        user.setIsSearching(isSearching);
+
+        if (user.getIsSearching() != isSearching) {
+            user.setIsSearching(isSearching);
+
+            if (!isSearching) {
+                user.setIsSearchable(false);
+            }
+
+            userRepository.save(user);
+            log.info("Статус поиска пользователя {} изменен на: {}", userId, isSearching);
+        }
+    }
+
+    @Transactional
+    public void startSearch(UUID userId) {
+        User user = getById(userId);
+        user.setIsSearchable(true);
+        user.setIsSearching(true);
         userRepository.save(user);
+        log.info("Пользователь {} начал поиск", userId);
+    }
+
+    @Transactional
+    public void stopSearch(UUID userId) {
+        User user = getById(userId);
+        user.setIsSearchable(false);
+        user.setIsSearching(false);
+        userRepository.save(user);
+        log.info("Пользователь {} остановил поиск", userId);
+    }
+
+    public List<User> getSearchingUsers() {
+        return userRepository.findByIsSearchingTrue();
     }
 
     @Transactional
