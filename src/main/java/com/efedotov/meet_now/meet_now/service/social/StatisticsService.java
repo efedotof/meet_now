@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -16,42 +17,41 @@ public class StatisticsService {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    private volatile UserStatsDto lastStats;
-    private final Object statsLock = new Object();
-
+    @Transactional(readOnly = true)
     public UserStatsDto getUserStats() {
-        long onlineCount = userRepository.countByIsOnlineTrue();
-        long searchingCount = userRepository.countByIsSearchingTrue();
-        UserStatsDto newStats = new UserStatsDto(onlineCount, searchingCount);
-
-        synchronized (statsLock) {
-            lastStats = newStats;
+        try {
+            long onlineCount = userRepository.countByIsOnlineTrue();
+            long searchingCount = userRepository.countByIsSearchingTrue();
+            
+            log.debug("Получена статистика из БД: онлайн={}, в поиске={}", onlineCount, searchingCount);
+            
+            return new UserStatsDto(onlineCount, searchingCount);
+        } catch (Exception e) {
+            log.error("Ошибка при получении статистики из БД", e);
+            return new UserStatsDto(0L, 0L);
         }
-
-        return newStats;
     }
 
     public void broadcastUserStats() {
         try {
             UserStatsDto stats = getUserStats();
             messagingTemplate.convertAndSend("/topic/userstats", stats);
-            log.debug("Статистика отправлена: онлайн={}, в поиске={}",
+            log.debug("Статистика отправлена в WebSocket: онлайн={}, в поиске={}",
                     stats.getOnlineCount(), stats.getSearchingCount());
         } catch (MessagingException e) {
             log.error("Ошибка при отправке статистики", e);
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при отправке статистики", e);
         }
     }
 
     public void refreshAndBroadcastStats() {
+        log.debug("Принудительное обновление статистики");
         broadcastUserStats();
     }
 
+    @Transactional(readOnly = true)
     public UserStatsDto getCachedStats() {
-        synchronized (statsLock) {
-            if (lastStats == null) {
-                return getUserStats();
-            }
-            return lastStats;
-        }
+        return getUserStats(); 
     }
 }

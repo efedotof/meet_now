@@ -156,9 +156,16 @@ public class UserService {
             user.setIsOnline(isOnline);
             userRepository.save(user);
 
+            userRepository.flush();
+
+            long currentOnline = userRepository.countByIsOnlineTrue();
+            log.info("Статус онлайн пользователя {} изменен на: {}. Сейчас онлайн: {}",
+                    userId, isOnline, currentOnline);
+
             statisticsService.refreshAndBroadcastStats();
 
-            log.info("Статус онлайн пользователя {} изменен на: {}", userId, isOnline);
+            long verifiedOnline = userRepository.countByIsOnlineTrue();
+            log.info("Проверка после обновления: онлайн пользователей: {}", verifiedOnline);
         } else {
             log.debug("Статус онлайн пользователя {} уже установлен в: {}", userId, isOnline);
         }
@@ -172,9 +179,16 @@ public class UserService {
             user.setIsSearching(isSearching);
             userRepository.save(user);
 
+            userRepository.flush();
+
+            long currentSearching = userRepository.countByIsSearchingTrue();
+            log.info("Статус поиска пользователя {} изменен на: {}. Сейчас в поиске: {}",
+                    userId, isSearching, currentSearching);
+
             statisticsService.refreshAndBroadcastStats();
 
-            log.info("Статус поиска пользователя {} изменен на: {}", userId, isSearching);
+            long verifiedSearching = userRepository.countByIsSearchingTrue();
+            log.info("Проверка после обновления: в поиске пользователей: {}", verifiedSearching);
         }
     }
 
