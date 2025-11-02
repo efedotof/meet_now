@@ -42,7 +42,7 @@ public class UserService {
     @Transactional
     public boolean tryLockUserForSearch(UUID userId) {
         try {
-            int updated = userRepository.setUserSearchingStatus(userId, false, true);
+            int updated = userRepository.setUserSearchingStatus(userId, false, false);
             if (updated > 0) {
                 statisticsService.refreshAndBroadcastStats();
             }
@@ -188,13 +188,18 @@ public class UserService {
                 throw new RuntimeException("User must be online to start search");
             }
 
+            if (!user.getIsSearchable()) {
+                log.warn("Пользователь {} не доступен для поиска (isSearchable=false)", userId);
+                throw new RuntimeException("User must be searchable to start search");
+            }
+
             user.setIsSearching(true);
             userRepository.save(user);
 
             statisticsService.refreshAndBroadcastStats();
 
             log.info("Пользователь {} начал поиск. Статусы: online={}, searchable={}, searching={}",
-                    userId, user.getIsOnline(), true, true);
+                    userId, user.getIsOnline(), user.getIsSearchable(), true);
         } catch (RuntimeException e) {
             log.error("Ошибка при старте поиска для пользователя {}", userId, e);
             throw new RuntimeException("Failed to start search", e);
@@ -211,7 +216,7 @@ public class UserService {
             statisticsService.refreshAndBroadcastStats();
 
             log.info("Пользователь {} остановил поиск. Статусы: searchable={}, searching={}",
-                    userId, false, false);
+                    userId, user.getIsSearchable(), false);
         } catch (Exception e) {
             log.error("Ошибка при остановке поиска для пользователя {}", userId, e);
             throw new RuntimeException("Failed to stop search", e);
@@ -232,6 +237,10 @@ public class UserService {
 
     public List<User> getSearchingUsers() {
         return userRepository.findByIsSearchingTrue();
+    }
+
+    public List<User> getSearchableUsers() {
+        return userRepository.findByIsSearchableTrue();
     }
 
     @Transactional

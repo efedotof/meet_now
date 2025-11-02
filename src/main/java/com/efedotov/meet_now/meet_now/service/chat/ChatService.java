@@ -61,15 +61,13 @@ public class ChatService {
         constraint.setCanStart(false);
         chatConstraintRepository.save(constraint);
 
-        sender.setIsSearchable(false);
         sender.setIsSearching(false);
-        recipient.setIsSearchable(false);
         recipient.setIsSearching(false);
 
         userRepository.save(sender);
         userRepository.save(recipient);
 
-        log.info("Пользователи заблокированы для поиска: {} и {}", sender.getUsername(), recipient.getUsername());
+        log.info("Пользователи вышли из режима поиска: {} и {}", sender.getUsername(), recipient.getUsername());
 
         chatTimerManagementService.startSynchronizedTimer(tempChat.getTempChatId());
 
@@ -85,9 +83,8 @@ public class ChatService {
 
                 User sender = tempChat.getSender();
                 User recipient = tempChat.getRecipient();
-
-                sender.setIsSearchable(true);
-                recipient.setIsSearchable(true);
+                sender.setIsSearching(false);
+                recipient.setIsSearching(false);
                 userRepository.save(sender);
                 userRepository.save(recipient);
 

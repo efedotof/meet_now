@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.service.chat.ChatTimerService.TimerState;
-import com.efedotov.meet_now.meet_now.service.chat.TemporaryChatService.TemporaryChatCreatedEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public class ChatTimerManagementService {
     private final TemporaryChatService temporaryChatService;
 
     @EventListener
-    public void handleTemporaryChatCreated(TemporaryChatCreatedEvent event) {
+    public void handleTemporaryChatCreated(TemporaryChatService.TemporaryChatCreatedEvent event) {
         TemporaryChat tempChat = event.getTemporaryChat();
         log.info("Получено событие создания чата: {}", tempChat.getTempChatId());
         initializeTimerForNewChat(tempChat);

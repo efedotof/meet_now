@@ -76,10 +76,9 @@ public class SearchController {
         Specification<User> baseSpec = Specification.allOf(
                 UserSpecifications.notCurrentUser(userId),
                 UserSpecifications.isOnline(),
-                UserSpecifications.isSearchable(),
-                UserSpecifications.isSearching());
+                UserSpecifications.isSearchable());
 
-        log.info("Базовые условия поиска: isOnline=true, isSearchable=true, isSearching=true, notCurrentUser=true");
+        log.info("Базовые условия поиска: isOnline=true, isSearchable=true, notCurrentUser=true");
 
         if (floor != null && !floor.isEmpty()) {
             baseSpec = baseSpec.and(UserSpecifications.hasFloor(floor));
@@ -131,13 +130,13 @@ public class SearchController {
         if (users.isEmpty()) {
             log.warn("Пользователи по фильтрам не найдены для пользователя {}", sender.getUsername());
 
-            List<User> allSearchingUsers = userRepository.findByIsSearchingTrue();
-            log.info("Все пользователи в поиске ({}):", allSearchingUsers.size());
-            for (User user : allSearchingUsers) {
+            List<User> allSearchableUsers = userRepository.findByIsSearchableTrue();
+            log.info("Все пользователи доступные для поиска ({}):", allSearchableUsers.size());
+            for (User user : allSearchableUsers) {
                 if (!user.getId().equals(userId)) {
-                    log.info(" - {} ({}), возраст: {}, пол: {}, online: {}, searchable: {}",
+                    log.info(" - {} ({}), возраст: {}, пол: {}, online: {}, searching: {}",
                             user.getUsername(), user.getId(), user.getAge(), user.getFloor(),
-                            user.getIsOnline(), user.getIsSearchable());
+                            user.getIsOnline(), user.getIsSearching());
                 }
             }
 

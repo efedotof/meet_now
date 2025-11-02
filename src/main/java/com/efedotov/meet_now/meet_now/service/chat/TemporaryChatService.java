@@ -6,12 +6,15 @@ import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TemporaryChatService {
@@ -35,6 +38,23 @@ public class TemporaryChatService {
         }
 
         return savedChat;
+    }
+
+    @Transactional
+    public void finishTemporaryChat(UUID tempChatId) {
+        temporaryChatRepository.findById(tempChatId).ifPresent(chat -> {
+            chat.setIsFinished(true);
+            temporaryChatRepository.save(chat);
+            log.info("Временный чат {} помечен как завершенный", tempChatId);
+            temporaryChatRepository.delete(chat);
+            log.info("Временный чат {} удален из базы данных", tempChatId);
+        });
+    }
+
+    @Transactional
+    public void deleteTemporaryChat(UUID tempChatId) {
+        temporaryChatRepository.deleteById(tempChatId);
+        log.info("Временный чат {} удален из базы данных", tempChatId);
     }
 
     public boolean existsById(UUID tempChatId) {

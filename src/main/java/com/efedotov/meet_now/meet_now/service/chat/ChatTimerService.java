@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ChatTimerService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final TaskScheduler taskScheduler;
+    private final TemporaryChatService temporaryChatService;
 
     private final Map<UUID, TimerState> timerStates = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledFuture<?>> updateTasks = new ConcurrentHashMap<>();
@@ -79,6 +81,8 @@ public class ChatTimerService {
                     updateDto);
 
             if (finished) {
+                finishAndDeleteTemporaryChat(tempChatId);
+
                 ScheduledFuture<?> task = updateTasks.remove(tempChatId);
                 if (task != null) {
                     task.cancel(false);
@@ -88,6 +92,27 @@ public class ChatTimerService {
         }, Duration.ofSeconds(1));
 
         updateTasks.put(tempChatId, updateTask);
+    }
+
+    private void finishAndDeleteTemporaryChat(UUID tempChatId) {
+        try {
+            temporaryChatService.finishTemporaryChat(tempChatId);
+
+            TimerUpdateDto finishedDto = new TimerUpdateDto();
+            finishedDto.setTempChatId(tempChatId);
+            finishedDto.setRemainingTime(0L);
+            finishedDto.setFinished(true);
+
+            messagingTemplate.convertAndSend(
+                    "/topic/chat/" + tempChatId + "/timer",
+                    finishedDto);
+
+            log.info("Временный чат {} завершен по истечении времени", tempChatId);
+        } catch (MessagingException e) {
+            log.error("Ошибка при завершении временного чата {}: {}", tempChatId, e.getMessage());
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при завершении чата {}: {}", tempChatId, e.getMessage());
+        }
     }
 
     public void addTimeToTimer(UUID tempChatId, int additionalMinutes) {
