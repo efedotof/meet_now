@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatWebSocketRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.ChatMessagesRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.MarkMessagesReadRequest;
+import com.efedotov.meet_now.meet_now.dto.response.chat.AgreeChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
@@ -21,6 +24,7 @@ import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.chat.ActivityNotificationService;
 import com.efedotov.meet_now.meet_now.service.chat.ChatQueryService;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 import com.efedotov.meet_now.meet_now.service.chat.MessageProcessingService;
 import com.efedotov.meet_now.meet_now.service.chat.MessageQueryService;
 import com.efedotov.meet_now.meet_now.service.chat.PermanentChatUpdateService;
@@ -39,6 +43,7 @@ public class ChatWebSocketController {
     private final ActivityNotificationService activityNotificationService;
     private final SimpMessagingTemplate messagingTemplate;
     private final PermanentChatUpdateService permanentChatUpdateService;
+    private final ChatService chatService;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload MessageDto messageDto, Principal principal) {
@@ -145,6 +150,120 @@ public class ChatWebSocketController {
         UUID userId = userDetails.getUserId();
 
         permanentChatUpdateService.sendUpdatedPermanentChats(userId);
+    }
+
+    @MessageMapping("/chat.agreeToContinue")
+    public void agreeToContinue(@Payload AgreeChatWebSocketRequest request, Principal principal) {
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID authenticatedUserId = userDetails.getUserId();
+
+        if (!authenticatedUserId.equals(request.getUserId())) {
+            log.warn("Пользователь {} пытается согласиться от имени {}", authenticatedUserId, request.getUserId());
+            return;
+        }
+
+        log.info("Получено согласие на продолжение чата: tempChatId={}, userId={}",
+                request.getTempChatId(), request.getUserId());
+
+        try {
+            chatService.agreeToContinue(request.getTempChatId(), request.getUserId());
+
+            TemporaryChat updatedChat = chatService.getTemporaryChatById(request.getTempChatId())
+                    .orElseThrow(() -> new RuntimeException("Чат не найден"));
+
+            AgreeChatResponseDto response = new AgreeChatResponseDto();
+            response.setTempChatId(request.getTempChatId());
+            response.setUserId(request.getUserId());
+            response.setBothAgreed(updatedChat.getBothAgreed());
+            response.setSuccess(true);
+
+            messagingTemplate.convertAndSendToUser(
+                    userDetails.getUsername(),
+                    "/queue/chat.agree.response",
+                    response);
+
+            UUID otherUserId = getOtherUserId(updatedChat, request.getUserId());
+            String otherUserUsername = getUsernameById(otherUserId);
+
+            if (otherUserUsername != null) {
+                messagingTemplate.convertAndSendToUser(
+                        otherUserUsername,
+                        "/queue/chat.agree.notification",
+                        response);
+            }
+
+            if (Boolean.TRUE.equals(updatedChat.getBothAgreed())) {
+                handleBothAgreed(updatedChat);
+            }
+
+            log.info("Согласие на продолжение чата обработано успешно: tempChatId={}", request.getTempChatId());
+
+        } catch (MessagingException e) {
+            log.error("Ошибка при обработке согласия на продолжение чата: {}", e.getMessage());
+
+            AgreeChatResponseDto errorResponse = new AgreeChatResponseDto();
+            errorResponse.setTempChatId(request.getTempChatId());
+            errorResponse.setUserId(request.getUserId());
+            errorResponse.setSuccess(false);
+            errorResponse.setErrorMessage(e.getMessage());
+
+            messagingTemplate.convertAndSendToUser(
+                    userDetails.getUsername(),
+                    "/queue/chat.agree.response",
+                    errorResponse);
+        }
+    }
+
+    private UUID getOtherUserId(TemporaryChat chat, UUID currentUserId) {
+        if (chat.getSender().getId().equals(currentUserId)) {
+            return chat.getRecipient().getId();
+        } else {
+            return chat.getSender().getId();
+        }
+    }
+
+    private String getUsernameById(UUID userId) {
+        try {
+            return chatService.getUserById(userId)
+                    .map(user -> user.getUsername())
+                    .orElse(null);
+        } catch (Exception e) {
+            log.error("Ошибка при получении username для userId={}: {}", userId, e.getMessage());
+            return null;
+        }
+    }
+
+    private void handleBothAgreed(TemporaryChat tempChat) {
+        log.info("Оба пользователя согласились продолжить чат: {}", tempChat.getTempChatId());
+
+        chatService.createPermanentChatFromTemporary(tempChat);
+
+        UUID user1Id = tempChat.getSender().getId();
+        UUID user2Id = tempChat.getRecipient().getId();
+
+        permanentChatUpdateService.sendUpdatedPermanentChats(user1Id);
+        permanentChatUpdateService.sendUpdatedPermanentChats(user2Id);
+
+        AgreeChatResponseDto permanentChatCreated = new AgreeChatResponseDto();
+        permanentChatCreated.setTempChatId(tempChat.getTempChatId());
+        permanentChatCreated.setBothAgreed(true);
+        permanentChatCreated.setPermanentChatCreated(true);
+        permanentChatCreated.setSuccess(true);
+
+        String user1Username = tempChat.getSender().getUsername();
+        String user2Username = tempChat.getRecipient().getUsername();
+
+        messagingTemplate.convertAndSendToUser(
+                user1Username,
+                "/queue/chat.permanent.created",
+                permanentChatCreated);
+
+        messagingTemplate.convertAndSendToUser(
+                user2Username,
+                "/queue/chat.permanent.created",
+                permanentChatCreated);
+
+        log.info("Постоянный чат создан и пользователи уведомлены: {}", tempChat.getTempChatId());
     }
 
 }
