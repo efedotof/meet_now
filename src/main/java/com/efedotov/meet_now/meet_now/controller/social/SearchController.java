@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
@@ -60,21 +61,40 @@ public class SearchController {
             @RequestParam(required = false) String floor,
             Authentication authentication) {
 
-        log.info(
-                "Запрос к /filtered с параметрами: interests={}, purposes={}, verified={}, ageStart={}, ageStop={}, city={}, floor={}",
-                interests, purposes, verified, ageStart, ageStop, city, floor);
         UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
-
         User sender = userService.getById(userId);
-        log.info("Отправитель: {} (ID: {})", sender.getUsername(), sender.getId());
+
+        log.info("Поиск для пользователя: {} (ID: {})", sender.getUsername(), sender.getId());
+        log.info("Параметры поиска: floor={}, age={}-{}, verified={}", floor, ageStart, ageStop, verified);
+
+        if (!userService.isUserAvailableForSearch(userId)) {
+            log.warn("Отправитель {} недоступен для поиска. Статусы: online={}, searchable={}, searching={}",
+                    sender.getUsername(), sender.getIsOnline(), sender.getIsSearchable(), sender.getIsSearching());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not available for search");
+        }
 
         Specification<User> baseSpec = Specification.allOf(
                 UserSpecifications.notCurrentUser(userId),
+                UserSpecifications.isOnline(),
                 UserSpecifications.isSearchable(),
-                UserSpecifications.isSearching(),
-                UserSpecifications.isOnline());
+                UserSpecifications.isSearching());
 
         log.info("Базовые условия поиска: isOnline=true, isSearchable=true, isSearching=true, notCurrentUser=true");
+
+        if (floor != null && !floor.isEmpty()) {
+            baseSpec = baseSpec.and(UserSpecifications.hasFloor(floor));
+            log.info("Добавлен фильтр по полу: {}", floor);
+        }
+
+        if (ageStart != null || ageStop != null) {
+            baseSpec = baseSpec.and(UserSpecifications.hasAgeRange(ageStart, ageStop));
+            log.info("Добавлен фильтр по возрасту: {} - {}", ageStart, ageStop);
+        }
+
+        if (verified != null) {
+            baseSpec = baseSpec.and(UserSpecifications.isVerified(verified));
+            log.info("Добавлен фильтр верификации: {}", verified);
+        }
 
         if (interests != null && !interests.isEmpty()) {
             baseSpec = baseSpec.and(UserSpecifications.hasInterests(interests));
@@ -86,48 +106,40 @@ public class SearchController {
             log.info("Добавлен фильтр по целям: {}", purposes);
         }
 
-        if (verified != null) {
-            baseSpec = baseSpec.and(UserSpecifications.isVerified(verified));
-            log.info("Добавлен фильтр верификации: {}", verified);
-        }
-
-        if (ageStart != null || ageStop != null) {
-            baseSpec = baseSpec.and(UserSpecifications.hasAgeRange(ageStart, ageStop));
-            log.info("Добавлен фильтр по возрасту: {} - {}", ageStart, ageStop);
-        }
-
         if (city != null && !city.isEmpty()) {
             baseSpec = baseSpec.and(UserSpecifications.hasCity(city));
             log.info("Добавлен фильтр по городу: {}", city);
         }
 
-        if (floor != null && !floor.isEmpty()) {
-            baseSpec = baseSpec.and(UserSpecifications.hasFloor(floor));
-            log.info("Добавлен фильтр по полу: {}", floor);
-        }
         long onlineUsers = userRepository.countByIsOnlineTrue();
         long searchableUsers = userRepository.countByIsSearchableTrue();
         long searchingUsers = userRepository.countByIsSearchingTrue();
-        log.info("Пользователей онлайн: {}, В поиске: {}, В поиске: {}", onlineUsers, searchableUsers, searchingUsers);
+
+        log.info("Статистика системы: Онлайн: {}, Доступны для поиска: {}, В активном поиске: {}",
+                onlineUsers, searchableUsers, searchingUsers);
 
         List<User> users = userRepository.findAll(baseSpec);
+        log.info("Найдено подходящих пользователей: {}", users.size());
 
-        log.info("Найдено пользователей: {}", users.size());
         for (User user : users) {
             log.info(
-                    "Найден пользователь: {} (ID: {}), online: {}, searchable: {}, searching: {}, verified: {}, age: {}, city: {}, floor: {}",
-                    user.getUsername(), user.getId(), user.getIsOnline(),
-                    user.getIsSearchable(), user.getIsSearching(), user.getVerified(),
-                    user.getAge(), user.getCity(), user.getFloor());
+                    "Найден пользователь: {} ({}), возраст: {}, пол: {}, verified: {}, online: {}, searchable: {}, searching: {}",
+                    user.getUsername(), user.getId(), user.getAge(), user.getFloor(),
+                    user.getVerified(), user.getIsOnline(), user.getIsSearchable(), user.getIsSearching());
         }
 
         if (users.isEmpty()) {
-            log.warn("Пользователи по фильтрам не найдены");
+            log.warn("Пользователи по фильтрам не найдены для пользователя {}", sender.getUsername());
 
-            long totalUsers = userRepository.count();
-
-            log.info("Статистика системы: Всего пользователей: {}, Онлайн: {}, Доступны для поиска: {}, В поиске: {}",
-                    totalUsers, onlineUsers, searchableUsers, searchingUsers);
+            List<User> allSearchingUsers = userRepository.findByIsSearchingTrue();
+            log.info("Все пользователи в поиске ({}):", allSearchingUsers.size());
+            for (User user : allSearchingUsers) {
+                if (!user.getId().equals(userId)) {
+                    log.info(" - {} ({}), возраст: {}, пол: {}, online: {}, searchable: {}",
+                            user.getUsername(), user.getId(), user.getAge(), user.getFloor(),
+                            user.getIsOnline(), user.getIsSearchable());
+                }
+            }
 
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователи не найдены");
         }
@@ -135,30 +147,38 @@ public class SearchController {
         User recipient = users.get(new Random().nextInt(users.size()));
         log.info("Выбран получатель: {} (ID: {})", recipient.getUsername(), recipient.getId());
 
-        var tempChat = chatService.createTemporaryChat(sender, recipient, 5);
+        try {
 
-        TemporaryChatDto dto = TemporaryChatDto.builder()
-                .tempChatId(tempChat.getTempChatId())
-                .senderId(tempChat.getSender().getId())
-                .recipientId(tempChat.getRecipient().getId())
-                .createdAt(tempChat.getCreatedAt())
-                .durationMinutes(tempChat.getDurationMinutes())
-                .isFinished(tempChat.getIsFinished())
-                .bothAgreed(tempChat.getBothAgreed())
-                .build();
+            var tempChat = chatService.createTemporaryChat(sender, recipient, 5);
 
-        messagingTemplate.convertAndSendToUser(
-                sender.getUsername(),
-                "/queue/chat.temporary.new",
-                dto);
-        messagingTemplate.convertAndSendToUser(
-                recipient.getUsername(),
-                "/queue/chat.temporary.new",
-                dto);
+            TemporaryChatDto dto = TemporaryChatDto.builder()
+                    .tempChatId(tempChat.getTempChatId())
+                    .senderId(tempChat.getSender().getId())
+                    .recipientId(tempChat.getRecipient().getId())
+                    .createdAt(tempChat.getCreatedAt())
+                    .durationMinutes(tempChat.getDurationMinutes())
+                    .isFinished(tempChat.getIsFinished())
+                    .bothAgreed(tempChat.getBothAgreed())
+                    .build();
 
-        log.info("Отправлены уведомления о новом временном чате пользователям {} и {}",
-                sender.getUsername(), recipient.getUsername());
+            messagingTemplate.convertAndSendToUser(
+                    sender.getUsername(),
+                    "/queue/chat.temporary.new",
+                    dto);
+            messagingTemplate.convertAndSendToUser(
+                    recipient.getUsername(),
+                    "/queue/chat.temporary.new",
+                    dto);
 
-        return dto;
+            log.info("Успешно создан временный чат между {} и {}",
+                    sender.getUsername(), recipient.getUsername());
+
+            return dto;
+
+        } catch (MessagingException e) {
+            log.error("Ошибка при создании чата между {} и {}",
+                    sender.getUsername(), recipient.getUsername(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка при создании чата");
+        }
     }
 }

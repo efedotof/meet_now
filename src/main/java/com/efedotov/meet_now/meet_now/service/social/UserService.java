@@ -28,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final EncryptionUtils encryptionUtils;
     private final RoleRepository roleRepository;
+    private final StatisticsService statisticsService;
 
     public User getById(UUID id) {
         return userRepository.findById(id)
@@ -42,6 +43,9 @@ public class UserService {
     public boolean tryLockUserForSearch(UUID userId) {
         try {
             int updated = userRepository.setUserSearchingStatus(userId, false, true);
+            if (updated > 0) {
+                statisticsService.refreshAndBroadcastStats();
+            }
             return updated > 0;
         } catch (Exception e) {
             log.error("Ошибка при блокировке пользователя для поиска: {}", userId, e);
@@ -52,7 +56,10 @@ public class UserService {
     @Transactional
     public void unlockUserForSearch(UUID userId) {
         try {
-            userRepository.setUserSearchingStatus(userId, true, false);
+            int updated = userRepository.setUserSearchingStatus(userId, true, false);
+            if (updated > 0) {
+                statisticsService.refreshAndBroadcastStats();
+            }
         } catch (Exception e) {
             log.error("Ошибка при разблокировке пользователя для поиска: {}", userId, e);
         }
@@ -149,6 +156,8 @@ public class UserService {
             user.setIsOnline(isOnline);
             userRepository.save(user);
 
+            statisticsService.refreshAndBroadcastStats();
+
             log.info("Статус онлайн пользователя {} изменен на: {}", userId, isOnline);
         } else {
             log.debug("Статус онлайн пользователя {} уже установлен в: {}", userId, isOnline);
@@ -161,12 +170,9 @@ public class UserService {
 
         if (user.getIsSearching() != isSearching) {
             user.setIsSearching(isSearching);
-
-            if (!isSearching) {
-                user.setIsSearchable(false);
-            }
-
             userRepository.save(user);
+
+            statisticsService.refreshAndBroadcastStats();
 
             log.info("Статус поиска пользователя {} изменен на: {}", userId, isSearching);
         }
@@ -174,22 +180,54 @@ public class UserService {
 
     @Transactional
     public void startSearch(UUID userId) {
-        User user = getById(userId);
-        user.setIsSearchable(true);
-        user.setIsSearching(true);
-        userRepository.save(user);
+        try {
+            User user = getById(userId);
 
-        log.info("Пользователь {} начал поиск", userId);
+            if (!user.getIsOnline()) {
+                log.warn("Пользователь {} не онлайн, нельзя начать поиск", userId);
+                throw new RuntimeException("User must be online to start search");
+            }
+
+            user.setIsSearching(true);
+            userRepository.save(user);
+
+            statisticsService.refreshAndBroadcastStats();
+
+            log.info("Пользователь {} начал поиск. Статусы: online={}, searchable={}, searching={}",
+                    userId, user.getIsOnline(), true, true);
+        } catch (RuntimeException e) {
+            log.error("Ошибка при старте поиска для пользователя {}", userId, e);
+            throw new RuntimeException("Failed to start search", e);
+        }
     }
 
     @Transactional
     public void stopSearch(UUID userId) {
-        User user = getById(userId);
-        user.setIsSearchable(false);
-        user.setIsSearching(false);
-        userRepository.save(user);
+        try {
+            User user = getById(userId);
+            user.setIsSearching(false);
+            userRepository.save(user);
 
-        log.info("Пользователь {} остановил поиск", userId);
+            statisticsService.refreshAndBroadcastStats();
+
+            log.info("Пользователь {} остановил поиск. Статусы: searchable={}, searching={}",
+                    userId, false, false);
+        } catch (Exception e) {
+            log.error("Ошибка при остановке поиска для пользователя {}", userId, e);
+            throw new RuntimeException("Failed to stop search", e);
+        }
+    }
+
+    public boolean isUserAvailableForSearch(UUID userId) {
+        try {
+            User user = getById(userId);
+            return user.getIsOnline() &&
+                    user.getIsSearchable() &&
+                    user.getIsSearching();
+        } catch (Exception e) {
+            log.error("Ошибка при проверке доступности пользователя {}", userId, e);
+            return false;
+        }
     }
 
     public List<User> getSearchingUsers() {

@@ -36,6 +36,15 @@ public class ChatService {
 
     @Transactional
     public TemporaryChat createTemporaryChat(User sender, User recipient, int durationMinutes) {
+        log.info("Создание временного чата между {} и {}", sender.getUsername(), recipient.getUsername());
+
+        if (!sender.getIsSearching() || !recipient.getIsSearching()) {
+            log.error("Один из пользователей больше не в поиске: {}={}, {}={}",
+                    sender.getUsername(), sender.getIsSearching(),
+                    recipient.getUsername(), recipient.getIsSearching());
+            throw new IllegalStateException("One of users is no longer searching");
+        }
+
         TemporaryChat tempChat = new TemporaryChat();
         tempChat.setSender(sender);
         tempChat.setRecipient(recipient);
@@ -53,7 +62,14 @@ public class ChatService {
         chatConstraintRepository.save(constraint);
 
         sender.setIsSearchable(false);
+        sender.setIsSearching(false);
         recipient.setIsSearchable(false);
+        recipient.setIsSearching(false);
+
+        userRepository.save(sender);
+        userRepository.save(recipient);
+
+        log.info("Пользователи заблокированы для поиска: {} и {}", sender.getUsername(), recipient.getUsername());
 
         chatTimerManagementService.startSynchronizedTimer(tempChat.getTempChatId());
 

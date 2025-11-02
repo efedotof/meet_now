@@ -16,10 +16,19 @@ public class StatisticsService {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
+    private volatile UserStatsDto lastStats;
+    private final Object statsLock = new Object();
+
     public UserStatsDto getUserStats() {
         long onlineCount = userRepository.countByIsOnlineTrue();
         long searchingCount = userRepository.countByIsSearchingTrue();
-        return new UserStatsDto(onlineCount, searchingCount);
+        UserStatsDto newStats = new UserStatsDto(onlineCount, searchingCount);
+
+        synchronized (statsLock) {
+            lastStats = newStats;
+        }
+
+        return newStats;
     }
 
     public void broadcastUserStats() {
@@ -30,6 +39,19 @@ public class StatisticsService {
                     stats.getOnlineCount(), stats.getSearchingCount());
         } catch (MessagingException e) {
             log.error("Ошибка при отправке статистики", e);
+        }
+    }
+
+    public void refreshAndBroadcastStats() {
+        broadcastUserStats();
+    }
+
+    public UserStatsDto getCachedStats() {
+        synchronized (statsLock) {
+            if (lastStats == null) {
+                return getUserStats();
+            }
+            return lastStats;
         }
     }
 }

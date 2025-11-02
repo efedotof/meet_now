@@ -21,8 +21,8 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @Operation(summary = "Получить текущую статистику пользователей")
-    @GetMapping
+    @GetMapping("/user_stats")
     public ResponseEntity<UserStatsDto> getCurrentStats() {
-        return ResponseEntity.ok(statisticsService.getUserStats());
+        return ResponseEntity.ok(statisticsService.getCachedStats());
     }
 }
