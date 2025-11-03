@@ -29,4 +29,10 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     Long countByChat_ChatId(UUID chatId);
 
+    @Query("SELECT m FROM Message m WHERE m.isDeleted = false AND m.chat.chatId = :chatId ORDER BY m.createdAt ASC")
+    List<Message> findNonDeletedMessagesByChatId(@Param("chatId") UUID chatId);
+
+    @Query("SELECT m FROM Message m WHERE m.isDeleted = false AND m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt ASC")
+    List<Message> findNonDeletedMessagesByTempChatId(@Param("tempChatId") UUID tempChatId);
+
 }

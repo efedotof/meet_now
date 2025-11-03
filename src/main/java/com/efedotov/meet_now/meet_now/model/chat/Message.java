@@ -72,4 +72,14 @@ public class Message {
         mediaItem.setMessage(null);
         this.media.remove(mediaItem);
     }
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
 }

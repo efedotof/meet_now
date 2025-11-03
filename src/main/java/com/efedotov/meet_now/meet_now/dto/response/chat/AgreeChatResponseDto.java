@@ -11,4 +11,5 @@ public class AgreeChatResponseDto {
     private Boolean permanentChatCreated;
     private Boolean success;
     private String errorMessage;
+    private PermanentChatResponseDto permanentChat;
 }

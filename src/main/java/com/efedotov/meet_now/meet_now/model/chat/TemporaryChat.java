@@ -42,4 +42,13 @@ public class TemporaryChat {
 
     @Column(name = "both_agreed")
     private Boolean bothAgreed = false;
+
+    @Column(name = "deleted_by_sender")
+    private Boolean deletedBySender = false;
+
+    @Column(name = "deleted_by_recipient")
+    private Boolean deletedByRecipient = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

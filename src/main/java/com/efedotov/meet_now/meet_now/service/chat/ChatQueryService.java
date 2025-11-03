@@ -3,6 +3,7 @@ package com.efedotov.meet_now.meet_now.service.chat;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class ChatQueryService {
 
     private final ChatService chatService;
+    private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
 
     public List<TemporaryChat> getActiveTemporaryChats(UUID userId) {
@@ -67,6 +69,13 @@ public class ChatQueryService {
         dto.setTotalMessages(totalMessages);
 
         return dto;
+    }
+
+    public Optional<PermanentChatResponseDto> getPermanentChatByUsers(UUID user1Id, UUID user2Id) {
+        Optional<Chat> chat = chatRepository.findByUser1IdAndUser2Id(user1Id, user2Id)
+                .or(() -> chatRepository.findByUser1IdAndUser2Id(user2Id, user1Id));
+
+        return chat.map(c -> convertToPermanentChatDto(c, user1Id));
     }
 
 }

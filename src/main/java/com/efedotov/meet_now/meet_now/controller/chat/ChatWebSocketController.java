@@ -241,29 +241,45 @@ public class ChatWebSocketController {
         UUID user1Id = tempChat.getSender().getId();
         UUID user2Id = tempChat.getRecipient().getId();
 
-        permanentChatUpdateService.sendUpdatedPermanentChats(user1Id);
-        permanentChatUpdateService.sendUpdatedPermanentChats(user2Id);
+        List<PermanentChatResponseDto> user1Chats = chatQueryService.getPermanentChatsAsDto(user1Id);
+        List<PermanentChatResponseDto> user2Chats = chatQueryService.getPermanentChatsAsDto(user2Id);
 
-        AgreeChatResponseDto permanentChatCreated = new AgreeChatResponseDto();
-        permanentChatCreated.setTempChatId(tempChat.getTempChatId());
-        permanentChatCreated.setBothAgreed(true);
-        permanentChatCreated.setPermanentChatCreated(true);
-        permanentChatCreated.setSuccess(true);
+        PermanentChatResponseDto user1NewChat = findNewlyCreatedChat(user1Chats, user1Id, user2Id);
+        PermanentChatResponseDto user2NewChat = findNewlyCreatedChat(user2Chats, user1Id, user2Id);
 
         String user1Username = tempChat.getSender().getUsername();
         String user2Username = tempChat.getRecipient().getUsername();
 
-        messagingTemplate.convertAndSendToUser(
-                user1Username,
-                "/queue/chat.permanent.created",
-                permanentChatCreated);
+        if (user1NewChat != null) {
+            messagingTemplate.convertAndSendToUser(
+                    user1Username,
+                    "/queue/chat.permanent.created",
+                    user1NewChat);
+            log.info("Отправлен PermanentChatResponseDto пользователю {}: chatId={}",
+                    user1Username, user1NewChat.getChatId());
+        }
 
-        messagingTemplate.convertAndSendToUser(
-                user2Username,
-                "/queue/chat.permanent.created",
-                permanentChatCreated);
+        if (user2NewChat != null) {
+            messagingTemplate.convertAndSendToUser(
+                    user2Username,
+                    "/queue/chat.permanent.created",
+                    user2NewChat);
+            log.info("Отправлен PermanentChatResponseDto пользователю {}: chatId={}",
+                    user2Username, user2NewChat.getChatId());
+        }
+
+        permanentChatUpdateService.sendUpdatedPermanentChats(user1Id);
+        permanentChatUpdateService.sendUpdatedPermanentChats(user2Id);
 
         log.info("Постоянный чат создан и пользователи уведомлены: {}", tempChat.getTempChatId());
     }
 
+    private PermanentChatResponseDto findNewlyCreatedChat(List<PermanentChatResponseDto> chats,
+            UUID user1Id, UUID user2Id) {
+        return chats.stream()
+                .filter(chat -> (chat.getUser1Id().equals(user1Id) && chat.getUser2Id().equals(user2Id)) ||
+                        (chat.getUser1Id().equals(user2Id) && chat.getUser2Id().equals(user1Id)))
+                .findFirst()
+                .orElse(null);
+    }
 }

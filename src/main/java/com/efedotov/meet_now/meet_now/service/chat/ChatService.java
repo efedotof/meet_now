@@ -112,12 +112,13 @@ public class ChatService {
     }
 
     @Transactional
-    public void createPermanentChatFromTemporary(TemporaryChat tempChat) {
+    public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
         Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
                 tempChat.getSender().getId(), tempChat.getRecipient().getId());
 
+        Chat chat;
         if (existingChat.isEmpty()) {
-            Chat chat = new Chat();
+            chat = new Chat();
             chat.setUser1(tempChat.getSender());
             chat.setUser2(tempChat.getRecipient());
             chat.setCreatedAt(LocalDateTime.now());
@@ -127,7 +128,7 @@ public class ChatService {
             log.info("Создан постоянный чат между {} и {}",
                     tempChat.getSender().getId(), tempChat.getRecipient().getId());
         } else {
-            Chat chat = existingChat.get();
+            chat = existingChat.get();
             if (!Boolean.TRUE.equals(chat.getIsOpened())) {
                 chat.setIsOpened(true);
                 chatRepository.save(chat);
@@ -138,6 +139,8 @@ public class ChatService {
         tempChat.setIsFinished(true);
         temporaryChatRepository.save(tempChat);
         chatTimerManagementService.stopTimer(tempChat.getTempChatId());
+
+        return chat;
     }
 
     @Transactional
@@ -164,16 +167,6 @@ public class ChatService {
                 temporaryChatRepository.save(tempChat);
             }
         });
-    }
-
-    public List<TemporaryChat> getActiveTemporaryChatsForUser(UUID userId) {
-        return temporaryChatRepository.findByIsFinishedFalse().stream()
-                .filter(tc -> tc.getSender().getId().equals(userId) || tc.getRecipient().getId().equals(userId))
-                .toList();
-    }
-
-    public List<Chat> getPermanentChatsForUser(UUID userId) {
-        return chatRepository.findByUser1IdOrUser2Id(userId, userId);
     }
 
     @Transactional
@@ -204,4 +197,103 @@ public class ChatService {
         chatGameRepository.save(game);
         return game;
     }
+
+    @Transactional
+    public void deletePermanentChat(UUID chatId, UUID userId, boolean deleteForBoth) {
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            if (!isUserParticipant(chat, userId)) {
+                throw new IllegalStateException("Пользователь не является участником чата");
+            }
+
+            if (deleteForBoth) {
+                chat.setDeletedByUser1(true);
+                chat.setDeletedByUser2(true);
+                chat.setDeletedAt(LocalDateTime.now());
+                log.info("Чат {} удален для обоих пользователей", chatId);
+            } else {
+                if (chat.getUser1().getId().equals(userId)) {
+                    chat.setDeletedByUser1(true);
+                } else if (chat.getUser2().getId().equals(userId)) {
+                    chat.setDeletedByUser2(true);
+                }
+                chat.setDeletedAt(LocalDateTime.now());
+                log.info("Чат {} удален для пользователя {}", chatId, userId);
+            }
+
+            chatRepository.save(chat);
+        });
+    }
+
+    @Transactional
+    public void deleteTemporaryChat(UUID tempChatId, UUID userId, boolean deleteForBoth) {
+        temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
+            if (!isUserParticipant(tempChat, userId)) {
+                throw new IllegalStateException("Пользователь не является участником временного чата");
+            }
+
+            if (deleteForBoth) {
+                tempChat.setDeletedBySender(true);
+                tempChat.setDeletedByRecipient(true);
+                tempChat.setDeletedAt(LocalDateTime.now());
+                log.info("Временный чат {} удален для обоих пользователей", tempChatId);
+            } else {
+                if (tempChat.getSender().getId().equals(userId)) {
+                    tempChat.setDeletedBySender(true);
+                } else if (tempChat.getRecipient().getId().equals(userId)) {
+                    tempChat.setDeletedByRecipient(true);
+                }
+                tempChat.setDeletedAt(LocalDateTime.now());
+                log.info("Временный чат {} удален для пользователя {}", tempChatId, userId);
+            }
+
+            temporaryChatRepository.save(tempChat);
+        });
+    }
+
+    @Transactional
+    public void restorePermanentChat(UUID chatId, UUID userId) {
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            if (!isUserParticipant(chat, userId)) {
+                throw new IllegalStateException("Пользователь не является участником чата");
+            }
+
+            if (chat.getUser1().getId().equals(userId)) {
+                chat.setDeletedByUser1(false);
+            } else if (chat.getUser2().getId().equals(userId)) {
+                chat.setDeletedByUser2(false);
+            }
+
+            if (!chat.getDeletedByUser1() && !chat.getDeletedByUser2()) {
+                chat.setDeletedAt(null);
+            }
+
+            chatRepository.save(chat);
+            log.info("Чат {} восстановлен для пользователя {}", chatId, userId);
+        });
+    }
+
+    public List<Chat> getDeletedChatsForUser(UUID userId) {
+        return chatRepository.findDeletedChatsByUserId(userId);
+    }
+
+    public List<TemporaryChat> getActiveTemporaryChatsForUser(UUID userId) {
+        return temporaryChatRepository.findByIsFinishedFalse().stream()
+                .filter(tc -> (tc.getSender().getId().equals(userId) && !Boolean.TRUE.equals(tc.getDeletedBySender()))
+                        ||
+                        (tc.getRecipient().getId().equals(userId) && !Boolean.TRUE.equals(tc.getDeletedByRecipient())))
+                .toList();
+    }
+
+    public List<Chat> getPermanentChatsForUser(UUID userId) {
+        return chatRepository.findNonDeletedChatsByUserId(userId);
+    }
+
+    private boolean isUserParticipant(Chat chat, UUID userId) {
+        return chat.getUser1().getId().equals(userId) || chat.getUser2().getId().equals(userId);
+    }
+
+    private boolean isUserParticipant(TemporaryChat tempChat, UUID userId) {
+        return tempChat.getSender().getId().equals(userId) || tempChat.getRecipient().getId().equals(userId);
+    }
+
 }

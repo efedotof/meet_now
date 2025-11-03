@@ -42,4 +42,13 @@ public class Chat {
 
     @Column(name = "last_message_at")
     private LocalDateTime lastMessageAt;
+
+    @Column(name = "deleted_by_user1")
+    private Boolean deletedByUser1 = false;
+
+    @Column(name = "deleted_by_user2") 
+    private Boolean deletedByUser2 = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }
