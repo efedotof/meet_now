@@ -56,4 +56,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("SELECT COUNT(u) FROM User u WHERE u.isOnline = true AND u.isSearchable = true AND u.isSearching = true")
     long countAvailableForSearchUsers();
 
+    @Query("SELECT COUNT(r) > 0 FROM User u JOIN u.roles r WHERE u.id = :userId AND r.roleName IN ('MODERATION', 'ADMIN')")
+    boolean hasModerationRole(@Param("userId") UUID userId);
+
 }

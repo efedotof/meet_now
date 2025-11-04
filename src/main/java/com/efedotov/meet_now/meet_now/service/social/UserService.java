@@ -30,6 +30,10 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final StatisticsService statisticsService;
 
+    public boolean hasModerationRole(UUID userId) {
+        return userRepository.hasModerationRole(userId);
+    }
+
     public User getById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
