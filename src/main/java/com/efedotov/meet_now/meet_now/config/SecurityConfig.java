@@ -33,12 +33,14 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/webjars/**")
                         .permitAll()
+                        .requestMatchers("/api/v1/test").permitAll()
                         .requestMatchers("/api/v1/auth/token/**").permitAll()
                         .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/search/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/ws/**", "/app/**", "/topic/**", "/queue/**")
                         .permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/v1/games/complete").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -91,5 +91,10 @@ public class User {
     @JoinTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_url")
     private List<String> images = Collections.synchronizedList(new ArrayList<>());
+    @Column(name = "encrypted_push_token")
+    private String encryptedPushToken;
+
+    @Column(name = "push_token_salt")
+    private String pushTokenSalt;
 
 }
