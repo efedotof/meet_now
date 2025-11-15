@@ -22,4 +22,6 @@ public interface GiftRarityRepository extends JpaRepository<GiftRarity, UUID> {
     
     @Query("SELECT gr FROM GiftRarity gr WHERE gr.isActive = true ORDER BY gr.probability DESC")
     List<GiftRarity> findActiveByProbability();
+
+    long countByIsActiveTrue();
 }

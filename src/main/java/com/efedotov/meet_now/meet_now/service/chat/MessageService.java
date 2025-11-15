@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,6 +19,30 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+
+    @AdminOnly
+    @Transactional
+    public void adminDeleteMessage(UUID messageId) {
+        messageRepository.findById(messageId).ifPresent(message -> {
+            message.setIsDeleted(true);
+            message.setDeletedAt(LocalDateTime.now());
+            message.setDeletedBy(null);
+            messageRepository.save(message);
+            log.info("Администратор удалил сообщение {}", messageId);
+        });
+    }
+
+    @AdminOnly
+    @Transactional
+    public void adminRestoreMessage(UUID messageId) {
+        messageRepository.findById(messageId).ifPresent(message -> {
+            message.setIsDeleted(false);
+            message.setDeletedAt(null);
+            message.setDeletedBy(null);
+            messageRepository.save(message);
+            log.info("Администратор восстановил сообщение {}", messageId);
+        });
+    }
 
     @Transactional
     public void deleteMessage(UUID messageId, UUID userId, boolean deleteForEveryone) {

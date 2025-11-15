@@ -6,9 +6,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
+import com.efedotov.meet_now.meet_now.dto.response.statistics.UserStatistics;
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
@@ -37,6 +42,117 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Получить всех пользователей", description = "Возвращает всех пользователей с пагинацией. Только для администраторов")
+    @GetMapping("/admin/all")
+    public ResponseEntity<Page<UserDto>> getAllUsers(
+            Pageable pageable) {
+        Page<UserDto> users = userService.getAllUsers(pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Получить количество онлайн пользователей", description = "Возвращает количество пользователей онлайн. Только для администраторов")
+    @GetMapping("/admin/statistics/online-count")
+    public ResponseEntity<Long> getOnlineUsersCount() {
+        long count = userService.getOnlineUsersCount();
+        return ResponseEntity.ok(count);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Получить количество новых пользователей", description = "Возвращает количество новых пользователей за период. Только для администраторов")
+    @GetMapping("/admin/statistics/new-users")
+    public ResponseEntity<Long> getNewUsersCount(
+
+            @RequestParam(defaultValue = "24") int hours) {
+        long count = userService.getNewUsersCount(hours);
+        return ResponseEntity.ok(count);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Получить активных пользователей", description = "Возвращает активных пользователей (были онлайн недавно). Только для администраторов")
+    @GetMapping("/admin/active")
+    public ResponseEntity<Page<UserDto>> getActiveUsers(
+            Pageable pageable) {
+        Page<UserDto> users = userService.getActiveUsers(pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Удалить пользователя", description = "Полностью удаляет пользователя из системы. Только для администраторов")
+    @DeleteMapping("/admin/{userId}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable UUID userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Заблокировать пользователя", description = "Блокирует пользователя. Только для администраторов")
+    @PostMapping("/admin/{userId}/block")
+    public ResponseEntity<Void> blockUser(
+            @PathVariable UUID userId) {
+        userService.blockUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Разблокировать пользователя", description = "Разблокирует пользователя. Только для администраторов")
+    @PostMapping("/admin/{userId}/unblock")
+    public ResponseEntity<Void> unblockUser(
+            @PathVariable UUID userId) {
+        userService.unblockUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+   @AdminOnly
+@Operation(summary = "[АДМИНИСТРАТОР] Получить статистику пользователей", description = "Возвращает полную статистику по пользователям. Только для администраторов")
+@GetMapping("/admin/statistics/full")
+public ResponseEntity<UserStatistics> getUsersStatistics() {
+    UserStatistics statistics = userService.getUsersStatistics();
+    return ResponseEntity.ok(statistics);
+}
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Найти пользователей по email", description = "Поиск пользователей по email. Только для администраторов")
+    @GetMapping("/admin/search/email")
+    public ResponseEntity<Page<UserDto>> findUsersByEmail(
+            @RequestParam String email,
+            Pageable pageable) {
+        Page<UserDto> users = userService.findUsersByEmail(email, pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Найти пользователей по имени", description = "Поиск пользователей по имени пользователя. Только для администраторов")
+    @GetMapping("/admin/search/username")
+    public ResponseEntity<Page<UserDto>> findUsersByUsername(
+            @RequestParam String username,
+            Pageable pageable) {
+        Page<UserDto> users = userService.findUsersByUsername(username, pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Добавить роль пользователю", description = "Добавляет роль пользователю. Только для администраторов")
+    @PostMapping("/admin/{userId}/roles")
+    public ResponseEntity<Void> addRoleToUser(
+            @PathVariable UUID userId,
+            @RequestParam String roleName) {
+        userService.addRoleToUserAdministrationMethod(userId, roleName);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Удалить роль у пользователя", description = "Удаляет роль у пользователя. Только для администраторов")
+    @DeleteMapping("/admin/{userId}/roles")
+    public ResponseEntity<Void> removeRoleFromUser(
+            @PathVariable UUID userId,
+            @RequestParam String roleName) {
+        userService.removeRoleFromUser(userId, roleName);
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "Получение профиля по ID")
     @GetMapping("/{id}")

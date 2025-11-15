@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreateTemporaryChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteMessageRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteTemporaryChatRequest;
+import com.efedotov.meet_now.meet_now.dto.response.chat.ChatStatisticsAdmin;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.UserChatsResponse;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
@@ -46,6 +49,94 @@ public class ChatController {
     private final ChatService chatService;
     private final MessageRepository messageRepository;
     private final MessageService messageService;
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Получить все временные чаты")
+    @GetMapping("/admin/temporary/all")
+    public ResponseEntity<List<TemporaryChatDto>> getAllTemporaryChats() {
+        List<TemporaryChatDto> chatDtos = chatService.getAllTemporaryChats().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(chatDtos);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Получить все постоянные чаты")
+    @GetMapping("/admin/permanent/all")
+    public ResponseEntity<List<PermanentChatResponseDto>> getAllPermanentChats() {
+        List<PermanentChatResponseDto> chatDtos = chatService.getAllPermanentChats().stream()
+                .map(chat -> mapToPermanentChatDto(chat, null))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(chatDtos);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Получить временный чат по ID")
+    @GetMapping("/admin/temporary/{tempChatId}")
+    public ResponseEntity<TemporaryChatDto> getTemporaryChatById(@PathVariable UUID tempChatId) {
+        return chatService.getTemporaryChatById(tempChatId)
+                .map(this::mapToDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Получить постоянный чат по ID")
+    @GetMapping("/admin/permanent/{chatId}")
+    public ResponseEntity<PermanentChatResponseDto> getPermanentChatById(@PathVariable UUID chatId) {
+        return chatService.getPermanentChatById(chatId)
+                .map(chat -> mapToPermanentChatDto(chat, null))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Принудительно удалить постоянный чат")
+    @DeleteMapping("/admin/permanent/{chatId}")
+    public ResponseEntity<Void> adminDeletePermanentChat(@PathVariable UUID chatId) {
+        chatService.adminDeletePermanentChat(chatId);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Принудительно удалить временный чат")
+    @DeleteMapping("/admin/temporary/{tempChatId}")
+    public ResponseEntity<Void> adminDeleteTemporaryChat(@PathVariable UUID tempChatId) {
+        chatService.adminDeleteTemporaryChat(tempChatId);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Принудительно удалить сообщение")
+    @DeleteMapping("/admin/message/{messageId}")
+    public ResponseEntity<Void> adminDeleteMessage(@PathVariable UUID messageId) {
+        messageService.adminDeleteMessage(messageId);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Восстановить сообщение")
+    @PostMapping("/admin/message/{messageId}/restore")
+    public ResponseEntity<Void> adminRestoreMessage(@PathVariable UUID messageId) {
+        messageService.adminRestoreMessage(messageId);
+        return ResponseEntity.ok().build();
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Получить статистику по чатам")
+    @GetMapping("/admin/statistics")
+    public ResponseEntity<ChatStatisticsAdmin> getChatStatistics() {
+        ChatStatisticsAdmin stats = chatService.getChatStatistics();
+        return ResponseEntity.ok(stats);
+    }
+
+    @AdminOnly
+    @Operation(summary = "[ADMIN] Поиск чатов по пользователю")
+    @GetMapping("/admin/search/user/{userId}")
+    public ResponseEntity<UserChatsResponse> getUserChats(@PathVariable UUID userId) {
+        UserChatsResponse userChats = chatService.getUserChats(userId);
+        return ResponseEntity.ok(userChats);
+    }
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
@@ -91,33 +182,6 @@ public class ChatController {
                 .map(chat -> mapToPermanentChatDto(chat, userId))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(chatDtos);
-    }
-
-    private PermanentChatResponseDto mapToPermanentChatDto(Chat chat, UUID userId) {
-        PermanentChatResponseDto dto = new PermanentChatResponseDto();
-        dto.setChatId(chat.getChatId());
-        dto.setUser1Id(chat.getUser1().getId());
-        dto.setUser1Username(chat.getUser1().getUsername());
-        dto.setUser1Firstname(chat.getUser1().getFirstname());
-        dto.setUser1Subname(chat.getUser1().getSubname());
-        dto.setUser1Avatar(chat.getUser1().getAvatar());
-        dto.setUser2Id(chat.getUser2().getId());
-        dto.setUser2Username(chat.getUser2().getUsername());
-        dto.setUser2Firstname(chat.getUser2().getFirstname());
-        dto.setUser2Subname(chat.getUser2().getSubname());
-        dto.setUser2Avatar(chat.getUser2().getAvatar());
-        dto.setCreatedAt(chat.getCreatedAt());
-        dto.setIsOpened(chat.getIsOpened());
-        dto.setLastMessage(chat.getLastMessage());
-        dto.setLastMessageAt(chat.getLastMessageAt());
-
-        Long unreadCount = messageRepository.countUnreadMessagesInChat(chat.getChatId(), userId);
-        Long totalMessages = messageRepository.countByChat_ChatId(chat.getChatId());
-
-        dto.setUnreadCount(unreadCount);
-        dto.setTotalMessages(totalMessages);
-
-        return dto;
     }
 
     @Operation(summary = "Получить ограничения временного чата")
@@ -173,7 +237,33 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
+    private PermanentChatResponseDto mapToPermanentChatDto(Chat chat, UUID userId) {
+        PermanentChatResponseDto dto = new PermanentChatResponseDto();
+        dto.setChatId(chat.getChatId());
+        dto.setUser1Id(chat.getUser1().getId());
+        dto.setUser1Username(chat.getUser1().getUsername());
+        dto.setUser1Firstname(chat.getUser1().getFirstname());
+        dto.setUser1Subname(chat.getUser1().getSubname());
+        dto.setUser1Avatar(chat.getUser1().getAvatar());
+        dto.setUser2Id(chat.getUser2().getId());
+        dto.setUser2Username(chat.getUser2().getUsername());
+        dto.setUser2Firstname(chat.getUser2().getFirstname());
+        dto.setUser2Subname(chat.getUser2().getSubname());
+        dto.setUser2Avatar(chat.getUser2().getAvatar());
+        dto.setCreatedAt(chat.getCreatedAt());
+        dto.setIsOpened(chat.getIsOpened());
+        dto.setLastMessage(chat.getLastMessage());
+        dto.setLastMessageAt(chat.getLastMessageAt());
 
+        if (userId != null) {
+            Long unreadCount = messageRepository.countUnreadMessagesInChat(chat.getChatId(), userId);
+            Long totalMessages = messageRepository.countByChat_ChatId(chat.getChatId());
+            dto.setUnreadCount(unreadCount);
+            dto.setTotalMessages(totalMessages);
+        }
+
+        return dto;
+    }
 
     private TemporaryChatDto mapToDto(TemporaryChat chat) {
         return TemporaryChatDto.builder()
@@ -186,5 +276,4 @@ public class ChatController {
                 .bothAgreed(chat.getBothAgreed())
                 .build();
     }
-
 }

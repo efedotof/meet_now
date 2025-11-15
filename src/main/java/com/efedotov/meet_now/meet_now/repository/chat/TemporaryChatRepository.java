@@ -13,20 +13,25 @@ import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 
 @Repository
 public interface TemporaryChatRepository extends JpaRepository<TemporaryChat, UUID> {
-    List<TemporaryChat> findBySender_IdOrRecipient_Id(UUID senderId, UUID recipientId);
+        List<TemporaryChat> findBySenderIdOrRecipientId(UUID senderId, UUID recipientId);
 
-    List<TemporaryChat> findByIsFinishedFalse();
+        List<TemporaryChat> findByIsFinishedFalse();
 
-    @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END " +
-            "FROM TemporaryChat t WHERE t.tempChatId = :tempChatId " +
-            "AND (t.sender.id = :userId OR t.recipient.id = :userId)")
-    boolean existsByTempChatIdAndUserId(@Param("tempChatId") UUID tempChatId,
-            @Param("userId") UUID userId);
+        @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END " +
+                        "FROM TemporaryChat t WHERE t.tempChatId = :tempChatId " +
+                        "AND (t.sender.id = :userId OR t.recipient.id = :userId)")
+        boolean existsByTempChatIdAndUserId(@Param("tempChatId") UUID tempChatId,
+                        @Param("userId") UUID userId);
 
-    @Modifying
-    @Query("UPDATE TemporaryChat t SET t.isFinished = true WHERE t.tempChatId = :tempChatId")
-    void markAsFinished(@Param("tempChatId") UUID tempChatId);
+        @Modifying
+        @Query("UPDATE TemporaryChat t SET t.isFinished = true WHERE t.tempChatId = :tempChatId")
+        void markAsFinished(@Param("tempChatId") UUID tempChatId);
 
-    @Query("SELECT t FROM TemporaryChat t WHERE (t.sender.id = :userId AND t.deletedBySender = false) OR (t.recipient.id = :userId AND t.deletedByRecipient = false)")
-    List<TemporaryChat> findNonDeletedTemporaryChatsByUserId(@Param("userId") UUID userId);
+        @Query("SELECT t FROM TemporaryChat t WHERE (t.sender.id = :userId AND t.deletedBySender = false) OR (t.recipient.id = :userId AND t.deletedByRecipient = false)")
+        List<TemporaryChat> findNonDeletedTemporaryChatsByUserId(@Param("userId") UUID userId);
+
+        long countByIsFinished(Boolean isFinished);
+
+        long countByIsFinishedFalse();
+
 }

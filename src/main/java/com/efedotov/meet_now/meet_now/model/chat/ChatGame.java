@@ -1,6 +1,9 @@
 package com.efedotov.meet_now.meet_now.model.chat;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,4 +31,8 @@ public class ChatGame {
 
     @Column(columnDefinition = "text")
     private String state;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

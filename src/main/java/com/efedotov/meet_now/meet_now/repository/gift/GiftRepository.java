@@ -31,4 +31,8 @@ public interface GiftRepository extends JpaRepository<Gift, UUID> {
 
     @Query("SELECT g FROM Gift g WHERE g.id = :id AND g.isActive = true")
     Optional<Gift> findByIdAndIsActiveTrue(@Param("id") UUID id);
+
+    long countByIsActiveTrue();
+
+    List<Gift> findByRarity(GiftRarity rarity);
 }

@@ -375,7 +375,7 @@ public class MessageProcessingService {
     private TemporaryChat findOrCreateTemporaryChat(User sender, User recipient) {
         UUID senderId = sender.getId();
         UUID recipientId = recipient.getId();
-        List<TemporaryChat> tempChats = temporaryChatRepository.findBySender_IdOrRecipient_Id(senderId, recipientId);
+        List<TemporaryChat> tempChats = temporaryChatRepository.findBySenderIdOrRecipientId(senderId, recipientId);
 
         for (TemporaryChat tchat : tempChats) {
             if ((tchat.getSender().getId().equals(senderId) && tchat.getRecipient().getId().equals(recipientId)) ||

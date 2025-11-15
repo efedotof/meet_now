@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class FriendRequest {
+public class SendFriendRequest {
     private UUID fromUserId;
     private UUID toUserId;
 }

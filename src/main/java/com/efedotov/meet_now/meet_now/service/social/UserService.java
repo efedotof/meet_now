@@ -1,14 +1,25 @@
 package com.efedotov.meet_now.meet_now.service.social;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
+import com.efedotov.meet_now.meet_now.dto.response.statistics.UserStatistics;
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.moderation.RoleRepository;
@@ -16,7 +27,6 @@ import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.service.util.EncryptionUtils;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,15 +40,185 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final StatisticsService statisticsService;
 
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        return userRepository.findAll(pageable)
+                .map(this::mapToDto);
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public long getOnlineUsersCount() {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+        return userRepository.countByIsOnlineTrue();
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public long getNewUsersCount(int hours) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+        LocalDateTime since = LocalDateTime.now().minusHours(hours);
+        return userRepository.countByCreatedAtAfter(since);
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public Page<UserDto> getActiveUsers(Pageable pageable) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        return userRepository.findByIsOnlineTrue(pageable)
+                .map(this::mapToDto);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void deleteUser(UUID userId) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (adminId.equals(userId)) {
+            throw new RuntimeException("Cannot delete yourself");
+        }
+
+        userRepository.delete(user);
+        log.info("User {} deleted by admin {}", userId, adminId);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void blockUser(UUID userId) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        addRoleToUserAdministrationMethod(userId, "BLOCKED");
+        user.setIsSearchable(false);
+        user.setIsOnline(false);
+        user.setIsSearching(false);
+
+        userRepository.save(user);
+        log.info("User {} blocked by admin {}", userId, adminId);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void unblockUser(UUID userId) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        removeRoleFromUser(userId, "BLOCKED");
+        user.setIsSearchable(true);
+
+        userRepository.save(user);
+        log.info("User {} unblocked by admin {}", userId, adminId);
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public UserStatistics getUsersStatistics() {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        return UserStatistics.builder()
+                .totalUsers(userRepository.count())
+                .onlineUsers(userRepository.countByIsOnlineTrue())
+                .searchableUsers(userRepository.countByIsSearchableTrue())
+                .searchingUsers(userRepository.countByIsSearchingTrue())
+                .newUsersLast24h(userRepository.countByCreatedAtAfter(LocalDateTime.now().minusHours(24)))
+                .newUsersLast7d(userRepository.countByCreatedAtAfter(LocalDateTime.now().minusDays(7)))
+                .usersByCity(userRepository.countUsersByCity())
+                .build();
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public Page<UserDto> findUsersByEmail(String email, Pageable pageable) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        return userRepository.findByEmailContainingIgnoreCase(email, pageable)
+                .map(this::mapToDto);
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public Page<UserDto> findUsersByUsername(String username, Pageable pageable) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        return userRepository.findByUsernameContainingIgnoreCase(username, pageable)
+                .map(this::mapToDto);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void addRoleToUserAdministrationMethod(UUID userId, String roleName) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role role = roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.getRoles().add(role);
+        userRepository.save(user);
+        log.info("Role {} added to user {} by admin {}", roleName, userId, adminId);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void removeRoleFromUser(UUID userId, String roleName) {
+        UUID adminId = getCurrentAdminId();
+        validateAdmin(adminId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role role = roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        user.getRoles().remove(role);
+        userRepository.save(user);
+        log.info("Role {} removed from user {} by admin {}", roleName, userId, adminId);
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    private void validateAdmin(UUID userId) {
+        if (!userRepository.hasModerationRole(userId)) {
+            throw new RuntimeException("User does not have administrator rights");
+        }
+    }
+
+    @Transactional(readOnly = true)
     public boolean hasModerationRole(UUID userId) {
         return userRepository.hasModerationRole(userId);
     }
 
+    @Transactional(readOnly = true)
     public User getById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -124,6 +304,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void updatePassword(UUID userId, String oldPassword, String newPassword) {
         User user = getById(userId);
         String oldPasswordHash = encryptionUtils.hashPassword(oldPassword);
@@ -135,6 +316,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void updateSearchable(UUID userId, boolean isSearchable) {
         User user = getById(userId);
         user.setIsSearchable(isSearchable);
@@ -241,6 +423,7 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public boolean isUserAvailableForSearch(UUID userId) {
         try {
             User user = getById(userId);
@@ -253,10 +436,12 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<User> getSearchingUsers() {
         return userRepository.findByIsSearchingTrue();
     }
 
+    @Transactional(readOnly = true)
     public List<User> getSearchableUsers() {
         return userRepository.findByIsSearchableTrue();
     }
@@ -312,11 +497,13 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public String getUserAvatar(UUID userId) {
         User user = getById(userId);
         return user.getAvatar();
     }
 
+    @Transactional(readOnly = true)
     public List<String> getUserImages(UUID userId) {
         User user = getById(userId);
         return user.getImages() != null ? user.getImages() : Collections.emptyList();
@@ -365,6 +552,43 @@ public class UserService {
         } catch (Exception e) {
             log.error("Error removing all images for user {}", userId, e);
             throw new RuntimeException("Failed to remove all images", e);
+        }
+    }
+
+    private UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setFirstname(user.getFirstname());
+        dto.setSubname(user.getSubname());
+        dto.setDescription(user.getDescription());
+        dto.setAvatar(user.getAvatar());
+        dto.setCity(user.getCity());
+        dto.setAge(user.getAge());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setVerified(user.getVerified());
+        dto.setIsSearchable(user.getIsSearchable());
+        dto.setIsOnline(user.getIsOnline());
+        dto.setGamePoints(user.getGamePoints());
+        dto.setImages(user.getImages());
+
+        if (user.getRoles() != null) {
+            Set<String> roles = user.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRoles(roles);
+        }
+
+        return dto;
+    }
+
+    private UUID getCurrentAdminId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+            return ((CustomUserDetails) authentication.getPrincipal()).getUserId();
+        } else {
+            return null;
         }
     }
 

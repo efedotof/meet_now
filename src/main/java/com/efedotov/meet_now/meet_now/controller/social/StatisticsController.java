@@ -19,10 +19,12 @@ import lombok.RequiredArgsConstructor;
 public class StatisticsController {
 
     private final StatisticsService statisticsService;
+    
 
     @Operation(summary = "Получить текущую статистику пользователей")
     @GetMapping("/user_stats")
     public ResponseEntity<UserStatsDto> getCurrentStats() {
         return ResponseEntity.ok(statisticsService.getCachedStats());
     }
+
 }

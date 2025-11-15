@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface GiftTypeRepository extends JpaRepository<GiftType, UUID> {
 
     Optional<GiftType> findByTypeName(String typeName);
+
 }

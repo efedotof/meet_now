@@ -4,14 +4,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.dto.response.moderation.ReportDto;
+import com.efedotov.meet_now.meet_now.dto.response.moderation.ReportStatisticsDto;
 import com.efedotov.meet_now.meet_now.model.moderation.Report;
 import com.efedotov.meet_now.meet_now.model.moderation.ReportStatus;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.moderation.ReportRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +25,49 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+
+    @AdminOnly
+    public Page<ReportDto> getAllReports(Pageable pageable) {
+        return reportRepository.findAll(pageable)
+                .map(this::convertToDto);
+    }
+
+    @AdminOnly
+    public Page<ReportDto> getReportsByStatus(ReportStatus status, Pageable pageable) {
+        return reportRepository.findByStatus(status, pageable)
+                .map(this::convertToDto);
+    }
+
+    @AdminOnly
+    public ReportDto updateReportStatus(UUID reportId, ReportStatus newStatus) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        report.setStatus(newStatus);
+        Report updatedReport = reportRepository.save(report);
+
+        return convertToDto(updatedReport);
+    }
+
+    @AdminOnly
+    public void deleteReportByAdmin(UUID reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        reportRepository.delete(report);
+    }
+
+    @AdminOnly
+    public ReportStatisticsDto getReportsStatistics() {
+        ReportStatisticsDto statistics = new ReportStatisticsDto();
+
+        statistics.setTotalReports(reportRepository.count());
+        statistics.setSentReports(reportRepository.countByStatus(ReportStatus.SENT));
+        statistics.setInProcessReports(reportRepository.countByStatus(ReportStatus.IN_PROCESS));
+        statistics.setCompletedReports(reportRepository.countByStatus(ReportStatus.COMPLETED));
+
+        return statistics;
+    }
 
     public List<ReportDto> getUserReports(UUID userId) {
         List<Report> reports = reportRepository.findByReporter_IdOrReported_Id(userId, userId);

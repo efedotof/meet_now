@@ -1,5 +1,9 @@
 package com.efedotov.meet_now.meet_now.service.gift;
 
+import com.efedotov.meet_now.meet_now.dto.request.gift.AdminCreateGiftRarityRequest;
+import com.efedotov.meet_now.meet_now.dto.request.gift.AdminCreateGiftRequest;
+import com.efedotov.meet_now.meet_now.dto.request.gift.AdminUpdateGiftRarityRequest;
+import com.efedotov.meet_now.meet_now.dto.request.gift.AdminUpdateGiftRequest;
 import com.efedotov.meet_now.meet_now.dto.request.gift.SendGiftRequest;
 import com.efedotov.meet_now.meet_now.dto.response.gift.*;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
@@ -10,6 +14,8 @@ import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.gift.*;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +48,290 @@ public class GiftService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final TemporaryChatRepository temporaryChatRepository;
+    private final GiftTypeRepository giftTypeRepository;
+
+    @AdminOnly
+    public List<AdminGiftDto> getAllGiftsAdmin() {
+        return giftRepository.findAll().stream()
+                .map(this::convertToAdminGiftDto)
+                .collect(Collectors.toList());
+    }
+
+    @AdminOnly
+    @Transactional
+    public AdminGiftDto createGift(AdminCreateGiftRequest request) {
+        GiftRarity rarity = giftRarityRepository.findById(request.getRarityId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Редкость не найдена"));
+
+        GiftType giftType = findOrCreateGiftType(request.getGiftType());
+
+        Gift gift = new Gift();
+        gift.setName(request.getName());
+        gift.setDescription(request.getDescription());
+        gift.setImageUrl(request.getImageUrl());
+        gift.setAnimationUrl(request.getAnimationUrl());
+        gift.setGiftType(giftType);
+        gift.setRarity(rarity);
+        gift.setCostPoints(request.getCostPoints());
+        gift.setIsActive(true);
+        gift.setCreatedAt(LocalDateTime.now());
+
+        Gift savedGift = giftRepository.save(gift);
+        log.info("Создан новый подарок: {}", savedGift.getName());
+        return convertToAdminGiftDto(savedGift);
+    }
+
+    @AdminOnly
+    @Transactional
+    public AdminGiftDto updateGift(UUID giftId, AdminUpdateGiftRequest request) {
+        Gift gift = giftRepository.findById(giftId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Подарок не найден"));
+
+        if (request.getName() != null) {
+            gift.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            gift.setDescription(request.getDescription());
+        }
+        if (request.getImageUrl() != null) {
+            gift.setImageUrl(request.getImageUrl());
+        }
+        if (request.getAnimationUrl() != null) {
+            gift.setAnimationUrl(request.getAnimationUrl());
+        }
+        if (request.getGiftType() != null) {
+            GiftType giftType = findOrCreateGiftType(request.getGiftType());
+            gift.setGiftType(giftType);
+        }
+        if (request.getRarityId() != null) {
+            GiftRarity rarity = giftRarityRepository.findById(request.getRarityId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Редкость не найдена"));
+            gift.setRarity(rarity);
+        }
+        if (request.getCostPoints() != null) {
+            gift.setCostPoints(request.getCostPoints());
+        }
+        if (request.getIsActive() != null) {
+            gift.setIsActive(request.getIsActive());
+        }
+
+        Gift updatedGift = giftRepository.save(gift);
+        log.info("Обновлен подарок: {}", updatedGift.getName());
+        return convertToAdminGiftDto(updatedGift);
+    }
+
+    @AdminOnly
+    private GiftType findOrCreateGiftType(String typeName) {
+        Optional<GiftType> existingType = giftTypeRepository.findByTypeName(typeName);
+        if (existingType.isPresent()) {
+            return existingType.get();
+        }
+
+        GiftType newType = new GiftType();
+        newType.setTypeName(typeName);
+        newType.setDescription("Автоматически созданный тип: " + typeName);
+        return giftTypeRepository.save(newType);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void deleteGift(UUID giftId) {
+        Gift gift = giftRepository.findById(giftId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Подарок не найден"));
+
+        long sentGiftsCount = sentGiftRepository.countByGiftId(giftId);
+        long inventoryCount = userInventoryRepository.countByGiftId(giftId);
+
+        if (sentGiftsCount > 0 || inventoryCount > 0) {
+            gift.setIsActive(false);
+            giftRepository.save(gift);
+            log.info("Подарок {} деактивирован (мягкое удаление)", gift.getName());
+        } else {
+            giftRepository.delete(gift);
+            log.info("Подарок {} полностью удален", gift.getName());
+        }
+    }
+
+    @AdminOnly
+    @Transactional
+    public AdminGiftDto toggleGiftActive(UUID giftId) {
+        Gift gift = giftRepository.findById(giftId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Подарок не найден"));
+
+        gift.setIsActive(!gift.getIsActive());
+        Gift updatedGift = giftRepository.save(gift);
+
+        log.info("Статус активности подарка {} изменен на: {}",
+                updatedGift.getName(), updatedGift.getIsActive());
+        return convertToAdminGiftDto(updatedGift);
+    }
+
+    @AdminOnly
+    public List<AdminGiftRarityDto> getAllRaritiesAdmin() {
+        return giftRarityRepository.findAll().stream()
+                .map(this::convertToAdminGiftRarityDto)
+                .collect(Collectors.toList());
+    }
+
+    @AdminOnly
+    @Transactional
+    public AdminGiftRarityDto createGiftRarity(AdminCreateGiftRarityRequest request) {
+        if (giftRarityRepository.findByName(request.getName()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Редкость с таким именем уже существует");
+        }
+
+        GiftRarity rarity = new GiftRarity();
+        rarity.setName(request.getName());
+        rarity.setDisplayName(request.getDisplayName());
+        rarity.setColor(request.getColor());
+        rarity.setMultiplier(request.getMultiplier());
+        rarity.setProbability(request.getProbability());
+        rarity.setMinPoints(request.getMinPoints());
+        rarity.setMaxPoints(request.getMaxPoints());
+        rarity.setIsActive(true);
+        rarity.setCreatedAt(LocalDateTime.now());
+
+        GiftRarity savedRarity = giftRarityRepository.save(rarity);
+        log.info("Создана новая редкость: {}", savedRarity.getName());
+        return convertToAdminGiftRarityDto(savedRarity);
+    }
+
+    @AdminOnly
+    @Transactional
+    public AdminGiftRarityDto updateGiftRarity(UUID rarityId, AdminUpdateGiftRarityRequest request) {
+        GiftRarity rarity = giftRarityRepository.findById(rarityId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Редкость не найдена"));
+
+        if (request.getName() != null) {
+            if (!rarity.getName().equals(request.getName()) &&
+                    giftRarityRepository.findByName(request.getName()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Редкость с таким именем уже существует");
+            }
+            rarity.setName(request.getName());
+        }
+        if (request.getDisplayName() != null) {
+            rarity.setDisplayName(request.getDisplayName());
+        }
+        if (request.getColor() != null) {
+            rarity.setColor(request.getColor());
+        }
+        if (request.getMultiplier() != null) {
+            rarity.setMultiplier(request.getMultiplier());
+        }
+        if (request.getProbability() != null) {
+            rarity.setProbability(request.getProbability());
+        }
+        if (request.getMinPoints() != null) {
+            rarity.setMinPoints(request.getMinPoints());
+        }
+        if (request.getMaxPoints() != null) {
+            rarity.setMaxPoints(request.getMaxPoints());
+        }
+        if (request.getIsActive() != null) {
+            rarity.setIsActive(request.getIsActive());
+        }
+
+        GiftRarity updatedRarity = giftRarityRepository.save(rarity);
+        log.info("Обновлена редкость: {}", updatedRarity.getName());
+        return convertToAdminGiftRarityDto(updatedRarity);
+    }
+
+    @AdminOnly
+    @Transactional
+    public void deleteGiftRarity(UUID rarityId) {
+        GiftRarity rarity = giftRarityRepository.findById(rarityId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Редкость не найдена"));
+
+        List<Gift> giftsWithRarity = giftRepository.findByRarity(rarity);
+        if (!giftsWithRarity.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Невозможно удалить редкость, так как существуют подарки с этой редкостью");
+        }
+
+        giftRarityRepository.delete(rarity);
+        log.info("Редкость {} удалена", rarity.getName());
+    }
+
+    @AdminOnly
+    public AdminGiftStatsDto getAdminGiftStats() {
+        long totalGifts = giftRepository.count();
+        long activeGifts = giftRepository.countByIsActiveTrue();
+        long totalRarities = giftRarityRepository.count();
+        long activeRarities = giftRarityRepository.countByIsActiveTrue();
+        long totalSentGifts = sentGiftRepository.count();
+        long totalDailyGifts = dailyGiftRepository.count();
+        long totalInventoryItems = userInventoryRepository.count();
+
+        LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
+        long sentGiftsLastWeek = sentGiftRepository.countBySentAtAfter(weekAgo);
+        long dailyGiftsLastWeek = dailyGiftRepository.countByReceivedAtAfter(weekAgo);
+
+        return AdminGiftStatsDto.builder()
+                .totalGifts(totalGifts)
+                .activeGifts(activeGifts)
+                .totalRarities(totalRarities)
+                .activeRarities(activeRarities)
+                .totalSentGifts(totalSentGifts)
+                .totalDailyGifts(totalDailyGifts)
+                .totalInventoryItems(totalInventoryItems)
+                .sentGiftsLastWeek(sentGiftsLastWeek)
+                .dailyGiftsLastWeek(dailyGiftsLastWeek)
+                .build();
+    }
+
+    @AdminOnly
+    public List<AdminSentGiftDto> getSentGiftsAdmin(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sentAt"));
+        return sentGiftRepository.findAll(pageRequest).getContent().stream()
+                .map(this::convertToAdminSentGiftDto)
+                .collect(Collectors.toList());
+    }
+
+    @AdminOnly
+    public List<AdminUserInventoryDto> getUserInventoryAdmin(UUID userId) {
+        List<UserInventory> inventory = userInventoryRepository.findByUserId(userId);
+        return inventory.stream()
+                .map(this::convertToAdminUserInventoryDto)
+                .collect(Collectors.toList());
+    }
+
+    @AdminOnly
+    public AdminUserGiftStatsDto getUserGiftStatsAdmin(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь не найден"));
+
+        long sentCount = sentGiftRepository.countBySenderId(userId);
+        long receivedCount = sentGiftRepository.countByRecipientId(userId);
+        long inventoryCount = userInventoryRepository.countByUserId(userId);
+
+        Integer currentStreak = getCurrentStreak(userId);
+        Integer maxStreak = getMaxStreak(userId);
+
+        long dailyGiftsCount = dailyGiftRepository.countByUserId(userId);
+
+        List<Object[]> popularSentGifts = sentGiftRepository.findPopularSentGiftsByUser(userId);
+        UUID mostPopularSentGiftId = popularSentGifts.isEmpty() ? null : (UUID) popularSentGifts.get(0)[0];
+        long mostPopularSentGiftCount = popularSentGifts.isEmpty() ? 0L : (Long) popularSentGifts.get(0)[1];
+
+        List<Object[]> popularReceivedGifts = sentGiftRepository.findPopularReceivedGiftsByUser(userId);
+        UUID mostPopularReceivedGiftId = popularReceivedGifts.isEmpty() ? null : (UUID) popularReceivedGifts.get(0)[0];
+        long mostPopularReceivedGiftCount = popularReceivedGifts.isEmpty() ? 0L : (Long) popularReceivedGifts.get(0)[1];
+
+        return AdminUserGiftStatsDto.builder()
+                .userId(userId)
+                .username(user.getUsername())
+                .sentCount(sentCount)
+                .receivedCount(receivedCount)
+                .inventoryCount(inventoryCount)
+                .currentStreak(currentStreak)
+                .maxStreak(maxStreak)
+                .dailyGiftsCount(dailyGiftsCount)
+                .mostPopularSentGiftId(mostPopularSentGiftId)
+                .mostPopularSentGiftCount(mostPopularSentGiftCount)
+                .mostPopularReceivedGiftId(mostPopularReceivedGiftId)
+                .mostPopularReceivedGiftCount(mostPopularReceivedGiftCount)
+                .build();
+    }
 
     public List<GiftDto> getAllAvailableGifts() {
         return giftRepository.findByIsActiveTrue().stream()
@@ -340,9 +630,15 @@ public class GiftService {
     }
 
     public GiftStatsDto getGiftStats(UUID userId) {
-        Long sentCount = sentGiftRepository.countBySenderId(userId);
-        Long receivedCount = sentGiftRepository.countByRecipientId(userId);
-        Long inventoryCount = userInventoryRepository.countByUserId(userId);
+        Long sentCountRaw = sentGiftRepository.countBySenderId(userId);
+        long sentCount = sentCountRaw != null ? sentCountRaw : 0L;
+
+        Long receivedCountRaw = sentGiftRepository.countByRecipientId(userId);
+        long receivedCount = receivedCountRaw != null ? receivedCountRaw : 0L;
+
+        Long inventoryCountRaw = userInventoryRepository.countByUserId(userId);
+        long inventoryCount = inventoryCountRaw != null ? inventoryCountRaw : 0L;
+
         Integer currentStreak = getCurrentStreak(userId);
         Integer maxStreak = getMaxStreak(userId);
 
@@ -368,6 +664,22 @@ public class GiftService {
                 .build();
     }
 
+    @AdminOnly
+    private AdminGiftDto convertToAdminGiftDto(Gift gift) {
+        return AdminGiftDto.builder()
+                .id(gift.getId())
+                .name(gift.getName())
+                .description(gift.getDescription())
+                .imageUrl(gift.getImageUrl())
+                .giftType(gift.getGiftType().getTypeName())
+                .rarity(convertToGiftRarityDto(gift.getRarity()))
+                .costPoints(gift.getCostPoints())
+                .animationUrl(gift.getAnimationUrl())
+                .isActive(gift.getIsActive())
+                .createdAt(gift.getCreatedAt())
+                .build();
+    }
+
     private GiftRarityDto convertToGiftRarityDto(GiftRarity rarity) {
         if (rarity == null) {
             return null;
@@ -385,6 +697,25 @@ public class GiftService {
                 .build();
     }
 
+    @AdminOnly
+    private AdminGiftRarityDto convertToAdminGiftRarityDto(GiftRarity rarity) {
+        if (rarity == null) {
+            return null;
+        }
+        return AdminGiftRarityDto.builder()
+                .id(rarity.getId())
+                .name(rarity.getName())
+                .displayName(rarity.getDisplayName())
+                .color(rarity.getColor())
+                .multiplier(rarity.getMultiplier())
+                .probability(rarity.getProbability())
+                .minPoints(rarity.getMinPoints())
+                .maxPoints(rarity.getMaxPoints())
+                .isActive(rarity.getIsActive())
+                .createdAt(rarity.getCreatedAt())
+                .build();
+    }
+
     private SentGiftDto convertToSentGiftDto(SentGift sentGift) {
         return SentGiftDto.builder()
                 .id(sentGift.getId())
@@ -399,12 +730,46 @@ public class GiftService {
                 .build();
     }
 
+    @AdminOnly
+    private AdminSentGiftDto convertToAdminSentGiftDto(SentGift sentGift) {
+        return AdminSentGiftDto.builder()
+                .id(sentGift.getId())
+                .senderId(sentGift.getSender().getId())
+                .senderUsername(sentGift.getSender().getUsername())
+                .recipientId(sentGift.getRecipient().getId())
+                .recipientUsername(sentGift.getRecipient().getUsername())
+                .gift(convertToAdminGiftDto(sentGift.getGift()))
+                .chatId(sentGift.getChat() != null ? sentGift.getChat().getChatId() : null)
+                .tempChatId(sentGift.getTempChat() != null ? sentGift.getTempChat().getTempChatId() : null)
+                .message(sentGift.getMessage())
+                .isAnonymous(sentGift.getIsAnonymous())
+                .sentAt(sentGift.getSentAt())
+                .build();
+    }
+
     private UserInventoryDto convertToUserInventoryDto(UserInventory userInventory) {
         return UserInventoryDto.builder()
                 .id(userInventory.getId())
                 .gift(convertToGiftDto(userInventory.getGift()))
                 .receivedFromId(
                         userInventory.getReceivedFrom() != null ? userInventory.getReceivedFrom().getId() : null)
+                .quantity(userInventory.getQuantity())
+                .isVisible(userInventory.getIsVisible())
+                .receivedAt(userInventory.getReceivedAt())
+                .build();
+    }
+
+    @AdminOnly
+    private AdminUserInventoryDto convertToAdminUserInventoryDto(UserInventory userInventory) {
+        return AdminUserInventoryDto.builder()
+                .id(userInventory.getId())
+                .userId(userInventory.getUser().getId())
+                .username(userInventory.getUser().getUsername())
+                .gift(convertToAdminGiftDto(userInventory.getGift()))
+                .receivedFromId(
+                        userInventory.getReceivedFrom() != null ? userInventory.getReceivedFrom().getId() : null)
+                .receivedFromUsername(
+                        userInventory.getReceivedFrom() != null ? userInventory.getReceivedFrom().getUsername() : null)
                 .quantity(userInventory.getQuantity())
                 .isVisible(userInventory.getIsVisible())
                 .receivedAt(userInventory.getReceivedAt())

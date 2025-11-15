@@ -15,7 +15,7 @@ import java.util.UUID;
 @Repository
 public interface DailyGiftRepository extends JpaRepository<DailyGift, UUID> {
 
-    @Query("SELECT dg FROM DailyGift dg WHERE dg.user.id = :userId AND FUNCTION('DATE', dg.receivedAt) = CURRENT_DATE")
+    @Query("SELECT dg FROM DailyGift dg WHERE dg.user.id = :userId AND CAST(dg.receivedAt AS localdate) = CURRENT_DATE")
     Optional<DailyGift> findTodayByUserId(@Param("userId") UUID userId);
 
     @Query("SELECT dg FROM DailyGift dg WHERE dg.user.id = :userId AND dg.receivedAt >= :startOfDay AND dg.receivedAt < :endOfDay")
@@ -43,4 +43,8 @@ public interface DailyGiftRepository extends JpaRepository<DailyGift, UUID> {
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
         return findTodayByUserIdRange(userId, startOfDay, endOfDay);
     }
+
+    long countByUserId(UUID userId);
+
+    long countByReceivedAtAfter(LocalDateTime date);
 }

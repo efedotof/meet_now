@@ -8,6 +8,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.dto.response.chat.ChatStatisticsAdmin;
+import com.efedotov.meet_now.meet_now.dto.response.chat.UserChatsResponse;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
@@ -33,6 +36,81 @@ public class ChatService {
     private final ChatGameRepository chatGameRepository;
     private final UserRepository userRepository;
     private final ChatTimerManagementService chatTimerManagementService;
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public List<TemporaryChat> getAllTemporaryChats() {
+        return temporaryChatRepository.findAll();
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public List<Chat> getAllPermanentChats() {
+        return chatRepository.findAll();
+    }
+
+    @AdminOnly
+    @Transactional
+    public void adminDeletePermanentChat(UUID chatId) {
+        chatRepository.findById(chatId).ifPresent(chat -> {
+            chat.setDeletedByUser1(true);
+            chat.setDeletedByUser2(true);
+            chat.setDeletedAt(LocalDateTime.now());
+            chat.setIsOpened(false);
+            chatRepository.save(chat);
+            log.info("Администратор удалил постоянный чат {}", chatId);
+        });
+    }
+
+    @AdminOnly
+    @Transactional
+    public void adminDeleteTemporaryChat(UUID tempChatId) {
+        temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
+            tempChat.setDeletedBySender(true);
+            tempChat.setDeletedByRecipient(true);
+            tempChat.setDeletedAt(LocalDateTime.now());
+            tempChat.setIsFinished(true);
+            temporaryChatRepository.save(tempChat);
+            log.info("Администратор удалил временный чат {}", tempChatId);
+        });
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public ChatStatisticsAdmin getChatStatistics() {
+        ChatStatisticsAdmin stats = new ChatStatisticsAdmin();
+
+        long totalPermanentChats = chatRepository.count();
+        long totalTemporaryChats = temporaryChatRepository.count();
+        long activeTemporaryChats = temporaryChatRepository.countByIsFinishedFalse();
+        long activePermanentChats = chatRepository.countByIsOpenedTrue();
+        long deletedPermanentChats = chatRepository.countByDeletedByUser1TrueOrDeletedByUser2True();
+
+        stats.setTotalPermanentChats(totalPermanentChats);
+        stats.setTotalTemporaryChats(totalTemporaryChats);
+        stats.setActiveTemporaryChats(activeTemporaryChats);
+        stats.setActivePermanentChats(activePermanentChats);
+        stats.setDeletedPermanentChats(deletedPermanentChats);
+
+        return stats;
+    }
+
+    @AdminOnly
+    @Transactional(readOnly = true)
+    public UserChatsResponse getUserChats(UUID userId) {
+        UserChatsResponse response = new UserChatsResponse();
+
+        List<Chat> permanentChats = chatRepository.findByUser1IdOrUser2Id(userId, userId);
+        List<TemporaryChat> temporaryChats = temporaryChatRepository.findBySenderIdOrRecipientId(userId, userId);
+
+        response.setUserId(userId);
+        response.setPermanentChats(permanentChats);
+        response.setTemporaryChats(temporaryChats);
+        response.setTotalPermanentChats(permanentChats.size());
+        response.setTotalTemporaryChats(temporaryChats.size());
+
+        return response;
+    }
 
     public Optional<User> getUserById(UUID userId) {
         return userRepository.findById(userId);
@@ -184,7 +262,7 @@ public class ChatService {
     }
 
     public List<ChatGame> getChatGames(UUID chatId) {
-        return chatGameRepository.findByChat_ChatId(chatId);
+        return chatGameRepository.findByChatId(chatId);
     }
 
     public ChatGame addGameToChat(UUID chatId, String gameType, String initialState) {

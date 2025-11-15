@@ -88,7 +88,7 @@ public class WebSocketMessageService {
                 chatRepository.save(chat);
                 finalChatId = chat.getChatId();
             } else {
-                List<TemporaryChat> tempChats = temporaryChatRepository.findBySender_IdOrRecipient_Id(senderId,
+                List<TemporaryChat> tempChats = temporaryChatRepository.findBySenderIdOrRecipientId(senderId,
                         recipientId);
                 for (TemporaryChat tchat : tempChats) {
                     if ((tchat.getSender().getId().equals(senderId) && tchat.getRecipient().getId().equals(recipientId))
