@@ -1,5 +1,18 @@
 package com.efedotov.meet_now.meet_now.service.moderation;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.efedotov.meet_now.meet_now.dto.request.moderation.CreateAnswerRequest;
 import com.efedotov.meet_now.meet_now.dto.request.moderation.CreateQuestionRequest;
 import com.efedotov.meet_now.meet_now.dto.response.moderation.DailyQuestionStatisticDto;
@@ -18,19 +31,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Slf4j
 @Service
 @Transactional
@@ -47,8 +47,8 @@ public class SupportService {
         statistics.setTotalQuestions(questionRepository.count());
         statistics.setTotalAnswers(answerRepository.count());
 
-        statistics.setPendingQuestions(questionRepository.countByStatus(QuestionStatus.PENDING));
-        statistics.setResolvedQuestions(questionRepository.countByStatus(QuestionStatus.RESOLVED));
+        statistics.setPendingQuestions(questionRepository.countByStatus(QuestionStatus.PENDING.toString()));
+        statistics.setResolvedQuestions(questionRepository.countByStatus(QuestionStatus.RESOLVED.toString()));
 
         statistics.setUnansweredQuestions(questionRepository.countByAnswersIsEmpty());
 

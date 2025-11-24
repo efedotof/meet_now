@@ -20,8 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.security.AdminOnly;
-import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendConnectionDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendRequestDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendStatisticsDto;
@@ -31,6 +29,8 @@ import com.efedotov.meet_now.meet_now.dto.response.social.UserWithFriendCountDto
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,15 +79,19 @@ public class FriendService {
 
         FriendStatisticsDto statistics = new FriendStatisticsDto();
 
-        List<User> allUsers = userRepository.findAll();
+        long totalUsers = userRepository.count();
+        long usersWithFriends = userRepository.countUsersWithFriends();
 
-        statistics.setTotalUsers(allUsers.size());
-        statistics.setTotalFriendships(countTotalFriendships());
-        statistics.setAverageFriendsPerUser(calculateAverageFriendsPerUser(allUsers));
-        statistics.setUsersWithNoFriends(countUsersWithNoFriends(allUsers));
-        statistics.setMostFriendsCount(findMostFriendsCount(allUsers));
+        statistics.setTotalUsers(totalUsers);
+        statistics.setTotalFriendships(userRepository.countTotalFriendships() / 2);
+
+        statistics.setAverageFriendsPerUser(
+                userRepository.getAverageFriendsPerUser());
+        statistics.setUsersWithNoFriends(totalUsers - usersWithFriends);
+        statistics.setMostFriendsCount(
+                userRepository.getMaxFriendsCount());
         statistics.setFriendRequestsCount(friendRequests.values().stream().mapToInt(Set::size).sum());
-        statistics.setFriendsDistribution(calculateFriendsDistribution(allUsers));
+        statistics.setFriendsDistribution(calculateFriendsDistribution());
 
         return statistics;
     }
@@ -248,51 +252,14 @@ public class FriendService {
 
     @AdminOnly
     @Transactional(readOnly = true)
-    private long countTotalFriendships() {
-        return userRepository.findAll().stream()
-                .mapToLong(user -> user.getFriends().size())
-                .sum() / 2;
-    }
+    private FriendsDistributionDto calculateFriendsDistribution() {
+        long totalUsers = userRepository.count();
 
-    @AdminOnly
-    @Transactional(readOnly = true)
-    private double calculateAverageFriendsPerUser(List<User> users) {
-        if (users.isEmpty())
-            return 0.0;
-        return users.stream()
-                .mapToInt(user -> user.getFriends().size())
-                .average()
-                .orElse(0.0);
-    }
-
-    @AdminOnly
-    @Transactional(readOnly = true)
-    private long countUsersWithNoFriends(List<User> users) {
-        return users.stream()
-                .filter(user -> user.getFriends().isEmpty())
-                .count();
-    }
-
-    @AdminOnly
-    @Transactional(readOnly = true)
-    private int findMostFriendsCount(List<User> users) {
-        return users.stream()
-                .mapToInt(user -> user.getFriends().size())
-                .max()
-                .orElse(0);
-    }
-
-    @AdminOnly
-    @Transactional(readOnly = true)
-    private FriendsDistributionDto calculateFriendsDistribution(List<User> users) {
-        long zeroFriends = users.stream().filter(u -> u.getFriends().isEmpty()).count();
-        long oneToFiveFriends = users.stream().filter(u -> u.getFriends().size() >= 1 && u.getFriends().size() <= 5)
-                .count();
-        long sixToTenFriends = users.stream().filter(u -> u.getFriends().size() >= 6 && u.getFriends().size() <= 10)
-                .count();
-        long elevenToTwentyFriends = users.stream()
-                .filter(u -> u.getFriends().size() >= 11 && u.getFriends().size() <= 20).count();
-        long twentyOnePlusFriends = users.stream().filter(u -> u.getFriends().size() > 20).count();
+        long zeroFriends = totalUsers - userRepository.countUsersWithFriends();
+        long oneToFiveFriends = userRepository.countUsersWithFriendsBetween(1, 5);
+        long sixToTenFriends = userRepository.countUsersWithFriendsBetween(6, 10);
+        long elevenToTwentyFriends = userRepository.countUsersWithFriendsBetween(11, 20);
+        long twentyOnePlusFriends = userRepository.countUsersWithFriendsMoreThan(20);
 
         return FriendsDistributionDto.builder()
                 .zeroFriends(zeroFriends)

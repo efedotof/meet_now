@@ -408,7 +408,6 @@ public class StatisticsService {
         broadcastUserStats();
     }
 
-    @AdminOnly
     @Transactional(readOnly = true)
     public UserStatsDto getCachedStats() {
         return getUserStats();

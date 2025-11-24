@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -97,4 +98,31 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
         List<Object[]> findMostPopularPurposes();
 
         Page<User> findByIsOnlineTrue(Pageable pageable);
+
+        @Query(value = "SELECT COUNT(*) FROM user_friends", nativeQuery = true)
+        long countTotalFriendships();
+
+        @Query(value = "SELECT COUNT(DISTINCT user_id) FROM user_friends", nativeQuery = true)
+        long countUsersWithFriends();
+
+        @Query(value = "SELECT AVG(friend_count) FROM (" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM user_friends GROUP BY user_id" +
+                        ") as counts", nativeQuery = true)
+        Double getAverageFriendsPerUser();
+
+        @Query(value = "SELECT MAX(friend_count) FROM (" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM user_friends GROUP BY user_id" +
+                        ") as counts", nativeQuery = true)
+        Integer getMaxFriendsCount();
+
+        @Query(value = "SELECT COUNT(*) FROM (" +
+                        "SELECT user_id FROM user_friends GROUP BY user_id HAVING COUNT(friend_id) BETWEEN :min AND :max"
+                        +
+                        ") as users_in_range", nativeQuery = true)
+        long countUsersWithFriendsBetween(@Param("min") int min, @Param("max") int max);
+
+        @Query(value = "SELECT COUNT(*) FROM (" +
+                        "SELECT user_id FROM user_friends GROUP BY user_id HAVING COUNT(friend_id) > :min" +
+                        ") as users_more_than", nativeQuery = true)
+        long countUsersWithFriendsMoreThan(@Param("min") int min);
 }
