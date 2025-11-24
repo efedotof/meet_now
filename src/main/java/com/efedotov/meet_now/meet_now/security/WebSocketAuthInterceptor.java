@@ -42,7 +42,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                     String bearerToken = authHeaders.get(0);
                     if (bearerToken.startsWith("Bearer ")) {
                         token = bearerToken.substring(7);
-
                     } else {
                         log.warn("Authorization header does not start with 'Bearer '");
                     }
@@ -53,13 +52,14 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                     throw new RuntimeException("Authorization header is missing");
                 }
 
-                Optional<UserSession> sessionOpt = sessionService.findByToken(token);
+                Optional<UserSession> sessionOpt = sessionService.findValidSession(token);
                 if (!sessionOpt.isPresent()) {
-                    throw new RuntimeException("Invalid token");
+                    log.warn("Invalid or expired session token for WebSocket connection");
+                    throw new RuntimeException("Invalid or expired token");
                 }
 
                 UUID userId = sessionOpt.get().getUserId();
-                log.info("Authenticating user ID: {}", userId);
+                log.info("Authenticating user ID: {} for WebSocket", userId);
 
                 UserDetails userDetails = userDetailsService.loadUserById(userId);
                 log.info("Loaded UserDetails: {}", userDetails.getClass().getName());
@@ -71,13 +71,15 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 }
 
                 CustomUserDetails customDetails = (CustomUserDetails) userDetails;
-                log.info("User authenticated: {}", customDetails.getUsername());
+                log.info("User authenticated via WebSocket: {}", customDetails.getUsername());
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
                 accessor.setUser(auth);
+
+                log.info("WebSocket authentication successful for user: {}", customDetails.getUsername());
                 return message;
 
             } catch (RuntimeException e) {
