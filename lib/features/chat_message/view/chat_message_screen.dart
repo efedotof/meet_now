@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_ui_package/media_ui_package.dart';
-import 'package:meet_now_app/config.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
-import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart'; // Добавляем импорт
+import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app_server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/model/chats/agree_chat_request/agree_chat_response.dart';
+import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+
+import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app_server/repository/timer/timer_repository.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
@@ -75,18 +77,25 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     _mediaSelectionCubit = MediaSelectionCubit();
 
     _subscription = cubit.stream.listen((state) {
-      state.maybeMap(loaded: (_) => _scrollToBottom(), orElse: () {});
+      state.maybeMap(
+        loaded: (state) {
+          _scrollToBottom();
+          _checkForContinueRequest(context, state);
+        },
+        orElse: () {},
+      );
     });
 
     if (isTemporary) {
+      final totalTime = widget.temporaryChatModel!.durationMinutes * 60;
+
       _timerCubit = SyncTimerCubit(
         timerRepository: TimerRepository(
-          userModelAppInterface: context.read<UserModelAppInterface>(),
-          socketAddress: socketAddress,
+          socketService: context.read<SocketServiceInterface>(),
         ),
         tempChatId: _chatId,
         userId: senderID,
-        otherUserId: recipientId,
+        totalTime: totalTime,
       );
     }
   }
@@ -103,8 +112,234 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     super.dispose();
   }
 
-  void _checkForModal(BuildContext context, ChatMessageState state) {
-    // Добавьте логику для проверки модальных окон при необходимости
+  void _checkForContinueRequest(BuildContext context, ChatMessageState state) {
+    state.maybeMap(
+      loaded: (state) {
+        if (state.showContinueRequest && !state.isWaitingForResponse) {
+          _showContinueChatDialog(context, state.agreeChatResponse);
+        } else if (state.isWaitingForResponse) {
+          _showWaitingForResponseDialog(context);
+        }
+        if (state.agreeChatResponse?.permanentChatCreated == true) {
+          _showPermanentChatCreatedDialog(context, state.agreeChatResponse!);
+        }
+      },
+      orElse: () {},
+    );
+  }
+
+  void _showContinueChatDialog(
+    BuildContext context,
+    AgreeChatResponse? response,
+  ) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Продолжить общение?'),
+            content: const Text(
+              'Собеседник предлагает продолжить общение в постоянном чате. '
+              'Вы согласны?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  context.read<ChatMessageCubit>().respondToContinueRequest(
+                    false,
+                  );
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Отклонить'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<ChatMessageCubit>().respondToContinueRequest(
+                    true,
+                  );
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Принять'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showPermanentChatCreatedDialog(
+    BuildContext context,
+    AgreeChatResponse response,
+  ) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Постоянный чат создан'),
+            content: const Text(
+              'Теперь вы можете продолжить общение в постоянном чате. '
+              'Все сообщения сохранены.',
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Продолжить'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showWaitingForResponseDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Ожидание ответа'),
+            content: const Text(
+              'Запрос на продолжение чата отправлен. '
+              'Ожидаем ответа от собеседника...',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  context.read<ChatMessageCubit>().hideContinueRequest();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Отменить'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showContinueChatProposalDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Продолжить общение?'),
+            content: const Text(
+              'Хотите предложить собеседнику продолжить общение в постоянном чате?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Отмена'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<ChatMessageCubit>().sendContinueRequest();
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Предложить'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showTimeOptionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Время чата подходит к концу'),
+            content: const Text('Выберите действие:'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showAddTimeBottomSheet(context);
+                },
+                child: const Text('Добавить время'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showContinueChatProposalDialog(context);
+                },
+                child: const Text('Продолжить в постоянном чате'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showExitConfirmationDialog();
+                },
+                child: const Text('Завершить чат'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showAddTimeBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Добавить время к чату:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _timerCubit.proposeAddTime(1);
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('1 мин'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _timerCubit.proposeAddTime(3);
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('3 мин'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _timerCubit.proposeAddTime(5);
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('5 мин'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Отмена'),
+                ),
+              ],
+            ),
+          ),
+    );
   }
 
   String _getChatRecipient({required String currentUserId}) {
@@ -306,7 +541,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       value: _mediaSelectionCubit,
       child: BlocListener<ChatMessageCubit, ChatMessageState>(
         listener: (context, state) {
-          _checkForModal(context, state);
+          state.maybeMap(
+            loaded: (state) => _checkForContinueRequest(context, state),
+            orElse: () {},
+          );
         },
         child:
             isTemporary
@@ -336,6 +574,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         finished: () {
                           _showTimerFinishedDialog();
                         },
+                        timeOptions: (remainingTime, formattedTime) {
+                          _showTimeOptionsDialog(context);
+                        },
                       );
                     },
                     child: BuildScaffold(
@@ -351,6 +592,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                       scrollController: _scrollController,
                       chatModel: widget.chatModel,
                       onAddAttach: _showMediaPickerBottomSheet,
+                      onContinueChat:
+                          () => _showContinueChatProposalDialog(context),
                     ),
                   ),
                 )
@@ -367,6 +610,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   scrollController: _scrollController,
                   chatModel: widget.chatModel,
                   onAddAttach: _showMediaPickerBottomSheet,
+                  onContinueChat:
+                      () => _showContinueChatProposalDialog(context),
                 ),
       ),
     );

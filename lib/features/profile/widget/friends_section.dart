@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 class FriendsSection extends StatelessWidget {
   const FriendsSection({super.key, required this.theme, required this.user});

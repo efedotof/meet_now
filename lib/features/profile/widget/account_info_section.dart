@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/auth/user/user.dart';
+
+import 'info_row.dart';
 
 class AccountInfoSection extends StatelessWidget {
   const AccountInfoSection({
@@ -21,7 +23,7 @@ class AccountInfoSection extends StatelessWidget {
           children: [
             Text("Аккаунт", style: theme.textTheme.titleLarge),
             const SizedBox(height: 12),
-            _InfoRow(
+            InfoRow(
               icon: Icons.calendar_today,
               title: "Дата регистрации:",
               value: user.createdAt.toLocal().toString().split(' ')[0],
@@ -32,41 +34,15 @@ class AccountInfoSection extends StatelessWidget {
             //   value: user.isOnline ? "В сети" : "Не в сети",
             // ),
             if (user.floor.isNotEmpty)
-              _InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
+              InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
             if (user.roles.isNotEmpty)
-              _InfoRow(
+              InfoRow(
                 icon: Icons.security,
                 title: "Роли:",
                 value: user.roles.join(", "),
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.title,
-    required this.value,
-  });
-  final IconData icon;
-  final String title;
-  final String value;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text("$title $value", style: const TextStyle(fontSize: 14)),
-          ),
-        ],
       ),
     );
   }

@@ -43,6 +43,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   @override
   void dispose() {
     controller.dispose();
+    controller.stop();
     super.dispose();
   }
 

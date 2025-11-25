@@ -17,6 +17,7 @@ class UploadsAvatarsView extends StatefulWidget {
 class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
   final PageController _pageController = PageController();
   bool _avatarConfirmed = false;
+  int _currentPage = 0;
 
   UploadsAvatarsCubit get _cubit => context.read<UploadsAvatarsCubit>();
 
@@ -45,22 +46,25 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
   }
 
   Widget? _buildFloatingActionButton(UploadsAvatarsState state) {
-    final currentPage = _pageController.page?.round() ?? 0;
-
-    if (currentPage == 0) {
+    if (_currentPage == 0) {
       if (_avatarConfirmed && _cubit.isAvatarUploaded) {
         return FloatingActionButton(
-          onPressed: () => _pageController.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          ),
+          onPressed: () {
+            _pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+            setState(() {
+              _currentPage = 1;
+            });
+          },
           child: const Icon(Icons.arrow_forward),
         );
       }
       return null;
     }
 
-    if (currentPage == 1 && _cubit.areGalleryImagesSelected) {
+    if (_currentPage == 1 && _cubit.areGalleryImagesSelected) {
       return FloatingActionButton(
         onPressed: _cubit.confirmAndUploadGallery,
         child: const Icon(Icons.cloud_upload),
@@ -71,14 +75,33 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      final newPage = _pageController.page?.round() ?? 0;
+      if (newPage != _currentPage) {
+        setState(() {
+          _currentPage = newPage;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocListener<UploadsAvatarsCubit, UploadsAvatarsState>(
       listener: (context, state) {
         state.whenOrNull(
           error: (message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
           },
           avatarUploadSuccess: (_) {
             setState(() => _avatarConfirmed = true);
@@ -97,14 +120,19 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
             body: PageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
               children: [
                 AvatarPage(
                   state: state,
                   cubit: _cubit,
                   onPickAvatar: _pickAvatar,
                   avatarConfirmed: _avatarConfirmed,
-                  onAvatarConfirmedChange: (value) =>
-                      setState(() => _avatarConfirmed = value),
+                  onAvatarConfirmedChange:
+                      (value) => setState(() => _avatarConfirmed = value),
                 ),
                 GalleryPage(
                   state: state,

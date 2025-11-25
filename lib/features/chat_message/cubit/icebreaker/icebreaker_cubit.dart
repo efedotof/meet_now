@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/icebreaker_topec/icebreaker_topec.dart';
+import 'package:meet_now_app_server/model/social/icebreaker_topec/icebreaker_topec.dart';
+
 import 'package:meet_now_app_server/repository/icebreaker/icebreaker_interface.dart';
 
 part 'icebreaker_state.dart';

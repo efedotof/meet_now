@@ -14,7 +14,7 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
   String? _avatarUrl;
   List<String> _galleryImages = [];
   String? _selectedAvatarPath;
-  List<String> _selectedGalleryPaths = [];
+  final List<String> _selectedGalleryPaths = [];
 
   String? get avatarUrl => _avatarUrl;
   List<String> get galleryImages => _galleryImages;

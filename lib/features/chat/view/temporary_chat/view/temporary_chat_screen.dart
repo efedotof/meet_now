@@ -40,6 +40,7 @@ class TemporaryChatScreen extends StatelessWidget {
                 lastMessage: l10n.tapToView,
                 unreadCount: 0,
                 temporaryChat: chat,
+                sendLastMessageAt: null,
               );
             },
           );

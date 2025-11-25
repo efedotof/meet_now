@@ -34,6 +34,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "add3Minutes": MessageLookupByLibrary.simpleMessage("Добавить 3 минуты"),
     "addInterestHint": MessageLookupByLibrary.simpleMessage("Добавьте интерес"),
     "addPurposeHint": MessageLookupByLibrary.simpleMessage("Добавьте цель"),
+    "additionalcomments": MessageLookupByLibrary.simpleMessage(
+      "additionalComments",
+    ),
     "age": MessageLookupByLibrary.simpleMessage("Возраст"),
     "allowProfileSearch": MessageLookupByLibrary.simpleMessage(
       "Разрешить поиск моего профиля",
@@ -51,17 +54,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "availableCommands": MessageLookupByLibrary.simpleMessage(
       "Доступные команды",
     ),
+    "avatarupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "avatarUpdatedSuccessfully",
+    ),
+    "avataruploadfailed": MessageLookupByLibrary.simpleMessage(
+      "avatarUploadFailed",
+    ),
     "background": MessageLookupByLibrary.simpleMessage("Фон"),
+    "block": MessageLookupByLibrary.simpleMessage("block"),
+    "blockuser": MessageLookupByLibrary.simpleMessage("BlockUser"),
+    "blockuserconfirmation": MessageLookupByLibrary.simpleMessage(
+      "blockUserConfirmation",
+    ),
     "books": MessageLookupByLibrary.simpleMessage("Книги"),
     "cameraStartError": MessageLookupByLibrary.simpleMessage(
       "Ошибка запуска камеры",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Отмена"),
     "changePin": MessageLookupByLibrary.simpleMessage("Изменить PIN-код"),
+    "changepassword": MessageLookupByLibrary.simpleMessage("changePassword"),
     "chat": MessageLookupByLibrary.simpleMessage("Чат"),
     "chatTimeEnding": MessageLookupByLibrary.simpleMessage(
       "Время чата подходит к концу",
     ),
+    "chatdeleted": MessageLookupByLibrary.simpleMessage("chatDeleted"),
     "chats": MessageLookupByLibrary.simpleMessage("Чаты"),
     "chooseTheme": MessageLookupByLibrary.simpleMessage(
       "Выберите тему оформления",
@@ -69,6 +85,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "city": MessageLookupByLibrary.simpleMessage("Город"),
     "cityOptional": MessageLookupByLibrary.simpleMessage(
       "Город (необязательно)",
+    ),
+    "clear": MessageLookupByLibrary.simpleMessage("clear"),
+    "clearHistory": MessageLookupByLibrary.simpleMessage("Clear History"),
+    "clearhistoryconfirmation": MessageLookupByLibrary.simpleMessage(
+      "clearHistoryConfirmation",
     ),
     "close": MessageLookupByLibrary.simpleMessage("Закрыть"),
     "communication": MessageLookupByLibrary.simpleMessage("Общение"),
@@ -83,6 +104,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "darkTheme": MessageLookupByLibrary.simpleMessage("Темная тема"),
     "datingGoals": MessageLookupByLibrary.simpleMessage("Цели знакомств"),
+    "delete": MessageLookupByLibrary.simpleMessage("delete"),
+    "deletechat": MessageLookupByLibrary.simpleMessage("DeleteChat"),
+    "deletechatconfirmation": MessageLookupByLibrary.simpleMessage(
+      "deleteChatConfirmation",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "editProfile": MessageLookupByLibrary.simpleMessage(
       "Редактирование профиля",
@@ -107,6 +133,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "extendOrQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Хотите продлить время чата или перейти к анкете?",
     ),
+    "fakeprofile": MessageLookupByLibrary.simpleMessage("fakeProfile"),
     "female": MessageLookupByLibrary.simpleMessage("Женский"),
     "finish": MessageLookupByLibrary.simpleMessage("Завершить"),
     "finishOrClose": MessageLookupByLibrary.simpleMessage(
@@ -126,6 +153,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "friendship": MessageLookupByLibrary.simpleMessage("Дружба"),
     "games": MessageLookupByLibrary.simpleMessage("Игры"),
     "gender": MessageLookupByLibrary.simpleMessage("Пол"),
+    "harassment": MessageLookupByLibrary.simpleMessage("harassment"),
+    "historycleared": MessageLookupByLibrary.simpleMessage("historyCleared"),
+    "inappropriatecontent": MessageLookupByLibrary.simpleMessage(
+      "inappropriateContent",
+    ),
     "incorrectPin": MessageLookupByLibrary.simpleMessage("Неверный PIN"),
     "incorrectPinCode": MessageLookupByLibrary.simpleMessage(
       "Неверный PIN-код",
@@ -152,6 +184,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "music": MessageLookupByLibrary.simpleMessage("Музыка"),
     "myInterests": MessageLookupByLibrary.simpleMessage("Мои интересы"),
     "myProfile": MessageLookupByLibrary.simpleMessage("Мой профиль"),
+    "newpassword": MessageLookupByLibrary.simpleMessage("newPassword"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
       "У вас пока нет друзей",
@@ -162,15 +195,24 @@ class MessageLookup extends MessageLookupByLibrary {
     "noTemporaryChats": MessageLookupByLibrary.simpleMessage(
       "Временных чатов нет",
     ),
+    "nointerestsadded": MessageLookupByLibrary.simpleMessage(
+      "noInterestsAdded",
+    ),
+    "nopurposesadded": MessageLookupByLibrary.simpleMessage("noPurposesAdded"),
     "notifications": MessageLookupByLibrary.simpleMessage("Уведомления"),
     "offline": MessageLookupByLibrary.simpleMessage("не в сети"),
+    "oldpassword": MessageLookupByLibrary.simpleMessage("oldPassword"),
     "online": MessageLookupByLibrary.simpleMessage("в сети"),
     "onlyVerified": MessageLookupByLibrary.simpleMessage(
       "Только проверенные пользователи",
     ),
     "openQuestionnaire": MessageLookupByLibrary.simpleMessage("Открыть анкету"),
+    "other": MessageLookupByLibrary.simpleMessage("other"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordHint": MessageLookupByLibrary.simpleMessage("Пароль"),
+    "passwordchangedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "passwordChangedSuccessfully",
+    ),
     "permanentChats": MessageLookupByLibrary.simpleMessage("Постоянные чаты"),
     "personalInfo": MessageLookupByLibrary.simpleMessage("Основная информация"),
     "pinChangedSuccess": MessageLookupByLibrary.simpleMessage(
@@ -189,6 +231,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Скрывать конфиденциальную информацию в фоне",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Профиль"),
+    "profileupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "profileUpdatedSuccessfully",
+    ),
     "purposes": MessageLookupByLibrary.simpleMessage("Цели"),
     "qrNoValue": MessageLookupByLibrary.simpleMessage(
       "Не удалось распознать данные",
@@ -204,6 +249,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "register": MessageLookupByLibrary.simpleMessage("Зарегистрироваться"),
     "registration": MessageLookupByLibrary.simpleMessage("Регистрация"),
     "removeFriend": MessageLookupByLibrary.simpleMessage("Удалить из друзей"),
+    "reportsubmitted": MessageLookupByLibrary.simpleMessage("reportSubmitted"),
+    "reportuser": MessageLookupByLibrary.simpleMessage("ReportUser"),
+    "reportuserdescription": MessageLookupByLibrary.simpleMessage(
+      "reportUserDescription",
+    ),
     "retry": MessageLookupByLibrary.simpleMessage("Повторить попытку"),
     "russian": MessageLookupByLibrary.simpleMessage("Русский"),
     "save": MessageLookupByLibrary.simpleMessage("Сохранить"),
@@ -216,6 +266,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "security": MessageLookupByLibrary.simpleMessage("Безопасность"),
     "selectAge": MessageLookupByLibrary.simpleMessage("Выберите возраст"),
     "selectGender": MessageLookupByLibrary.simpleMessage("Выберите пол"),
+    "selectreason": MessageLookupByLibrary.simpleMessage("selectReason"),
     "sendMessage": MessageLookupByLibrary.simpleMessage("Написать сообщение"),
     "sendingFile": MessageLookupByLibrary.simpleMessage("отправляет файл"),
     "sendingImage": MessageLookupByLibrary.simpleMessage("отправляет фото"),
@@ -225,6 +276,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "signUp": MessageLookupByLibrary.simpleMessage("Зарегистрироваться"),
+    "spam": MessageLookupByLibrary.simpleMessage("spam"),
     "sports": MessageLookupByLibrary.simpleMessage("Спорт"),
     "startCommunication": MessageLookupByLibrary.simpleMessage(
       "Начать общение",
@@ -236,6 +288,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stopThink": MessageLookupByLibrary.simpleMessage(
       "Стоп-стоп, подумайте с чего вы хотите начать...",
     ),
+    "submitreport": MessageLookupByLibrary.simpleMessage("submitReport"),
     "support": MessageLookupByLibrary.simpleMessage("Поддержка"),
     "tapToView": MessageLookupByLibrary.simpleMessage(
       "Нажмите, чтобы посмотреть",
@@ -255,6 +308,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeSelection": MessageLookupByLibrary.simpleMessage("Выбор темы"),
     "timerSeconds": MessageLookupByLibrary.simpleMessage("Таймер:"),
     "typing": MessageLookupByLibrary.simpleMessage("печатает..."),
+    "uploadingavatar": MessageLookupByLibrary.simpleMessage("uploadingAvatar"),
+    "userblocked": MessageLookupByLibrary.simpleMessage("userBlocked"),
     "username": MessageLookupByLibrary.simpleMessage("Имя пользователя"),
     "usernameHint": MessageLookupByLibrary.simpleMessage("Пользователь"),
     "version": m1,

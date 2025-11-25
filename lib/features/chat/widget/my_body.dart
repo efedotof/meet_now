@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 
 import 'chat_tile.dart';
 import 'temporary_chats_banner.dart';
@@ -96,12 +96,19 @@ class MyBody extends StatelessWidget {
 
                 final (name, avatar) = _getChatDisplayData(chat, currentUserId);
 
-                return ChatTile(
-                  name: name,
-                  lastMessage: chat.lastMessage ?? "Начните общение",
-                  unreadCount: 3,
-                  avatar: avatar,
-                  chat: chat,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  child: ChatTile(
+                    name: name,
+                    lastMessage: chat.lastMessage ?? "Начните общение",
+                    unreadCount: chat.unreadCount,
+                    avatar: avatar,
+                    chat: chat,
+                    sendLastMessageAt: chat.lastMessageAt,
+                  ),
                 );
               }, childCount: state.permanentChat.length),
             ),

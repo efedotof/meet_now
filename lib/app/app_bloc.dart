@@ -12,16 +12,19 @@ import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_acti
 import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
+import 'package:meet_now_app/features/gift/cubit/gift_cubit.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
 import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
 import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/user_stats_cubit.dart';
 import 'package:meet_now_app/features/security/cubit/security_cubit.dart';
 import 'package:meet_now_app/features/setting_profile/cubit/setting_profile_cubit.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
@@ -78,6 +81,7 @@ class AppBloc extends StatelessWidget {
               (context) => ChatCubit(
                 userModelAppInterface: context.read<UserModelAppInterface>(),
                 socketServiceInterface: context.read<SocketServiceInterface>(),
+                chatInterface: context.read<ChatInterface>(),
               ),
         ),
         BlocProvider(
@@ -87,6 +91,7 @@ class AppBloc extends StatelessWidget {
                 passwordStorageInterface:
                     context.read<PasswordStorageInterface>(),
                 userStorageInterface: context.read<UserStorageInterface>(),
+                userInterface: context.read<UserInterface>(),
               ),
         ),
         BlocProvider(
@@ -102,6 +107,7 @@ class AppBloc extends StatelessWidget {
                 gamesInterface: context.read<GamesInterface>(),
                 friendInterface: context.read<FriendInterface>(),
                 uploadImageInterface: context.read<UploadImageInterface>(),
+                socketInterface: context.read<SocketServiceInterface>(),
               ),
         ),
         BlocProvider(
@@ -162,6 +168,7 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => SettingProfileCubit(
                 userInterface: context.read<UserInterface>(),
+                uploadImageInterface: context.read<UploadImageInterface>(),
               ),
         ),
         BlocProvider(
@@ -185,9 +192,28 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => GameChatCubit(
                 gamesRepository: context.read<GamesInterface>(),
+                tokenInterface: context.read<TokenInterface>(),
               ),
         ),
         BlocProvider(create: (context) => MediaSelectionCubit()),
+        BlocProvider(
+          create:
+              (context) =>
+                  GiftCubit(giftInterface: context.read<GiftInterface>()),
+        ),
+        BlocProvider(
+          create:
+              (context) => UserStatsCubit(
+                socketServiceInterface: context.read<SocketServiceInterface>(),
+                userStatsInterface: context.read<UserStatsInterface>(),
+              ),
+        ),
+        BlocProvider(
+          create:
+              (context) => SupportCubit(
+                supportInterface: context.read<SupportInterface>(),
+              ),
+        ),
       ],
       child: child,
     );

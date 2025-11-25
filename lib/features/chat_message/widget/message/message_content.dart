@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app_server/model/message/message.dart';
+import 'package:meet_now_app_server/model/chats/message/message.dart';
 
 import 'file_message.dart';
 import 'image_message.dart';
@@ -25,13 +25,23 @@ class MessageContent extends StatelessWidget {
     final media = hasMedia ? message.media.first : null;
 
     if (message.isSticker) {
-      return StickerMessage(message: message, theme: theme);
+      return StickerMessage(message: message, theme: theme, isMe: isMe);
     } else if (message.isImage && hasMedia) {
-      return ImageMessage(message: message, theme: theme, media: media!);
+      return ImageMessage(
+        message: message,
+        theme: theme,
+        media: media!,
+        isMe: isMe,
+      );
     } else if (message.isVideo && hasMedia) {
-      return VideoMessage(message: message, theme: theme, media: media!);
+      return VideoMessage(
+        message: message,
+        theme: theme,
+        media: media!,
+        isMe: isMe,
+      );
     } else if (message.isFile && hasMedia) {
-      return FileMessage(theme: theme, media: media!);
+      return FileMessage(theme: theme, media: media!, isMe: isMe);
     } else {
       return TextMessage(message: message, isMe: isMe, theme: theme);
     }

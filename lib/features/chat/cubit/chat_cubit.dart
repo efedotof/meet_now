@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app_server/model/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
+import 'package:meet_now_app_server/model/chats/delete_temporary_chat_request/delete_temporary_chat_request.dart';
+import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
+import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
@@ -14,11 +17,14 @@ class ChatCubit extends Cubit<ChatState> {
   late final StreamSubscription _temporarySub;
   final UserModelAppInterface _userModelAppInterface;
   final SocketServiceInterface _socketServiceInterface;
+  final ChatInterface _chatInterface;
 
   ChatCubit({
+    required ChatInterface chatInterface,
     required SocketServiceInterface socketServiceInterface,
     required UserModelAppInterface userModelAppInterface,
-  }) : _userModelAppInterface = userModelAppInterface,
+  }) : _chatInterface = chatInterface,
+       _userModelAppInterface = userModelAppInterface,
        _socketServiceInterface = socketServiceInterface,
        super(
          const ChatState(permanentChat: [], temporaryChat: [], isLoading: true),
@@ -52,6 +58,47 @@ class ChatCubit extends Cubit<ChatState> {
       onError:
           (e) => emit(state.copyWith(error: e.toString(), isLoading: false)),
     );
+  }
+
+  Future<void> deletePermanentChat(String chatId, bool deleteForBoth) async {
+    try {
+      await _chatInterface.deletePermanentChat(
+        request: DeleteChatRequest(
+          chatId: chatId,
+          userId: state.currentUserId!,
+          deleteForBoth: deleteForBoth,
+        ),
+      );
+
+      final updatedChats =
+          state.permanentChat.where((chat) => chat.chatId != chatId).toList();
+      emit(state.copyWith(permanentChat: updatedChats));
+    } catch (e) {
+      emit(state.copyWith(error: 'Ошибка при удалении чата: ${e.toString()}'));
+    }
+  }
+
+  Future<void> deleteTemporaryChat(
+    String tempChatId,
+    bool deleteForBoth,
+  ) async {
+    try {
+      await _chatInterface.deleteTemporaryChat(
+        request: DeleteTemporaryChatRequest(
+          tempChatId: tempChatId,
+          userId: state.currentUserId!,
+          deleteForBoth: deleteForBoth,
+        ),
+      );
+
+      final updatedChats =
+          state.temporaryChat
+              .where((chat) => chat.tempChatId != tempChatId)
+              .toList();
+      emit(state.copyWith(temporaryChat: updatedChats));
+    } catch (e) {
+      emit(state.copyWith(error: 'Ошибка при удалении чата: ${e.toString()}'));
+    }
   }
 
   Future<void> refresh() async {

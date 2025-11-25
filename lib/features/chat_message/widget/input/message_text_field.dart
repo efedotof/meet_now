@@ -4,7 +4,7 @@ import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/com
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/user_activity/user_activity.dart';
+import 'package:meet_now_app_server/model/social/user_activity/user_activity.dart';
 
 class MessageTextField extends StatelessWidget {
   const MessageTextField({
@@ -27,7 +27,7 @@ class MessageTextField extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(

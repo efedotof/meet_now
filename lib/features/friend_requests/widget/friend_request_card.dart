@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
-import 'package:meet_now_app_server/model/friends_request/friend_request.dart';
+import 'package:meet_now_app_server/model/social/friends_request/friend_request.dart';
 
 class FriendRequestCard extends StatelessWidget {
   final FriendRequest friendRequest;

@@ -6,8 +6,9 @@ import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
-import 'package:meet_now_app_server/model/commands/commands_chat.dart';
-import 'package:meet_now_app_server/model/sticker/sticker.dart';
+import 'package:meet_now_app_server/model/social/commands/commands_chat.dart';
+import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
+
 import '../suggestions/command_suggestions_widget.dart';
 import 'sticker_picker_widget.dart';
 import 'input_bottom_bar.dart';
@@ -21,15 +22,17 @@ class InputArea extends StatefulWidget {
     required this.chatId,
     required this.onAddAttach,
     required this.onStickerSelected,
+    required this.isTemporary,
     super.key,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
-  final VoidCallback onAddAttach;
+  final VoidCallback? onAddAttach;
   final Function(String) onCommandResult;
   final Function(Sticker) onStickerSelected;
   final String chatId;
+  final bool isTemporary;
 
   @override
   State<InputArea> createState() => _InputAreaState();
@@ -109,11 +112,12 @@ class _InputAreaState extends State<InputArea> {
             CommandSuggestionsWidget(controller: widget.controller),
             StickerPickerWidget(onStickerSelected: _handleStickerSelected),
 
-            MediaPreviewSection(
-              theme: theme,
-              thumbnailCache: _thumbnailCache,
-              mediaLibrary: _mediaLibrary,
-            ),
+            if (!widget.isTemporary)
+              MediaPreviewSection(
+                theme: theme,
+                thumbnailCache: _thumbnailCache,
+                mediaLibrary: _mediaLibrary,
+              ),
 
             InputBottomBar(
               controller: widget.controller,
@@ -122,6 +126,7 @@ class _InputAreaState extends State<InputArea> {
               onSend: _handleSend,
               stickerCubit: _stickerCubit,
               textFieldFocusNode: _textFieldFocusNode,
+              isTemporary: widget.isTemporary,
             ),
           ],
         ),

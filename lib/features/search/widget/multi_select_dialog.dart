@@ -17,7 +17,8 @@ class MultiSelectDialog extends StatefulWidget {
   State<MultiSelectDialog> createState() => _MultiSelectDialogState();
 }
 
-class _MultiSelectDialogState extends State<MultiSelectDialog> with TickerProviderStateMixin {
+class _MultiSelectDialogState extends State<MultiSelectDialog>
+    with TickerProviderStateMixin {
   late List<String> _tempSelected;
   late List<AnimationController> _animationControllers;
   late List<Animation<double>> _scaleAnimations;
@@ -39,19 +40,24 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> with TickerProvid
       ),
     );
 
-    _scaleAnimations = _animationControllers
-        .map((controller) => Tween<double>(begin: 0.95, end: 1.0).animate(
-              CurvedAnimation(parent: controller, curve: Curves.elasticOut),
-            ))
-        .toList();
+    _scaleAnimations =
+        _animationControllers
+            .map(
+              (controller) => Tween<double>(begin: 0.95, end: 1.0).animate(
+                CurvedAnimation(parent: controller, curve: Curves.elasticOut),
+              ),
+            )
+            .toList();
 
-    _opacityAnimations = _animationControllers
-        .map((controller) => Tween<double>(begin: 0.0, end: 1.0).animate(
-              CurvedAnimation(parent: controller, curve: Curves.easeIn),
-            ))
-        .toList();
+    _opacityAnimations =
+        _animationControllers
+            .map(
+              (controller) => Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(parent: controller, curve: Curves.easeIn),
+              ),
+            )
+            .toList();
 
-    // Запуск анимаций с задержкой
     Future.delayed(const Duration(milliseconds: 100), () {
       for (final controller in _animationControllers) {
         controller.forward();
@@ -79,7 +85,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> with TickerProvid
             children: List.generate(widget.items.length, (index) {
               final item = widget.items[index];
               final isSelected = _tempSelected.contains(item);
-              
+
               return AnimatedBuilder(
                 animation: _animationControllers[index],
                 builder: (context, child) {

@@ -38,6 +38,11 @@ class AppRepository extends StatelessWidget {
         reportAddress: reportAddress,
         stickersAddress: stickersAddress,
         cityAddress: cityAddress,
+        giftAddress: giftAddress,
+        userStatsAddress: userStatsAddress,
+        supportAddress: supportAddress,
+        pushNotificationAddress: pushNotificationAddress,
+        mqttAddress: mqttAddress,
       ).initializeRepository();
 
   @override
@@ -62,6 +67,11 @@ class AppRepository extends StatelessWidget {
       reportAddress: reportAddress,
       stickersAddress: stickersAddress,
       cityAddress: cityAddress,
+      giftAddress: giftAddress,
+      userStatsAddress: userStatsAddress,
+      supportAddress: supportAddress,
+      pushNotificationAddress: pushNotificationAddress,
+      mqttAddress: mqttAddress,
     ).initializeRepository();
   }
 }

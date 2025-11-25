@@ -29,7 +29,11 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
-  void _showSnackBar(BuildContext context, String message, {bool error = false}) {
+  void _showSnackBar(
+    BuildContext context,
+    String message, {
+    bool error = false,
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -61,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     _showSnackBar(context, error, error: true);
                   },
                   success: () {
-                    _showSnackBar(context,"Вход успешный");
+                    _showSnackBar(context, "Вход успешный");
                   },
                   orElse: () {},
                 );
@@ -81,7 +85,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Username
                     ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: buttonWidth),
                       child: TextFormField(
@@ -91,15 +94,15 @@ class _SignInScreenState extends State<SignInScreen> {
                           prefixIcon: const Icon(Icons.person),
                         ),
                         textInputAction: TextInputAction.next,
-                        validator: (value) =>
-                            (value == null || value.isEmpty)
-                                ? S.of(context).enterUsername
-                                : null,
+                        validator:
+                            (value) =>
+                                (value == null || value.isEmpty)
+                                    ? S.of(context).enterUsername
+                                    : null,
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Password
                     ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: buttonWidth),
                       child: TextFormField(
@@ -119,42 +122,44 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         obscureText: _obscureText,
                         textInputAction: TextInputAction.done,
-                        validator: (value) =>
-                            (value == null || value.isEmpty)
-                                ? S.of(context).enterPassword
-                                : null,
+                        validator:
+                            (value) =>
+                                (value == null || value.isEmpty)
+                                    ? S.of(context).enterPassword
+                                    : null,
                       ),
                     ),
                     const SizedBox(height: 24),
 
-                    // Button
                     ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: buttonWidth),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
-                                    context.read<SignInCubit>().login(
-                                          context: context,
-                                          username: username,
-                                          password: password,
-                                        );
-                                  }
-                                },
-                          child: isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(S.of(context).signIn),
+                          onPressed:
+                              isLoading
+                                  ? null
+                                  : () {
+                                    if (_formKey.currentState?.validate() ??
+                                        false) {
+                                      context.read<SignInCubit>().login(
+                                        context: context,
+                                        username: username,
+                                        password: password,
+                                      );
+                                    }
+                                  },
+                          child:
+                              isLoading
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                  : Text(S.of(context).signIn),
                         ),
                       ),
                     ),

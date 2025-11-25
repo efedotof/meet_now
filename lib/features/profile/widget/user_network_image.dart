@@ -62,7 +62,6 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
   @override
   Widget build(BuildContext context) {
     Widget child;
-
     if (_isLoading) {
       child = const Center(child: CircularProgressIndicator());
     } else if (_hasError || _presignedUrl == null) {
@@ -75,7 +74,8 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
       );
     } else {
       child = GestureDetector(
-        onTap: () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
+        onTap:
+            () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Image.network(

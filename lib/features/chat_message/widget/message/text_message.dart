@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app_server/model/message/message.dart';
+import 'package:meet_now_app_server/model/chats/message/message.dart';
 
 class TextMessage extends StatelessWidget {
   final Message message;
@@ -21,9 +21,8 @@ class TextMessage extends StatelessWidget {
         color:
             message.isSticker
                 ? theme.colorScheme.onSurface
-                : (isMe
-                    ? theme.scaffoldBackgroundColor
-                    : theme.colorScheme.primary),
+                : (isMe ? Colors.white : theme.colorScheme.onSurface),
+        height: 1.4,
       ),
     );
   }

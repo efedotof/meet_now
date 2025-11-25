@@ -32,6 +32,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "add3Minutes": MessageLookupByLibrary.simpleMessage("Add 3 minutes"),
     "addInterestHint": MessageLookupByLibrary.simpleMessage("Add interest"),
     "addPurposeHint": MessageLookupByLibrary.simpleMessage("Add purpose"),
+    "additionalcomments": MessageLookupByLibrary.simpleMessage(
+      "additionalComments",
+    ),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "allowProfileSearch": MessageLookupByLibrary.simpleMessage(
       "Allow my profile to be searchable",
@@ -47,21 +50,39 @@ class MessageLookup extends MessageLookupByLibrary {
     "availableCommands": MessageLookupByLibrary.simpleMessage(
       "Available commands",
     ),
+    "avatarupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "avatarUpdatedSuccessfully",
+    ),
+    "avataruploadfailed": MessageLookupByLibrary.simpleMessage(
+      "avatarUploadFailed",
+    ),
     "background": MessageLookupByLibrary.simpleMessage("Background"),
+    "block": MessageLookupByLibrary.simpleMessage("block"),
+    "blockuser": MessageLookupByLibrary.simpleMessage("BlockUser"),
+    "blockuserconfirmation": MessageLookupByLibrary.simpleMessage(
+      "blockUserConfirmation",
+    ),
     "books": MessageLookupByLibrary.simpleMessage("Books"),
     "cameraStartError": MessageLookupByLibrary.simpleMessage(
       "Camera start error",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "changePin": MessageLookupByLibrary.simpleMessage("Change PIN"),
+    "changepassword": MessageLookupByLibrary.simpleMessage("changePassword"),
     "chat": MessageLookupByLibrary.simpleMessage("Chat"),
     "chatTimeEnding": MessageLookupByLibrary.simpleMessage(
       "Chat time is coming to an end",
     ),
+    "chatdeleted": MessageLookupByLibrary.simpleMessage("chatDeleted"),
     "chats": MessageLookupByLibrary.simpleMessage("Chats"),
     "chooseTheme": MessageLookupByLibrary.simpleMessage("Choose a theme"),
     "city": MessageLookupByLibrary.simpleMessage("City"),
     "cityOptional": MessageLookupByLibrary.simpleMessage("City (optional)"),
+    "clear": MessageLookupByLibrary.simpleMessage("clear"),
+    "clearHistory": MessageLookupByLibrary.simpleMessage("Clear History"),
+    "clearhistoryconfirmation": MessageLookupByLibrary.simpleMessage(
+      "clearHistoryConfirmation",
+    ),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
     "communication": MessageLookupByLibrary.simpleMessage("Communication"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
@@ -75,6 +96,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "darkTheme": MessageLookupByLibrary.simpleMessage("Dark Theme"),
     "datingGoals": MessageLookupByLibrary.simpleMessage("Dating goals"),
+    "delete": MessageLookupByLibrary.simpleMessage("delete"),
+    "deletechat": MessageLookupByLibrary.simpleMessage("DeleteChat"),
+    "deletechatconfirmation": MessageLookupByLibrary.simpleMessage(
+      "deleteChatConfirmation",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
@@ -107,6 +133,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "extendOrQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Do you want to extend the chat time or go to the questionnaire?",
     ),
+    "fakeprofile": MessageLookupByLibrary.simpleMessage("fakeProfile"),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
     "finish": MessageLookupByLibrary.simpleMessage("Finish"),
     "finishOrClose": MessageLookupByLibrary.simpleMessage(
@@ -124,6 +151,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "friendship": MessageLookupByLibrary.simpleMessage("Friendship"),
     "games": MessageLookupByLibrary.simpleMessage("Games"),
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
+    "harassment": MessageLookupByLibrary.simpleMessage("harassment"),
+    "historycleared": MessageLookupByLibrary.simpleMessage("historyCleared"),
+    "inappropriatecontent": MessageLookupByLibrary.simpleMessage(
+      "inappropriateContent",
+    ),
     "incorrectPin": MessageLookupByLibrary.simpleMessage("Incorrect PIN"),
     "incorrectPinCode": MessageLookupByLibrary.simpleMessage(
       "Incorrect PIN code",
@@ -150,6 +182,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "music": MessageLookupByLibrary.simpleMessage("Music"),
     "myInterests": MessageLookupByLibrary.simpleMessage("My Interests"),
     "myProfile": MessageLookupByLibrary.simpleMessage("My Profile"),
+    "newpassword": MessageLookupByLibrary.simpleMessage("newPassword"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
       "You have no friends yet",
@@ -160,15 +193,24 @@ class MessageLookup extends MessageLookupByLibrary {
     "noTemporaryChats": MessageLookupByLibrary.simpleMessage(
       "No temporary chats",
     ),
+    "nointerestsadded": MessageLookupByLibrary.simpleMessage(
+      "noInterestsAdded",
+    ),
+    "nopurposesadded": MessageLookupByLibrary.simpleMessage("noPurposesAdded"),
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "offline": MessageLookupByLibrary.simpleMessage("offline"),
+    "oldpassword": MessageLookupByLibrary.simpleMessage("oldPassword"),
     "online": MessageLookupByLibrary.simpleMessage("online"),
     "onlyVerified": MessageLookupByLibrary.simpleMessage("Only verified users"),
     "openQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Open questionnaire",
     ),
+    "other": MessageLookupByLibrary.simpleMessage("other"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHint": MessageLookupByLibrary.simpleMessage("Password"),
+    "passwordchangedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "passwordChangedSuccessfully",
+    ),
     "permanentChats": MessageLookupByLibrary.simpleMessage("Permanent Chats"),
     "personalInfo": MessageLookupByLibrary.simpleMessage(
       "Personal information",
@@ -189,6 +231,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Hide sensitive information in background",
     ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "profileUpdatedSuccessfully",
+    ),
     "purposes": MessageLookupByLibrary.simpleMessage("Purposes"),
     "qrNoValue": MessageLookupByLibrary.simpleMessage(
       "Unable to recognize data",
@@ -204,6 +249,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "registration": MessageLookupByLibrary.simpleMessage("Registration"),
     "removeFriend": MessageLookupByLibrary.simpleMessage("Remove friend"),
+    "reportsubmitted": MessageLookupByLibrary.simpleMessage("reportSubmitted"),
+    "reportuser": MessageLookupByLibrary.simpleMessage("ReportUser"),
+    "reportuserdescription": MessageLookupByLibrary.simpleMessage(
+      "reportUserDescription",
+    ),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "russian": MessageLookupByLibrary.simpleMessage("Russian"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
@@ -216,6 +266,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "security": MessageLookupByLibrary.simpleMessage("Security"),
     "selectAge": MessageLookupByLibrary.simpleMessage("Select age"),
     "selectGender": MessageLookupByLibrary.simpleMessage("Select gender"),
+    "selectreason": MessageLookupByLibrary.simpleMessage("selectReason"),
     "sendMessage": MessageLookupByLibrary.simpleMessage("Send message"),
     "sendingFile": MessageLookupByLibrary.simpleMessage("sending file"),
     "sendingImage": MessageLookupByLibrary.simpleMessage("sending photo"),
@@ -223,6 +274,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
+    "spam": MessageLookupByLibrary.simpleMessage("spam"),
     "sports": MessageLookupByLibrary.simpleMessage("Sports"),
     "startCommunication": MessageLookupByLibrary.simpleMessage(
       "Start communicating",
@@ -234,6 +286,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "stopThink": MessageLookupByLibrary.simpleMessage(
       "Stop-stop, think about where you want to start...",
     ),
+    "submitreport": MessageLookupByLibrary.simpleMessage("submitReport"),
     "support": MessageLookupByLibrary.simpleMessage("Support"),
     "tapToView": MessageLookupByLibrary.simpleMessage("Tap to view"),
     "tellAboutYourself": MessageLookupByLibrary.simpleMessage(
@@ -251,6 +304,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeSelection": MessageLookupByLibrary.simpleMessage("Theme Selection"),
     "timerSeconds": MessageLookupByLibrary.simpleMessage("Timer:"),
     "typing": MessageLookupByLibrary.simpleMessage("typing..."),
+    "uploadingavatar": MessageLookupByLibrary.simpleMessage("uploadingAvatar"),
+    "userblocked": MessageLookupByLibrary.simpleMessage("userBlocked"),
     "username": MessageLookupByLibrary.simpleMessage("Username"),
     "usernameHint": MessageLookupByLibrary.simpleMessage("Username"),
     "version": m1,

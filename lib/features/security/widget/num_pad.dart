@@ -24,44 +24,19 @@ class NumPad extends StatelessWidget {
       mainAxisSpacing: 8,
       crossAxisSpacing: 8,
       children: [
-        MyButton(value:'1', onKeyPressed: onKeyPressed),
-        MyButton(value:'2', onKeyPressed: onKeyPressed),
-        MyButton(value:'3', onKeyPressed: onKeyPressed),
-        MyButton(value:'4', onKeyPressed: onKeyPressed),
-        MyButton(value:'5', onKeyPressed: onKeyPressed),
-        MyButton(value:'6', onKeyPressed: onKeyPressed),
-        MyButton(value:'7', onKeyPressed: onKeyPressed),
-        MyButton(value:'8', onKeyPressed: onKeyPressed),
-        MyButton(value:'9', onKeyPressed: onKeyPressed),
+        MyButton(value: '1', onKeyPressed: onKeyPressed),
+        MyButton(value: '2', onKeyPressed: onKeyPressed),
+        MyButton(value: '3', onKeyPressed: onKeyPressed),
+        MyButton(value: '4', onKeyPressed: onKeyPressed),
+        MyButton(value: '5', onKeyPressed: onKeyPressed),
+        MyButton(value: '6', onKeyPressed: onKeyPressed),
+        MyButton(value: '7', onKeyPressed: onKeyPressed),
+        MyButton(value: '8', onKeyPressed: onKeyPressed),
+        MyButton(value: '9', onKeyPressed: onKeyPressed),
         const SizedBox.shrink(),
-        _buildButton('0'),
+        MyButton(value: '0', onKeyPressed: onKeyPressed),
         BackspaceButton(onBackspacePressed: onBackspacePressed),
       ],
     );
   }
-
-  Widget _buildButton(String value) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => onKeyPressed(value),
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.withAlpha(5)),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Center(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
- 
 }
-

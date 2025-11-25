@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Message> messages,  bool isLoadingMore)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Message> messages,  bool isLoadingMore,  bool isTemporary,  bool showContinueRequest,  bool isWaitingForResponse,  AgreeChatResponse? agreeChatResponse)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.messages,_that.isLoadingMore);case _Error() when error != null:
+return loaded(_that.messages,_that.isLoadingMore,_that.isTemporary,_that.showContinueRequest,_that.isWaitingForResponse,_that.agreeChatResponse);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Message> messages,  bool isLoadingMore)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Message> messages,  bool isLoadingMore,  bool isTemporary,  bool showContinueRequest,  bool isWaitingForResponse,  AgreeChatResponse? agreeChatResponse)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.messages,_that.isLoadingMore);case _Error():
+return loaded(_that.messages,_that.isLoadingMore,_that.isTemporary,_that.showContinueRequest,_that.isWaitingForResponse,_that.agreeChatResponse);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Message> messages,  bool isLoadingMore)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Message> messages,  bool isLoadingMore,  bool isTemporary,  bool showContinueRequest,  bool isWaitingForResponse,  AgreeChatResponse? agreeChatResponse)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.messages,_that.isLoadingMore);case _Error() when error != null:
+return loaded(_that.messages,_that.isLoadingMore,_that.isTemporary,_that.showContinueRequest,_that.isWaitingForResponse,_that.agreeChatResponse);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,7 +257,7 @@ String toString() {
 
 
 class _Loaded implements ChatMessageState {
-  const _Loaded({required final  List<Message> messages, this.isLoadingMore = false}): _messages = messages;
+  const _Loaded({required final  List<Message> messages, this.isLoadingMore = false, required this.isTemporary, this.showContinueRequest = false, this.isWaitingForResponse = false, this.agreeChatResponse}): _messages = messages;
   
 
  final  List<Message> _messages;
@@ -268,6 +268,10 @@ class _Loaded implements ChatMessageState {
 }
 
 @JsonKey() final  bool isLoadingMore;
+ final  bool isTemporary;
+@JsonKey() final  bool showContinueRequest;
+@JsonKey() final  bool isWaitingForResponse;
+ final  AgreeChatResponse? agreeChatResponse;
 
 /// Create a copy of ChatMessageState
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +283,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.isTemporary, isTemporary) || other.isTemporary == isTemporary)&&(identical(other.showContinueRequest, showContinueRequest) || other.showContinueRequest == showContinueRequest)&&(identical(other.isWaitingForResponse, isWaitingForResponse) || other.isWaitingForResponse == isWaitingForResponse)&&(identical(other.agreeChatResponse, agreeChatResponse) || other.agreeChatResponse == agreeChatResponse));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isLoadingMore);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isLoadingMore,isTemporary,showContinueRequest,isWaitingForResponse,agreeChatResponse);
 
 @override
 String toString() {
-  return 'ChatMessageState.loaded(messages: $messages, isLoadingMore: $isLoadingMore)';
+  return 'ChatMessageState.loaded(messages: $messages, isLoadingMore: $isLoadingMore, isTemporary: $isTemporary, showContinueRequest: $showContinueRequest, isWaitingForResponse: $isWaitingForResponse, agreeChatResponse: $agreeChatResponse)';
 }
 
 
@@ -299,11 +303,11 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ChatMessageStateCopyWith
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Message> messages, bool isLoadingMore
+ List<Message> messages, bool isLoadingMore, bool isTemporary, bool showContinueRequest, bool isWaitingForResponse, AgreeChatResponse? agreeChatResponse
 });
 
 
-
+$AgreeChatResponseCopyWith<$Res>? get agreeChatResponse;
 
 }
 /// @nodoc
@@ -316,15 +320,31 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isLoadingMore = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isLoadingMore = null,Object? isTemporary = null,Object? showContinueRequest = null,Object? isWaitingForResponse = null,Object? agreeChatResponse = freezed,}) {
   return _then(_Loaded(
 messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
 as List<Message>,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,isTemporary: null == isTemporary ? _self.isTemporary : isTemporary // ignore: cast_nullable_to_non_nullable
+as bool,showContinueRequest: null == showContinueRequest ? _self.showContinueRequest : showContinueRequest // ignore: cast_nullable_to_non_nullable
+as bool,isWaitingForResponse: null == isWaitingForResponse ? _self.isWaitingForResponse : isWaitingForResponse // ignore: cast_nullable_to_non_nullable
+as bool,agreeChatResponse: freezed == agreeChatResponse ? _self.agreeChatResponse : agreeChatResponse // ignore: cast_nullable_to_non_nullable
+as AgreeChatResponse?,
   ));
 }
 
+/// Create a copy of ChatMessageState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AgreeChatResponseCopyWith<$Res>? get agreeChatResponse {
+    if (_self.agreeChatResponse == null) {
+    return null;
+  }
 
+  return $AgreeChatResponseCopyWith<$Res>(_self.agreeChatResponse!, (value) {
+    return _then(_self.copyWith(agreeChatResponse: value));
+  });
+}
 }
 
 /// @nodoc

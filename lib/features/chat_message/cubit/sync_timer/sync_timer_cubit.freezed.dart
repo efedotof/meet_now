@@ -55,7 +55,7 @@ extension SyncTimerStatePatterns on SyncTimerState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Running value)?  running,TResult Function( _Finished value)?  finished,TResult Function( _AddTimeProposed value)?  addTimeProposed,TResult Function( _WaitingForResponse value)?  waitingForResponse,TResult Function( _TimeAdded value)?  timeAdded,TResult Function( _TimeRejected value)?  timeRejected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Running value)?  running,TResult Function( _Finished value)?  finished,TResult Function( _AddTimeProposed value)?  addTimeProposed,TResult Function( _WaitingForResponse value)?  waitingForResponse,TResult Function( _TimeAdded value)?  timeAdded,TResult Function( _TimeRejected value)?  timeRejected,TResult Function( _TimeOptions value)?  timeOptions,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
@@ -65,7 +65,9 @@ return finished(_that);case _AddTimeProposed() when addTimeProposed != null:
 return addTimeProposed(_that);case _WaitingForResponse() when waitingForResponse != null:
 return waitingForResponse(_that);case _TimeAdded() when timeAdded != null:
 return timeAdded(_that);case _TimeRejected() when timeRejected != null:
-return timeRejected(_that);case _:
+return timeRejected(_that);case _TimeOptions() when timeOptions != null:
+return timeOptions(_that);case _Error() when error != null:
+return error(_that);case _:
   return orElse();
 
 }
@@ -83,7 +85,7 @@ return timeRejected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Running value)  running,required TResult Function( _Finished value)  finished,required TResult Function( _AddTimeProposed value)  addTimeProposed,required TResult Function( _WaitingForResponse value)  waitingForResponse,required TResult Function( _TimeAdded value)  timeAdded,required TResult Function( _TimeRejected value)  timeRejected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Running value)  running,required TResult Function( _Finished value)  finished,required TResult Function( _AddTimeProposed value)  addTimeProposed,required TResult Function( _WaitingForResponse value)  waitingForResponse,required TResult Function( _TimeAdded value)  timeAdded,required TResult Function( _TimeRejected value)  timeRejected,required TResult Function( _TimeOptions value)  timeOptions,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
@@ -93,7 +95,9 @@ return finished(_that);case _AddTimeProposed():
 return addTimeProposed(_that);case _WaitingForResponse():
 return waitingForResponse(_that);case _TimeAdded():
 return timeAdded(_that);case _TimeRejected():
-return timeRejected(_that);case _:
+return timeRejected(_that);case _TimeOptions():
+return timeOptions(_that);case _Error():
+return error(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -110,7 +114,7 @@ return timeRejected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Running value)?  running,TResult? Function( _Finished value)?  finished,TResult? Function( _AddTimeProposed value)?  addTimeProposed,TResult? Function( _WaitingForResponse value)?  waitingForResponse,TResult? Function( _TimeAdded value)?  timeAdded,TResult? Function( _TimeRejected value)?  timeRejected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Running value)?  running,TResult? Function( _Finished value)?  finished,TResult? Function( _AddTimeProposed value)?  addTimeProposed,TResult? Function( _WaitingForResponse value)?  waitingForResponse,TResult? Function( _TimeAdded value)?  timeAdded,TResult? Function( _TimeRejected value)?  timeRejected,TResult? Function( _TimeOptions value)?  timeOptions,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
@@ -120,7 +124,9 @@ return finished(_that);case _AddTimeProposed() when addTimeProposed != null:
 return addTimeProposed(_that);case _WaitingForResponse() when waitingForResponse != null:
 return waitingForResponse(_that);case _TimeAdded() when timeAdded != null:
 return timeAdded(_that);case _TimeRejected() when timeRejected != null:
-return timeRejected(_that);case _:
+return timeRejected(_that);case _TimeOptions() when timeOptions != null:
+return timeOptions(_that);case _Error() when error != null:
+return error(_that);case _:
   return null;
 
 }
@@ -137,7 +143,7 @@ return timeRejected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( int remainingTime,  String formattedTime)?  running,TResult Function()?  finished,TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)?  addTimeProposed,TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes)?  waitingForResponse,TResult Function( int additionalMinutes)?  timeAdded,TResult Function()?  timeRejected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( int remainingTime,  String formattedTime)?  running,TResult Function()?  finished,TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)?  addTimeProposed,TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes)?  waitingForResponse,TResult Function( int additionalMinutes)?  timeAdded,TResult Function()?  timeRejected,TResult Function( int remainingTime,  String formattedTime)?  timeOptions,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Running() when running != null:
@@ -146,7 +152,9 @@ return finished();case _AddTimeProposed() when addTimeProposed != null:
 return addTimeProposed(_that.remainingTime,_that.formattedTime,_that.additionalMinutes,_that.fromUserId);case _WaitingForResponse() when waitingForResponse != null:
 return waitingForResponse(_that.remainingTime,_that.formattedTime,_that.additionalMinutes);case _TimeAdded() when timeAdded != null:
 return timeAdded(_that.additionalMinutes);case _TimeRejected() when timeRejected != null:
-return timeRejected();case _:
+return timeRejected();case _TimeOptions() when timeOptions != null:
+return timeOptions(_that.remainingTime,_that.formattedTime);case _Error() when error != null:
+return error(_that.message);case _:
   return orElse();
 
 }
@@ -164,7 +172,7 @@ return timeRejected();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( int remainingTime,  String formattedTime)  running,required TResult Function()  finished,required TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)  addTimeProposed,required TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes)  waitingForResponse,required TResult Function( int additionalMinutes)  timeAdded,required TResult Function()  timeRejected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( int remainingTime,  String formattedTime)  running,required TResult Function()  finished,required TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)  addTimeProposed,required TResult Function( int remainingTime,  String formattedTime,  int additionalMinutes)  waitingForResponse,required TResult Function( int additionalMinutes)  timeAdded,required TResult Function()  timeRejected,required TResult Function( int remainingTime,  String formattedTime)  timeOptions,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Running():
@@ -173,7 +181,9 @@ return finished();case _AddTimeProposed():
 return addTimeProposed(_that.remainingTime,_that.formattedTime,_that.additionalMinutes,_that.fromUserId);case _WaitingForResponse():
 return waitingForResponse(_that.remainingTime,_that.formattedTime,_that.additionalMinutes);case _TimeAdded():
 return timeAdded(_that.additionalMinutes);case _TimeRejected():
-return timeRejected();case _:
+return timeRejected();case _TimeOptions():
+return timeOptions(_that.remainingTime,_that.formattedTime);case _Error():
+return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -190,7 +200,7 @@ return timeRejected();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( int remainingTime,  String formattedTime)?  running,TResult? Function()?  finished,TResult? Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)?  addTimeProposed,TResult? Function( int remainingTime,  String formattedTime,  int additionalMinutes)?  waitingForResponse,TResult? Function( int additionalMinutes)?  timeAdded,TResult? Function()?  timeRejected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( int remainingTime,  String formattedTime)?  running,TResult? Function()?  finished,TResult? Function( int remainingTime,  String formattedTime,  int additionalMinutes,  String fromUserId)?  addTimeProposed,TResult? Function( int remainingTime,  String formattedTime,  int additionalMinutes)?  waitingForResponse,TResult? Function( int additionalMinutes)?  timeAdded,TResult? Function()?  timeRejected,TResult? Function( int remainingTime,  String formattedTime)?  timeOptions,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Running() when running != null:
@@ -199,7 +209,9 @@ return finished();case _AddTimeProposed() when addTimeProposed != null:
 return addTimeProposed(_that.remainingTime,_that.formattedTime,_that.additionalMinutes,_that.fromUserId);case _WaitingForResponse() when waitingForResponse != null:
 return waitingForResponse(_that.remainingTime,_that.formattedTime,_that.additionalMinutes);case _TimeAdded() when timeAdded != null:
 return timeAdded(_that.additionalMinutes);case _TimeRejected() when timeRejected != null:
-return timeRejected();case _:
+return timeRejected();case _TimeOptions() when timeOptions != null:
+return timeOptions(_that.remainingTime,_that.formattedTime);case _Error() when error != null:
+return error(_that.message);case _:
   return null;
 
 }
@@ -578,5 +590,139 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _TimeOptions extends SyncTimerState {
+  const _TimeOptions({required this.remainingTime, required this.formattedTime}): super._();
+  
+
+ final  int remainingTime;
+ final  String formattedTime;
+
+/// Create a copy of SyncTimerState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TimeOptionsCopyWith<_TimeOptions> get copyWith => __$TimeOptionsCopyWithImpl<_TimeOptions>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimeOptions&&(identical(other.remainingTime, remainingTime) || other.remainingTime == remainingTime)&&(identical(other.formattedTime, formattedTime) || other.formattedTime == formattedTime));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,remainingTime,formattedTime);
+
+@override
+String toString() {
+  return 'SyncTimerState.timeOptions(remainingTime: $remainingTime, formattedTime: $formattedTime)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TimeOptionsCopyWith<$Res> implements $SyncTimerStateCopyWith<$Res> {
+  factory _$TimeOptionsCopyWith(_TimeOptions value, $Res Function(_TimeOptions) _then) = __$TimeOptionsCopyWithImpl;
+@useResult
+$Res call({
+ int remainingTime, String formattedTime
+});
+
+
+
+
+}
+/// @nodoc
+class __$TimeOptionsCopyWithImpl<$Res>
+    implements _$TimeOptionsCopyWith<$Res> {
+  __$TimeOptionsCopyWithImpl(this._self, this._then);
+
+  final _TimeOptions _self;
+  final $Res Function(_TimeOptions) _then;
+
+/// Create a copy of SyncTimerState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? remainingTime = null,Object? formattedTime = null,}) {
+  return _then(_TimeOptions(
+remainingTime: null == remainingTime ? _self.remainingTime : remainingTime // ignore: cast_nullable_to_non_nullable
+as int,formattedTime: null == formattedTime ? _self.formattedTime : formattedTime // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Error extends SyncTimerState {
+  const _Error(this.message): super._();
+  
+
+ final  String message;
+
+/// Create a copy of SyncTimerState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'SyncTimerState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ErrorCopyWith<$Res> implements $SyncTimerStateCopyWith<$Res> {
+  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class __$ErrorCopyWithImpl<$Res>
+    implements _$ErrorCopyWith<$Res> {
+  __$ErrorCopyWithImpl(this._self, this._then);
+
+  final _Error _self;
+  final $Res Function(_Error) _then;
+
+/// Create a copy of SyncTimerState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(_Error(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on

@@ -34,9 +34,9 @@ class AboutAppScreen extends StatelessWidget {
                   Text(
                     'MeetNow',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -55,9 +55,9 @@ class AboutAppScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               '📃 Описание приложения',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -67,76 +67,83 @@ class AboutAppScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               '🔧 Основной функционал MeetNow',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             FeatureItem(
               icon: '💬',
               title: 'Анонимный старт (Blind Chat)',
-              description: 'Временный чат со скрытой информацией. Время общения ограничено 5-10 минутами.',
+              description:
+                  'Временный чат со скрытой информацией. Время общения ограничено 5-10 минутами.',
             ),
             FeatureItem(
               icon: '🔓',
               title: 'Взаимное раскрытие анкет',
-              description: 'Анкеты открываются только при взаимном согласии обоих пользователей.',
+              description:
+                  'Анкеты открываются только при взаимном согласии обоих пользователей.',
             ),
             FeatureItem(
               icon: '👥',
               title: 'Добавление в друзья',
-              description: 'Возможность продолжить общение и добавить в друзья после раскрытия анкет.',
+              description:
+                  'Возможность продолжить общение и добавить в друзья после раскрытия анкет.',
             ),
             FeatureItem(
               icon: '📚',
               title: 'Анкета пользователя',
-              description: 'Подробная информация о пользователе, включая интересы и биографию.',
+              description:
+                  'Подробная информация о пользователе, включая интересы и биографию.',
             ),
             const SizedBox(height: 24),
             Text(
               '🌟 Дополнительные функции',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                MyChip(label:'💡 Темы для общения'),
-                MyChip(label:'🎭 Аватары вместо фото'),
-                MyChip(label:'🧠 Режим "Молчи 30 секунд"'),
-                MyChip(label:'🎲 Вопрос дня'),
-                MyChip(label:'🧩 Совпадение по интересам'),
-                MyChip(label:'🔔 Второй шанс'),
-                MyChip(label:'🕹 Мини-игры в чате'),
+                MyChip(label: '💡 Темы для общения'),
+                MyChip(label: '🎭 Аватары вместо фото'),
+                MyChip(label: '🎲 Вопрос дня'),
+                MyChip(label: '🧩 Совпадение по интересам'),
+                MyChip(label: '🔔 Второй шанс'),
+                MyChip(label: '🕹 Мини-игры в чате'),
               ],
             ),
             const SizedBox(height: 24),
             Text(
               '🔐 Безопасность и приватность',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text('• Все чаты шифруются\n• Жалобы/блокировка в 1 клик\n• Функция "Скрыть себя от поиска"'),
+            const Text(
+              '• Все чаты шифруются\n• Жалобы/блокировка в 1 клик\n• Функция "Скрыть себя от поиска"',
+            ),
             const SizedBox(height: 24),
             Text(
               '📲 Технологии',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text('• Flutter (кросс-платформенность)\n• PostgreSQL\n• Java + SpringBoot'),
+            const Text(
+              '• Flutter (кросс-платформенность)\n• PostgreSQL\n• Java + SpringBoot',
+            ),
             const SizedBox(height: 24),
             Text(
               '📞 Обратная связь',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListTile(

@@ -8,7 +8,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 class PinCodeInput extends StatelessWidget {
   const PinCodeInput({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<PinCodeCubit, PinCodeState>(
       builder: (context, state) {
@@ -43,7 +43,10 @@ class PinCodeInput extends StatelessWidget {
           readOnly: true,
           enablePinAutofill: false,
           errorAnimationController: state.maybeWhen(
-            failure: (error) => StreamController<ErrorAnimationType>()..add(ErrorAnimationType.shake),
+            failure:
+                (error) =>
+                    StreamController<ErrorAnimationType>()
+                      ..add(ErrorAnimationType.shake),
             orElse: () => null,
           ),
         );

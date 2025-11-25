@@ -3,15 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/user_stats_cubit.dart';
 import 'package:meet_now_app/features/search/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/interes/interest.dart';
-import 'package:meet_now_app_server/model/purpose/purpose.dart';
+import 'package:meet_now_app_server/model/social/interes/interest.dart';
+import 'package:meet_now_app_server/model/social/purpose/purpose.dart';
+
 import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 @RoutePage()
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserStatsCubit>().initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +32,24 @@ class SearchScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).search), elevation: 0),
+      appBar: AppBar(
+        title: Text(S.of(context).search),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(40),
+          child: BlocBuilder<UserStatsCubit, UserStatsState>(
+            builder: (context, state) {
+              return state.maybeWhen(
+                loaded: (userStats) => StatsBar(userStats: userStats),
+                orElse: () => LoadingStatsBar(),
+              );
+            },
+          ),
+        ),
+      ),
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
           final cubit = context.read<SearchCubit>();
-
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 500),
@@ -213,7 +239,8 @@ class SearchScreen extends StatelessWidget {
                                   final selectedIds =
                                       allInterests
                                           .where(
-                                            (i) => result.contains(i.title),
+                                            (i) =>
+                                                result.contains(i.title ?? ''),
                                           )
                                           .map((i) => i.id)
                                           .toList();
@@ -243,9 +270,7 @@ class SearchScreen extends StatelessWidget {
                             );
                           },
                         ),
-
                         const SizedBox(height: 16),
-
                         ValueListenableBuilder<Box>(
                           valueListenable:
                               context
@@ -279,7 +304,8 @@ class SearchScreen extends StatelessWidget {
                                   final selectedIds =
                                       allPurpose
                                           .where(
-                                            (i) => result.contains(i.title),
+                                            (i) =>
+                                                result.contains(i.title ?? ''),
                                           )
                                           .map((i) => i.id)
                                           .toList();
@@ -309,7 +335,6 @@ class SearchScreen extends StatelessWidget {
                             );
                           },
                         ),
-
                         const SizedBox(height: 40),
                       ],
                     ],
@@ -326,6 +351,7 @@ class SearchScreen extends StatelessWidget {
           builder: (context, state) {
             final canSearch = state.gender.isNotEmpty && state.ageFrom != null;
             final cubit = context.read<SearchCubit>();
+            final theme = Theme.of(context);
             return PulseAnimation(
               isAnimating: state.isSearching,
               child: ElevatedButton(
@@ -348,10 +374,10 @@ class SearchScreen extends StatelessWidget {
                     state.isSearching
                         ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: const [
                             Text("Stop search"),
-                            const SizedBox(width: 8),
-                            const SizedBox(
+                            SizedBox(width: 8),
+                            SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),

@@ -53,7 +53,7 @@ class MediaPreviewSection extends StatelessWidget {
         if (state.selectedMedia.isEmpty) return const SizedBox.shrink();
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: theme.colorScheme.surface,
+          color: Colors.transparent,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
