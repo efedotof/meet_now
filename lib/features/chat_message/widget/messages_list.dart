@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:meet_now_app_server/model/message/message.dart';
+import 'package:meet_now_app_server/model/chats/message/message.dart';
 import 'message/message_bubble.dart';
 
-class MessagesList extends StatelessWidget {
+class MessagesList extends StatefulWidget {
   const MessagesList({
     super.key,
     required this.messages,
@@ -16,19 +16,52 @@ class MessagesList extends StatelessWidget {
   final String currentUserId;
 
   @override
+  State<MessagesList> createState() => _MessagesListState();
+}
+
+class _MessagesListState extends State<MessagesList> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  @override
+  void didUpdateWidget(MessagesList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.messages.length > oldWidget.messages.length) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    }
+  }
+
+  void _scrollToBottom() {
+    if (widget.scrollController.hasClients) {
+      widget.scrollController.animateTo(
+        widget.scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return ListView.builder(
-      controller: scrollController,
+      controller: widget.scrollController,
       padding: const EdgeInsets.symmetric(vertical: 16),
-      itemCount: messages.length,
+      itemCount: widget.messages.length,
       itemBuilder: (context, index) {
-        final message = messages[index];
-        final isMe = message.senderId == currentUserId;
+        final message = widget.messages[index];
+        final isMe = message.senderId == widget.currentUserId;
         final showTime =
-            index == messages.length - 1 ||
-            messages[index + 1].senderId != message.senderId;
+            index == widget.messages.length - 1 ||
+            _shouldShowTime(widget.messages[index], widget.messages[index + 1]);
 
         return Column(
           crossAxisAlignment:
@@ -62,5 +95,14 @@ class MessagesList extends StatelessWidget {
         );
       },
     );
+  }
+
+  bool _shouldShowTime(Message current, Message next) {
+    if (current.senderId != next.senderId) {
+      return true;
+    }
+
+    final timeDifference = next.createdAt!.difference(current.createdAt!);
+    return timeDifference.inMinutes > 5;
   }
 }

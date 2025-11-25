@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/report/report.dart';
+import 'package:meet_now_app_server/model/social/report/report.dart';
+
 import 'package:meet_now_app_server/repository/report/report_interface.dart';
 
 part 'report_state.dart';
@@ -22,7 +23,6 @@ class ReportCubit extends Cubit<ReportState> {
       emit(ReportState.error(e.toString()));
     }
   }
-
 
   Future<void> withdrawReport(String reportId) async {
     try {

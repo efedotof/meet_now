@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SettingProfileState {
 
- User? get user; String get username; String get firstname; String get subname; String get description; String get city; String get age; List<String> get interests; List<String> get purposes; bool get isSearchable; String? get oldPassword; String? get newPassword; bool get isLoading; String? get errorMessage; bool get isSuccess; bool get isPasswordChanged;
+ User? get user; String get username; String get firstname; String get subname; String get description; String get city; String get age; List<String> get interests; List<String> get purposes; bool get isSearchable; String? get oldPassword; String? get newPassword; bool get isLoading; String? get errorMessage; bool get isSuccess; bool get isPasswordChanged; Uint8List? get tempAvatarData;
 /// Create a copy of SettingProfileState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SettingProfileStateCopyWith<SettingProfileState> get copyWith => _$SettingProfi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingProfileState&&(identical(other.user, user) || other.user == user)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.isPasswordChanged, isPasswordChanged) || other.isPasswordChanged == isPasswordChanged));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingProfileState&&(identical(other.user, user) || other.user == user)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.isPasswordChanged, isPasswordChanged) || other.isPasswordChanged == isPasswordChanged)&&const DeepCollectionEquality().equals(other.tempAvatarData, tempAvatarData));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged);
+int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged,const DeepCollectionEquality().hash(tempAvatarData));
 
 @override
 String toString() {
-  return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged)';
+  return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged, tempAvatarData: $tempAvatarData)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SettingProfileStateCopyWith<$Res>  {
   factory $SettingProfileStateCopyWith(SettingProfileState value, $Res Function(SettingProfileState) _then) = _$SettingProfileStateCopyWithImpl;
 @useResult
 $Res call({
- User? user, String username, String firstname, String subname, String description, String city, String age, List<String> interests, List<String> purposes, bool isSearchable, String? oldPassword, String? newPassword, bool isLoading, String? errorMessage, bool isSuccess, bool isPasswordChanged
+ User? user, String username, String firstname, String subname, String description, String city, String age, List<String> interests, List<String> purposes, bool isSearchable, String? oldPassword, String? newPassword, bool isLoading, String? errorMessage, bool isSuccess, bool isPasswordChanged, Uint8List? tempAvatarData
 });
 
 
@@ -62,7 +62,7 @@ class _$SettingProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of SettingProfileState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = freezed,Object? username = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? city = null,Object? age = null,Object? interests = null,Object? purposes = null,Object? isSearchable = null,Object? oldPassword = freezed,Object? newPassword = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? isSuccess = null,Object? isPasswordChanged = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = freezed,Object? username = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? city = null,Object? age = null,Object? interests = null,Object? purposes = null,Object? isSearchable = null,Object? oldPassword = freezed,Object? newPassword = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? isSuccess = null,Object? isPasswordChanged = null,Object? tempAvatarData = freezed,}) {
   return _then(_self.copyWith(
 user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User?,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -80,7 +80,8 @@ as String?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore:
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,isPasswordChanged: null == isPasswordChanged ? _self.isPasswordChanged : isPasswordChanged // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,tempAvatarData: freezed == tempAvatarData ? _self.tempAvatarData : tempAvatarData // ignore: cast_nullable_to_non_nullable
+as Uint8List?,
   ));
 }
 /// Create a copy of SettingProfileState
@@ -177,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged,  Uint8List? tempAvatarData)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SettingProfileState() when $default != null:
-return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged);case _:
+return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged,_that.tempAvatarData);case _:
   return orElse();
 
 }
@@ -198,10 +199,10 @@ return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged,  Uint8List? tempAvatarData)  $default,) {final _that = this;
 switch (_that) {
 case _SettingProfileState():
-return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged);case _:
+return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged,_that.tempAvatarData);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +219,10 @@ return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.de
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( User? user,  String username,  String firstname,  String subname,  String description,  String city,  String age,  List<String> interests,  List<String> purposes,  bool isSearchable,  String? oldPassword,  String? newPassword,  bool isLoading,  String? errorMessage,  bool isSuccess,  bool isPasswordChanged,  Uint8List? tempAvatarData)?  $default,) {final _that = this;
 switch (_that) {
 case _SettingProfileState() when $default != null:
-return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged);case _:
+return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.description,_that.city,_that.age,_that.interests,_that.purposes,_that.isSearchable,_that.oldPassword,_that.newPassword,_that.isLoading,_that.errorMessage,_that.isSuccess,_that.isPasswordChanged,_that.tempAvatarData);case _:
   return null;
 
 }
@@ -233,7 +234,7 @@ return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.de
 
 
 class _SettingProfileState implements SettingProfileState {
-  const _SettingProfileState({this.user, required this.username, required this.firstname, required this.subname, required this.description, required this.city, required this.age, required final  List<String> interests, required final  List<String> purposes, required this.isSearchable, this.oldPassword, this.newPassword, required this.isLoading, this.errorMessage, required this.isSuccess, required this.isPasswordChanged}): _interests = interests,_purposes = purposes;
+  const _SettingProfileState({this.user, required this.username, required this.firstname, required this.subname, required this.description, required this.city, required this.age, required final  List<String> interests, required final  List<String> purposes, required this.isSearchable, this.oldPassword, this.newPassword, required this.isLoading, this.errorMessage, required this.isSuccess, required this.isPasswordChanged, this.tempAvatarData}): _interests = interests,_purposes = purposes;
   
 
 @override final  User? user;
@@ -264,6 +265,7 @@ class _SettingProfileState implements SettingProfileState {
 @override final  String? errorMessage;
 @override final  bool isSuccess;
 @override final  bool isPasswordChanged;
+@override final  Uint8List? tempAvatarData;
 
 /// Create a copy of SettingProfileState
 /// with the given fields replaced by the non-null parameter values.
@@ -275,16 +277,16 @@ _$SettingProfileStateCopyWith<_SettingProfileState> get copyWith => __$SettingPr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingProfileState&&(identical(other.user, user) || other.user == user)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.isPasswordChanged, isPasswordChanged) || other.isPasswordChanged == isPasswordChanged));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingProfileState&&(identical(other.user, user) || other.user == user)&&(identical(other.username, username) || other.username == username)&&(identical(other.firstname, firstname) || other.firstname == firstname)&&(identical(other.subname, subname) || other.subname == subname)&&(identical(other.description, description) || other.description == description)&&(identical(other.city, city) || other.city == city)&&(identical(other.age, age) || other.age == age)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.isSearchable, isSearchable) || other.isSearchable == isSearchable)&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isSuccess, isSuccess) || other.isSuccess == isSuccess)&&(identical(other.isPasswordChanged, isPasswordChanged) || other.isPasswordChanged == isPasswordChanged)&&const DeepCollectionEquality().equals(other.tempAvatarData, tempAvatarData));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged);
+int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged,const DeepCollectionEquality().hash(tempAvatarData));
 
 @override
 String toString() {
-  return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged)';
+  return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged, tempAvatarData: $tempAvatarData)';
 }
 
 
@@ -295,7 +297,7 @@ abstract mixin class _$SettingProfileStateCopyWith<$Res> implements $SettingProf
   factory _$SettingProfileStateCopyWith(_SettingProfileState value, $Res Function(_SettingProfileState) _then) = __$SettingProfileStateCopyWithImpl;
 @override @useResult
 $Res call({
- User? user, String username, String firstname, String subname, String description, String city, String age, List<String> interests, List<String> purposes, bool isSearchable, String? oldPassword, String? newPassword, bool isLoading, String? errorMessage, bool isSuccess, bool isPasswordChanged
+ User? user, String username, String firstname, String subname, String description, String city, String age, List<String> interests, List<String> purposes, bool isSearchable, String? oldPassword, String? newPassword, bool isLoading, String? errorMessage, bool isSuccess, bool isPasswordChanged, Uint8List? tempAvatarData
 });
 
 
@@ -312,7 +314,7 @@ class __$SettingProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of SettingProfileState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = freezed,Object? username = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? city = null,Object? age = null,Object? interests = null,Object? purposes = null,Object? isSearchable = null,Object? oldPassword = freezed,Object? newPassword = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? isSuccess = null,Object? isPasswordChanged = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = freezed,Object? username = null,Object? firstname = null,Object? subname = null,Object? description = null,Object? city = null,Object? age = null,Object? interests = null,Object? purposes = null,Object? isSearchable = null,Object? oldPassword = freezed,Object? newPassword = freezed,Object? isLoading = null,Object? errorMessage = freezed,Object? isSuccess = null,Object? isPasswordChanged = null,Object? tempAvatarData = freezed,}) {
   return _then(_SettingProfileState(
 user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as User?,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
@@ -330,7 +332,8 @@ as String?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore:
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isSuccess: null == isSuccess ? _self.isSuccess : isSuccess // ignore: cast_nullable_to_non_nullable
 as bool,isPasswordChanged: null == isPasswordChanged ? _self.isPasswordChanged : isPasswordChanged // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,tempAvatarData: freezed == tempAvatarData ? _self.tempAvatarData : tempAvatarData // ignore: cast_nullable_to_non_nullable
+as Uint8List?,
   ));
 }
 

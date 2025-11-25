@@ -5,13 +5,15 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/city/city.dart';
-import 'package:meet_now_app_server/model/search/search_random_model.dart';
+import 'package:meet_now_app_server/model/searchs/search/search_random_model.dart';
+import 'package:meet_now_app_server/model/social/city/city.dart';
+
 import 'package:meet_now_app_server/repository/city/city_interface.dart';
 import 'package:meet_now_app_server/repository/search/search_interface.dart';
 import 'package:meet_now_app_server/repository/user/user_interface.dart';
 
 part 'search_state.dart';
+
 part 'search_cubit.freezed.dart';
 
 class SearchCubit extends Cubit<SearchState> {
@@ -90,6 +92,8 @@ class SearchCubit extends Cubit<SearchState> {
     emit(state.copyWith(isSearching: true));
     await _userInterface.startSearch();
 
+    final gender = _convertGender(state.gender);
+
     while (!_shouldStopSearch && !isClosed) {
       try {
         final request = SearchRandomModel(
@@ -97,13 +101,12 @@ class SearchCubit extends Cubit<SearchState> {
           purposes: state.purposes,
           ageStart: state.ageFrom!,
           ageStop: state.ageFrom! + 3,
-          floor: state.gender,
+          floor: gender,
           city: state.city,
           verified: state.verified,
         );
 
         final chat = await _searchInterface.randomSearch(request: request);
-
         if (chat.tempChatId.isNotEmpty &&
             context.mounted &&
             !_shouldStopSearch) {
@@ -149,6 +152,23 @@ class SearchCubit extends Cubit<SearchState> {
 
   void clearCities() {
     emit(state.copyWith(cities: []));
+  }
+
+  String _convertGender(String gender) {
+    switch (gender.toLowerCase()) {
+      case 'м':
+      case 'М':
+      case 'муж':
+      case 'male':
+        return 'male';
+      case 'ж':
+      case "Ж":
+      case 'жен':
+      case 'female':
+        return 'female';
+      default:
+        return gender;
+    }
   }
 
   @override

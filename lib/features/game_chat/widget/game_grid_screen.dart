@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/friends/widget/empty_state.dart';
-import 'package:meet_now_app_server/model/game_response/game_response.dart';
-
+import 'package:meet_now_app_server/model/chats/game_response/game_response.dart';
 import 'game_card.dart';
 
 class GamesGrid extends StatelessWidget {
   final List<GameResponse> games;
+  final String? chatId;
 
-  const GamesGrid({super.key, required this.games});
+  const GamesGrid({super.key, required this.games, required this.chatId});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class GamesGrid extends StatelessWidget {
         itemCount: games.length,
         itemBuilder: (context, index) {
           final game = games[index];
-          return GameCard(game: game);
+          return GameCard(game: game, chatId: chatId);
         },
       ),
     );

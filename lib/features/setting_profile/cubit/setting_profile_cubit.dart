@@ -1,18 +1,25 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/auth/user/user.dart';
+import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app_server/repository/user/user_interface.dart';
 
 part 'setting_profile_state.dart';
 part 'setting_profile_cubit.freezed.dart';
 
 class SettingProfileCubit extends Cubit<SettingProfileState> {
-  SettingProfileCubit({required UserInterface userInterface})
-    : _userInterface = userInterface,
-      super(SettingProfileState.initial());
+  SettingProfileCubit({
+    required UploadImageInterface uploadImageInterface,
+    required UserInterface userInterface,
+  }) : _uploadImageInterface = uploadImageInterface,
+       _userInterface = userInterface,
+       super(SettingProfileState.initial());
 
   final UserInterface _userInterface;
-
+  final UploadImageInterface _uploadImageInterface;
   void initialize(User user) {
     emit(
       state.copyWith(
@@ -139,6 +146,53 @@ class SettingProfileCubit extends Cubit<SettingProfileState> {
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
+  }
+
+  Future<void> uploadAvatar(String avatarUri) async {
+    try {
+      emit(state.copyWith(isLoading: true, errorMessage: null));
+
+      final file = File(avatarUri);
+      final imageData = await file.readAsBytes();
+      setTempAvatar(imageData);
+
+      final fileUrls = await _uploadImageInterface.uploadMultipleMedia([
+        avatarUri,
+      ]);
+
+      if (fileUrls.isEmpty) {
+        throw Exception('No URL received after upload');
+      }
+
+      final avatarUrl = fileUrls.first;
+      final updatedUser = state.user!.copyWith(avatar: avatarUrl);
+      await _userInterface.putUserProfile(user: updatedUser);
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          user: updatedUser,
+          isSuccess: true,
+          tempAvatarData: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to upload avatar: ${e.toString()}',
+          tempAvatarData: null,
+        ),
+      );
+    }
+  }
+
+  void setTempAvatar(Uint8List imageData) {
+    emit(state.copyWith(tempAvatarData: imageData));
+  }
+
+  void clearTempAvatar() {
+    emit(state.copyWith(tempAvatarData: null));
   }
 
   void clearError() {

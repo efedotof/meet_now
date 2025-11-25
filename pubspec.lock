@@ -372,6 +372,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_mqtt_push:
+    dependency: transitive
+    description:
+      path: "."
+      ref: "9c36914c1cf72718493a71162fc6877d1b703566"
+      resolved-ref: "9c36914c1cf72718493a71162fc6877d1b703566"
+      url: "https://github.com/efedotof/flutter_mqtt_push.git"
+    source: git
+    version: "1.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -607,11 +616,11 @@ packages:
     source: hosted
     version: "0.11.1"
   media_ui_package:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
-      ref: b16469970c95c60c806bb8a094b23fe2349a090c
-      resolved-ref: b16469970c95c60c806bb8a094b23fe2349a090c
+      ref: "1da912c71cfe225caef8913b0677e14ce5386111"
+      resolved-ref: "1da912c71cfe225caef8913b0677e14ce5386111"
       url: "https://github.com/efedotof/media_ui_package.git"
     source: git
     version: "0.0.4"
@@ -619,8 +628,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ba118ec7953a955145a8d774450726690399a9b5
-      resolved-ref: ba118ec7953a955145a8d774450726690399a9b5
+      ref: "931680c18f50e2605520a42f8c520ea242da49ca"
+      resolved-ref: "931680c18f50e2605520a42f8c520ea242da49ca"
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"
@@ -1150,7 +1159,7 @@ packages:
     source: hosted
     version: "2.2.0"
   video_player:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: video_player
       sha256: "0d55b1f1a31e5ad4c4967bfaa8ade0240b07d20ee4af1dfef5f531056512961a"

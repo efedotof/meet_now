@@ -7,6 +7,10 @@ abstract class ChatMessageState with _$ChatMessageState {
   const factory ChatMessageState.loaded({
     required List<Message> messages,
     @Default(false) bool isLoadingMore,
+    required bool isTemporary,
+    @Default(false) bool showContinueRequest,
+    @Default(false) bool isWaitingForResponse,
+    AgreeChatResponse? agreeChatResponse,
   }) = _Loaded;
   const factory ChatMessageState.error(String message) = _Error;
 }

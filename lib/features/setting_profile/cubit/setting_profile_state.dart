@@ -19,23 +19,25 @@ abstract class SettingProfileState with _$SettingProfileState {
     String? errorMessage,
     required bool isSuccess,
     required bool isPasswordChanged,
+    Uint8List? tempAvatarData,
   }) = _SettingProfileState;
 
   factory SettingProfileState.initial() => const SettingProfileState(
-        username: '',
-        firstname: '',
-        subname: '',
-        description: '',
-        city: '',
-        age: '',
-        interests: [],
-        purposes: [],
-        isSearchable: true,
-        oldPassword: '',
-        newPassword: '',
-        isLoading: false,
-        errorMessage: null,
-        isSuccess: false,
-        isPasswordChanged: false,
-      );
+    username: '',
+    firstname: '',
+    subname: '',
+    description: '',
+    city: '',
+    age: '',
+    interests: [],
+    purposes: [],
+    isSearchable: true,
+    oldPassword: '',
+    newPassword: '',
+    isLoading: false,
+    errorMessage: null,
+    isSuccess: false,
+    isPasswordChanged: false,
+    tempAvatarData: null, // И здесь
+  );
 }

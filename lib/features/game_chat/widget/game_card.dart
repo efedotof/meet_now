@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
-import 'package:meet_now_app_server/model/game_response/game_response.dart';
+import 'package:meet_now_app_server/model/chats/game_response/game_response.dart';
 
 import 'game_web_view_screen.dart';
 
 class GameCard extends StatelessWidget {
   final GameResponse game;
+  final String? chatId;
 
-  const GameCard({super.key, required this.game});
+  const GameCard({super.key, required this.game, required this.chatId});
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +90,6 @@ class GameCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -121,6 +121,7 @@ class GameCard extends StatelessWidget {
   Future<void> _onGameTap(BuildContext context, GameResponse game) async {
     final cubit = context.read<GameChatCubit>();
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -137,7 +138,7 @@ class GameCard extends StatelessWidget {
     );
 
     try {
-      final url = await cubit.getUrlGameByType(game.gameType);
+      final url = await cubit.getUrlGameByType(game.gameType, chatId);
 
       if (context.mounted) {
         Navigator.of(context).pop();
@@ -171,4 +172,3 @@ class GameCard extends StatelessWidget {
     }
   }
 }
-

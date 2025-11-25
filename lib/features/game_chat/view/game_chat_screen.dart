@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/widget/widget.dart';
+import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
 
 @RoutePage()
 class GameChatScreen extends StatefulWidget {
-  const GameChatScreen({super.key});
+  final String? chatId;
+
+  const GameChatScreen({super.key, this.chatId});
 
   @override
   State<GameChatScreen> createState() => _GameChatScreenState();
@@ -30,7 +33,7 @@ class _GameChatScreenState extends State<GameChatScreen> {
         elevation: 0,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () => context.pushRoute(GiftRoute()),
             child: Text(
               "${context.read<UserModelAppInterface>().user!.gamePoints} points",
             ),
@@ -42,7 +45,7 @@ class _GameChatScreenState extends State<GameChatScreen> {
           return state.when(
             initial: () => LoadingWidget(),
             loading: () => LoadingWidget(),
-            loaded: (games) => GamesGrid(games: games),
+            loaded: (games) => GamesGrid(games: games, chatId: widget.chatId),
             error: (message) => ErrorsWidget(message: message),
           );
         },

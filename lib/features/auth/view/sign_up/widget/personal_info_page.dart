@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/cubit/sign_up_cubit.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/city/city.dart';
+import 'package:meet_now_app_server/model/social/city/city.dart';
 
 class PersonalInfoPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -27,7 +27,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   bool _isSearching = false;
   bool _showDropdown = false;
   bool _citySelected = false;
-
   final GlobalKey _cityFieldKey = GlobalKey();
 
   @override
@@ -41,9 +40,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     if (_cityFocusNode.hasFocus &&
         _cityController.text.length >= 2 &&
         !_citySelected) {
-      setState(() {
-        _showDropdown = true;
-      });
+      setState(() => _showDropdown = true);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final context = _cityFieldKey.currentContext;
         if (context != null) {
@@ -55,9 +52,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         }
       });
     } else if (!_cityFocusNode.hasFocus) {
-      setState(() {
-        _showDropdown = false;
-      });
+      setState(() => _showDropdown = false);
     }
   }
 
@@ -89,15 +84,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       });
       return;
     }
-
     setState(() {
       _isSearching = true;
       _showDropdown = true;
       _citySelected = false;
     });
-
     final cities = await context.read<SignUpCubit>().searchCities(query);
-
     if (mounted) {
       setState(() {
         _foundCities = cities;
@@ -124,7 +116,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: widget.buttonWidth),
                 child: TextFormField(
@@ -145,7 +136,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   validator: (value) => value!.isEmpty ? 'Введите город' : null,
                 ),
               ),
-
               if (_showDropdown) ...[
                 const SizedBox(height: 8),
                 AnimatedSwitcher(
@@ -198,79 +188,79 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   ),
                 ),
               ],
-
               const SizedBox(height: 16),
-              _buildFirstNameField(context),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+                child: TextFormField(
+                  initialValue: widget.formData.firstname,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).firstName,
+                    prefixIcon: const Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enterFirstName : null,
+                  onChanged: (value) => widget.formData.firstname = value,
+                ),
+              ),
               const SizedBox(height: 16),
-              _buildLastNameField(context),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+                child: TextFormField(
+                  initialValue: widget.formData.subname,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).lastName,
+                    prefixIcon: const Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enterLastName : null,
+                  onChanged: (value) => widget.formData.subname = value,
+                ),
+              ),
               const SizedBox(height: 16),
-              _buildAgeField(context),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+                child: TextFormField(
+                  initialValue:
+                      widget.formData.age > 0
+                          ? widget.formData.age.toString()
+                          : '',
+                  decoration: InputDecoration(
+                    labelText: S.of(context).age,
+                    prefixIcon: const Icon(Icons.cake_outlined),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return S.of(context).enterAge;
+                    }
+                    final age = int.tryParse(value);
+                    if (age == null || age < 14) return S.of(context).minAge;
+                    return null;
+                  },
+                  onChanged:
+                      (value) => widget.formData.age = int.tryParse(value) ?? 0,
+                ),
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFirstNameField(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-      child: TextFormField(
-        initialValue: widget.formData.firstname,
-        decoration: InputDecoration(
-          labelText: S.of(context).firstName,
-          prefixIcon: const Icon(Icons.person_outline),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          filled: true,
-          fillColor: Colors.grey[50],
-        ),
-        validator:
-            (value) => value!.isEmpty ? S.of(context).enterFirstName : null,
-        onChanged: (value) => widget.formData.firstname = value,
-      ),
-    );
-  }
-
-  Widget _buildLastNameField(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-      child: TextFormField(
-        initialValue: widget.formData.subname,
-        decoration: InputDecoration(
-          labelText: S.of(context).lastName,
-          prefixIcon: const Icon(Icons.person_outline),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          filled: true,
-          fillColor: Colors.grey[50],
-        ),
-        validator:
-            (value) => value!.isEmpty ? S.of(context).enterLastName : null,
-        onChanged: (value) => widget.formData.subname = value,
-      ),
-    );
-  }
-
-  Widget _buildAgeField(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-      child: TextFormField(
-        initialValue:
-            widget.formData.age > 0 ? widget.formData.age.toString() : '',
-        decoration: InputDecoration(
-          labelText: S.of(context).age,
-          prefixIcon: const Icon(Icons.cake_outlined),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          filled: true,
-          fillColor: Colors.grey[50],
-        ),
-        keyboardType: TextInputType.number,
-        validator: (value) {
-          if (value == null || value.isEmpty) return S.of(context).enterAge;
-          final age = int.tryParse(value);
-          if (age == null || age < 14) return S.of(context).minAge;
-          return null;
-        },
-        onChanged: (value) => widget.formData.age = int.tryParse(value) ?? 0,
       ),
     );
   }

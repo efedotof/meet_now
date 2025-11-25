@@ -1238,6 +1238,266 @@ class S {
       args: [],
     );
   }
+
+  /// `Clear History`
+  String get clearHistory {
+    return Intl.message(
+      'Clear History',
+      name: 'clearHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DeleteChat`
+  String get deletechat {
+    return Intl.message('DeleteChat', name: 'deletechat', desc: '', args: []);
+  }
+
+  /// `BlockUser`
+  String get blockuser {
+    return Intl.message('BlockUser', name: 'blockuser', desc: '', args: []);
+  }
+
+  /// `ReportUser`
+  String get reportuser {
+    return Intl.message('ReportUser', name: 'reportuser', desc: '', args: []);
+  }
+
+  /// `clearHistoryConfirmation`
+  String get clearhistoryconfirmation {
+    return Intl.message(
+      'clearHistoryConfirmation',
+      name: 'clearhistoryconfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `historyCleared`
+  String get historycleared {
+    return Intl.message(
+      'historyCleared',
+      name: 'historycleared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `clear`
+  String get clear {
+    return Intl.message('clear', name: 'clear', desc: '', args: []);
+  }
+
+  /// `deleteChatConfirmation`
+  String get deletechatconfirmation {
+    return Intl.message(
+      'deleteChatConfirmation',
+      name: 'deletechatconfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `chatDeleted`
+  String get chatdeleted {
+    return Intl.message('chatDeleted', name: 'chatdeleted', desc: '', args: []);
+  }
+
+  /// `delete`
+  String get delete {
+    return Intl.message('delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `blockUserConfirmation`
+  String get blockuserconfirmation {
+    return Intl.message(
+      'blockUserConfirmation',
+      name: 'blockuserconfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `userBlocked`
+  String get userblocked {
+    return Intl.message('userBlocked', name: 'userblocked', desc: '', args: []);
+  }
+
+  /// `block`
+  String get block {
+    return Intl.message('block', name: 'block', desc: '', args: []);
+  }
+
+  /// `reportUserDescription`
+  String get reportuserdescription {
+    return Intl.message(
+      'reportUserDescription',
+      name: 'reportuserdescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `selectReason`
+  String get selectreason {
+    return Intl.message(
+      'selectReason',
+      name: 'selectreason',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `additionalComments`
+  String get additionalcomments {
+    return Intl.message(
+      'additionalComments',
+      name: 'additionalcomments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `reportSubmitted`
+  String get reportsubmitted {
+    return Intl.message(
+      'reportSubmitted',
+      name: 'reportsubmitted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `submitReport`
+  String get submitreport {
+    return Intl.message(
+      'submitReport',
+      name: 'submitreport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `spam`
+  String get spam {
+    return Intl.message('spam', name: 'spam', desc: '', args: []);
+  }
+
+  /// `harassment`
+  String get harassment {
+    return Intl.message('harassment', name: 'harassment', desc: '', args: []);
+  }
+
+  /// `inappropriateContent`
+  String get inappropriatecontent {
+    return Intl.message(
+      'inappropriateContent',
+      name: 'inappropriatecontent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `fakeProfile`
+  String get fakeprofile {
+    return Intl.message('fakeProfile', name: 'fakeprofile', desc: '', args: []);
+  }
+
+  /// `other`
+  String get other {
+    return Intl.message('other', name: 'other', desc: '', args: []);
+  }
+
+  /// `changePassword`
+  String get changepassword {
+    return Intl.message(
+      'changePassword',
+      name: 'changepassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `newPassword`
+  String get newpassword {
+    return Intl.message('newPassword', name: 'newpassword', desc: '', args: []);
+  }
+
+  /// `oldPassword`
+  String get oldpassword {
+    return Intl.message('oldPassword', name: 'oldpassword', desc: '', args: []);
+  }
+
+  /// `noPurposesAdded`
+  String get nopurposesadded {
+    return Intl.message(
+      'noPurposesAdded',
+      name: 'nopurposesadded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `noInterestsAdded`
+  String get nointerestsadded {
+    return Intl.message(
+      'noInterestsAdded',
+      name: 'nointerestsadded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `passwordChangedSuccessfully`
+  String get passwordchangedsuccessfully {
+    return Intl.message(
+      'passwordChangedSuccessfully',
+      name: 'passwordchangedsuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `profileUpdatedSuccessfully`
+  String get profileupdatedsuccessfully {
+    return Intl.message(
+      'profileUpdatedSuccessfully',
+      name: 'profileupdatedsuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `avatarUploadFailed`
+  String get avataruploadfailed {
+    return Intl.message(
+      'avatarUploadFailed',
+      name: 'avataruploadfailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `avatarUpdatedSuccessfully`
+  String get avatarupdatedsuccessfully {
+    return Intl.message(
+      'avatarUpdatedSuccessfully',
+      name: 'avatarupdatedsuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `uploadingAvatar`
+  String get uploadingavatar {
+    return Intl.message(
+      'uploadingAvatar',
+      name: 'uploadingavatar',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -13,18 +13,12 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  media_ui_package:
-    git:
-      url: https://github.com/efedotof/media_ui_package.git
-      path: .
-      ref: b16469970c95c60c806bb8a094b23fe2349a090c
-
+  
   meet_now_app_server:
     git:
       url: https://github.com/efedotof/meet_now_app_server.git
       path: .
-      ref: ba118ec7953a955145a8d774450726690399a9b5
-
+      ref: 931680c18f50e2605520a42f8c520ea242da49ca
 
   cupertino_icons: ^1.0.8
   bloc: ^9.0.0
@@ -53,7 +47,24 @@ dependencies:
   webview_flutter_android: ^4.10.3
   webview_flutter_wkwebview: ^3.23.1
   mime: ^2.0.0
-  # charset_converter: ^2.3.0
+  video_player: ^2.10.0
+
+
+icons_launcher:
+  image_path: "assets/ic_logo_radius.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
+    windows:
+      enable: true
+    web:
+      enable: true
+    macos:
+      enable: true
+
+
 
 dev_dependencies:
   flutter_test:
@@ -72,8 +83,7 @@ flutter:
     - assets/administration.png
     - assets/moderator.png
     - assets/verify.png
-
-
+    - assets/logo.png
 
 flutter_intl:
   enabled: true

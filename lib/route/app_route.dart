@@ -19,7 +19,6 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: SearchRoute.page, path: "search"),
         AutoRoute(page: ChatRoute.page, path: "chat"),
-        // AutoRoute(page: FriendsRoute.page, path: "friends"),
         AutoRoute(page: GameChatRoute.page, path: "game_chat"),
         AutoRoute(page: SettingsRoute.page, path: "settings"),
       ],
@@ -45,5 +44,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: TemporaryChatRoute.page, path: "/temporary_chat"),
     AutoRoute(page: UploadsAvatarsRoute.page, path: "/uploads_avatars"),
     AutoRoute(page: FullImageRoute.page, path: "/full_image"),
+    AutoRoute(page: GiftRoute.page, path: "/gift"),
+    AutoRoute(page: FriendsRoute.page, path: "/friends"),
   ];
 }

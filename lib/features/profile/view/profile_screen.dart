@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/profile/widget/widget.dart';
-import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
 class ProfileScreen extends StatelessWidget {
@@ -13,8 +13,8 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final user = context.read<SettingsCubit>().userModelAppInterface.user!;
-    
+    final user = context.read<UserModelAppInterface>().user!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).myProfile),

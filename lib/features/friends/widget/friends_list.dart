@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/friends/widget/friend_card.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendsList extends StatelessWidget {
   const FriendsList({super.key, required this.friends, required this.theme});
-  final List<User> friends;
+  final List<FriendDto> friends;
   final ThemeData theme;
 
   @override
@@ -14,7 +14,6 @@ class FriendsList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Поисковая строка
           TextField(
             decoration: InputDecoration(
               hintText: S.of(context).searchFriendsHint,
@@ -29,7 +28,6 @@ class FriendsList extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Список друзей
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

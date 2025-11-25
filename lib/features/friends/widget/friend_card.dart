@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendCard extends StatelessWidget {
   const FriendCard({super.key, required this.friend, required this.theme});
-  final User friend;
+  final FriendDto friend;
   final ThemeData theme;
 
   @override
@@ -16,7 +16,7 @@ class FriendCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Навигация к профилю друга
+          // TODO:Навигация к профилю друга
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -27,20 +27,10 @@ class FriendCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundImage:
-                        friend.avatar != null
-                            ? NetworkImage(friend.avatar!)
-                            : null,
+                    backgroundImage: NetworkImage(friend.avatar),
                     backgroundColor:
                         isDark ? Colors.grey[800] : Colors.grey[300],
-                    child:
-                        friend.avatar == null
-                            ? Icon(
-                              Icons.person,
-                              size: 40,
-                              color: isDark ? Colors.white70 : Colors.black54,
-                            )
-                            : null,
+                    child: null,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -50,11 +40,11 @@ class FriendCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (friend.firstname != null || friend.subname != null)
+                  if (friend.firstname != '' || friend.subname != '')
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        '${friend.firstname ?? ''} ${friend.subname ?? ''}',
+                        '${friend.firstname} ${friend.subname}',
                         style: theme.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                         maxLines: 1,
@@ -70,14 +60,14 @@ class FriendCard extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.chat_bubble_outline),
                     onPressed: () {
-                      // Начать чат
+                      //TODO: Начать чат
                     },
                     tooltip: S.of(context).sendMessage,
                   ),
                   IconButton(
                     icon: const Icon(Icons.person_remove_outlined),
                     onPressed: () {
-                      // Удалить из друзей
+                      //TODO: Удалить из друзей
                     },
                     tooltip: S.of(context).removeFriend,
                   ),

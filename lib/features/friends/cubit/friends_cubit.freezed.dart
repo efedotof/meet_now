@@ -122,7 +122,7 @@ return friendsList(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<User> friends)?  friendsList,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( List<FriendDto> friends)?  friendsList,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _FriendsList() when friendsList != null:
@@ -144,7 +144,7 @@ return friendsList(_that.friends);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<User> friends)  friendsList,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( List<FriendDto> friends)  friendsList,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _FriendsList():
@@ -165,7 +165,7 @@ return friendsList(_that.friends);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<User> friends)?  friendsList,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( List<FriendDto> friends)?  friendsList,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _FriendsList() when friendsList != null:
@@ -213,11 +213,11 @@ String toString() {
 
 
 class _FriendsList implements FriendsState {
-  const _FriendsList({required final  List<User> friends}): _friends = friends;
+  const _FriendsList({required final  List<FriendDto> friends}): _friends = friends;
   
 
- final  List<User> _friends;
- List<User> get friends {
+ final  List<FriendDto> _friends;
+ List<FriendDto> get friends {
   if (_friends is EqualUnmodifiableListView) return _friends;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_friends);
@@ -254,7 +254,7 @@ abstract mixin class _$FriendsListCopyWith<$Res> implements $FriendsStateCopyWit
   factory _$FriendsListCopyWith(_FriendsList value, $Res Function(_FriendsList) _then) = __$FriendsListCopyWithImpl;
 @useResult
 $Res call({
- List<User> friends
+ List<FriendDto> friends
 });
 
 
@@ -274,7 +274,7 @@ class __$FriendsListCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? friends = null,}) {
   return _then(_FriendsList(
 friends: null == friends ? _self._friends : friends // ignore: cast_nullable_to_non_nullable
-as List<User>,
+as List<FriendDto>,
   ));
 }
 

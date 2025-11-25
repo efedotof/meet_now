@@ -3,8 +3,9 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/login/login.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/auth/login/login.dart';
+import 'package:meet_now_app_server/model/auth/user/user.dart';
+
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 
 part 'sign_in_state.dart';

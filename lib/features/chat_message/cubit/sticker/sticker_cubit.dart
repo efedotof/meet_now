@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/sticker/sticker.dart';
+import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 import 'package:meet_now_app_server/repository/stikers_parks/stikers_parks_interface.dart';
 
 part 'sticker_state.dart';

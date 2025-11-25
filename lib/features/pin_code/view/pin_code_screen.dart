@@ -18,12 +18,7 @@ class PinCodeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: BlocConsumer<PinCodeCubit, PinCodeState>(
             listener: (context, state) {
-              state.maybeWhen(
-                failure: (error) {
-                  // Ошибка уже обрабатывается в cubit
-                },
-                orElse: () {},
-              );
+              state.maybeWhen(failure: (error) {}, orElse: () {});
             },
             builder: (context, state) {
               final currentPin = state.maybeWhen(
@@ -70,10 +65,10 @@ class PinCodeScreen extends StatelessWidget {
                     child: NumPad(
                       onKeyPressed: (digit) {
                         context.read<PinCodeCubit>().addDigit(
-                              context: context,
-                              digit: digit,
-                              currentPin: currentPin,
-                            );
+                          context: context,
+                          digit: digit,
+                          currentPin: currentPin,
+                        );
                       },
                       onBackspacePressed: () {
                         context.read<PinCodeCubit>().backspace(currentPin);

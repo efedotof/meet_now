@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/user_activity/user_activity.dart';
+import 'package:meet_now_app_server/model/social/user_activity/user_activity.dart';
 import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 

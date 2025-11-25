@@ -217,16 +217,62 @@ class FullImageRouteArgs {
 
 /// generated route for
 /// [GameChatScreen]
-class GameChatRoute extends PageRouteInfo<void> {
-  const GameChatRoute({List<PageRouteInfo>? children})
-    : super(GameChatRoute.name, initialChildren: children);
+class GameChatRoute extends PageRouteInfo<GameChatRouteArgs> {
+  GameChatRoute({Key? key, String? chatId, List<PageRouteInfo>? children})
+    : super(
+        GameChatRoute.name,
+        args: GameChatRouteArgs(key: key, chatId: chatId),
+        initialChildren: children,
+      );
 
   static const String name = 'GameChatRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const GameChatScreen();
+      final args = data.argsAs<GameChatRouteArgs>(
+        orElse: () => const GameChatRouteArgs(),
+      );
+      return GameChatScreen(key: args.key, chatId: args.chatId);
+    },
+  );
+}
+
+class GameChatRouteArgs {
+  const GameChatRouteArgs({this.key, this.chatId});
+
+  final Key? key;
+
+  final String? chatId;
+
+  @override
+  String toString() {
+    return 'GameChatRouteArgs{key: $key, chatId: $chatId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! GameChatRouteArgs) return false;
+    return key == other.key && chatId == other.chatId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ chatId.hashCode;
+}
+
+/// generated route for
+/// [GiftScreen]
+class GiftRoute extends PageRouteInfo<void> {
+  const GiftRoute({List<PageRouteInfo>? children})
+    : super(GiftRoute.name, initialChildren: children);
+
+  static const String name = 'GiftRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const GiftScreen();
     },
   );
 }

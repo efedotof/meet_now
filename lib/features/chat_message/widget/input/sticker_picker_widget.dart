@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
-import 'package:meet_now_app_server/model/sticker/sticker.dart';
+import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
+import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
 class StickerPickerWidget extends StatefulWidget {
   final Function(Sticker) onStickerSelected;
@@ -16,6 +17,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
   List<Sticker> _stickers = [];
   bool _isLoading = true;
   String? _error;
+  final Map<String, String> _presignedUrlCache = {};
 
   @override
   void initState() {
@@ -36,6 +38,24 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
         _error = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<String> _getPresignedUrl(String fileUrl) async {
+    try {
+      if (_presignedUrlCache.containsKey(fileUrl)) {
+        return _presignedUrlCache[fileUrl]!;
+      }
+
+      final url = await context.read<UploadImageInterface>().getPresignedUrl(
+        fileUrl,
+      );
+      _presignedUrlCache[fileUrl] = url;
+
+      return url;
+    } catch (e) {
+      debugPrint('Error getting presigned URL: $e');
+      throw Exception('Failed to get presigned URL: $e');
     }
   }
 
@@ -138,45 +158,73 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
-                                          child: Image.network(
-                                            sticker.imageUrl,
-                                            fit: BoxFit.cover,
-                                            loadingBuilder: (
-                                              context,
-                                              child,
-                                              loadingProgress,
-                                            ) {
-                                              if (loadingProgress == null) {
-                                                return child;
+                                          child: FutureBuilder<String>(
+                                            future: _getPresignedUrl(
+                                              sticker.imageUrl,
+                                            ),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Center(
+                                                  child: Icon(
+                                                    Icons.error_outline,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.error,
+                                                  ),
+                                                );
+                                              } else if (snapshot.hasData) {
+                                                return Image.network(
+                                                  snapshot.data!,
+                                                  fit: BoxFit.cover,
+                                                  loadingBuilder: (
+                                                    context,
+                                                    child,
+                                                    loadingProgress,
+                                                  ) {
+                                                    if (loadingProgress ==
+                                                        null) {
+                                                      return child;
+                                                    }
+                                                    return Center(
+                                                      child: CircularProgressIndicator(
+                                                        value:
+                                                            loadingProgress
+                                                                        .expectedTotalBytes !=
+                                                                    null
+                                                                ? loadingProgress
+                                                                        .cumulativeBytesLoaded /
+                                                                    loadingProgress
+                                                                        .expectedTotalBytes!
+                                                                : null,
+                                                      ),
+                                                    );
+                                                  },
+                                                  errorBuilder: (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) {
+                                                    return Center(
+                                                      child: Icon(
+                                                        Icons.error_outline,
+                                                        color:
+                                                            Theme.of(
+                                                              context,
+                                                            ).colorScheme.error,
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                return const SizedBox();
                                               }
-                                              return Center(
-                                                child: CircularProgressIndicator(
-                                                  value:
-                                                      loadingProgress
-                                                                  .expectedTotalBytes !=
-                                                              null
-                                                          ? loadingProgress
-                                                                  .cumulativeBytesLoaded /
-                                                              loadingProgress
-                                                                  .expectedTotalBytes!
-                                                          : null,
-                                                ),
-                                              );
-                                            },
-                                            errorBuilder: (
-                                              context,
-                                              error,
-                                              stackTrace,
-                                            ) {
-                                              return Center(
-                                                child: Icon(
-                                                  Icons.error_outline,
-                                                  color:
-                                                      Theme.of(
-                                                        context,
-                                                      ).colorScheme.error,
-                                                ),
-                                              );
                                             },
                                           ),
                                         ),

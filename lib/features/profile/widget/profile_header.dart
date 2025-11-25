@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/user/user.dart';
+import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.user});
@@ -38,9 +38,9 @@ class ProfileHeader extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             user.username,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           if (user.firstname != null || user.subname != null)
             Padding(
