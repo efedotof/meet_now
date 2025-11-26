@@ -7,6 +7,7 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class ChatScreen extends StatelessWidget {
@@ -23,17 +24,36 @@ class ChatScreen extends StatelessWidget {
             userModelAppInterface: context.read<UserModelAppInterface>(),
             chatInterface: context.read<ChatInterface>(),
           )..refresh(),
-      child: BlocBuilder<ChatCubit, ChatState>(
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(l10n.chats),
-              centerTitle: true,
-              actions: [],
-            ),
-            body: MyBody(state: state),
-          );
-        },
+      child: SkeletonTheme(
+        shimmerGradient: const LinearGradient(
+          colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
+          stops: [0.1, 0.5, 0.9],
+        ),
+        darkShimmerGradient: const LinearGradient(
+          colors: [
+            Color(0xFF222222),
+            Color(0xFF242424),
+            Color(0xFF2B2B2B),
+            Color(0xFF242424),
+            Color(0xFF222222),
+          ],
+          stops: [0.0, 0.2, 0.5, 0.8, 1],
+          begin: Alignment(-2.4, -0.2),
+          end: Alignment(2.4, 0.2),
+          tileMode: TileMode.clamp,
+        ),
+        child: BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, state) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(l10n.chats),
+                centerTitle: true,
+                actions: [],
+              ),
+              body: MyBody(state: state),
+            );
+          },
+        ),
       ),
     );
   }

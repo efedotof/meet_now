@@ -1,13 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:media_ui_package/media_ui_package.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/command_suggestions/command_suggestions_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
-import 'package:meet_now_app_server/model/social/commands/commands_chat.dart';
-import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 
 import '../suggestions/command_suggestions_widget.dart';
 import 'sticker_picker_widget.dart';

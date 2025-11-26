@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/generated/l10n.dart';
+import 'package:skeletons_forked/skeletons_forked.dart';
 
 class LoadingMessages extends StatelessWidget {
   const LoadingMessages({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation(
-              Theme.of(context).colorScheme.primary,
+          SkeletonAvatar(
+            style: SkeletonAvatarStyle(
+              width: 50,
+              height: 50,
+              shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            S.of(context).loadingMessages,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+          SizedBox(height: 16),
+          SkeletonLine(
+            style: SkeletonLineStyle(
+              height: 16,
+              width: 120,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
           ),
         ],

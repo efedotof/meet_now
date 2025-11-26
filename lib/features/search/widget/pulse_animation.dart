@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class PulseAnimation extends StatefulWidget {
@@ -27,10 +26,11 @@ class _PulseAnimationState extends State<PulseAnimation>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
-    _animation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+
+    _animation = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     if (widget.isAnimating) {
       _controller.repeat(reverse: true);
@@ -55,9 +55,6 @@ class _PulseAnimationState extends State<PulseAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _animation,
-      child: widget.child,
-    );
+    return ScaleTransition(scale: _animation, child: widget.child);
   }
 }

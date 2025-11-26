@@ -43,7 +43,9 @@ class _AgeOptionState extends State<AgeOption>
     super.didChangeDependencies();
     _colorAnimation = ColorTween(
       begin: Theme.of(context).cardTheme.color,
-      end: Theme.of(context).elevatedButtonTheme.style?.backgroundColor?.resolve({}),
+      end: Theme.of(
+        context,
+      ).elevatedButtonTheme.style?.backgroundColor?.resolve({}),
     ).animate(_controller);
 
     _borderAnimation = BorderRadiusTween(
@@ -101,9 +103,10 @@ class _AgeOptionState extends State<AgeOption>
                   color: _colorAnimation.value,
                   borderRadius: _borderAnimation.value,
                   border: Border.all(
-                    color: isSelected
-                        ? Colors.transparent
-                        : isDark
+                    color:
+                        isSelected
+                            ? Colors.transparent
+                            : isDark
                             ? Colors.white24
                             : Colors.black12,
                     width: 1,
@@ -115,10 +118,16 @@ class _AgeOptionState extends State<AgeOption>
                     Text(
                       ageLabel,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isSelected
-                            ? theme.elevatedButtonTheme.style?.foregroundColor?.resolve({})
-                            : theme.textTheme.bodyMedium?.color,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isSelected
+                                ? theme
+                                    .elevatedButtonTheme
+                                    .style
+                                    ?.foregroundColor
+                                    ?.resolve({})
+                                : theme.textTheme.bodyMedium?.color,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -127,7 +136,8 @@ class _AgeOptionState extends State<AgeOption>
                       child: Icon(
                         Icons.check,
                         size: 18,
-                        color: theme.elevatedButtonTheme.style?.foregroundColor?.resolve({}),
+                        color: theme.elevatedButtonTheme.style?.foregroundColor
+                            ?.resolve({}),
                       ),
                     ),
                   ],

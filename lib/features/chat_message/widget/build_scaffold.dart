@@ -7,9 +7,9 @@ import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_c
 import 'package:meet_now_app/features/chat_message/widget/app_bar_widget.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 
+import 'chat_messages_skeleton.dart';
 import 'error_message.dart';
 import 'input/input_area.dart';
-import 'loading_messages.dart';
 import 'messages_list.dart';
 
 class BuildScaffold extends StatefulWidget {
@@ -248,8 +248,8 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                       return AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
                         child: state.when(
-                          initial: () => const LoadingMessages(),
-                          loading: () => const LoadingMessages(),
+                          initial: () => const ChatMessagesSkeleton(),
+                          loading: () => const ChatMessagesSkeleton(),
                           error:
                               (message) => ErrorMessage(
                                 message: message,

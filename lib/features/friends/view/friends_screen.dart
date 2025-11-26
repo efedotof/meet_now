@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/friends/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class FriendsScreen extends StatefulWidget {
@@ -25,25 +26,38 @@ class _FriendsScreenState extends State<FriendsScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(S.of(context).friends)),
-      body: RefreshIndicator(
-        onRefresh: () => context.read<FriendsCubit>().refreshFriend(),
-        child: BlocBuilder<FriendsCubit, FriendsState>(
-          builder: (context, state) {
-            return state.when(
-              initial:
-                  () => Center(
-                    child: CircularProgressIndicator(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-              friendsList: (friends) {
-                if (friends.isEmpty) {
-                  return EmptyState(theme: theme);
-                }
-                return FriendsList(friends: friends, theme: theme);
-              },
-            );
-          },
+      body: SkeletonTheme(
+        shimmerGradient: LinearGradient(
+          colors: [
+            theme.colorScheme.surface.withAlpha(90),
+            theme.colorScheme.surface.withAlpha(50),
+            theme.colorScheme.surface.withAlpha(90),
+          ],
+          stops: const [0.1, 0.5, 0.9],
+        ),
+        darkShimmerGradient: LinearGradient(
+          colors: [
+            Colors.grey.shade800,
+            Colors.grey.shade700,
+            Colors.grey.shade800,
+          ],
+          stops: const [0.1, 0.5, 0.9],
+        ),
+        child: RefreshIndicator(
+          onRefresh: () => context.read<FriendsCubit>().refreshFriend(),
+          child: BlocBuilder<FriendsCubit, FriendsState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => const FriendsSkeleton(),
+                friendsList: (friends) {
+                  if (friends.isEmpty) {
+                    return EmptyState(theme: theme);
+                  }
+                  return FriendsList(friends: friends);
+                },
+              );
+            },
+          ),
         ),
       ),
     );

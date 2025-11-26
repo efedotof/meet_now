@@ -4,9 +4,8 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendsList extends StatelessWidget {
-  const FriendsList({super.key, required this.friends, required this.theme});
+  const FriendsList({super.key, required this.friends});
   final List<FriendDto> friends;
-  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +26,14 @@ class FriendsList extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
           Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.8,
-              ),
+            child: ListView.builder(
               itemCount: friends.length,
-              itemBuilder: (context, index) {
-                return FriendCard(friend: friends[index], theme: theme);
-              },
+              itemBuilder:
+                  (context, index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: FriendCard(friend: friends[index]),
+                  ),
             ),
           ),
         ],

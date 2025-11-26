@@ -1,11 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:media_ui_package/media_ui_package.dart';
-import 'package:meet_now_app_server/model/chats/message/message.dart';
-import 'package:meet_now_app_server/model/chats/message_media/message_media.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
-import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 import 'file_size_formatter.dart';
 import 'text_message.dart';
 

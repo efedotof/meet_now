@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:media_ui_package/media_ui_package.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class MediaThumbnail extends StatelessWidget {
   const MediaThumbnail({
