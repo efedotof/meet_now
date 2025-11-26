@@ -3,13 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:media_ui_package/media_ui_package.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 import 'package:meet_now_app/features/setting_profile/cubit/setting_profile_cubit.dart';
 import 'package:meet_now_app/features/setting_profile/widget/widget.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 @RoutePage()
 class SettingProfileScreen extends StatefulWidget {

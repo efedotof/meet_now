@@ -13,13 +13,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  
   meet_now_app_server:
     git:
       url: https://github.com/efedotof/meet_now_app_server.git
       path: .
-      ref: 931680c18f50e2605520a42f8c520ea242da49ca
-
+      ref: 241f1e81f331298808c824f2310117a830e54ef4
   cupertino_icons: ^1.0.8
   bloc: ^9.0.0
   flutter_bloc: ^9.1.1
@@ -48,10 +46,12 @@ dependencies:
   webview_flutter_wkwebview: ^3.23.1
   mime: ^2.0.0
   video_player: ^2.10.0
+  icons_launcher: ^3.0.3
+  skeletons_forked : ^0.0.4
 
 
 icons_launcher:
-  image_path: "assets/ic_logo_radius.png"
+  image_path: "assets/logo.png"
   platforms:
     android:
       enable: true

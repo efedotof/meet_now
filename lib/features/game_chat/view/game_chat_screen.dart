@@ -5,6 +5,7 @@ import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
+import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class GameChatScreen extends StatefulWidget {
@@ -27,28 +28,47 @@ class _GameChatScreenState extends State<GameChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Игры'),
-        elevation: 0,
-        actions: [
-          TextButton(
-            onPressed: () => context.pushRoute(GiftRoute()),
-            child: Text(
-              "${context.read<UserModelAppInterface>().user!.gamePoints} points",
-            ),
-          ),
-        ],
+    return SkeletonTheme(
+      shimmerGradient: const LinearGradient(
+        colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
+        stops: [0.1, 0.5, 0.9],
       ),
-      body: BlocBuilder<GameChatCubit, GameChatState>(
-        builder: (context, state) {
-          return state.when(
-            initial: () => LoadingWidget(),
-            loading: () => LoadingWidget(),
-            loaded: (games) => GamesGrid(games: games, chatId: widget.chatId),
-            error: (message) => ErrorsWidget(message: message),
-          );
-        },
+      darkShimmerGradient: const LinearGradient(
+        colors: [
+          Color(0xFF222222),
+          Color(0xFF242424),
+          Color(0xFF2B2B2B),
+          Color(0xFF242424),
+          Color(0xFF222222),
+        ],
+        stops: [0.0, 0.2, 0.5, 0.8, 1],
+        begin: Alignment(-2.4, -0.2),
+        end: Alignment(2.4, 0.2),
+        tileMode: TileMode.clamp,
+      ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Игры'),
+          elevation: 0,
+          actions: [
+            TextButton(
+              onPressed: () => context.pushRoute(GiftRoute()),
+              child: Text(
+                "${context.read<UserModelAppInterface>().user!.gamePoints} points",
+              ),
+            ),
+          ],
+        ),
+        body: BlocBuilder<GameChatCubit, GameChatState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const GamesSkeleton(),
+              loading: () => const GamesSkeleton(),
+              loaded: (games) => GamesGrid(games: games, chatId: widget.chatId),
+              error: (message) => ErrorsWidget(message: message),
+            );
+          },
+        ),
       ),
     );
   }

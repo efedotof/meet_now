@@ -2,19 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:media_ui_package/media_ui_package.dart';
-
-import 'package:meet_now_app_server/model/chats/agree_chat_request/agree_chat_response.dart';
-import 'package:meet_now_app_server/model/chats/message/message.dart';
-import 'package:meet_now_app_server/model/chats/message_media/message_media.dart';
-
-import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
-
-import 'package:meet_now_app_server/repository/friend/friend_interface.dart';
-import 'package:meet_now_app_server/repository/games/games_interface.dart';
-import 'package:meet_now_app_server/repository/message/message_interface.dart';
-import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
-import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 part 'chat_message_state.dart';
 part 'chat_message_cubit.freezed.dart';

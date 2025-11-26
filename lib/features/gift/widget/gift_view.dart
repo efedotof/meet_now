@@ -5,7 +5,7 @@ import 'package:meet_now_app_server/storage/token/token_interface.dart';
 
 import 'errors_widget.dart';
 import 'gift_content.dart';
-import 'loading_widget.dart';
+import 'gift_skeleton.dart';
 
 class GiftView extends StatelessWidget {
   const GiftView({super.key});
@@ -28,8 +28,8 @@ class GiftView extends StatelessWidget {
         },
         builder: (context, state) {
           return state.when(
-            initial: () => const LoadingWidget(),
-            loading: () => const LoadingWidget(),
+            initial: () => const GiftSkeleton(),
+            loading: () => const GiftSkeleton(),
             loaded:
                 (
                   gifts,

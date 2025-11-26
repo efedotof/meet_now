@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.7"
   args:
     dependency: transitive
     description:
@@ -269,8 +277,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: a579ef0effc186783cacbe9142c11d2d358c0cbe
-      resolved-ref: a579ef0effc186783cacbe9142c11d2d358c0cbe
+      ref: "39f06a2d51b1b32669e80326642c7a11b01bf590"
+      resolved-ref: "39f06a2d51b1b32669e80326642c7a11b01bf590"
       url: "https://github.com/efedotof/attach_file_photo_plugin.git"
     source: git
     version: "0.0.1"
@@ -503,6 +511,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  icons_launcher:
+    dependency: "direct main"
+    description:
+      name: icons_launcher
+      sha256: "6317d56a73ee528f1dd570d7cd7be120ce58014e0fe635d141ada3d88782f58d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.4"
   intl:
     dependency: "direct main"
     description:
@@ -619,8 +643,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "1da912c71cfe225caef8913b0677e14ce5386111"
-      resolved-ref: "1da912c71cfe225caef8913b0677e14ce5386111"
+      ref: e6f73b5ee7873350aee8254defa23c4c702711d9
+      resolved-ref: e6f73b5ee7873350aee8254defa23c4c702711d9
       url: "https://github.com/efedotof/media_ui_package.git"
     source: git
     version: "0.0.4"
@@ -628,8 +652,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "931680c18f50e2605520a42f8c520ea242da49ca"
-      resolved-ref: "931680c18f50e2605520a42f8c520ea242da49ca"
+      ref: "241f1e81f331298808c824f2310117a830e54ef4"
+      resolved-ref: "241f1e81f331298808c824f2310117a830e54ef4"
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"
@@ -793,6 +817,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: "6323a5b0fa688b6a010df4905a56b00181479e6d10534cecfecede2aa55add61"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.3"
   pretty_qr_code:
     dependency: "direct main"
     description:
@@ -913,6 +945,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  skeletons_forked:
+    dependency: "direct main"
+    description:
+      name: skeletons_forked
+      sha256: "9715c7cbffe2ec68cb69be4a5e0fc0e382dfa7bd96166104386f48b5f853dcaa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1070,6 +1110,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  universal_io:
+    dependency: transitive
+    description:
+      name: universal_io
+      sha256: f63cbc48103236abf48e345e07a03ce5757ea86285ed313a6a032596ed9301e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.1"
   universal_platform:
     dependency: "direct main"
     description:
@@ -1198,6 +1246,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
+  visibility_detector:
+    dependency: transitive
+    description:
+      name: visibility_detector
+      sha256: dd5cc11e13494f432d15939c3aa8ae76844c42b723398643ce9addb88a5ed420
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0+2"
   vm_service:
     dependency: transitive
     description:

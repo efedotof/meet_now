@@ -1,80 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendCard extends StatelessWidget {
-  const FriendCard({super.key, required this.friend, required this.theme});
+  const FriendCard({super.key, required this.friend});
   final FriendDto friend;
-  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = theme.brightness == Brightness.dark;
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          // TODO:Навигация к профилю друга
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(10),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: Text(
+                friend.firstname.isNotEmpty ? friend.firstname[0] : 'U',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: NetworkImage(friend.avatar),
-                    backgroundColor:
-                        isDark ? Colors.grey[800] : Colors.grey[300],
-                    child: null,
-                  ),
-                  const SizedBox(height: 16),
                   Text(
-                    friend.username,
-                    style: theme.textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
+                    "${friend.firstname} ${friend.subname}",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (friend.firstname != '' || friend.subname != '')
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        '${friend.firstname} ${friend.subname}',
-                        style: theme.textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: friend.isOnline ? Colors.green : Colors.red,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                ],
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.chat_bubble_outline),
-                    onPressed: () {
-                      //TODO: Начать чат
-                    },
-                    tooltip: S.of(context).sendMessage,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person_remove_outlined),
-                    onPressed: () {
-                      //TODO: Удалить из друзей
-                    },
-                    tooltip: S.of(context).removeFriend,
+                      const SizedBox(width: 6),
+                      Text(
+                        friend.isOnline ? "онлайн" : "оффлайн",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: friend.isOnline ? Colors.green : Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(50),
+            ),
+          ],
         ),
       ),
     );

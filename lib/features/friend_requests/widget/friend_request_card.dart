@@ -19,13 +19,17 @@ class FriendRequestCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 24,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               backgroundImage:
                   friendRequest.avatar != null
                       ? NetworkImage(friendRequest.avatar!)
                       : null,
               child:
                   friendRequest.avatar == null
-                      ? const Icon(Icons.person)
+                      ? Icon(
+                        Icons.person,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      )
                       : null,
             ),
             const SizedBox(width: 16),
@@ -47,26 +51,43 @@ class FriendRequestCard extends StatelessWidget {
                           '${friendRequest.age} лет',
                         friendRequest.city,
                       ].where((e) => e != null).join(', '),
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(70),
+                      ),
                     ),
                 ],
               ),
             ),
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.check_circle, color: Colors.green),
-                  onPressed:
-                      () => context.read<FriendCubit>().acceptRequest(
-                        friendRequest.id,
-                      ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.check, color: Colors.white),
+                    onPressed:
+                        () => context.read<FriendCubit>().acceptRequest(
+                          friendRequest.id,
+                        ),
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.cancel, color: Colors.red),
-                  onPressed:
-                      () => context.read<FriendCubit>().rejectRequest(
-                        friendRequest.id,
-                      ),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed:
+                        () => context.read<FriendCubit>().rejectRequest(
+                          friendRequest.id,
+                        ),
+                  ),
                 ),
               ],
             ),
