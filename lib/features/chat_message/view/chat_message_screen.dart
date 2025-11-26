@@ -10,7 +10,6 @@ import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_c
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 import 'package:meet_now_app/features/chat_message/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class ChatMessageScreen extends StatefulWidget {
@@ -531,101 +530,82 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     final theme = Theme.of(context);
     final currentUserId = context.read<UserModelAppInterface>().user!.id;
 
-    return SkeletonTheme(
-      shimmerGradient: const LinearGradient(
-        colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
-        stops: [0.1, 0.5, 0.9],
-      ),
-      darkShimmerGradient: const LinearGradient(
-        colors: [
-          Color(0xFF222222),
-          Color(0xFF242424),
-          Color(0xFF2B2B2B),
-          Color(0xFF242424),
-          Color(0xFF222222),
-        ],
-        stops: [0.0, 0.2, 0.5, 0.8, 1],
-        begin: Alignment(-2.4, -0.2),
-        end: Alignment(2.4, 0.2),
-        tileMode: TileMode.clamp,
-      ),
-      child: BlocProvider.value(
-        value: _mediaSelectionCubit,
-        child: BlocListener<ChatMessageCubit, ChatMessageState>(
-          listener: (context, state) {
-            state.maybeMap(
-              loaded: (state) => _checkForContinueRequest(context, state),
-              orElse: () {},
-            );
-          },
-          child:
-              isTemporary
-                  ? BlocProvider.value(
-                    value: _timerCubit,
-                    child: BlocListener<SyncTimerCubit, SyncTimerState>(
-                      listener: (context, state) {
-                        state.whenOrNull(
-                          addTimeProposed: (
-                            remainingTime,
-                            formattedTime,
+    return BlocProvider.value(
+      value: _mediaSelectionCubit,
+      child: BlocListener<ChatMessageCubit, ChatMessageState>(
+        listener: (context, state) {
+          state.maybeMap(
+            loaded: (state) => _checkForContinueRequest(context, state),
+            orElse: () {},
+          );
+        },
+        child:
+            isTemporary
+                ? BlocProvider.value(
+                  value: _timerCubit,
+                  child: BlocListener<SyncTimerCubit, SyncTimerState>(
+                    listener: (context, state) {
+                      state.whenOrNull(
+                        addTimeProposed: (
+                          remainingTime,
+                          formattedTime,
+                          additionalMinutes,
+                          fromUserId,
+                        ) {
+                          _showAddTimeProposalDialog(
+                            context,
                             additionalMinutes,
                             fromUserId,
-                          ) {
-                            _showAddTimeProposalDialog(
-                              context,
-                              additionalMinutes,
-                              fromUserId,
-                            );
-                          },
-                          timeAdded: (additionalMinutes) {
-                            _showTimeAddedDialog(context, additionalMinutes);
-                          },
-                          timeRejected: () {
-                            _showTimeRejectedDialog(context);
-                          },
-                          finished: () {
-                            _showTimerFinishedDialog();
-                          },
-                          timeOptions: (remainingTime, formattedTime) {
-                            _showTimeOptionsDialog(context);
-                          },
-                        );
-                      },
-                      child: BuildScaffold(
-                        theme: theme,
-                        currentUserId: currentUserId,
-                        onBackPressed: _onBackPressed,
-                        isTemporary: isTemporary,
-                        chatId: _chatId,
-                        senderID: senderID,
-                        recipientId: recipientId,
-                        messageController: _messageController,
-                        sendMessage: _sendMessage,
-                        scrollController: _scrollController,
-                        chatModel: widget.chatModel,
-                        onAddAttach: _showMediaPickerBottomSheet,
-                        onContinueChat:
-                            () => _showContinueChatProposalDialog(context),
-                      ),
+                          );
+                        },
+                        timeAdded: (additionalMinutes) {
+                          _showTimeAddedDialog(context, additionalMinutes);
+                        },
+                        timeRejected: () {
+                          _showTimeRejectedDialog(context);
+                        },
+                        finished: () {
+                          _showTimerFinishedDialog();
+                        },
+                        timeOptions: (remainingTime, formattedTime) {
+                          _showTimeOptionsDialog(context);
+                        },
+                      );
+                    },
+                    child: BuildScaffold(
+                      theme: theme,
+                      currentUserId: currentUserId,
+                      onBackPressed: _onBackPressed,
+                      isTemporary: isTemporary,
+                      chatId: _chatId,
+                      senderID: senderID,
+                      recipientId: recipientId,
+                      messageController: _messageController,
+                      sendMessage: _sendMessage,
+                      scrollController: _scrollController,
+                      chatModel: widget.chatModel,
+                      onAddAttach: _showMediaPickerBottomSheet,
+                      onContinueChat:
+                          () => _showContinueChatProposalDialog(context),
                     ),
-                  )
-                  : BuildScaffold(
-                    theme: theme,
-                    currentUserId: currentUserId,
-                    onBackPressed: _onBackPressed,
-                    isTemporary: isTemporary,
-                    chatId: _chatId,
-                    senderID: senderID,
-                    recipientId: recipientId,
-                    messageController: _messageController,
-                    sendMessage: _sendMessage,
-                    scrollController: _scrollController,
-                    chatModel: widget.chatModel,
-                    onAddAttach: _showMediaPickerBottomSheet,
-                    onContinueChat:
-                        () => _showContinueChatProposalDialog(context),
                   ),
-        ),
+                )
+                : BuildScaffold(
+                  theme: theme,
+                  currentUserId: currentUserId,
+                  onBackPressed: _onBackPressed,
+                  isTemporary: isTemporary,
+                  chatId: _chatId,
+                  senderID: senderID,
+                  recipientId: recipientId,
+                  messageController: _messageController,
+                  sendMessage: _sendMessage,
+                  scrollController: _scrollController,
+                  chatModel: widget.chatModel,
+                  onAddAttach: _showMediaPickerBottomSheet,
+                  onContinueChat:
+                      () => _showContinueChatProposalDialog(context),
+                ),
       ),
     );
   }

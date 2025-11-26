@@ -32,6 +32,7 @@ class ChatTile extends StatefulWidget {
 
 class _ChatTileState extends State<ChatTile> {
   bool _isDeleting = false;
+  bool _imageError = false;
 
   void _showDeleteDialog() {
     showDialog(
@@ -122,10 +123,64 @@ class _ChatTileState extends State<ChatTile> {
     }
   }
 
+  Widget _buildAvatar() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final backgroundColor = isDark ? Colors.grey[800] : Colors.grey[300];
+    final iconColor = isDark ? Colors.white70 : Colors.black54;
+
+    if (widget.avatar == null || _imageError) {
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backgroundColor,
+        ),
+        child: Icon(Icons.person, size: 24, color: iconColor),
+      );
+    }
+
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: backgroundColor),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Image.network(
+          widget.avatar!,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && !_imageError) {
+                setState(() {
+                  _imageError = true;
+                });
+              }
+            });
+            return Icon(Icons.person, size: 24, color: iconColor);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                strokeWidth: 2,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Dismissible(
       key: Key(
@@ -137,11 +192,11 @@ class _ChatTileState extends State<ChatTile> {
       background: Container(
         decoration: BoxDecoration(
           color: Colors.red,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white, size: 30),
+        child: const Icon(Icons.delete, color: Colors.white, size: 24),
       ),
       confirmDismiss: (direction) async {
         _showDeleteDialog();
@@ -149,158 +204,117 @@ class _ChatTileState extends State<ChatTile> {
       },
       child: GestureDetector(
         onLongPress: _showDeleteDialog,
-        child: Opacity(
-          opacity: _isDeleting ? 0.6 : 1.0,
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: theme.cardTheme.color,
-            child: Stack(
-              children: [
-                InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap:
-                      _isDeleting
-                          ? null
-                          : () {
-                            if (widget.chat != null) {
-                              context.pushRoute(
-                                ChatMessageRoute(
-                                  chatModel: widget.chat,
-                                  temporaryChatModel: null,
-                                ),
-                              );
-                            } else if (widget.temporaryChat != null) {
-                              context.pushRoute(
-                                ChatMessageRoute(
-                                  chatModel: null,
-                                  temporaryChatModel: widget.temporaryChat,
-                                ),
-                              );
-                            }
-                          },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 28,
-                              backgroundImage:
-                                  widget.avatar != null
-                                      ? NetworkImage(widget.avatar!)
-                                      : null,
-                              backgroundColor:
-                                  isDark ? Colors.grey[800] : Colors.grey[300],
-                              child:
-                                  widget.avatar == null
-                                      ? Icon(
-                                        Icons.person,
-                                        size: 28,
-                                        color:
-                                            isDark
-                                                ? Colors.white70
-                                                : Colors.black54,
-                                      )
-                                      : null,
-                            ),
-                            if (widget.unreadCount != null &&
-                                widget.unreadCount! > 0)
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: theme.cardTheme.color!,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    widget.unreadCount! > 99
-                                        ? '99+'
-                                        : widget.unreadCount!.toString(),
-                                    style: TextStyle(
-                                      color:
-                                          isDark ? Colors.black : Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.colorScheme.outline.withAlpha(30)),
+          ),
+          child: Stack(
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap:
+                    _isDeleting
+                        ? null
+                        : () {
+                          if (widget.chat != null) {
+                            context.pushRoute(
+                              ChatMessageRoute(
+                                chatModel: widget.chat,
+                                temporaryChatModel: null,
                               ),
-                          ],
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.name,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                            );
+                          } else if (widget.temporaryChat != null) {
+                            context.pushRoute(
+                              ChatMessageRoute(
+                                chatModel: null,
+                                temporaryChatModel: widget.temporaryChat,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                widget.lastMessage,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.secondary,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                            );
+                          }
+                        },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      _buildAvatar(),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _formatTime(widget.sendLastMessageAt),
-                              style: theme.textTheme.bodySmall,
+                              widget.name,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 8),
-                            if (widget.unreadCount != null &&
-                                widget.unreadCount! > 0)
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary,
-                                  shape: BoxShape.circle,
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.lastMessage,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurface.withAlpha(
+                                  150,
                                 ),
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            _formatTime(widget.sendLastMessageAt),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withAlpha(150),
+                            ),
+                          ),
+                          if (widget.unreadCount != null &&
+                              widget.unreadCount! > 0)
+                            Container(
+                              margin: const EdgeInsets.only(top: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                widget.unreadCount! > 99
+                                    ? '99+'
+                                    : widget.unreadCount!.toString(),
+                                style: TextStyle(
+                                  color: theme.colorScheme.onPrimary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                if (_isDeleting)
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Center(child: CircularProgressIndicator()),
+              ),
+              if (_isDeleting)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),

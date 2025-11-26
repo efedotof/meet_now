@@ -10,28 +10,17 @@ class TemporaryChatsBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         onTap: () => context.pushRoute(TemporaryChatRoute()),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors:
-                  isDark
-                      ? [const Color(0xFF3A3A3A), const Color(0xFF2A2A2A)]
-                      : [const Color(0xFFF5F5F5), const Color(0xFFE0E0E0)],
-            ),
-          ),
           child: Row(
             children: [
               Container(
@@ -40,23 +29,29 @@ class TemporaryChatsBanner extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.timer, color: Colors.white, size: 24),
+                child: Icon(
+                  Icons.timer,
+                  color: theme.colorScheme.onPrimary,
+                  size: 20,
+                ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Активные временные чаты',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       'У вас $count ${_formatCount(count)} до открытия профилей',
-                      style: theme.textTheme.bodyMedium,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withAlpha(150),
+                      ),
                     ),
                   ],
                 ),
@@ -64,7 +59,7 @@ class TemporaryChatsBanner extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: theme.colorScheme.secondary,
+                color: theme.colorScheme.onSurface.withAlpha(150),
               ),
             ],
           ),

@@ -27,7 +27,6 @@ class MyBody extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () => context.read<ChatCubit>().refresh(),
-      color: Theme.of(context).colorScheme.primary,
       child: CustomScrollView(
         slivers: [
           if (state.temporaryChat.isNotEmpty)
@@ -40,19 +39,17 @@ class MyBody extends StatelessWidget {
                 child: TemporaryChatsBanner(count: state.temporaryChat.length),
               ),
             ),
-
           SliverPadding(
-            padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
+            padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             sliver: SliverToBoxAdapter(
               child: Text(
                 S.of(context).permanentChats,
                 style: Theme.of(
                   context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
           ),
-
           if (state.permanentChat.isEmpty)
             SliverFillRemaining(
               child: Center(
@@ -70,21 +67,18 @@ class MyBody extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      S.of(context).startCommunicationHint,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(S.of(context).startCommunication),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        S.of(context).startCommunicationHint,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-
           if (state.permanentChat.isNotEmpty)
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {

@@ -16,24 +16,17 @@ class TemporaryChatScreen extends StatelessWidget {
     final l10n = S.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.temporaryChats)),
+      appBar: AppBar(
+        title: Text(l10n.temporaryChats),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: SkeletonTheme(
         shimmerGradient: const LinearGradient(
-          colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
-          stops: [0.1, 0.5, 0.9],
+          colors: [Color(0xFFE0E0E0), Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
         ),
         darkShimmerGradient: const LinearGradient(
-          colors: [
-            Color(0xFF222222),
-            Color(0xFF242424),
-            Color(0xFF2B2B2B),
-            Color(0xFF242424),
-            Color(0xFF222222),
-          ],
-          stops: [0.0, 0.2, 0.5, 0.8, 1],
-          begin: Alignment(-2.4, -0.2),
-          end: Alignment(2.4, 0.2),
-          tileMode: TileMode.clamp,
+          colors: [Color(0xFF2A2A2A), Color(0xFF3A3A3A), Color(0xFF2A2A2A)],
         ),
         child: BlocBuilder<ChatCubit, ChatState>(
           builder: (context, state) {
@@ -52,7 +45,7 @@ class TemporaryChatScreen extends StatelessWidget {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.temporaryChat.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final chat = state.temporaryChat[index];
                 return ChatTile(
