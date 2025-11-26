@@ -17,64 +17,20 @@ class MultiSelectDialog extends StatefulWidget {
   State<MultiSelectDialog> createState() => _MultiSelectDialogState();
 }
 
-class _MultiSelectDialogState extends State<MultiSelectDialog>
-    with TickerProviderStateMixin {
+class _MultiSelectDialogState extends State<MultiSelectDialog> {
   late List<String> _tempSelected;
-  late List<AnimationController> _animationControllers;
-  late List<Animation<double>> _scaleAnimations;
-  late List<Animation<double>> _opacityAnimations;
 
   @override
   void initState() {
     super.initState();
     _tempSelected = List.from(widget.selectedItems);
-    _initAnimations();
-  }
-
-  void _initAnimations() {
-    _animationControllers = List.generate(
-      widget.items.length,
-      (index) => AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 300 + (index * 100)),
-      ),
-    );
-
-    _scaleAnimations =
-        _animationControllers
-            .map(
-              (controller) => Tween<double>(begin: 0.95, end: 1.0).animate(
-                CurvedAnimation(parent: controller, curve: Curves.elasticOut),
-              ),
-            )
-            .toList();
-
-    _opacityAnimations =
-        _animationControllers
-            .map(
-              (controller) => Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(parent: controller, curve: Curves.easeIn),
-              ),
-            )
-            .toList();
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      for (final controller in _animationControllers) {
-        controller.forward();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    for (final controller in _animationControllers) {
-      controller.dispose();
-    }
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return AlertDialog(
       title: Text(widget.title),
       content: SizedBox(
@@ -82,36 +38,25 @@ class _MultiSelectDialogState extends State<MultiSelectDialog>
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: List.generate(widget.items.length, (index) {
-              final item = widget.items[index];
-              final isSelected = _tempSelected.contains(item);
-
-              return AnimatedBuilder(
-                animation: _animationControllers[index],
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _opacityAnimations[index],
-                    child: Transform.scale(
-                      scale: _scaleAnimations[index].value,
-                      child: child,
-                    ),
+            children:
+                widget.items.map((item) {
+                  final isSelected = _tempSelected.contains(item);
+                  return CheckboxListTile(
+                    value: isSelected,
+                    title: Text(item),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == true) {
+                          _tempSelected.add(item);
+                        } else {
+                          _tempSelected.remove(item);
+                        }
+                      });
+                    },
+                    checkColor: colors.onPrimary,
+                    fillColor: WidgetStateProperty.all(colors.primary),
                   );
-                },
-                child: CheckboxListTile(
-                  value: isSelected,
-                  title: Text(item),
-                  onChanged: (value) {
-                    setState(() {
-                      if (value == true) {
-                        _tempSelected.add(item);
-                      } else {
-                        _tempSelected.remove(item);
-                      }
-                    });
-                  },
-                ),
-              );
-            }),
+                }).toList(),
           ),
         ),
       ),

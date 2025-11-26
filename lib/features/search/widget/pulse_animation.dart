@@ -28,8 +28,8 @@ class _PulseAnimationState extends State<PulseAnimation>
     );
 
     _animation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
+      begin: 1.0,
+      end: 1.03,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     if (widget.isAnimating) {
@@ -44,6 +44,7 @@ class _PulseAnimationState extends State<PulseAnimation>
       _controller.repeat(reverse: true);
     } else if (!widget.isAnimating && _controller.isAnimating) {
       _controller.stop();
+      _controller.value = 0.0;
     }
   }
 
@@ -55,6 +56,11 @@ class _PulseAnimationState extends State<PulseAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(scale: _animation, child: widget.child);
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.scale(scale: _animation.value, child: widget.child);
+      },
+    );
   }
 }

@@ -7,6 +7,8 @@ class LoadingStatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -15,14 +17,14 @@ class LoadingStatItem extends StatelessWidget {
           height: 16,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            color: theme.primaryColor,
+            color: colors.primary,
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.textTheme.bodySmall?.color?.withAlpha(7),
+            color: colors.onSurface.withAlpha(150),
           ),
         ),
       ],

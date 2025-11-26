@@ -18,6 +18,7 @@ class StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final userStats = context.read<UserStatsCubit>().state.maybeWhen(
       loaded: (stats) => stats,
       orElse: () => null,
@@ -31,7 +32,7 @@ class StatItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 16, color: color),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
         Text(
           '$count',
           style: theme.textTheme.bodyMedium?.copyWith(
@@ -39,11 +40,11 @@ class StatItem extends StatelessWidget {
             color: color,
           ),
         ),
-        const SizedBox(width: 2),
+        const SizedBox(width: 4),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.textTheme.bodySmall?.color?.withAlpha(7),
+            color: colors.onSurface.withAlpha(150),
           ),
         ),
       ],
