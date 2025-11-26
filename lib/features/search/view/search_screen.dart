@@ -8,7 +8,6 @@ import 'package:meet_now_app/features/search/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/interes/interest.dart';
 import 'package:meet_now_app_server/model/social/purpose/purpose.dart';
-
 import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
 
 @RoutePage()
@@ -29,19 +28,19 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final colors = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).search),
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
+          preferredSize: const Size.fromHeight(48),
           child: BlocBuilder<UserStatsCubit, UserStatsState>(
             builder: (context, state) {
               return state.maybeWhen(
                 loaded: (userStats) => StatsBar(userStats: userStats),
-                orElse: () => LoadingStatsBar(),
+                orElse: () => const LoadingStatsBar(),
               );
             },
           ),
@@ -54,7 +53,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 500),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -69,12 +68,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       const SizedBox(height: 24),
                       Container(
                         decoration: BoxDecoration(
-                          color: theme.cardTheme.color,
+                          color: colors.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isDark ? Colors.white24 : Colors.black12,
-                            width: 1,
-                          ),
+                          border: Border.all(color: colors.outline, width: 1),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -87,16 +83,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 16,
-                                        horizontal: 24,
+                                        horizontal: 20,
                                       ),
                                       decoration: BoxDecoration(
                                         color:
                                             isSelected
-                                                ? theme
-                                                    .elevatedButtonTheme
-                                                    .style
-                                                    ?.backgroundColor
-                                                    ?.resolve({})
+                                                ? colors.primary
                                                 : Colors.transparent,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -107,15 +99,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                               ?.copyWith(
                                                 color:
                                                     isSelected
-                                                        ? theme
-                                                            .elevatedButtonTheme
-                                                            .style
-                                                            ?.foregroundColor
-                                                            ?.resolve({})
-                                                        : theme
-                                                            .textTheme
-                                                            .bodyLarge
-                                                            ?.color,
+                                                        ? colors.onPrimary
+                                                        : colors.onSurface,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                         ),
@@ -139,17 +124,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           spacing: 12,
                           runSpacing: 12,
                           children:
-                              cubit.ageFromList
-                                  .map(
-                                    (ageStart) => SizedBox(
-                                      width:
-                                          (MediaQuery.of(context).size.width -
-                                              96) /
-                                          2,
-                                      child: AgeOption(ageStart: ageStart),
-                                    ),
-                                  )
-                                  .toList(),
+                              cubit.ageFromList.map((ageStart) {
+                                return SizedBox(
+                                  width:
+                                      (MediaQuery.of(context).size.width - 84) /
+                                      2,
+                                  child: AgeOption(ageStart: ageStart),
+                                );
+                              }).toList(),
                         ),
                       ],
                       if (state.gender.isNotEmpty && state.ageFrom != null) ...[
@@ -163,18 +145,20 @@ class _SearchScreenState extends State<SearchScreen> {
                                 labelText: S.of(context).cityOptional,
                                 border: const OutlineInputBorder(),
                                 filled: true,
-                                fillColor: theme.cardTheme.color,
+                                fillColor: colors.surface,
                               ),
                             ),
                             if (state.cities.isNotEmpty)
                               Container(
+                                margin: const EdgeInsets.only(top: 4),
                                 decoration: BoxDecoration(
-                                  color: theme.cardTheme.color,
+                                  color: colors.surface,
                                   borderRadius: BorderRadius.circular(8),
                                   boxShadow: [
                                     BoxShadow(
-                                      blurRadius: 4,
-                                      color: Colors.black.withAlpha(1),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                      color: colors.shadow,
                                     ),
                                   ],
                                 ),
@@ -201,6 +185,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             Checkbox(
                               value: state.verified,
                               onChanged: (_) => cubit.toggleVerified(),
+                              fillColor: WidgetStateProperty.all(
+                                colors.primary,
+                              ),
                             ),
                             Text(S.of(context).onlyVerified),
                           ],
@@ -255,6 +242,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
+                                side: BorderSide(color: colors.outline),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -264,7 +252,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                     style: theme.textTheme.bodyLarge,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Icon(Icons.arrow_drop_down, size: 24),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 24,
+                                    color: colors.onSurface,
+                                  ),
                                 ],
                               ),
                             );
@@ -320,6 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
+                                side: BorderSide(color: colors.outline),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +322,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                     style: theme.textTheme.bodyLarge,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Icon(Icons.arrow_drop_down, size: 24),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 24,
+                                    color: colors.onSurface,
+                                  ),
                                 ],
                               ),
                             );
@@ -346,12 +343,13 @@ class _SearchScreenState extends State<SearchScreen> {
         },
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: BlocBuilder<SearchCubit, SearchState>(
           builder: (context, state) {
             final canSearch = state.gender.isNotEmpty && state.ageFrom != null;
             final cubit = context.read<SearchCubit>();
-            final theme = Theme.of(context);
+            final colors = Theme.of(context).colorScheme;
+
             return PulseAnimation(
               isAnimating: state.isSearching,
               child: ElevatedButton(
@@ -361,11 +359,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         : null,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
-                  backgroundColor:
+                  backgroundColor: canSearch ? colors.primary : colors.surface,
+                  foregroundColor:
                       canSearch
-                          ? theme.elevatedButtonTheme.style?.backgroundColor
-                              ?.resolve({})
-                          : null,
+                          ? colors.onPrimary
+                          : colors.onSurface.withAlpha(150),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -374,13 +372,16 @@ class _SearchScreenState extends State<SearchScreen> {
                     state.isSearching
                         ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Text("Stop search"),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colors.onPrimary,
+                              ),
                             ),
                           ],
                         )

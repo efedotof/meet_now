@@ -189,5 +189,6 @@
   "profileupdatedsuccessfully": "profileUpdatedSuccessfully",
   "avataruploadfailed": "avatarUploadFailed",
   "avatarupdatedsuccessfully": "avatarUpdatedSuccessfully",
-  "uploadingavatar": "uploadingAvatar"
+  "uploadingavatar": "uploadingAvatar",
+  "searching": "Searching"
 }

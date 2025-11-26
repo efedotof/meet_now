@@ -262,6 +262,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchFriendsHint": MessageLookupByLibrary.simpleMessage(
       "Поиск друзей...",
     ),
+    "searching": MessageLookupByLibrary.simpleMessage("Searching"),
     "seconds": MessageLookupByLibrary.simpleMessage("секунд"),
     "security": MessageLookupByLibrary.simpleMessage("Безопасность"),
     "selectAge": MessageLookupByLibrary.simpleMessage("Выберите возраст"),
