@@ -26,29 +26,18 @@ class ChatScreen extends StatelessWidget {
           )..refresh(),
       child: SkeletonTheme(
         shimmerGradient: const LinearGradient(
-          colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
-          stops: [0.1, 0.5, 0.9],
+          colors: [Color(0xFFE0E0E0), Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
         ),
         darkShimmerGradient: const LinearGradient(
-          colors: [
-            Color(0xFF222222),
-            Color(0xFF242424),
-            Color(0xFF2B2B2B),
-            Color(0xFF242424),
-            Color(0xFF222222),
-          ],
-          stops: [0.0, 0.2, 0.5, 0.8, 1],
-          begin: Alignment(-2.4, -0.2),
-          end: Alignment(2.4, 0.2),
-          tileMode: TileMode.clamp,
+          colors: [Color(0xFF2A2A2A), Color(0xFF3A3A3A), Color(0xFF2A2A2A)],
         ),
         child: BlocBuilder<ChatCubit, ChatState>(
           builder: (context, state) {
             return Scaffold(
               appBar: AppBar(
                 title: Text(l10n.chats),
-                centerTitle: true,
-                actions: [],
+                elevation: 0,
+                backgroundColor: Colors.transparent,
               ),
               body: MyBody(state: state),
             );
