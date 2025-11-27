@@ -18,58 +18,120 @@ class MultiSelectDialog extends StatefulWidget {
 }
 
 class _MultiSelectDialogState extends State<MultiSelectDialog> {
-  late List<String> _tempSelected;
+  late List<String> _temp;
 
   @override
   void initState() {
     super.initState();
-    _tempSelected = List.from(widget.selectedItems);
+    _temp = List.from(widget.selectedItems);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    return AlertDialog(
-      title: Text(widget.title),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children:
-                widget.items.map((item) {
-                  final isSelected = _tempSelected.contains(item);
-                  return CheckboxListTile(
-                    value: isSelected,
-                    title: Text(item),
-                    onChanged: (value) {
+    return Dialog(
+      backgroundColor: colors.surface,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: widget.items.length,
+                separatorBuilder: (_, __) =>
+                    Divider(height: 1, color: colors.outline.withOpacity(0.1)),
+                itemBuilder: (_, i) {
+                  final item = widget.items[i];
+                  final selected = _temp.contains(item);
+
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
                       setState(() {
-                        if (value == true) {
-                          _tempSelected.add(item);
-                        } else {
-                          _tempSelected.remove(item);
-                        }
+                        selected ? _temp.remove(item) : _temp.add(item);
                       });
                     },
-                    checkColor: colors.onPrimary,
-                    fillColor: WidgetStateProperty.all(colors.primary),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 4,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 180),
+                            width: 22,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: colors.primary.withOpacity(0.6),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                              color: selected
+                                  ? colors.primary
+                                  : Colors.transparent,
+                            ),
+                            child: selected
+                                ? Icon(Icons.check,
+                                    size: 16, color: colors.onPrimary)
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
-                }).toList(),
-          ),
+                },
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    S.of(context).cancel,
+                    style: TextStyle(color: colors.onSurface.withOpacity(0.6)),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, _temp),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minimumSize: const Size(80, 42),
+                  ),
+                  child: Text(S.of(context).save),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(S.of(context).cancel),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context, _tempSelected),
-          child: Text(S.of(context).save),
-        ),
-      ],
     );
   }
 }

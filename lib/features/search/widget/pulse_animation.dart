@@ -23,28 +23,27 @@ class _PulseAnimationState extends State<PulseAnimation>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
     _animation = Tween<double>(
       begin: 1.0,
-      end: 1.03,
+      end: 1.06,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    if (widget.isAnimating) {
-      _controller.repeat(reverse: true);
-    }
+    if (widget.isAnimating) _controller.repeat(reverse: true);
   }
 
   @override
   void didUpdateWidget(PulseAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (widget.isAnimating && !_controller.isAnimating) {
       _controller.repeat(reverse: true);
     } else if (!widget.isAnimating && _controller.isAnimating) {
       _controller.stop();
-      _controller.value = 0.0;
+      _controller.value = 1.0;
     }
   }
 
@@ -58,9 +57,15 @@ class _PulseAnimationState extends State<PulseAnimation>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
-        return Transform.scale(scale: _animation.value, child: widget.child);
-      },
+      builder:
+          (_, child) => Transform.scale(
+            scale: _animation.value,
+            child: Opacity(
+              opacity: widget.isAnimating ? 1 : 0.85,
+              child: child,
+            ),
+          ),
+      child: widget.child,
     );
   }
 }
