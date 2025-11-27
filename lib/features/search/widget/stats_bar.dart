@@ -8,30 +8,32 @@ class StatsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      height: 48,
+      height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outline, width: 1)),
+        border: Border(
+          top: BorderSide(
+            color: colors.outline.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
       ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           StatItem(
-            icon: Icons.person,
-            countKey: 'onlineCount',
-            label: 'Online',
-            color: Colors.green,
+            icon: Icons.circle,
+            count: userStats.onlineCount,
+            label: "Online",
           ),
           StatItem(
-            icon: Icons.search,
-            countKey: 'searchingCount',
-            label: 'Searching',
-            color: Colors.blue,
+            icon: Icons.circle_outlined,
+            count: userStats.searchingCount,
+            label: "Searching",
           ),
         ],
       ),

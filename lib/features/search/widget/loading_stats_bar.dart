@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/generated/l10n.dart';
 import 'loading_stat_item.dart';
 
 class LoadingStatsBar extends StatelessWidget {
@@ -7,22 +6,18 @@ class LoadingStatsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      height: 48,
+      height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outline, width: 1)),
+        border: Border(top: BorderSide(color: colors.outline.withAlpha(150))),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          LoadingStatItem(label: S.of(context).online),
-          LoadingStatItem(label: S.of(context).searching),
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [LoadingStatItem(), LoadingStatItem()],
       ),
     );
   }
