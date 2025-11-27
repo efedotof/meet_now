@@ -7,108 +7,105 @@ import 'package:meet_now_app_server/model/chats/game_response/game_response.dart
 import 'game_web_view_screen.dart';
 
 class GameCard extends StatelessWidget {
+  const GameCard({super.key, required this.game, this.chatId});
   final GameResponse game;
   final String? chatId;
 
-  const GameCard({super.key, required this.game, required this.chatId});
-
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _onGameTap(context, game),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    final cardBg = const Color(0xFFF5F7FA);
+    final chipBg = const Color(0xFFE8EEF5);
+    final textPrimary = const Color(0xFF1C1F26);
+    final textSecondary = const Color(0xFF6C7A89);
+
+    return InkWell(
+      onTap: () => _onGameTap(context, game),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.42,
+        height: MediaQuery.of(context).size.width * 0.42,
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Stack(
           children: [
-            Expanded(
-              flex: 3,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                child:
-                    game.thumbnailUrl.isNotEmpty
-                        ? CachedNetworkImage(
-                          imageUrl: game.thumbnailUrl,
-                          fit: BoxFit.cover,
-                          placeholder:
-                              (context, url) => Container(
-                                color: Colors.grey[200],
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
+            Positioned.fill(
+              child:
+                  game.thumbnailUrl.isNotEmpty
+                      ? CachedNetworkImage(
+                        imageUrl: game.thumbnailUrl,
+                        fit: BoxFit.cover,
+                        placeholder:
+                            (context, url) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                        errorWidget:
+                            (context, url, error) => const Center(
+                              child: Icon(
+                                Icons.sports_esports_outlined,
+                                color: Colors.grey,
+                                size: 40,
                               ),
-                          errorWidget:
-                              (context, url, error) => Container(
-                                color: Colors.grey[200],
-                                child: const Icon(
-                                  Icons.sports_esports_outlined,
-                                  color: Colors.grey,
-                                  size: 40,
-                                ),
-                              ),
-                        )
-                        : Container(
-                          color: Colors.grey[200],
-                          child: const Icon(
-                            Icons.sports_esports_outlined,
-                            color: Colors.grey,
-                            size: 40,
-                          ),
+                            ),
+                      )
+                      : const Center(
+                        child: Icon(
+                          Icons.sports_esports_outlined,
+                          color: Colors.grey,
+                          size: 40,
                         ),
+                      ),
+            ),
+
+            Positioned(
+              left: 6,
+              top: 6,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: chipBg,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  game.gameName,
+                  style: TextStyle(
+                    color: textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      game.gameName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      game.gameDescription,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withAlpha(1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        game.gameType,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.deepPurple,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: cardBg.withAlpha(92),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(14),
+                    bottomRight: Radius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  game.gameDescription,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: textSecondary, fontSize: 12.5),
                 ),
               ),
             ),

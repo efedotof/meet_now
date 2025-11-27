@@ -17,11 +17,11 @@ class ProfileStats extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            StatWidget(
-              icon: Icons.people,
-              count: user.friends?.length ?? 0,
-              label: "Друзья",
-            ),
+            // StatWidget(
+            //   icon: Icons.people,
+            //   count: user.friends?.length ?? 0,
+            //   label: "Друзья",
+            // ),
             StatWidget(
               icon: Icons.favorite,
               count: user.purposes.length,

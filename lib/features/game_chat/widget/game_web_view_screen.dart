@@ -1,16 +1,17 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class GameWebViewScreen extends StatefulWidget {
-  final String url;
-  final String gameName;
-
   const GameWebViewScreen({
     super.key,
     required this.url,
     required this.gameName,
   });
+
+  final String url;
+  final String gameName;
 
   @override
   State<GameWebViewScreen> createState() => _GameWebViewScreenState();
@@ -18,44 +19,36 @@ class GameWebViewScreen extends StatefulWidget {
 
 class _GameWebViewScreenState extends State<GameWebViewScreen> {
   late final WebViewController _controller;
-  var _isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (int progress) {
-                debugPrint('WebView is loading (progress : $progress%)');
-              },
-              onPageStarted: (String url) {
-                setState(() {
-                  _isLoading = true;
-                });
-              },
-              onPageFinished: (String url) {
-                setState(() {
-                  _isLoading = false;
-                });
-              },
-              onWebResourceError: (WebResourceError error) {
-                setState(() {
-                  _isLoading = false;
-                });
-                debugPrint('''
-Page resource error:
-  code: ${error.errorCode}
-  description: ${error.description}
-  errorType: ${error.errorType}
-  isForMainFrame: ${error.isForMainFrame}
-          ''');
-              },
-            ),
-          )
-          ..loadRequest(Uri.parse(widget.url));
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (progress) {},
+          onPageStarted: (url) {
+            setState(() {
+              _isLoading = true;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onWebResourceError: (_) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
 
     if (_controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
@@ -64,44 +57,72 @@ Page resource error:
     }
   }
 
+  Future<void> _refreshPage() async {
+    await _controller.reload();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
           children: [
-            Text(
-              widget.gameName,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            RefreshIndicator(
+              onRefresh: _refreshPage,
+              color: colors.primary,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: WebViewWidget(controller: _controller),
+                  ),
+                ],
+              ),
             ),
+
+            Positioned(
+              left: 12,
+              top: 12,
+              child: Material(
+                color: Colors.black54,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => context.maybePop(),
+                  child: const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             if (_isLoading)
-              const Text(
-                'Загрузка...',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withAlpha(15),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              _controller.reload();
-            },
-            tooltip: 'Обновить',
-          ),
-          IconButton(
-            icon: const Icon(Icons.open_in_browser),
-            onPressed: () {},
-            tooltip: 'Открыть в браузере',
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_isLoading) const Center(child: CircularProgressIndicator()),
-        ],
       ),
     );
   }
