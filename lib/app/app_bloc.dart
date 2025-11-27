@@ -193,6 +193,7 @@ class AppBloc extends StatelessWidget {
               (context) => GameChatCubit(
                 gamesRepository: context.read<GamesInterface>(),
                 tokenInterface: context.read<TokenInterface>(),
+                userInterface: context.read<UserInterface>(),
               ),
         ),
         BlocProvider(create: (context) => MediaSelectionCubit()),

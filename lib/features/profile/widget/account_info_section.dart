@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
+import 'base_card.dart';
 import 'info_row.dart';
 
 class AccountInfoSection extends StatelessWidget {
@@ -14,35 +15,26 @@ class AccountInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Аккаунт", style: theme.textTheme.titleLarge),
-            const SizedBox(height: 12),
+    return BaseCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Аккаунт", style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          InfoRow(
+            icon: Icons.calendar_today,
+            title: "Дата регистрации:",
+            value: user.createdAt.toLocal().toString().split(' ')[0],
+          ),
+          if (user.floor.isNotEmpty)
+            InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
+          if (user.roles.isNotEmpty)
             InfoRow(
-              icon: Icons.calendar_today,
-              title: "Дата регистрации:",
-              value: user.createdAt.toLocal().toString().split(' ')[0],
+              icon: Icons.security,
+              title: "Роли:",
+              value: user.roles.join(", "),
             ),
-            // _InfoRow(
-            //   icon: Icons.circle,
-            //   title: "Статус:",
-            //   value: user.isOnline ? "В сети" : "Не в сети",
-            // ),
-            if (user.floor.isNotEmpty)
-              InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
-            if (user.roles.isNotEmpty)
-              InfoRow(
-                icon: Icons.security,
-                title: "Роли:",
-                value: user.roles.join(", "),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

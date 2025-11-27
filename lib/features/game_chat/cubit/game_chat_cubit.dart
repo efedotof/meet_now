@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/chats/game_response/game_response.dart';
-
-import 'package:meet_now_app_server/repository/games/games_interface.dart';
-import 'package:meet_now_app_server/storage/token/token_interface.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 part 'game_chat_state.dart';
 part 'game_chat_cubit.freezed.dart';
@@ -11,11 +8,13 @@ part 'game_chat_cubit.freezed.dart';
 class GameChatCubit extends Cubit<GameChatState> {
   final GamesInterface gamesRepository;
   final TokenInterface _tokenInterface;
+  final UserInterface _userInterface;
 
   GameChatCubit({
+    required UserInterface userInterface,
     required this.gamesRepository,
     required TokenInterface tokenInterface,
-  }) : _tokenInterface = tokenInterface,
+  }) : _userInterface = userInterface, _tokenInterface = tokenInterface,
        super(const GameChatState.initial());
 
   Future<void> fetchGames() async {
@@ -47,5 +46,10 @@ class GameChatCubit extends Cubit<GameChatState> {
     } catch (e) {
       rethrow;
     }
+  }
+
+
+  Future<void> refreshUser() async {
+   await _userInterface.getUser();
   }
 }

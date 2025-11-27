@@ -51,25 +51,38 @@ class _GameChatScreenState extends State<GameChatScreen> {
           title: const Text('Игры'),
           elevation: 0,
           actions: [
-            TextButton(
-              onPressed: () => context.pushRoute(GiftRoute()),
-              child: Text(
-                "${context.read<UserModelAppInterface>().user!.gamePoints} points",
-              ),
+            BlocBuilder<GameChatCubit, GameChatState>(
+              builder: (context, state) {
+                return TextButton(
+                  onPressed: () => context.pushRoute(GiftRoute()),
+                  child: Text(
+                    "${context.read<UserModelAppInterface>().user!.gamePoints} points",
+                  ),
+                );
+              },
             ),
           ],
         ),
-        body: BlocBuilder<GameChatCubit, GameChatState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => const GamesSkeleton(),
-              loading: () => const GamesSkeleton(),
-              loaded: (games) => GamesGrid(games: games, chatId: widget.chatId),
-              error: (message) => ErrorsWidget(message: message),
-            );
-          },
+        body: RefreshIndicator(
+          onRefresh: () => _onRefresh(),
+          child: BlocBuilder<GameChatCubit, GameChatState>(
+            builder: (context, state) {
+              return state.when(
+                initial: () => const GamesSkeleton(),
+                loading: () => const GamesSkeleton(),
+                loaded:
+                    (games) => GamesGrid(games: games, chatId: widget.chatId),
+                error: (message) => ErrorsWidget(message: message),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _onRefresh() async {
+    context.read<GameChatCubit>().fetchGames();
+    context.read<GameChatCubit>().refreshUser();
   }
 }

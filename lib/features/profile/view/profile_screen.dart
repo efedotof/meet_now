@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/profile/widget/widget.dart';
-import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
@@ -35,44 +35,101 @@ class ProfileScreen extends StatelessWidget {
         tileMode: TileMode.clamp,
       ),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).myProfile),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed:
-                  () => context.pushRoute(SettingProfileRoute(user: user!)),
-            ),
-          ],
-        ),
-        body:
-            user == null
-                ? const ProfileSkeleton()
-                : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ProfileHeader(user: user),
-                      const SizedBox(height: 24),
-                      if (user.images != null && user.images!.isNotEmpty) ...[
-                        UserPhotosSection(images: user.images!),
-                        const SizedBox(height: 24),
-                      ],
-                      ProfileStats(user: user),
-                      const SizedBox(height: 24),
-                      PersonalInfo(theme: theme, user: user),
-                      const SizedBox(height: 24),
-                      InterestsSection(theme: theme, user: user),
-                      const SizedBox(height: 24),
-                      PurposesSection(theme: theme, user: user),
-                      const SizedBox(height: 24),
-                      FriendsSection(theme: theme, user: user),
-                      const SizedBox(height: 24),
-                      AccountInfoSection(theme: theme, user: user),
-                    ],
-                  ),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, state) {
+            return RefreshIndicator(
+              onRefresh: () => context.read<SettingsCubit>().getCurrentUser(),
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    user == null
+                        ? const ProfileSkeleton()
+                        : SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 10),
+                              ProfileHeader(user: user),
+                              const SizedBox(height: 20),
+                              if (user.images != null &&
+                                  user.images!.isNotEmpty) ...[
+                                UserPhotosSection(images: user.images!),
+                                const SizedBox(height: 20),
+                              ],
+                              ProfileStats(user: user),
+                              const SizedBox(height: 20),
+                              PersonalInfo(theme: theme, user: user),
+                              const SizedBox(height: 16),
+                              InterestsSection(theme: theme, user: user),
+                              const SizedBox(height: 16),
+                              PurposesSection(theme: theme, user: user),
+                              const SizedBox(height: 16),
+                              AccountInfoSection(theme: theme, user: user),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+
+                    Positioned(
+                      left: 12,
+                      top: 12,
+                      child: Material(
+                        color: Colors.black54,
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () => context.maybePop(),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      right: 12,
+                      top: 12,
+                      child: Material(
+                        color: Colors.black54,
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap:
+                              () => context.pushRoute(
+                                SettingProfileRoute(
+                                  user:
+                                      context
+                                          .read<UserModelAppInterface>()
+                                          .user!,
+                                ),
+                              ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
