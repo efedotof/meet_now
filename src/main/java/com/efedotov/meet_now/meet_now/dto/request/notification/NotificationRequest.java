@@ -6,4 +6,5 @@ import lombok.Data;
 public class NotificationRequest {
     private String message;
     private String title;
+    private String action; 
 }

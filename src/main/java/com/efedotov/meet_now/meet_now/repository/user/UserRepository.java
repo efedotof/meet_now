@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -102,7 +103,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
         @Query(value = "SELECT COUNT(*) FROM user_friends", nativeQuery = true)
         long countTotalFriendships();
 
-        @Query(value = "SELECT COUNT(DISTINCT user_id) FROM user_friends", nativeQuery = true)
+        @Query("SELECT COUNT(DISTINCT f.user.id) FROM Friendship f")
         long countUsersWithFriends();
 
         @Query(value = "SELECT AVG(friend_count) FROM (" +
@@ -125,4 +126,19 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
                         "SELECT user_id FROM user_friends GROUP BY user_id HAVING COUNT(friend_id) > :min" +
                         ") as users_more_than", nativeQuery = true)
         long countUsersWithFriendsMoreThan(@Param("min") int min);
+
+        @EntityGraph(attributePaths = { "friends" })
+        @Query("SELECT u FROM User u WHERE u.id = :userId")
+        Optional<User> findByIdWithFriends(@Param("userId") UUID userId);
+
+        @Query(value = "SELECT u, COUNT(f.id) as friendCount FROM User u LEFT JOIN Friendship f ON u.id = f.user.id GROUP BY u.id ORDER BY friendCount DESC")
+        List<Object[]> findPopularUsersWithFriendCount(@Param("limit") int limit);
+
+        List<User> findByEncryptedPushTokenIsNotNull();
+
+        List<User> findByIsOnlineTrueAndEncryptedPushTokenIsNotNull();
+
+        @Query("SELECT COUNT(u) FROM User u WHERE u.encryptedPushToken IS NOT NULL")
+        long countUsersWithPushTokens();
+
 }

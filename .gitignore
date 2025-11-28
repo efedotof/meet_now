@@ -32,3 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 /src/main/resources/application.yml
+/src/main/resources/google-services.json
+/src/main/resources/meetnowapp-8c0a1-firebase-adminsdk-fbsvc-03e56a1da7.json

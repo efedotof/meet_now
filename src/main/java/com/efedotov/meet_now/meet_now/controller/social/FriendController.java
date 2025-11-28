@@ -1,9 +1,7 @@
 package com.efedotov.meet_now.meet_now.controller.social;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +20,11 @@ import com.efedotov.meet_now.meet_now.dto.request.social.FriendAction;
 import com.efedotov.meet_now.meet_now.dto.request.social.SendFriendRequest;
 import com.efedotov.meet_now.meet_now.dto.request.social.RemoveFriendRequest;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendConnectionDto;
+import com.efedotov.meet_now.meet_now.dto.response.social.FriendDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendRequestDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendStatisticsDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserWithFriendCountDto;
-import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.service.social.FriendService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -145,10 +143,9 @@ public class FriendController {
 
     @GetMapping("/list")
     @Operation(summary = "Получить список друзей пользователя")
-    public ResponseEntity<List<User>> getFriends(@RequestParam UUID userId) {
-        Set<User> friendsSet = friendService.getFriends(userId);
-        List<User> friendsList = friendsSet.stream().collect(Collectors.toList());
-        return ResponseEntity.ok(friendsList);
+    public ResponseEntity<List<FriendDto>> getFriends(@RequestParam UUID userId) {
+        List<FriendDto> friends = friendService.getFriends(userId);
+        return ResponseEntity.ok(friends);
     }
 
     @GetMapping("/requests/incoming")

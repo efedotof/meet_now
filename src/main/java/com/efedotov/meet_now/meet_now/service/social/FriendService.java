@@ -1,16 +1,5 @@
 package com.efedotov.meet_now.meet_now.service.social;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,13 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendConnectionDto;
+import com.efedotov.meet_now.meet_now.dto.response.social.FriendDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendRequestDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendStatisticsDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.FriendsDistributionDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserWithFriendCountDto;
+import com.efedotov.meet_now.meet_now.model.user.FriendRequest;
+import com.efedotov.meet_now.meet_now.model.user.FriendRequestStatus;
+import com.efedotov.meet_now.meet_now.model.user.Friendship;
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.user.FriendRequestRepository;
+import com.efedotov.meet_now.meet_now.repository.user.FriendshipRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
@@ -35,13 +30,17 @@ import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendService {
 
     private final UserRepository userRepository;
-    private final Map<UUID, Set<UUID>> friendRequests = new HashMap<>();
+    private final FriendRequestRepository friendRequestRepository;
+    private final FriendshipRepository friendshipRepository;
 
     @AdminOnly
     @Transactional(readOnly = true)
@@ -49,20 +48,18 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        List<FriendConnectionDto> allConnections = new ArrayList<>();
-
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            for (User friend : user.getFriends()) {
-                FriendConnectionDto connection = new FriendConnectionDto();
-                connection.setUser1Id(user.getId());
-                connection.setUser1Username(user.getUsername());
-                connection.setUser2Id(friend.getId());
-                connection.setUser2Username(friend.getUsername());
-                connection.setFriendsSince(user.getCreatedAt());
-                allConnections.add(connection);
-            }
-        }
+        List<Friendship> allFriendships = friendshipRepository.findAll();
+        List<FriendConnectionDto> allConnections = allFriendships.stream()
+                .map(friendship -> {
+                    FriendConnectionDto connection = new FriendConnectionDto();
+                    connection.setUser1Id(friendship.getUser().getId());
+                    connection.setUser1Username(friendship.getUser().getUsername());
+                    connection.setUser2Id(friendship.getFriend().getId());
+                    connection.setUser2Username(friendship.getFriend().getUsername());
+                    connection.setFriendsSince(friendship.getFriendsSince());
+                    return connection;
+                })
+                .collect(Collectors.toList());
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allConnections.size());
@@ -80,17 +77,22 @@ public class FriendService {
         FriendStatisticsDto statistics = new FriendStatisticsDto();
 
         long totalUsers = userRepository.count();
-        long usersWithFriends = userRepository.countUsersWithFriends();
+        long totalFriendships = friendshipRepository.count();
+        long pendingRequestsCount = friendRequestRepository.countPendingRequests();
 
         statistics.setTotalUsers(totalUsers);
-        statistics.setTotalFriendships(userRepository.countTotalFriendships() / 2);
+        statistics.setTotalFriendships(totalFriendships / 2);
 
-        statistics.setAverageFriendsPerUser(
-                userRepository.getAverageFriendsPerUser());
-        statistics.setUsersWithNoFriends(totalUsers - usersWithFriends);
-        statistics.setMostFriendsCount(
-                userRepository.getMaxFriendsCount());
-        statistics.setFriendRequestsCount(friendRequests.values().stream().mapToInt(Set::size).sum());
+        Double avgFriends = friendshipRepository.getAverageFriendsPerUser();
+        statistics.setAverageFriendsPerUser(avgFriends != null ? avgFriends : 0.0);
+
+        Integer maxFriends = friendshipRepository.getMaxFriendsCount();
+        statistics.setMostFriendsCount(maxFriends != null ? maxFriends : 0);
+
+        long usersWithNoFriends = userRepository.count() - userRepository.countUsersWithFriends();
+        statistics.setUsersWithNoFriends(usersWithNoFriends);
+
+        statistics.setFriendRequestsCount(pendingRequestsCount);
         statistics.setFriendsDistribution(calculateFriendsDistribution());
 
         return statistics;
@@ -110,7 +112,10 @@ public class FriendService {
                     dto.setUserId(user.getId());
                     dto.setUsername(user.getUsername());
                     dto.setEmail(user.getEmail());
-                    dto.setFriendCount(user.getFriends().size());
+
+                    long friendCount = friendshipRepository.countByUserId(user.getId());
+                    dto.setFriendCount((int) friendCount);
+
                     dto.setCreatedAt(user.getCreatedAt());
                     return dto;
                 })
@@ -125,17 +130,18 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        List<User> allUsers = userRepository.findAll();
+        List<Object[]> popularUsersData = userRepository.findPopularUsersWithFriendCount(limit);
 
-        return allUsers.stream()
-                .sorted((u1, u2) -> Integer.compare(u2.getFriends().size(), u1.getFriends().size()))
-                .limit(limit)
-                .map(user -> {
+        return popularUsersData.stream()
+                .map(data -> {
+                    User user = (User) data[0];
+                    Long friendCount = (Long) data[1];
+
                     UserWithFriendCountDto dto = new UserWithFriendCountDto();
                     dto.setUserId(user.getId());
                     dto.setUsername(user.getUsername());
                     dto.setEmail(user.getEmail());
-                    dto.setFriendCount(user.getFriends().size());
+                    dto.setFriendCount(friendCount.intValue());
                     dto.setCreatedAt(user.getCreatedAt());
                     return dto;
                 })
@@ -148,22 +154,11 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        User user1 = userRepository.findById(user1Id)
-                .orElseThrow(() -> new RuntimeException("Пользователь 1 не найден"));
-        User user2 = userRepository.findById(user2Id)
-                .orElseThrow(() -> new RuntimeException("Пользователь 2 не найден"));
+        friendshipRepository.deleteByUserIdAndFriendId(user1Id, user2Id);
+        friendshipRepository.deleteByUserIdAndFriendId(user2Id, user1Id);
 
-        boolean removedFromUser1 = user1.getFriends().remove(user2);
-        boolean removedFromUser2 = user2.getFriends().remove(user1);
-
-        if (removedFromUser1 || removedFromUser2) {
-            userRepository.save(user1);
-            userRepository.save(user2);
-            log.info("Администратор {} удалил дружескую связь между {} и {}", adminId, user1Id, user2Id);
-            return "Дружеская связь удалена";
-        } else {
-            return "Дружеская связь не найдена";
-        }
+        log.info("Администратор {} удалил дружескую связь между {} и {}", adminId, user1Id, user2Id);
+        return "Дружеская связь удалена";
     }
 
     @AdminOnly
@@ -172,27 +167,18 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        List<FriendRequestDto> allRequests = new ArrayList<>();
+        List<FriendRequest> requests = friendRequestRepository.findByStatus(FriendRequestStatus.PENDING);
 
-        for (Map.Entry<UUID, Set<UUID>> entry : friendRequests.entrySet()) {
-            UUID toUserId = entry.getKey();
-            User toUser = userRepository.findById(toUserId).orElse(null);
-
-            for (UUID fromUserId : entry.getValue()) {
-                User fromUser = userRepository.findById(fromUserId).orElse(null);
-
-                if (toUser != null && fromUser != null) {
-                    FriendRequestDto request = new FriendRequestDto();
-                    request.setFromUserId(fromUserId);
-                    request.setFromUsername(fromUser.getUsername());
-                    request.setToUserId(toUserId);
-                    request.setToUsername(toUser.getUsername());
-                    allRequests.add(request);
-                }
-            }
-        }
-
-        return allRequests;
+        return requests.stream()
+                .map(request -> {
+                    FriendRequestDto dto = new FriendRequestDto();
+                    dto.setFromUserId(request.getFromUser().getId());
+                    dto.setFromUsername(request.getFromUser().getUsername());
+                    dto.setToUserId(request.getToUser().getId());
+                    dto.setToUsername(request.getToUser().getUsername());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @AdminOnly
@@ -201,12 +187,11 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        Set<UUID> requests = friendRequests.get(toUserId);
-        if (requests != null && requests.contains(fromUserId)) {
-            requests.remove(fromUserId);
-            if (requests.isEmpty()) {
-                friendRequests.remove(toUserId);
-            }
+        Optional<FriendRequest> friendRequest = friendRequestRepository
+                .findByFromUserIdAndToUserIdAndStatus(fromUserId, toUserId, FriendRequestStatus.PENDING);
+
+        if (friendRequest.isPresent()) {
+            friendRequestRepository.delete(friendRequest.get());
             log.info("Администратор {} удалил запрос в друзья от {} к {}", adminId, fromUserId, toUserId);
             return "Запрос в друзья удален";
         } else {
@@ -220,26 +205,19 @@ public class FriendService {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
-        int removedCount = 0;
+        List<FriendRequest> incomingRequests = friendRequestRepository
+                .findByToUserIdAndStatus(userId, FriendRequestStatus.PENDING);
 
-        Set<UUID> incomingRequests = friendRequests.remove(userId);
-        if (incomingRequests != null) {
-            removedCount += incomingRequests.size();
-        }
+        List<FriendRequest> outgoingRequests = friendRequestRepository
+                .findByFromUserIdAndStatus(userId, FriendRequestStatus.PENDING);
 
-        Iterator<Map.Entry<UUID, Set<UUID>>> iterator = friendRequests.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<UUID, Set<UUID>> entry = iterator.next();
-            if (entry.getValue().remove(userId)) {
-                removedCount++;
-                if (entry.getValue().isEmpty()) {
-                    iterator.remove();
-                }
-            }
-        }
+        int totalRemoved = incomingRequests.size() + outgoingRequests.size();
 
-        log.info("Администратор {} очистил {} запросов пользователя {}", adminId, removedCount, userId);
-        return String.format("Удалено %d запросов пользователя", removedCount);
+        friendRequestRepository.deleteAll(incomingRequests);
+        friendRequestRepository.deleteAll(outgoingRequests);
+
+        log.info("Администратор {} очистил {} запросов пользователя {}", adminId, totalRemoved, userId);
+        return String.format("Удалено %d запросов пользователя", totalRemoved);
     }
 
     @AdminOnly
@@ -281,38 +259,49 @@ public class FriendService {
         User toUser = userRepository.findById(toUserId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (получатель) не найден"));
 
-        if (fromUser.getFriends().contains(toUser)) {
+        if (friendshipRepository.existsByUserIdAndFriendId(fromUserId, toUserId)) {
             return "Пользователь уже в списке друзей";
         }
 
-        friendRequests.putIfAbsent(toUserId, new HashSet<>());
-        boolean added = friendRequests.get(toUserId).add(fromUserId);
+        if (friendRequestRepository.existsByFromUserIdAndToUserIdAndStatus(
+                fromUserId, toUserId, FriendRequestStatus.PENDING)) {
+            return "Запрос уже был отправлен ранее";
+        }
 
-        return added ? "Запрос в друзья отправлен" : "Запрос уже был отправлен ранее";
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setFromUser(fromUser);
+        friendRequest.setToUser(toUser);
+        friendRequest.setStatus(FriendRequestStatus.PENDING);
+
+        friendRequestRepository.save(friendRequest);
+
+        return "Запрос в друзья отправлен";
     }
 
     @Transactional
     public String acceptFriendRequest(UUID currentUserId, UUID requesterId) {
-        Set<UUID> requests = friendRequests.getOrDefault(currentUserId, new HashSet<>());
-        if (!requests.contains(requesterId)) {
-            return "Нет запроса от данного пользователя";
-        }
+        FriendRequest friendRequest = friendRequestRepository
+                .findByFromUserIdAndToUserIdAndStatus(requesterId, currentUserId, FriendRequestStatus.PENDING)
+                .orElseThrow(() -> new RuntimeException("Запрос в друзья не найден"));
 
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new RuntimeException("Пользователь (отправитель) не найден"));
 
-        currentUser.getFriends().add(requester);
-        requester.getFriends().add(currentUser);
+        Friendship friendship1 = new Friendship();
+        friendship1.setUser(currentUser);
+        friendship1.setFriend(requester);
 
-        userRepository.save(currentUser);
-        userRepository.save(requester);
+        Friendship friendship2 = new Friendship();
+        friendship2.setUser(requester);
+        friendship2.setFriend(currentUser);
 
-        requests.remove(requesterId);
-        if (requests.isEmpty()) {
-            friendRequests.remove(currentUserId);
-        }
+        friendshipRepository.save(friendship1);
+        friendshipRepository.save(friendship2);
+
+        friendRequest.setStatus(FriendRequestStatus.ACCEPTED);
+        friendRequestRepository.save(friendRequest);
 
         sendNotification(requesterId, currentUser.getUsername() + " принял ваш запрос в друзья");
 
@@ -321,50 +310,62 @@ public class FriendService {
 
     @Transactional
     public String rejectFriendRequest(UUID currentUserId, UUID requesterId) {
-        Set<UUID> requests = friendRequests.getOrDefault(currentUserId, new HashSet<>());
-        if (!requests.contains(requesterId)) {
-            return "Нет запроса от данного пользователя";
-        }
+        FriendRequest friendRequest = friendRequestRepository
+                .findByFromUserIdAndToUserIdAndStatus(requesterId, currentUserId, FriendRequestStatus.PENDING)
+                .orElseThrow(() -> new RuntimeException("Запрос в друзья не найден"));
 
-        requests.remove(requesterId);
-        if (requests.isEmpty()) {
-            friendRequests.remove(currentUserId);
-        }
+        friendRequest.setStatus(FriendRequestStatus.REJECTED);
+        friendRequestRepository.save(friendRequest);
 
         return "Запрос отклонён";
     }
 
     @Transactional
     public String removeFriend(UUID userId, UUID friendId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new RuntimeException("Друг не найден"));
+        friendshipRepository.deleteByUserIdAndFriendId(userId, friendId);
+        friendshipRepository.deleteByUserIdAndFriendId(friendId, userId);
 
-        boolean removedFromUser = user.getFriends().remove(friend);
-        boolean removedFromFriend = friend.getFriends().remove(user);
-
-        userRepository.save(user);
-        userRepository.save(friend);
-
-        return (removedFromUser && removedFromFriend) ? "Пользователь удалён из друзей"
-                : "Пользователь не был в списке друзей";
+        return "Пользователь удалён из друзей";
     }
 
     @Transactional(readOnly = true)
-    public Set<User> getFriends(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        return user.getFriends();
+    public List<FriendDto> getFriends(UUID userId) {
+        List<Friendship> friendships = friendshipRepository.findByUserId(userId);
+        return friendships.stream()
+                .map(Friendship::getFriend)
+                .map(this::mapToFriendDto)
+                .collect(Collectors.toList());
+    }
+
+    private FriendDto mapToFriendDto(User user) {
+        FriendDto dto = new FriendDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setFirstname(user.getFirstname());
+        dto.setSubname(user.getSubname());
+        dto.setDescription(user.getDescription());
+        dto.setAvatar(user.getAvatar());
+        dto.setCity(user.getCity());
+        dto.setAge(user.getAge());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setVerified(user.getVerified());
+        dto.setIsOnline(user.getIsOnline());
+        dto.setFloor(user.getFloor());
+        dto.setGamePoints(user.getGamePoints());
+        dto.setImages(user.getImages());
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public List<UserDto> getIncomingRequests(UUID userId) {
-        Set<UUID> requests = friendRequests.getOrDefault(userId, Collections.emptySet());
+        List<FriendRequest> requests = friendRequestRepository
+                .findByToUserIdAndStatus(userId, FriendRequestStatus.PENDING);
 
-        List<User> users = userRepository.findAllById(requests);
-
-        return users.stream().map(this::mapToDto).collect(Collectors.toList());
+        return requests.stream()
+                .map(FriendRequest::getFromUser)
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     private void sendNotification(UUID userId, String message) {
