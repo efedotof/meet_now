@@ -1,12 +1,25 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'chat_swipe_item.dart';
 
 class ChatTile extends StatefulWidget {
+  const ChatTile({
+    super.key,
+    required this.name,
+    required this.lastMessage,
+    this.unreadCount,
+    this.avatar,
+    this.sendLastMessageAt,
+    this.chat,
+    this.temporaryChat,
+  });
+
   final String name;
   final String lastMessage;
   final int? unreadCount;
@@ -14,17 +27,6 @@ class ChatTile extends StatefulWidget {
   final DateTime? sendLastMessageAt;
   final PermanentChatResponseDto? chat;
   final TemporaryChat? temporaryChat;
-
-  const ChatTile({
-    super.key,
-    required this.name,
-    required this.lastMessage,
-    required this.unreadCount,
-    this.avatar,
-    this.chat,
-    this.temporaryChat,
-    required this.sendLastMessageAt,
-  });
 
   @override
   State<ChatTile> createState() => _ChatTileState();
@@ -37,7 +39,7 @@ class _ChatTileState extends State<ChatTile> {
   void _showDeleteDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: const Text('Удалить чат'),
           content: const Text('Выберите вариант удаления:'),
@@ -72,7 +74,7 @@ class _ChatTileState extends State<ChatTile> {
   void _showConfirmDeleteForBothDialog() {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: const Text('Удалить для обоих'),
           content: const Text(
@@ -99,226 +101,22 @@ class _ChatTileState extends State<ChatTile> {
   Future<void> _deleteChat({required bool forBoth}) async {
     if (_isDeleting) return;
 
-    setState(() {
-      _isDeleting = true;
-    });
+    setState(() => _isDeleting = true);
 
     try {
-      final chatCubit = context.read<ChatCubit>();
+      final cubit = context.read<ChatCubit>();
 
       if (widget.chat != null) {
-        await chatCubit.deletePermanentChat(widget.chat!.chatId, forBoth);
+        await cubit.deletePermanentChat(widget.chat!.chatId, forBoth);
       } else if (widget.temporaryChat != null) {
-        await chatCubit.deleteTemporaryChat(
+        await cubit.deleteTemporaryChat(
           widget.temporaryChat!.tempChatId,
           forBoth,
         );
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isDeleting = false;
-        });
-      }
+      if (mounted) setState(() => _isDeleting = false);
     }
-  }
-
-  Widget _buildAvatar() {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final backgroundColor = isDark ? Colors.grey[800] : Colors.grey[300];
-    final iconColor = isDark ? Colors.white70 : Colors.black54;
-
-    if (widget.avatar == null || _imageError) {
-      return Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: backgroundColor,
-        ),
-        child: Icon(Icons.person, size: 24, color: iconColor),
-      );
-    }
-
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: backgroundColor),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Image.network(
-          widget.avatar!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted && !_imageError) {
-                setState(() {
-                  _imageError = true;
-                });
-              }
-            });
-            return Icon(Icons.person, size: 24, color: iconColor);
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value:
-                    loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                strokeWidth: 2,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Dismissible(
-      key: Key(
-        widget.chat?.chatId ??
-            widget.temporaryChat?.tempChatId ??
-            UniqueKey().toString(),
-      ),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white, size: 24),
-      ),
-      confirmDismiss: (direction) async {
-        _showDeleteDialog();
-        return false;
-      },
-      child: GestureDetector(
-        onLongPress: _showDeleteDialog,
-        child: Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.colorScheme.outline.withAlpha(30)),
-          ),
-          child: Stack(
-            children: [
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap:
-                    _isDeleting
-                        ? null
-                        : () {
-                          if (widget.chat != null) {
-                            context.pushRoute(
-                              ChatMessageRoute(
-                                chatModel: widget.chat,
-                                temporaryChatModel: null,
-                              ),
-                            );
-                          } else if (widget.temporaryChat != null) {
-                            context.pushRoute(
-                              ChatMessageRoute(
-                                chatModel: null,
-                                temporaryChatModel: widget.temporaryChat,
-                              ),
-                            );
-                          }
-                        },
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      _buildAvatar(),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.name,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.lastMessage,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withAlpha(
-                                  150,
-                                ),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            _formatTime(widget.sendLastMessageAt),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withAlpha(150),
-                            ),
-                          ),
-                          if (widget.unreadCount != null &&
-                              widget.unreadCount! > 0)
-                            Container(
-                              margin: const EdgeInsets.only(top: 4),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                widget.unreadCount! > 99
-                                    ? '99+'
-                                    : widget.unreadCount!.toString(),
-                                style: TextStyle(
-                                  color: theme.colorScheme.onPrimary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_isDeleting)
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   String _formatTime(DateTime? dateTime) {
@@ -326,14 +124,220 @@ class _ChatTileState extends State<ChatTile> {
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final d = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
-    if (messageDate == today) {
+    if (d == today) {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    } else if (messageDate == today.subtract(const Duration(days: 1))) {
+    } else if (d == today.subtract(const Duration(days: 1))) {
       return 'Вчера';
     } else {
       return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}';
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: ChatSwipeItem(
+        actionButtons: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RawMaterialButton(
+              onPressed: () {},
+              elevation: 2,
+              shape: const CircleBorder(),
+              fillColor: Colors.grey,
+              constraints: const BoxConstraints(minWidth: 0),
+              child: const Icon(
+                Icons.notifications_off_outlined,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 10),
+            RawMaterialButton(
+              onPressed: _showDeleteDialog,
+              elevation: 2,
+              shape: const CircleBorder(),
+              fillColor: Colors.red,
+              constraints: const BoxConstraints(minWidth: 0),
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+          ],
+        ),
+        child: GestureDetector(
+          onLongPress: _showDeleteDialog,
+          child: SizedBox(
+            height: 80,
+            child: Stack(
+              children: [
+                InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap:
+                      _isDeleting
+                          ? null
+                          : () {
+                            if (widget.chat != null) {
+                              context.pushRoute(
+                                ChatMessageRoute(
+                                  chatModel: widget.chat,
+                                  temporaryChatModel: null,
+                                ),
+                              );
+                            } else {
+                              context.pushRoute(
+                                ChatMessageRoute(
+                                  chatModel: null,
+                                  temporaryChatModel: widget.temporaryChat,
+                                ),
+                              );
+                            }
+                          },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        if (widget.avatar == null || _imageError)
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  isDark ? Colors.grey[800] : Colors.grey[300],
+                            ),
+                            child: Icon(
+                              Icons.person,
+                              size: 24,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
+                          )
+                        else
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey[300],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child:
+                                  _imageError
+                                      ? const Icon(Icons.person)
+                                      : CachedNetworkImage(
+                                        imageUrl: widget.avatar!,
+                                        fit: BoxFit.cover,
+                                        placeholder:
+                                            (context, url) => Container(
+                                              color: Colors.grey[300],
+                                              child: const Icon(
+                                                Icons.person,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                        errorWidget: (context, url, error) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                                if (mounted) {
+                                                  setState(
+                                                    () => _imageError = true,
+                                                  );
+                                                }
+                                              });
+                                          return const Icon(Icons.person);
+                                        },
+                                      ),
+                            ),
+                          ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.name,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.lastMessage,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withAlpha(150),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              _formatTime(widget.sendLastMessageAt),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withAlpha(150),
+                              ),
+                            ),
+                            if (widget.unreadCount != null &&
+                                widget.unreadCount! > 0)
+                              Container(
+                                margin: const EdgeInsets.only(top: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  widget.unreadCount! > 99
+                                      ? '99+'
+                                      : widget.unreadCount!.toString(),
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (_isDeleting)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

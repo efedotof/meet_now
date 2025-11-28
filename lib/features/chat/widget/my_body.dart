@@ -29,8 +29,7 @@ class MyBody extends StatelessWidget {
       onRefresh: () => context.read<ChatCubit>().refresh(),
       child: CustomScrollView(
         slivers: [
-          if (state.temporaryChat.isNotEmpty)
-            SliverToBoxAdapter(
+          SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -39,6 +38,16 @@ class MyBody extends StatelessWidget {
                 child: TemporaryChatsBanner(count: state.temporaryChat.length),
               ),
             ),
+          // if (state.temporaryChat.isNotEmpty)
+          //   SliverToBoxAdapter(
+          //     child: Padding(
+          //       padding: const EdgeInsets.symmetric(
+          //         horizontal: 16,
+          //         vertical: 8,
+          //       ),
+          //       child: TemporaryChatsBanner(count: state.temporaryChat.length),
+          //     ),
+          //   ),
           SliverPadding(
             padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             sliver: SliverToBoxAdapter(
