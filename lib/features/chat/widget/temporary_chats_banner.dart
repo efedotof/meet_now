@@ -9,11 +9,10 @@ class TemporaryChatsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
@@ -26,12 +25,12 @@ class TemporaryChatsBanner extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.timer,
-                  color: theme.colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 20,
                 ),
               ),
@@ -42,15 +41,16 @@ class TemporaryChatsBanner extends StatelessWidget {
                   children: [
                     Text(
                       'Активные временные чаты',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.black : Colors.white,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'У вас $count ${_formatCount(count)} до открытия профилей',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withAlpha(150),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: isDark ? Colors.black : Colors.white,
                       ),
                     ),
                   ],
@@ -59,7 +59,7 @@ class TemporaryChatsBanner extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: theme.colorScheme.onSurface.withAlpha(150),
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
               ),
             ],
           ),

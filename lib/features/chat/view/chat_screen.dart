@@ -15,8 +15,6 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = S.of(context);
-
     return BlocProvider(
       create:
           (context) => ChatCubit(
@@ -35,7 +33,7 @@ class ChatScreen extends StatelessWidget {
           builder: (context, state) {
             return Scaffold(
               appBar: AppBar(
-                title: Text(l10n.chats),
+                title: Text(S.of(context).chats),
                 elevation: 0,
                 backgroundColor: Colors.transparent,
               ),
