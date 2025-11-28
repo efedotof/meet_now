@@ -25,6 +25,6 @@ public class StickerPack {
     @Column(nullable = false, unique = true, length = 100)
     private String title;
 
-    @OneToMany(mappedBy = "pack", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pack", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Sticker> stickers;
 }

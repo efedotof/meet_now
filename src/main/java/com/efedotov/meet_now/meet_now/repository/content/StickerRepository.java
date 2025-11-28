@@ -1,6 +1,7 @@
 package com.efedotov.meet_now.meet_now.repository.content;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -22,12 +23,14 @@ public interface StickerRepository extends JpaRepository<Sticker, UUID> {
 
     boolean existsByPackAndEmoji(StickerPack pack, String emoji);
 
-    @Query("SELECT NEW com.efedotov.meet_now.meet_now.dto.response.content.StickerPackStatsDTO(s.pack.title, COUNT(s)) "
-            +
+    @Query("SELECT NEW com.efedotov.meet_now.meet_now.dto.response.content.StickerPackStatsDTO(s.pack.title, COUNT(s)) " +
             "FROM Sticker s GROUP BY s.pack.id, s.pack.title")
     List<StickerPackStatsDTO> countStickersPerPack();
 
     @Query("SELECT NEW com.efedotov.meet_now.meet_now.dto.response.content.EmojiStatsDTO(s.emoji, COUNT(s)) " +
             "FROM Sticker s GROUP BY s.emoji ORDER BY COUNT(s) DESC")
     List<EmojiStatsDTO> findMostPopularEmojis();
+
+    @Query("SELECT s FROM Sticker s LEFT JOIN FETCH s.pack WHERE s.id = :id")
+    Optional<Sticker> findByIdWithPack(UUID id);
 }

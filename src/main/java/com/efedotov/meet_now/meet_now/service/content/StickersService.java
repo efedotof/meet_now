@@ -37,15 +37,16 @@ public class StickersService {
     private final StickerRepository stickerRepository;
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public Page<StickerPackDto> getAllStickerPacksAdmin(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
 
         if (search != null && !search.trim().isEmpty()) {
-            return stickerPackRepository.findByTitleContainingIgnoreCase(search.trim(), pageable)
+            return stickerPackRepository.findByTitleContainingIgnoreCaseWithStickers(search.trim(), pageable)
                     .map(this::convertToStickerPackDto);
         }
 
-        return stickerPackRepository.findAll(pageable)
+        return stickerPackRepository.findAllWithStickers(pageable)
                 .map(this::convertToStickerPackDto);
     }
 
@@ -100,13 +101,15 @@ public class StickersService {
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public StickerPackDto getStickerPackAdmin(UUID packId) {
-        StickerPack pack = stickerPackRepository.findById(packId)
+        StickerPack pack = stickerPackRepository.findByIdWithStickers(packId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Стикерпак не найден"));
         return convertToStickerPackDto(pack);
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public Page<StickerDto> getAllStickersAdmin(int page, int size, UUID packId) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -177,6 +180,7 @@ public class StickersService {
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public StickerDto getStickerAdmin(UUID stickerId) {
         Sticker sticker = stickerRepository.findById(stickerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Стикер не найден"));
@@ -184,6 +188,7 @@ public class StickersService {
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public StickerStatisticsResponse getStickerStatistics() {
         long totalPacks = stickerPackRepository.count();
         long totalStickers = stickerRepository.count();
@@ -240,37 +245,43 @@ public class StickersService {
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public List<StickerPackDto> exportAllStickerPacks() {
-        return stickerPackRepository.findAll().stream()
+        return stickerPackRepository.findAllWithStickers().stream()
                 .map(this::convertToStickerPackDto)
                 .toList();
     }
 
     @AdminOnly
+    @Transactional(readOnly = true)
     public List<StickerDto> exportAllStickers() {
         return stickerRepository.findAll().stream()
                 .map(this::convertToStickerDto)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<StickerPackDto> getAllStickerPacks() {
-        return stickerPackRepository.findAll().stream()
+        return stickerPackRepository.findAllWithStickers().stream()
                 .map(this::convertToStickerPackDto)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public StickerPackDto getStickerPack(UUID packId) {
-        StickerPack pack = stickerPackRepository.findById(packId)
+        StickerPack pack = stickerPackRepository.findByIdWithStickers(packId)
                 .orElseThrow(() -> new RuntimeException("Sticker pack not found: " + packId));
         return convertToStickerPackDto(pack);
     }
 
+    @Transactional(readOnly = true)
     public List<StickerDto> getStickersByPack(UUID packId) {
         return stickerRepository.findByPackId(packId).stream()
                 .map(this::convertToStickerDto)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public StickerDto getSticker(UUID stickerId) {
         Sticker sticker = stickerRepository.findById(stickerId)
                 .orElseThrow(() -> new RuntimeException("Sticker not found: " + stickerId));

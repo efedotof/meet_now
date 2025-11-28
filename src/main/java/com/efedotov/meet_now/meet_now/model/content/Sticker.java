@@ -15,12 +15,9 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(
-    name = "sticker",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"pack_id", "emoji"})
-    }
-)
+@Table(name = "sticker", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "pack_id", "emoji" })
+})
 public class Sticker {
 
     @Id
@@ -28,7 +25,7 @@ public class Sticker {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pack_id", nullable = false)
+    @JoinColumn(name = "pack_id")
     private StickerPack pack;
 
     @Column(nullable = false, length = 100)
