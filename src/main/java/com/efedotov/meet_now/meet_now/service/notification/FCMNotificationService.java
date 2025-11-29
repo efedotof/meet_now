@@ -22,9 +22,9 @@ public class FCMNotificationService {
     private final PushTokenService pushTokenService;
 
     @AdminOnly
-    public void sendNotificationToUser(UUID userId, String message, String title, String userPassword) {
+    public void sendNotificationToUser(UUID userId, String message, String title) {
         try {
-            String pushToken = pushTokenService.getDecryptedPushToken(userId, userPassword);
+            String pushToken = pushTokenService.getDecryptedPushToken(userId);
             if (pushToken != null) {
                 sendNotificationToToken(pushToken, message, title);
                 log.info("FCM notification sent to user: {}", userId);
@@ -58,22 +58,21 @@ public class FCMNotificationService {
         }
     }
 
-    @AdminOnly
     public void sendDataNotificationToToken(String pushToken, String message, String title,
             Map<String, String> data) {
         try {
-            Message.Builder messageBuilder = Message.builder()
+            Message fcmMessage = Message.builder()
                     .setToken(pushToken)
-                    .putData("title", title != null ? title : "New Notification")
-                    .putData("body", message)
-                    .putData("timestamp", String.valueOf(System.currentTimeMillis()));
+                    .setNotification(Notification.builder()
+                            .setTitle(title != null ? title : "New Notification")
+                            .setBody(message)
+                            .build())
+                    .putAllData(data)
+                    .putData("timestamp", String.valueOf(System.currentTimeMillis()))
+                    .build();
 
-            if (data != null) {
-                data.forEach(messageBuilder::putData);
-            }
-
-            String response = FirebaseMessaging.getInstance().send(messageBuilder.build());
-            log.debug("FCM data notification sent to token: {}, response: {}", pushToken, response);
+            String response = FirebaseMessaging.getInstance().send(fcmMessage);
+            log.debug("FCM notification with data sent to token: {}, response: {}", pushToken, response);
 
         } catch (FirebaseMessagingException e) {
             log.error("Failed to send FCM data notification to token: {}", pushToken, e);

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
-import com.efedotov.meet_now.meet_now.service.util.TokenEncryptionService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,51 +18,28 @@ import lombok.extern.slf4j.Slf4j;
 public class PushTokenService {
 
     private final UserRepository userRepository;
-    private final TokenEncryptionService tokenEncryptionService;
 
-    public void savePushTokenForCurrentUser(String pushToken, String userPassword) {
+    public void savePushTokenForCurrentUser(String pushToken) {
         UUID userId = getCurrentUserId();
-        savePushToken(userId, pushToken, userPassword);
+        savePushToken(userId, pushToken);
     }
 
-    public void savePushToken(UUID userId, String pushToken, String userPassword) {
+    public void savePushToken(UUID userId, String pushToken) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        try {
-            String salt = tokenEncryptionService.generateSalt();
-            String encryptedToken = tokenEncryptionService.encryptPushTokenWithSalt(
-                    pushToken, userPassword, salt);
+        user.setEncryptedPushToken(pushToken);
+        user.setPushTokenSalt(null); // Соль больше не нужна
+        userRepository.save(user);
 
-            user.setEncryptedPushToken(encryptedToken);
-            user.setPushTokenSalt(salt);
-            userRepository.save(user);
-
-            log.info("Push token saved for user: {}", userId);
-
-        } catch (Exception e) {
-            log.error("Failed to encrypt and save push token for user: {}", userId, e);
-            throw new RuntimeException("Failed to save push token", e);
-        }
+        log.info("Push token saved for user: {}", userId);
     }
 
-    public String getDecryptedPushToken(UUID userId, String userPassword) {
+    public String getDecryptedPushToken(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getEncryptedPushToken() == null) {
-            return null;
-        }
-
-        try {
-            return tokenEncryptionService.decryptPushTokenWithSalt(
-                    user.getEncryptedPushToken(),
-                    userPassword,
-                    user.getPushTokenSalt());
-        } catch (Exception e) {
-            log.error("Failed to decrypt push token for user: {}", userId, e);
-            throw new RuntimeException("Failed to decrypt push token", e);
-        }
+        return user.getEncryptedPushToken(); // Просто возвращаем токен без расшифровки
     }
 
     public void removePushTokenForCurrentUser() {

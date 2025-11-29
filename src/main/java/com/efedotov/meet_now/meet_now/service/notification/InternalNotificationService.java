@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -18,12 +17,9 @@ public class InternalNotificationService {
     private final FCMNotificationService fcmNotificationService;
     private final PushTokenService pushTokenService;
 
-    @Value("${app.internal.notification.password}")
-    private String systemPassword;
-
     public void sendSystemNotification(UUID userId, String message, String title) {
         try {
-            fcmNotificationService.sendNotificationToUser(userId, message, title, systemPassword);
+            fcmNotificationService.sendNotificationToUser(userId, message, title);
             log.info("System notification sent to user: {}", userId);
 
         } catch (Exception e) {
@@ -42,7 +38,7 @@ public class InternalNotificationService {
             data.put("senderName", senderName);
             data.put("action", "open_chat");
 
-            String pushToken = pushTokenService.getDecryptedPushToken(recipientId, systemPassword);
+            String pushToken = pushTokenService.getDecryptedPushToken(recipientId);
             if (pushToken != null) {
                 fcmNotificationService.sendDataNotificationToToken(pushToken, message, title, data);
                 log.info("New message notification sent to user: {}", recipientId);
@@ -57,7 +53,7 @@ public class InternalNotificationService {
 
     public void sendSystemDataNotification(UUID userId, String message, String title, Map<String, String> data) {
         try {
-            String pushToken = pushTokenService.getDecryptedPushToken(userId, systemPassword);
+            String pushToken = pushTokenService.getDecryptedPushToken(userId);
             if (pushToken != null) {
                 fcmNotificationService.sendDataNotificationToToken(pushToken, message, title, data);
                 log.info("System data notification sent to user: {}", userId);

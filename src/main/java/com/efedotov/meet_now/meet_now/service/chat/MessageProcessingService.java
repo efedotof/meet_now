@@ -25,6 +25,7 @@ import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.content.MessageContentTypeRepository;
 import com.efedotov.meet_now.meet_now.repository.content.StickerRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.service.notification.InternalNotificationService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class MessageProcessingService {
     private final MessageContentTypeRepository contentTypeRepository;
     private final StickerRepository stickerRepository;
     private final PermanentChatUpdateService permanentChatUpdateService;
+    private final InternalNotificationService internalNotificationService;
 
     @Transactional
     public MessageDto processMessageDto(MessageDto messageDto) {
@@ -105,6 +107,21 @@ public class MessageProcessingService {
                 "/queue/messages",
                 responseDto);
 
+        try {
+            String notificationMessage = generateNotificationMessage(messageDto);
+            String senderName = generateSenderName(sender);
+            internalNotificationService.sendNewMessageNotification(
+                    recipientId,
+                    senderId,
+                    senderName,
+                    notificationMessage);
+            log.info("Push-уведомление отправлено пользователю {} от {}", recipient.getUsername(),
+                    sender.getUsername());
+        } catch (Exception e) {
+            log.error("Ошибка при отправке push-уведомления пользователю {}: {}", recipient.getUsername(),
+                    e.getMessage());
+        }
+
         if (chat != null) {
             permanentChatUpdateService.notifyNewMessageInPermanentChat(
                     chat.getChatId(),
@@ -118,7 +135,38 @@ public class MessageProcessingService {
                 responseDto.getMedia() != null ? responseDto.getMedia().size() : 0);
 
         return responseDto;
+    }
 
+    private String generateNotificationMessage(MessageDto messageDto) {
+        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
+
+            MessageMediaDto firstMedia = messageDto.getMedia().get(0);
+            if (firstMedia.getStickerId() != null) {
+                return "Отправил(а) стикер";
+            } else if ("image".equals(firstMedia.getContentType())) {
+                return messageDto.getMedia().size() > 1 ? "Отправил(а) " + messageDto.getMedia().size() + " фото"
+                        : "Отправил(а) фото";
+            } else if ("video".equals(firstMedia.getContentType())) {
+                return messageDto.getMedia().size() > 1 ? "Отправил(а) " + messageDto.getMedia().size() + " видео"
+                        : "Отправил(а) видео";
+            } else if ("file".equals(firstMedia.getContentType())) {
+                return messageDto.getMedia().size() > 1 ? "Отправил(а) " + messageDto.getMedia().size() + " файлов"
+                        : "Отправил(а) файл";
+            }
+        }
+
+        return messageDto.getText() != null && !messageDto.getText().isEmpty() ? messageDto.getText()
+                : "Новое сообщение";
+    }
+
+    private String generateSenderName(User sender) {
+        if (sender.getFirstname() != null && sender.getSubname() != null) {
+            return sender.getFirstname() + " " + sender.getSubname();
+        } else if (sender.getFirstname() != null) {
+            return sender.getFirstname();
+        } else {
+            return sender.getUsername();
+        }
     }
 
     private void updateLastMessageInChat(Chat chat, Message message) {
@@ -408,5 +456,4 @@ public class MessageProcessingService {
         }
         return text != null && text.length() > 50 ? text.substring(0, 47) + "..." : text;
     }
-
 }

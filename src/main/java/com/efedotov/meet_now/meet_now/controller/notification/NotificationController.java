@@ -2,7 +2,6 @@ package com.efedotov.meet_now.meet_now.controller.notification;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +28,6 @@ public class NotificationController {
     private final FCMNotificationService notificationService;
     private final PushTokenService pushTokenService;
 
-    @Value("${app.internal.notification.password}")
-    private String systemPassword;
-
     @AdminOnly
     @PostMapping("/token/{pushToken}")
     public ResponseEntity<?> sendTokenNotification(
@@ -48,7 +44,7 @@ public class NotificationController {
             @PathVariable UUID userId,
             @RequestBody NotificationRequest request) {
 
-        notificationService.sendNotificationToUser(userId, request.getMessage(), request.getTitle(), systemPassword);
+        notificationService.sendNotificationToUser(userId, request.getMessage(), request.getTitle());
         return ResponseEntity.ok().build();
     }
 
@@ -56,7 +52,7 @@ public class NotificationController {
     public ResponseEntity<?> registerPushToken(
             @RequestBody PushTokenRequest request) {
 
-        pushTokenService.savePushTokenForCurrentUser(request.getPushToken(), request.getPassword());
+        pushTokenService.savePushTokenForCurrentUser(request.getPushToken());
         return ResponseEntity.ok().build();
     }
 

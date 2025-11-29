@@ -50,18 +50,12 @@ public class FirebaseConfig {
     }
 
     private InputStream getConfigFileStream() throws IOException {
-        InputStream stream = null;
-
-        try {
-            ClassPathResource resource = new ClassPathResource(firebaseConfigPath);
-            if (resource.exists()) {
-                stream = resource.getInputStream();
-                return stream;
-            }
-        } catch (IOException e) {
+        ClassPathResource resource = new ClassPathResource(firebaseConfigPath);
+        if (resource.exists()) {
+            return resource.getInputStream();
+        } else {
             log.debug("Firebase config not found in classpath");
+            return null;
         }
-
-        return null;
     }
 }
