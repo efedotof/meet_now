@@ -565,22 +565,6 @@ class SupportRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [TemporaryChatScreen]
-class TemporaryChatRoute extends PageRouteInfo<void> {
-  const TemporaryChatRoute({List<PageRouteInfo>? children})
-    : super(TemporaryChatRoute.name, initialChildren: children);
-
-  static const String name = 'TemporaryChatRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const TemporaryChatScreen();
-    },
-  );
-}
-
-/// generated route for
 /// [ThemeScreen]
 class ThemeRoute extends PageRouteInfo<void> {
   const ThemeRoute({List<PageRouteInfo>? children})

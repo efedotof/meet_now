@@ -42,7 +42,6 @@ class AppRepository extends StatelessWidget {
         userStatsAddress: userStatsAddress,
         supportAddress: supportAddress,
         pushNotificationAddress: pushNotificationAddress,
-        mqttAddress: mqttAddress,
       ).initializeRepository();
 
   @override
@@ -71,7 +70,6 @@ class AppRepository extends StatelessWidget {
       userStatsAddress: userStatsAddress,
       supportAddress: supportAddress,
       pushNotificationAddress: pushNotificationAddress,
-      mqttAddress: mqttAddress,
     ).initializeRepository();
   }
 }
