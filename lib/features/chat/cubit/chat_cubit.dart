@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meet_now_app/features/chat/widget/chat_type.dart';
 import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
 import 'package:meet_now_app_server/model/chats/delete_temporary_chat_request/delete_temporary_chat_request.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
@@ -27,7 +28,12 @@ class ChatCubit extends Cubit<ChatState> {
        _userModelAppInterface = userModelAppInterface,
        _socketServiceInterface = socketServiceInterface,
        super(
-         const ChatState(permanentChat: [], temporaryChat: [], isLoading: true),
+         const ChatState(
+           permanentChat: [],
+           temporaryChat: [],
+           isLoading: true,
+           selectedChatType: ChatType.all,
+         ),
        ) {
     _init();
   }
@@ -58,6 +64,10 @@ class ChatCubit extends Cubit<ChatState> {
       onError:
           (e) => emit(state.copyWith(error: e.toString(), isLoading: false)),
     );
+  }
+
+  void changeChatType(ChatType chatType) {
+    emit(state.copyWith(selectedChatType: chatType));
   }
 
   Future<void> deletePermanentChat(String chatId, bool deleteForBoth) async {
