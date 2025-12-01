@@ -20,17 +20,16 @@ class SuggestionsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+        color: Colors.black87,
+        // borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             S.of(context).availableCommands,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 8),
           Wrap(

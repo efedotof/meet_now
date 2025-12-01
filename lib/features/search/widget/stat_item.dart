@@ -15,28 +15,23 @@ class StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
+    final isDart = theme.brightness == Brightness.dark;
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 10,
-          color: colors.primary.withAlpha(60),
-        ),
+        Icon(icon, size: 10, color: isDart ? Colors.black : Colors.white),
         const SizedBox(width: 6),
         Text(
           count.toString(),
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: colors.onSurface,
+            color: isDart ? Colors.black : Colors.white,
           ),
         ),
         const SizedBox(width: 4),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.onSurface.withAlpha(55),
+            color: isDart ? Colors.black : Colors.white,
           ),
         ),
       ],

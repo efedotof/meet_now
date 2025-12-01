@@ -17,6 +17,8 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).settings),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         actions: [
           BlocBuilder<SettingsCubit, SettingsState>(
@@ -32,7 +34,7 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: ()=> context.read<SettingsCubit>().getCurrentUser(),
+        onRefresh: () => context.read<SettingsCubit>().getCurrentUser(),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +64,9 @@ class SettingsScreen extends StatelessWidget {
                                     Text(
                                       '${user.firstname} ${user.subname}',
                                       style:
-                                          Theme.of(context).textTheme.titleLarge,
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.titleLarge,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -105,7 +109,7 @@ class SettingsScreen extends StatelessWidget {
                                       ),
                                   ],
                                 ),
-        
+
                                 const SizedBox(height: 4),
                                 Text(
                                   '@${user.username}',
@@ -147,7 +151,7 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-        
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -214,7 +218,8 @@ class SettingsScreen extends StatelessWidget {
                           icon: Icons.notifications,
                           title: S.of(context).notifications,
                           onTap:
-                              () => context.pushRoute(NotificationSettingRoute()),
+                              () =>
+                                  context.pushRoute(NotificationSettingRoute()),
                         ),
                         SettingsItem(
                           icon: Icons.security,

@@ -25,6 +25,36 @@ class TemporaryChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String timeText = '';
+    if (!chat.isFinished) {
+      if (remainingTime != null && remainingTime! > 0) {
+        if (remainingTime! >= 86400) {
+          timeText = '${(remainingTime! / 86400).floor()}д';
+        } else if (remainingTime! >= 3600) {
+          timeText = '${(remainingTime! / 3600).floor()}ч';
+        } else if (remainingTime! >= 60) {
+          timeText = '${(remainingTime! / 60).floor()}м';
+        } else {
+          timeText = 'скоро';
+        }
+      } else {
+        final expiresAt = chat.createdAt.add(
+          Duration(minutes: chat.durationMinutes),
+        );
+        final diff = expiresAt.difference(DateTime.now());
+
+        if (diff.inDays > 0) {
+          timeText = '${diff.inDays}д';
+        } else if (diff.inHours > 0) {
+          timeText = '${diff.inHours}ч';
+        } else if (diff.inMinutes > 0) {
+          timeText = '${diff.inMinutes}м';
+        } else {
+          timeText = 'скоро';
+        }
+      }
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -40,19 +70,54 @@ class TemporaryChatTile extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: _buildAvatar(context),
+
+        leading: Stack(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: Colors.grey[300],
+              backgroundImage: avatar != null ? NetworkImage(avatar!) : null,
+              child:
+                  avatar == null
+                      ? const Icon(Icons.person, size: 24, color: Colors.grey)
+                      : null,
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.surface,
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.access_time,
+                  size: 10,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+
         title: Row(
           children: [
             Expanded(
               child: Text(
                 name,
+                overflow: TextOverflow.ellipsis,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (unreadCount > 0) ...[
+            if (unreadCount > 0)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
@@ -67,165 +132,92 @@ class TemporaryChatTile extends StatelessWidget {
                   ),
                 ),
               ),
-            ],
           ],
         ),
+
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
             Text(
               lastMessage,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withAlpha(178),
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
             ),
           ],
         ),
-        trailing: _buildTemporaryIndicator(),
+
+        trailing:
+            chat.isFinished || timeText.isEmpty
+                ? const SizedBox()
+                : Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withAlpha(25),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.orange.withAlpha(76),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    timeText,
+                    style: const TextStyle(
+                      color: Colors.orange,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+
         onTap: () {
           context.pushRoute(ChatMessageRoute(temporaryChatModel: chat));
         },
+
         onLongPress: () {
-          _showDeleteDialog(context);
-        },
-      ),
-    );
-  }
+          showDialog(
+            context: context,
+            builder:
+                (_) => AlertDialog(
+                  title: const Text('Удалить чат'),
+                  content: const Text(
+                    'Вы уверены, что хотите удалить этот временный чат?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Отмена'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context.read<ChatCubit>().deleteTemporaryChat(
+                          chat.tempChatId,
+                          false,
+                        );
 
-  Widget _buildAvatar(BuildContext context) {
-    return Stack(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: Colors.grey[300],
-          backgroundImage: avatar != null ? NetworkImage(avatar!) : null,
-          child:
-              avatar == null
-                  ? const Icon(Icons.person, color: Colors.grey, size: 24)
-                  : null,
-        ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.surface,
-                width: 2,
-              ),
-            ),
-            child: const Icon(Icons.access_time, color: Colors.white, size: 10),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTemporaryIndicator() {
-    // Если чат завершен, не показываем индикатор
-    if (chat.isFinished) {
-      return const SizedBox();
-    }
-
-    String timeText;
-
-    // Если есть данные из cubit, используем их
-    if (remainingTime != null && remainingTime! > 0) {
-      if (remainingTime! > 86400) {
-        // больше суток
-        timeText = '${(remainingTime! / 86400).floor()}д';
-      } else if (remainingTime! > 3600) {
-        // больше часа
-        timeText = '${(remainingTime! / 3600).floor()}ч';
-      } else if (remainingTime! > 60) {
-        // больше минуты
-        timeText = '${(remainingTime! / 60).floor()}м';
-      } else {
-        timeText = 'скоро';
-      }
-    } else {
-      // Если данных из cubit нет, рассчитываем из createdAt и durationMinutes
-      final expiresAt = chat.createdAt.add(
-        Duration(minutes: chat.durationMinutes),
-      );
-      final now = DateTime.now();
-      final difference = expiresAt.difference(now);
-
-      if (difference.inDays > 0) {
-        timeText = '${difference.inDays}д';
-      } else if (difference.inHours > 0) {
-        timeText = '${difference.inHours}ч';
-      } else if (difference.inMinutes > 0) {
-        timeText = '${difference.inMinutes}м';
-      } else {
-        timeText = 'скоро';
-      }
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.orange.withAlpha(25), // 0.1 * 255 ≈ 25
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.orange.withAlpha(76),
-          width: 1,
-        ), // 0.3 * 255 ≈ 76
-      ),
-      child: Text(
-        timeText,
-        style: const TextStyle(
-          color: Colors.orange,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Удалить чат'),
-            content: const Text(
-              'Вы уверены, что хотите удалить этот временный чат?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Отмена'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _deleteChat(context);
-                },
-                child: const Text(
-                  'Удалить',
-                  style: TextStyle(color: Colors.red),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Временный чат удален'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Удалить',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _deleteChat(BuildContext context) {
-    context.read<ChatCubit>().deleteTemporaryChat(chat.tempChatId, false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Временный чат удален'),
-        duration: Duration(seconds: 2),
+          );
+        },
       ),
     );
   }

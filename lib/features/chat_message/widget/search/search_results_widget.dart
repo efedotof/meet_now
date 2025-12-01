@@ -20,7 +20,7 @@ class SearchResultsWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       height: 50,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
+        color: Colors.black87,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
       ),
       child: Row(

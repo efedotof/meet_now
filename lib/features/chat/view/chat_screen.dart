@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocProvider(
       create:
           (_) => ChatCubit(
@@ -44,22 +45,29 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         child: BlocBuilder<ChatCubit, ChatState>(
           builder: (context, state) {
+            final chatTypes = [
+              (ChatType.all, "Все"),
+              (ChatType.permanent, "Постоянные"),
+              (ChatType.temporary, "Временные"),
+            ];
             return Scaffold(
               appBar: AppBar(
+                scrolledUnderElevation: 0,
+                surfaceTintColor: Colors.transparent,
                 actions: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                      horizontal: 12,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: isDark ? Colors.white : Colors.black,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Select',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: isDark ? Colors.black : Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -67,12 +75,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 15),
                   RawMaterialButton(
+                    fillColor: isDark ? Colors.white : Colors.black,
                     onPressed: () {},
                     elevation: 2.0,
                     shape: const CircleBorder(),
-                    fillColor: Colors.black,
                     constraints: const BoxConstraints(minWidth: 0.0),
-                    child: const Icon(Icons.add, color: Colors.white),
+                    child: Icon(
+                      Icons.add,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -85,9 +96,26 @@ class _ChatScreenState extends State<ChatScreen> {
                     SearchField(controller: _searchController),
                     const SizedBox(height: 10),
 
-                    _buildChatTypeChips(context, state),
-                    
+                    Wrap(
+                      spacing: 8,
+                      children:
+                          chatTypes.map((type) {
+                            return ChoiceChip(
+                              label: Text(type.$2),
+                              selected: state.selectedChatType == type.$1,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  context.read<ChatCubit>().changeChatType(
+                                    type.$1,
+                                  );
+                                }
+                              },
+                            );
+                          }).toList(),
+                    ),
+
                     const SizedBox(height: 10),
+
                     MyBody(state: state),
                   ],
                 ),
@@ -96,29 +124,6 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildChatTypeChips(BuildContext context, ChatState state) {
-    final chatTypes = [
-      (ChatType.all, "Все"),
-      (ChatType.permanent, "Постоянные"),
-      (ChatType.temporary, "Временные"),
-    ];
-
-    return Wrap(
-      spacing: 8,
-      children: chatTypes.map((type) {
-        return ChoiceChip(
-          label: Text(type.$2),
-          selected: state.selectedChatType == type.$1,
-          onSelected: (selected) {
-            if (selected) {
-              context.read<ChatCubit>().changeChatType(type.$1);
-            }
-          },
-        );
-      }).toList(),
     );
   }
 }

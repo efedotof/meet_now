@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
+// import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
 import 'package:meet_now_app_server/repository/stikers_parks/stikers_parks_interface.dart';
 
 part 'sticker_state.dart';
@@ -42,4 +43,22 @@ class StickerCubit extends Cubit<StickerState> {
       throw Exception('Failed to load stickers: $e');
     }
   }
+
+  // Future<List<StickerPack>> getAllStickerPack() async {
+  //    try {
+  //     final packs = await _stickerParksInterface.getAllStickerPacks();
+  //     final allStickersPack = <StickerPack>[];
+
+  //     for (final pack in packs) {
+  //       final stickers = await _stickerParksInterface.getStickersByPack(
+  //         pack.id,
+  //       );
+  //       // allStickers.addAll(stickers);
+  //     }
+
+  //     return allStickers;
+  //   } catch (e) {
+  //     throw Exception('Failed to load stickers: $e');
+  //   }
+  // }
 }

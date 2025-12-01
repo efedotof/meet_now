@@ -87,6 +87,8 @@ flutter:
     - assets/moderator.png
     - assets/verify.png
     - assets/logo.png
+    - assets/chat_bg/fone1.png
+    - assets/chat_bg/fone2.png
 
 flutter_intl:
   enabled: true

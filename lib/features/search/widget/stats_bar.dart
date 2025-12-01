@@ -8,20 +8,10 @@ class StatsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Container(
       height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(
-          top: BorderSide(
-            color: colors.outline.withOpacity(0.2),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: BoxDecoration(color: Colors.transparent),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -41,9 +41,9 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
           children: [
             Text(
               widget.title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
 
@@ -51,8 +51,9 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: widget.items.length,
-                separatorBuilder: (_, __) =>
-                    Divider(height: 1, color: colors.outline.withOpacity(0.1)),
+                separatorBuilder:
+                    (_, __) =>
+                        Divider(height: 1, color: colors.outline.withAlpha(10)),
                 itemBuilder: (_, i) {
                   final item = widget.items[i];
                   final selected = _temp.contains(item);
@@ -83,18 +84,23 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
                             height: 22,
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: colors.primary.withOpacity(0.6),
+                                color: colors.primary.withAlpha(60),
                                 width: 2,
                               ),
                               borderRadius: BorderRadius.circular(6),
-                              color: selected
-                                  ? colors.primary
-                                  : Colors.transparent,
+                              color:
+                                  selected
+                                      ? colors.primary
+                                      : Colors.transparent,
                             ),
-                            child: selected
-                                ? Icon(Icons.check,
-                                    size: 16, color: colors.onPrimary)
-                                : null,
+                            child:
+                                selected
+                                    ? Icon(
+                                      Icons.check,
+                                      size: 16,
+                                      color: colors.onPrimary,
+                                    )
+                                    : null,
                           ),
                         ],
                       ),
@@ -113,7 +119,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
                   onPressed: () => Navigator.pop(context),
                   child: Text(
                     S.of(context).cancel,
-                    style: TextStyle(color: colors.onSurface.withOpacity(0.6)),
+                    style: TextStyle(color: colors.onSurface.withAlpha(60)),
                   ),
                 ),
                 const SizedBox(width: 6),

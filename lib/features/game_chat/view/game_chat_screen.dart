@@ -49,6 +49,8 @@ class _GameChatScreenState extends State<GameChatScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Игры'),
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           actions: [
             BlocBuilder<GameChatCubit, GameChatState>(

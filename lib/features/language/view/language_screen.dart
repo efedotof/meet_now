@@ -12,7 +12,11 @@ class LanguageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).language)),
+      appBar: AppBar(
+        title: Text(S.of(context).language),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: BlocBuilder<LanguageCubit, LanguageState>(
         builder: (context, state) {
           return state.when(
