@@ -61,99 +61,115 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocBuilder<StickerCubit, StickerState>(
       builder: (context, state) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: state.maybeWhen(visible: () => 200, orElse: () => 0),
-          curve: Curves.easeInOut,
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black87 : Colors.white70,
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: state.maybeWhen(
             visible:
-                () => Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                    border: Border(
-                      top: BorderSide(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                        width: 1,
-                      ),
-                    ),
+                () => ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.5,
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text(
-                              'Стикеры',
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.close, size: 20),
-                              onPressed: () {
-                                context.read<StickerCubit>().hideStickers();
-                              },
-                            ),
-                          ],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Стикеры',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.close,
+                                  size: 20,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                                onPressed: () {
+                                  context.read<StickerCubit>().hideStickers();
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child:
-                            _isLoading
-                                ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                                : _error != null
-                                ? Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('Ошибка загрузки стикеров: $_error'),
-                                      const SizedBox(height: 10),
-                                      ElevatedButton(
-                                        onPressed: _loadStickers,
-                                        child: const Text('Повторить'),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                : _stickers.isEmpty
-                                ? const Center(
-                                  child: Text('Стикеры не найдены'),
-                                )
-                                : GridView.builder(
-                                  padding: const EdgeInsets.all(8),
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4,
-                                        mainAxisSpacing: 8,
-                                        crossAxisSpacing: 8,
-                                        childAspectRatio: 1,
-                                      ),
-                                  itemCount: _stickers.length,
-                                  itemBuilder: (context, index) {
-                                    final sticker = _stickers[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        widget.onStickerSelected(sticker);
-                                        context
-                                            .read<StickerCubit>()
-                                            .hideStickers();
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                        Flexible(
+                          fit: FlexFit.loose,
+                          child:
+                              _isLoading
+                                  ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                  : _error != null
+                                  ? Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Ошибка загрузки стикеров: $_error',
+                                          style: TextStyle(
+                                            color:
+                                                isDark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                           ),
-                                          color:
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceContainerHighest,
                                         ),
+                                        const SizedBox(height: 10),
+                                        ElevatedButton(
+                                          onPressed: _loadStickers,
+                                          child: const Text('Повторить'),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  : _stickers.isEmpty
+                                  ? Center(
+                                    child: Text(
+                                      'Стикеры не найдены',
+                                      style: TextStyle(
+                                        color:
+                                            isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
+                                    ),
+                                  )
+                                  : GridView.builder(
+                                    padding: const EdgeInsets.all(8),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 4,
+                                          mainAxisSpacing: 8,
+                                          crossAxisSpacing: 8,
+                                          childAspectRatio: 1,
+                                        ),
+                                    itemCount: _stickers.length,
+                                    itemBuilder: (context, index) {
+                                      final sticker = _stickers[index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          widget.onStickerSelected(sticker);
+                                          context
+                                              .read<StickerCubit>()
+                                              .hideStickers();
+                                        },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
                                             12,
@@ -170,19 +186,16 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                       CircularProgressIndicator(),
                                                 );
                                               } else if (snapshot.hasError) {
-                                                return Center(
+                                                return const Center(
                                                   child: Icon(
                                                     Icons.error_outline,
-                                                    color:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.error,
+                                                    color: Colors.red,
                                                   ),
                                                 );
                                               } else if (snapshot.hasData) {
                                                 return Image.network(
                                                   snapshot.data!,
-                                                  fit: BoxFit.cover,
+                                                  fit: BoxFit.contain,
                                                   loadingBuilder: (
                                                     context,
                                                     child,
@@ -206,21 +219,17 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                       ),
                                                     );
                                                   },
-                                                  errorBuilder: (
-                                                    context,
-                                                    error,
-                                                    stackTrace,
-                                                  ) {
-                                                    return Center(
-                                                      child: Icon(
-                                                        Icons.error_outline,
-                                                        color:
-                                                            Theme.of(
-                                                              context,
-                                                            ).colorScheme.error,
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) => const Center(
+                                                        child: Icon(
+                                                          Icons.error_outline,
+                                                          color: Colors.red,
+                                                        ),
                                                       ),
-                                                    );
-                                                  },
                                                 );
                                               } else {
                                                 return const SizedBox();
@@ -228,12 +237,12 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                             },
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      ),
-                    ],
+                                      );
+                                    },
+                                  ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             orElse: () => const SizedBox.shrink(),

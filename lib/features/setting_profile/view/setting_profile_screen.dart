@@ -222,6 +222,8 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(S.of(context).editProfile),
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
             leading: IconButton(
               icon: const Icon(Icons.close),
               onPressed: () => context.maybePop(),

@@ -138,7 +138,6 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: ChatSwipeItem(

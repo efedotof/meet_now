@@ -54,7 +54,11 @@ class MyReportScreen extends StatelessWidget {
         tileMode: TileMode.clamp,
       ),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Мои жалобы")),
+        appBar: AppBar(
+          title: const Text("Мои жалобы"),
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
         body: RefreshIndicator(
           onRefresh: () => context.read<ReportCubit>().loadReports(),
           child: BlocBuilder<ReportCubit, ReportState>(

@@ -14,7 +14,11 @@ class GiftView extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint(context.read<TokenInterface>().getToken());
     return Scaffold(
-      appBar: AppBar(title: const Text('Магазин подарков')),
+      appBar: AppBar(
+        title: const Text('Магазин подарков'),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: BlocConsumer<GiftCubit, GiftState>(
         listener: (context, state) {
           state.maybeWhen(

@@ -9,39 +9,50 @@ class SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return BlocBuilder<CommandSuggestionsCubit, CommandSuggestionsState>(
       builder: (context, state) {
         return Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: theme.colorScheme.primary,
+            color: isDark ? Colors.black87 : Colors.white70,
           ),
-          margin: const EdgeInsets.only(bottom: 8),
-          child: IconButton(
-            icon: state.when(
+          padding: EdgeInsets.all(6),
+          child: GestureDetector(
+            onTap: state.maybeWhen(
+              searching: () => null,
+              orElse: () => onPressed,
+            ),
+            child: state.when(
               initial:
-                  () => Icon(Icons.send, color: theme.colorScheme.onPrimary),
-              visible:
-                  (suggestions) =>
-                      Icon(Icons.send, color: theme.colorScheme.onPrimary),
+                  () => Icon(
+                    Icons.send,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
               hidden:
-                  () => Icon(Icons.send, color: theme.colorScheme.onPrimary),
+                  () => Icon(
+                    Icons.send,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+              visible:
+                  (suggestions) => Icon(
+                    Icons.send,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
               searching:
                   () => SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: theme.colorScheme.onPrimary,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
               searchResults:
-                  (results) =>
-                      Icon(Icons.search, color: theme.colorScheme.onPrimary),
-            ),
-            onPressed: state.maybeWhen(
-              searching: () => null,
-              orElse: () => onPressed,
+                  (results) => Icon(
+                    Icons.search,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
             ),
           ),
         );

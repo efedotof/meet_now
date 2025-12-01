@@ -50,7 +50,11 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).qrScanner)),
+      appBar: AppBar(
+        title: Text(S.of(context).qrScanner),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       backgroundColor: Colors.black,
       body: Stack(
         children: [

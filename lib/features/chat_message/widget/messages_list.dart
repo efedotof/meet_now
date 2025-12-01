@@ -52,48 +52,64 @@ class _MessagesListState extends State<MessagesList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ListView.builder(
+    return CustomScrollView(
       controller: widget.scrollController,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      itemCount: widget.messages.length,
-      itemBuilder: (context, index) {
-        final message = widget.messages[index];
-        final isMe = message.senderId == widget.currentUserId;
-        final showTime =
-            index == widget.messages.length - 1 ||
-            _shouldShowTime(widget.messages[index], widget.messages[index + 1]);
+      slivers: [
+        const SliverToBoxAdapter(child: SizedBox(height: 60)),
 
-        return Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: isMe ? 60 : 16,
-                right: isMe ? 16 : 60,
-                top: 4,
-                bottom: showTime ? 4 : 8,
-              ),
-              child: MessageBubble(message: message, isMe: isMe, theme: theme),
-            ),
-            if (showTime)
-              Padding(
-                padding: EdgeInsets.only(
-                  left: isMe ? 0 : 16,
-                  right: isMe ? 16 : 0,
-                  bottom: 16,
-                ),
-                child: Text(
-                  DateFormat.Hm().format(message.createdAt!),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.secondary,
-                    fontSize: 11,
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final message = widget.messages[index];
+              final isMe = message.senderId == widget.currentUserId;
+              final showTime =
+                  index == widget.messages.length - 1 ||
+                  _shouldShowTime(
+                    widget.messages[index],
+                    widget.messages[index + 1],
+                  );
+
+              return Column(
+                crossAxisAlignment:
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: isMe ? 60 : 16,
+                      right: isMe ? 16 : 60,
+                      top: 4,
+                      bottom: showTime ? 4 : 8,
+                    ),
+                    child: MessageBubble(
+                      message: message,
+                      isMe: isMe,
+                      theme: theme,
+                    ),
                   ),
-                ),
-              ),
-          ],
-        );
-      },
+                  if (showTime)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: isMe ? 0 : 16,
+                        right: isMe ? 16 : 0,
+                        bottom: 16,
+                      ),
+                      child: Text(
+                        DateFormat.Hm().format(message.createdAt!),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.secondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }, childCount: widget.messages.length),
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+      ],
     );
   }
 

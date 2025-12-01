@@ -25,7 +25,11 @@ class _FriendsScreenState extends State<FriendsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(S.of(context).friends)),
+      appBar: AppBar(
+        title: Text(S.of(context).friends),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: SkeletonTheme(
         shimmerGradient: LinearGradient(
           colors: [

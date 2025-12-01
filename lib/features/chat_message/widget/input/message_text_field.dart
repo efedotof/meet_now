@@ -24,59 +24,64 @@ class MessageTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.shadow.withAlpha(5),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        decoration: InputDecoration(
-          hintText: S.of(context).messageHint,
-          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
-          suffixIcon: BlocBuilder<StickerCubit, StickerState>(
-            builder: (context, state) {
-              final color = state.maybeWhen(
-                visible: () => theme.colorScheme.primary,
-                orElse: () => theme.colorScheme.onSurfaceVariant,
-              );
-              return IconButton(
-                icon: Icon(Icons.emoji_emotions_outlined, color: color),
-                onPressed: () {
-                  stickerCubit.toggleStickers();
-                  FocusScope.of(context).unfocus();
-                },
-              );
-            },
-          ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? Colors.black87 : Colors.white70,
+          borderRadius: BorderRadius.circular(25),
         ),
-        onChanged: (value) {
-          context.read<UserActivityCubit>().sendActivity(
-            type: ActivityType.TYPING,
-            chatId: chatId,
-          );
-          context.read<CommandSuggestionsCubit>().showSuggestionsVisible(value);
-        },
-        style: theme.textTheme.bodyMedium,
-        minLines: 1,
-        maxLines: 5,
-        onSubmitted: (_) => onSend(),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                decoration: InputDecoration(
+                  hintText: S.of(context).messageHint,
+                  hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  border: InputBorder.none,
+                  isCollapsed: false,
+                  fillColor: Colors.transparent,
+                  filled: false,
+                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+                minLines: 1,
+                maxLines: 5,
+                onChanged: (value) {
+                  context.read<UserActivityCubit>().sendActivity(
+                    type: ActivityType.TYPING,
+                    chatId: chatId,
+                  );
+                  context
+                      .read<CommandSuggestionsCubit>()
+                      .showSuggestionsVisible(value);
+                },
+                onSubmitted: (_) => onSend(),
+              ),
+            ),
+            BlocBuilder<StickerCubit, StickerState>(
+              builder: (context, state) {
+                final color = state.maybeWhen(
+                  visible: () => isDark ? Colors.white : Colors.black,
+                  orElse: () => isDark ? Colors.white : Colors.black,
+                );
+                return IconButton(
+                  icon: Icon(Icons.emoji_emotions_outlined, color: color),
+                  onPressed: () {
+                    stickerCubit.toggleStickers();
+                    FocusScope.of(context).unfocus();
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

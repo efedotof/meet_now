@@ -18,6 +18,8 @@ class AboutAppScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('О приложении'),
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.router.pop(),

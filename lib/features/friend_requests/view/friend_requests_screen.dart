@@ -15,6 +15,8 @@ class FriendRequestsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Запросы в друзья'),
         centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
       body: SkeletonTheme(

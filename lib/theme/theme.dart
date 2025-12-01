@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final dartTheme = ThemeData(
   brightness: Brightness.dark,
-  scaffoldBackgroundColor: Colors.black,
+  scaffoldBackgroundColor: Color(0xFF121212),
   colorScheme: const ColorScheme.dark(
     primary: Colors.white,
     secondary: Colors.grey,
@@ -18,7 +18,7 @@ final dartTheme = ThemeData(
     ),
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Colors.black,
+    backgroundColor: Color(0xFF111010),
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.grey,
     elevation: 0,
