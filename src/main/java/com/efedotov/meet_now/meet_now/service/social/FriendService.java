@@ -26,6 +26,7 @@ import com.efedotov.meet_now.meet_now.repository.user.FriendshipRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
+import com.efedotov.meet_now.meet_now.service.notification.InternalNotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class FriendService {
     private final UserRepository userRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
+    private final InternalNotificationService internalNotificationService;
 
     @AdminOnly
     @Transactional(readOnly = true)
@@ -274,6 +276,12 @@ public class FriendService {
         friendRequest.setStatus(FriendRequestStatus.PENDING);
 
         friendRequestRepository.save(friendRequest);
+
+        try {
+            internalNotificationService.sendFriendRequestNotification(
+                    toUser.getId(), fromUser.getId(), fromUser.getUsername());
+        } catch (Exception e) {
+        }
 
         return "Запрос в друзья отправлен";
     }

@@ -33,8 +33,8 @@ public class Question {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "question_status")
-    private QuestionStatus status;
+    @Column(name = "status")
+    private QuestionStatus status = QuestionStatus.PENDING;
 
     @Column(name = "user_id")
     private UUID userId;

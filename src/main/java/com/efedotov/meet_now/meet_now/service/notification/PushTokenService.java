@@ -29,7 +29,7 @@ public class PushTokenService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setEncryptedPushToken(pushToken);
-        user.setPushTokenSalt(null); // Соль больше не нужна
+        user.setPushTokenSalt(null); 
         userRepository.save(user);
 
         log.info("Push token saved for user: {}", userId);
@@ -39,7 +39,7 @@ public class PushTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return user.getEncryptedPushToken(); // Просто возвращаем токен без расшифровки
+        return user.getEncryptedPushToken(); 
     }
 
     public void removePushTokenForCurrentUser() {
