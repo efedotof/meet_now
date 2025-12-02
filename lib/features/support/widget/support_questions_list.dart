@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
 import 'package:meet_now_app_server/model/social/question/question.dart';
-import 'package:meet_now_app_server/model/social/question/question_status.dart';
 
 class SupportQuestionsList extends StatelessWidget {
   final List<Question> questions;
@@ -57,20 +56,28 @@ class SupportQuestionsList extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(QuestionStatus status) {
-    Color backgroundColor;
-    Color textColor;
+  Widget _buildStatusChip(String status) {
+    // Инициализация при объявлении
+    Color backgroundColor = Colors.grey.withAlpha(20);
+    Color textColor = Colors.grey;
+    String statusText = status;
 
     switch (status) {
-      case QuestionStatus.pending:
-        backgroundColor = Colors.orange.withAlpha(2);
+      case "PENDING":
+        backgroundColor = Colors.orange.withAlpha(20);
         textColor = Colors.orange;
-      case QuestionStatus.received:
-        backgroundColor = Colors.blue.withAlpha(2);
+        statusText = 'ОЖИДАЕТ';
+        break;
+      case "RECEIVED":
+        backgroundColor = Colors.blue.withAlpha(20);
         textColor = Colors.blue;
-      case QuestionStatus.resolved:
-        backgroundColor = Colors.green.withAlpha(2);
+        statusText = 'ПОЛУЧЕНО';
+        break;
+      case "RESOLVED":
+        backgroundColor = Colors.green.withAlpha(20);
         textColor = Colors.green;
+        statusText = 'РЕШЕНО';
+        break;
     }
 
     return Container(
@@ -80,7 +87,7 @@ class SupportQuestionsList extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        status.name.toUpperCase(),
+        statusText.toUpperCase(),
         style: TextStyle(
           color: textColor,
           fontSize: 10,
