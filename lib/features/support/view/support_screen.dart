@@ -11,6 +11,7 @@ class SupportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<SupportCubit>().getMyQuestions();
     return SkeletonTheme(
       shimmerGradient: const LinearGradient(
         colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
@@ -31,6 +32,8 @@ class SupportScreen extends StatelessWidget {
       ),
       child: Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
           title: const Text(
             'Мои вопросы в поддержку',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),

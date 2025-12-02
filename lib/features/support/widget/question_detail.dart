@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:meet_now_app_server/model/social/question/question.dart';
-import 'package:meet_now_app_server/model/social/question/question_status.dart';
 
 import 'answer_card.dart';
 import 'info_card.dart';
@@ -27,7 +26,7 @@ class QuestionDetail extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
-              StatusChip(status: question.status),
+              StatusChip(status: question.status.toString()),
             ],
           ),
           const SizedBox(height: 16),
@@ -56,7 +55,7 @@ class QuestionDetail extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const Spacer(),
-                      if (question.status != QuestionStatus.resolved)
+                      if (question.status != 'RESOLVED')
                         ElevatedButton.icon(
                           onPressed: () => _showAddAnswerDialog(context),
                           icon: const Icon(Icons.reply),
