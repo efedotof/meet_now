@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 import 'package:meet_now_app_server/model/gifts/gift_stats/gift_stats.dart';
@@ -17,6 +18,13 @@ class GiftCubit extends Cubit<GiftState> {
 
   final GiftInterface _giftInterface;
 
+  void changeView(GiftView view) {
+    final state = this.state;
+    if (state is _Loaded) {
+      emit(state.copyWith(currentView: view));
+    }
+  }
+
   Future<void> loadInitialData() async {
     emit(const GiftState.loading());
     try {
@@ -28,6 +36,8 @@ class GiftCubit extends Cubit<GiftState> {
         _giftInterface.getGiftStats(),
       ]);
 
+      debugPrint("$futures");
+
       emit(
         GiftState.loaded(
           gifts: futures[0] as List<Gift>,
@@ -35,6 +45,7 @@ class GiftCubit extends Cubit<GiftState> {
           isDailyGiftAvailable: futures[2] as bool,
           currentStreak: futures[3] as int,
           giftStats: futures[4] as GiftStats,
+          currentView: GiftView.shop,
         ),
       );
     } catch (e) {

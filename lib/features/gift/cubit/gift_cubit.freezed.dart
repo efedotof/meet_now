@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift,  GiftView currentView)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift);case _Error() when error != null:
+return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift,_that.currentView);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift,  GiftView currentView)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift);case _Error():
+return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift,_that.currentView);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  Gift? lastClaimedGift,  GiftView currentView)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift);case _Error() when error != null:
+return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.lastClaimedGift,_that.currentView);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,7 +257,7 @@ String toString() {
 
 
 class _Loaded implements GiftState {
-  const _Loaded({required final  List<Gift> gifts, required final  List<UserInventory> inventory, required this.isDailyGiftAvailable, required this.currentStreak, required this.giftStats, this.lastClaimedGift}): _gifts = gifts,_inventory = inventory;
+  const _Loaded({required final  List<Gift> gifts, required final  List<UserInventory> inventory, required this.isDailyGiftAvailable, required this.currentStreak, required this.giftStats, this.lastClaimedGift, this.currentView = GiftView.shop}): _gifts = gifts,_inventory = inventory;
   
 
  final  List<Gift> _gifts;
@@ -278,6 +278,7 @@ class _Loaded implements GiftState {
  final  int currentStreak;
  final  GiftStats giftStats;
  final  Gift? lastClaimedGift;
+@JsonKey() final  GiftView currentView;
 
 /// Create a copy of GiftState
 /// with the given fields replaced by the non-null parameter values.
@@ -289,16 +290,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._gifts, _gifts)&&const DeepCollectionEquality().equals(other._inventory, _inventory)&&(identical(other.isDailyGiftAvailable, isDailyGiftAvailable) || other.isDailyGiftAvailable == isDailyGiftAvailable)&&(identical(other.currentStreak, currentStreak) || other.currentStreak == currentStreak)&&(identical(other.giftStats, giftStats) || other.giftStats == giftStats)&&(identical(other.lastClaimedGift, lastClaimedGift) || other.lastClaimedGift == lastClaimedGift));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._gifts, _gifts)&&const DeepCollectionEquality().equals(other._inventory, _inventory)&&(identical(other.isDailyGiftAvailable, isDailyGiftAvailable) || other.isDailyGiftAvailable == isDailyGiftAvailable)&&(identical(other.currentStreak, currentStreak) || other.currentStreak == currentStreak)&&(identical(other.giftStats, giftStats) || other.giftStats == giftStats)&&(identical(other.lastClaimedGift, lastClaimedGift) || other.lastClaimedGift == lastClaimedGift)&&(identical(other.currentView, currentView) || other.currentView == currentView));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_gifts),const DeepCollectionEquality().hash(_inventory),isDailyGiftAvailable,currentStreak,giftStats,lastClaimedGift);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_gifts),const DeepCollectionEquality().hash(_inventory),isDailyGiftAvailable,currentStreak,giftStats,lastClaimedGift,currentView);
 
 @override
 String toString() {
-  return 'GiftState.loaded(gifts: $gifts, inventory: $inventory, isDailyGiftAvailable: $isDailyGiftAvailable, currentStreak: $currentStreak, giftStats: $giftStats, lastClaimedGift: $lastClaimedGift)';
+  return 'GiftState.loaded(gifts: $gifts, inventory: $inventory, isDailyGiftAvailable: $isDailyGiftAvailable, currentStreak: $currentStreak, giftStats: $giftStats, lastClaimedGift: $lastClaimedGift, currentView: $currentView)';
 }
 
 
@@ -309,7 +310,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $GiftStateCopyWith<$Res> 
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Gift> gifts, List<UserInventory> inventory, bool isDailyGiftAvailable, int currentStreak, GiftStats giftStats, Gift? lastClaimedGift
+ List<Gift> gifts, List<UserInventory> inventory, bool isDailyGiftAvailable, int currentStreak, GiftStats giftStats, Gift? lastClaimedGift, GiftView currentView
 });
 
 
@@ -326,7 +327,7 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of GiftState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? gifts = null,Object? inventory = null,Object? isDailyGiftAvailable = null,Object? currentStreak = null,Object? giftStats = null,Object? lastClaimedGift = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? gifts = null,Object? inventory = null,Object? isDailyGiftAvailable = null,Object? currentStreak = null,Object? giftStats = null,Object? lastClaimedGift = freezed,Object? currentView = null,}) {
   return _then(_Loaded(
 gifts: null == gifts ? _self._gifts : gifts // ignore: cast_nullable_to_non_nullable
 as List<Gift>,inventory: null == inventory ? _self._inventory : inventory // ignore: cast_nullable_to_non_nullable
@@ -334,7 +335,8 @@ as List<UserInventory>,isDailyGiftAvailable: null == isDailyGiftAvailable ? _sel
 as bool,currentStreak: null == currentStreak ? _self.currentStreak : currentStreak // ignore: cast_nullable_to_non_nullable
 as int,giftStats: null == giftStats ? _self.giftStats : giftStats // ignore: cast_nullable_to_non_nullable
 as GiftStats,lastClaimedGift: freezed == lastClaimedGift ? _self.lastClaimedGift : lastClaimedGift // ignore: cast_nullable_to_non_nullable
-as Gift?,
+as Gift?,currentView: null == currentView ? _self.currentView : currentView // ignore: cast_nullable_to_non_nullable
+as GiftView,
   ));
 }
 

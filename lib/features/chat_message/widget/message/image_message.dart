@@ -34,6 +34,16 @@ class _ImageMessageState extends State<ImageMessage> {
     _presignedUrlFuture = _getPresignedUrl();
   }
 
+  @override
+  void didUpdateWidget(ImageMessage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.media.mediaUrl != oldWidget.media.mediaUrl) {
+      setState(() {
+        _presignedUrlFuture = _getPresignedUrl();
+      });
+    }
+  }
+
   Future<String?> _getPresignedUrl() async {
     if (widget.media.mediaUrl == null || widget.media.mediaUrl!.isEmpty) {
       return null;
@@ -65,7 +75,6 @@ class _ImageMessageState extends State<ImageMessage> {
   @override
   Widget build(BuildContext context) {
     final isTemp = widget.message.id?.startsWith('temp') ?? false;
-
     return FutureBuilder<String?>(
       future: _presignedUrlFuture,
       builder: (context, snapshot) {
@@ -300,10 +309,12 @@ class _ImageMessageState extends State<ImageMessage> {
                             color: Colors.black.withAlpha(6),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.fullscreen_rounded,
-                            color: Colors.white,
-                            size: 16,
+                          child: GestureDetector(
+                            child: const Icon(
+                              Icons.fullscreen_rounded,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ),

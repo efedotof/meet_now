@@ -285,8 +285,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "39f06a2d51b1b32669e80326642c7a11b01bf590"
-      resolved-ref: "39f06a2d51b1b32669e80326642c7a11b01bf590"
+      ref: eb9186488b3867f6eab53555badd456d18c4260c
+      resolved-ref: eb9186488b3867f6eab53555badd456d18c4260c
       url: "https://github.com/efedotof/attach_file_photo_plugin.git"
     source: git
     version: "0.0.1"
@@ -722,8 +722,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: e6f73b5ee7873350aee8254defa23c4c702711d9
-      resolved-ref: e6f73b5ee7873350aee8254defa23c4c702711d9
+      ref: e9ee19f794477dca27793c16247adedd26b50498
+      resolved-ref: e9ee19f794477dca27793c16247adedd26b50498
       url: "https://github.com/efedotof/media_ui_package.git"
     source: git
     version: "0.0.4"
@@ -731,8 +731,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "2814d1dcc6414801e55a8e7a734f06c9321eaf85"
-      resolved-ref: "2814d1dcc6414801e55a8e7a734f06c9321eaf85"
+      ref: "03d052eb275d116be45fed6378b53f68e4d81ed8"
+      resolved-ref: "03d052eb275d116be45fed6378b53f68e4d81ed8"
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"

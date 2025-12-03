@@ -48,43 +48,50 @@ class MediaPreviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BlocBuilder<MediaSelectionCubit, MediaSelectionState>(
       builder: (context, state) {
         if (state.selectedMedia.isEmpty) return const SizedBox.shrink();
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: Colors.transparent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Выбрано медиа: ${state.selectedMedia.length}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.black87 : Colors.white70,
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text(
+                //   'Выбрано медиа: ${state.selectedMedia.length}',
+                //   style: theme.textTheme.bodySmall?.copyWith(
+                //     color: theme.colorScheme.onSurfaceVariant,
+                //   ),
+                // ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 80,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: state.selectedMedia.length,
+                    itemBuilder: (context, index) {
+                      final mediaItem = state.selectedMedia[index];
+                      return MediaThumbnail(
+                        mediaItem: mediaItem,
+                        loadThumbnail: _loadThumbnail,
+                        formatDuration: _formatDuration,
+                        theme: theme,
+                        onRemove:
+                            () => context
+                                .read<MediaSelectionCubit>()
+                                .removeMedia(mediaItem),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 80,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: state.selectedMedia.length,
-                  itemBuilder: (context, index) {
-                    final mediaItem = state.selectedMedia[index];
-                    return MediaThumbnail(
-                      mediaItem: mediaItem,
-                      loadThumbnail: _loadThumbnail,
-                      formatDuration: _formatDuration,
-                      theme: theme,
-                      onRemove:
-                          () => context.read<MediaSelectionCubit>().removeMedia(
-                            mediaItem,
-                          ),
-                    );
-                  },
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
