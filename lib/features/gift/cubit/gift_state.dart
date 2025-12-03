@@ -11,6 +11,16 @@ class GiftState with _$GiftState {
     required int currentStreak,
     required GiftStats giftStats,
     Gift? lastClaimedGift,
+
+    @Default(GiftView.shop) GiftView currentView,
   }) = _Loaded;
   const factory GiftState.error(String message) = _Error;
+}
+
+enum GiftView {
+  shop('Магазин'),
+  purchased('Купленное');
+
+  final String name;
+  const GiftView(this.name);
 }

@@ -62,7 +62,7 @@ class _CustomFloatActionButtonState extends State<CustomFloatActionButton> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 350),
             curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
             decoration: BoxDecoration(
               color: canSearch ? colors.primary : colors.surface,
               borderRadius: BorderRadius.circular(40),
@@ -75,7 +75,7 @@ class _CustomFloatActionButtonState extends State<CustomFloatActionButton> {
                   ),
               ],
             ),
-            width: state.isSearching ? 150 : 60,
+            width: state.isSearching ? 160 : 60,
             height: 60,
             child: Row(
               mainAxisAlignment:
