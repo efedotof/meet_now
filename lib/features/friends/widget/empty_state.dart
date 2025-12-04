@@ -4,8 +4,7 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.theme});
-  final ThemeData theme;
+  const EmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +15,17 @@ class EmptyState extends StatelessWidget {
           Icon(
             Icons.people_alt_outlined,
             size: 80,
-            color: theme.colorScheme.secondary,
+            color: Theme.of(context).colorScheme.secondary,
           ),
           const SizedBox(height: 24),
-          Text(S.of(context).noFriendsYet, style: theme.textTheme.titleLarge),
+          Text(
+            S.of(context).noFriendsYet,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
           Text(
             S.of(context).startCommunicationHint,
-            style: theme.textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),

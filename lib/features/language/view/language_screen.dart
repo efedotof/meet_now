@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/features/language/widget/widget.dart';
-import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class LanguageScreen extends StatelessWidget {
@@ -12,23 +11,36 @@ class LanguageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).language),
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: BlocBuilder<LanguageCubit, LanguageState>(
-        builder: (context, state) {
-          return state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loaded:
-                (currentLocale, supportedLocales) => LanguageList(
-                  currentLocale: currentLocale,
-                  supportedLocales: supportedLocales,
-                ),
-            error: (message) => Center(child: Text(message)),
-          );
-        },
+      body: Stack(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: BlocBuilder<LanguageCubit, LanguageState>(
+              builder: (context, state) {
+                return state.when(
+                  initial:
+                      () => const Center(child: CircularProgressIndicator()),
+                  loaded:
+                      (currentLocale, supportedLocales) => Column(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.12,
+                          ),
+                          LanguageList(
+                            currentLocale: currentLocale,
+                            supportedLocales: supportedLocales,
+                          ),
+                        ],
+                      ),
+                  error: (message) => Center(child: Text(message)),
+                );
+              },
+            ),
+          ),
+
+          const AppBarWidget(),
+        ],
       ),
     );
   }

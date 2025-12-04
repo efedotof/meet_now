@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
 
+import 'inventory_item.dart';
+
 class InventoryGrid extends StatelessWidget {
   final List<UserInventory> inventory;
   final Function(UserInventory) onGiftTap;
@@ -14,7 +16,16 @@ class InventoryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (inventory.isEmpty) {
-      return const Center(child: Text('У вас еще нет купленных подарков'));
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'У вас еще нет купленных подарков',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
 
     return GridView.builder(
@@ -28,28 +39,7 @@ class InventoryGrid extends StatelessWidget {
       itemCount: inventory.length,
       itemBuilder: (context, index) {
         final item = inventory[index];
-        return Card(
-          child: InkWell(
-            onTap: () => onGiftTap(item),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.inventory, size: 48),
-                const SizedBox(height: 8),
-                Text(
-                  item.gift.name,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Количество: ${item.quantity}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-        );
+        return InventoryItem(inventoryItem: item, onTap: () => onGiftTap(item));
       },
     );
   }

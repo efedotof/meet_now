@@ -1503,6 +1503,36 @@ class S {
   String get searching {
     return Intl.message('Searching', name: 'searching', desc: '', args: []);
   }
+
+  /// `Обновление...`
+  String get updating {
+    return Intl.message('Обновление...', name: 'updating', desc: '', args: []);
+  }
+
+  /// `Мои жалобы`
+  String get my_report {
+    return Intl.message('Мои жалобы', name: 'my_report', desc: '', args: []);
+  }
+
+  /// `Настройки уведомлений`
+  String get notification_settings {
+    return Intl.message(
+      'Настройки уведомлений',
+      name: 'notification_settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Мои вопросы в поддержку`
+  String get my_question_support {
+    return Intl.message(
+      'Мои вопросы в поддержку',
+      name: 'my_question_support',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

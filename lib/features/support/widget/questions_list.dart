@@ -11,11 +11,11 @@ class QuestionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: questions.length,
-      itemBuilder: (context, i) {
-        final q = questions[i];
+    return Wrap(
+      runSpacing: 16,
+      spacing: 16,
+      children: List.generate(questions.length, (index) {
+        final q = questions[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           elevation: 2,
@@ -82,7 +82,7 @@ class QuestionsList extends StatelessWidget {
             ),
           ),
         );
-      },
+      }),
     );
   }
 

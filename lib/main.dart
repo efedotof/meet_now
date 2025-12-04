@@ -37,7 +37,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
   Hive
     ..init(directory.path)
     ..registerAdapters();

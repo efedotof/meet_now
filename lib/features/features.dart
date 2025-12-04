@@ -9,7 +9,6 @@ export 'language/language.dart';
 export 'main_home/main_home.dart';
 export 'my_report/my_report.dart';
 export 'notification/notification.dart';
-export 'notification_setting/notification_setting.dart';
 export 'pin_code/pin_code.dart';
 export 'profile/profile.dart';
 export 'qr_code/qr_code.dart';

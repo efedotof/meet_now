@@ -29,10 +29,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SettingProfileRoute.page, path: "/setting_profile"),
     AutoRoute(page: LanguageRoute.page, path: "/language"),
     AutoRoute(page: NotificationRoute.page, path: "/notification"),
-    AutoRoute(
-      page: NotificationSettingRoute.page,
-      path: "/notification_setting",
-    ),
     AutoRoute(page: ChatMessageRoute.page, path: "/chat_message"),
     AutoRoute(page: AboutAppRoute.page, path: "/about_app"),
 

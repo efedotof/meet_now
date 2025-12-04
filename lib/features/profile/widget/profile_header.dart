@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meet_now_app/features/settings/widget/widget.dart';
+import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
