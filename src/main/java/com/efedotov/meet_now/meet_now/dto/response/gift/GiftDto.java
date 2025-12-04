@@ -2,7 +2,6 @@ package com.efedotov.meet_now.meet_now.dto.response.gift;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.util.UUID;
 
 @Data
@@ -16,4 +15,8 @@ public class GiftDto {
     private GiftRarityDto rarity;
     private Integer costPoints;
     private String animationUrl;
+    private Integer availableQuantity;
+    private Boolean isLimited;
+    private Boolean isSoldOut;
+    private Integer soldCount;
 }

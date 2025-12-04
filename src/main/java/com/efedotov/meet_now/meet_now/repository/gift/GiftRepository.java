@@ -3,6 +3,7 @@ package com.efedotov.meet_now.meet_now.repository.gift;
 import com.efedotov.meet_now.meet_now.model.gift.Gift;
 import com.efedotov.meet_now.meet_now.model.gift.GiftRarity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,20 @@ public interface GiftRepository extends JpaRepository<Gift, UUID> {
     long countByIsActiveTrue();
 
     List<Gift> findByRarity(GiftRarity rarity);
+
+    @Query("SELECT g FROM Gift g WHERE g.isActive = true AND (g.isLimited = false OR (g.isLimited = true AND g.isSoldOut = false))")
+    List<Gift> findAvailableForPurchase();
+
+    @Query("SELECT COUNT(g) FROM Gift g WHERE g.isActive = true AND g.isLimited = true AND g.isSoldOut = false")
+    long countAvailableLimitedGifts();
+
+    @Modifying
+    @Query("UPDATE Gift g SET g.availableQuantity = g.availableQuantity - :quantity, g.soldCount = g.soldCount + :quantity WHERE g.id = :giftId AND (g.availableQuantity IS NULL OR g.availableQuantity >= :quantity)")
+    int decreaseGiftQuantity(@Param("giftId") UUID giftId, @Param("quantity") Integer quantity);
+
+    @Query("SELECT g FROM Gift g WHERE g.isLimited = true AND g.isSoldOut = false AND g.isActive = true")
+    List<Gift> findLimitedAvailableGifts();
+
+    @Query("SELECT g FROM Gift g WHERE g.isLimited = true AND g.isSoldOut = true AND g.isActive = true")
+    List<Gift> findSoldOutGifts();
 }

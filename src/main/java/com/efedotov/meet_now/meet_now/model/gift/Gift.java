@@ -58,4 +58,56 @@ public class Gift {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "available_quantity")
+    private Integer availableQuantity;
+
+    @Builder.Default
+    @Column(name = "is_limited")
+    private Boolean isLimited = false;
+
+    @Builder.Default
+    @Column(name = "is_sold_out")
+    private Boolean isSoldOut = false;
+
+    @Column(name = "initial_quantity")
+    private Integer initialQuantity;
+
+    @Builder.Default
+    @Column(name = "sold_count")
+    private Integer soldCount = 0;
+
+    @Transient
+    public boolean isAvailableForPurchase() {
+        if (!isActive) {
+            return false;
+        }
+
+        if (isLimited) {
+            if (isSoldOut) {
+                return false;
+            }
+            if (availableQuantity != null && availableQuantity <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean decreaseQuantity(int amount) {
+        if (isLimited && availableQuantity != null) {
+            if (availableQuantity >= amount) {
+                availableQuantity -= amount;
+                soldCount += amount;
+
+                if (availableQuantity <= 0) {
+                    isSoldOut = true;
+                }
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
 }

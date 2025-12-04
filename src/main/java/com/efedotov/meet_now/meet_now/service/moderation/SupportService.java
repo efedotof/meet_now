@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,6 +26,7 @@ import com.efedotov.meet_now.meet_now.model.moderation.QuestionStatus;
 import com.efedotov.meet_now.meet_now.repository.moderation.AnswerRepository;
 import com.efedotov.meet_now.meet_now.repository.moderation.QuestionRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.social.UserService;
 
 import jakarta.transaction.Transactional;
@@ -42,7 +44,7 @@ public class SupportService {
 
     @AdminOnly
     public SupportStatisticsDto getSupportStatistics() {
-        SupportStatisticsDto statistics = new SupportStatisticsDto();
+        SupportStatisticsDto statistics = new SupportStatisticsDto(); 
 
         statistics.setTotalQuestions(questionRepository.count());
         statistics.setTotalAnswers(answerRepository.count());
@@ -130,7 +132,8 @@ public class SupportService {
         return questionRepository.findByAnswersIsEmpty();
     }
 
-    public Question createQuestion(CreateQuestionRequest request, UUID userId) {
+    public Question createQuestion(CreateQuestionRequest request, Authentication authentication) {
+        UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
         Question question = new Question();
         question.setTitle(request.getTitle());
         question.setDescription(request.getDescription());

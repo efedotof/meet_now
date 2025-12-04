@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.dto.response.statistics.UserStatistics;
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.social.UserService;
 
@@ -106,13 +106,13 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-   @AdminOnly
-@Operation(summary = "[АДМИНИСТРАТОР] Получить статистику пользователей", description = "Возвращает полную статистику по пользователям. Только для администраторов")
-@GetMapping("/admin/statistics/full")
-public ResponseEntity<UserStatistics> getUsersStatistics() {
-    UserStatistics statistics = userService.getUsersStatistics();
-    return ResponseEntity.ok(statistics);
-}
+    @AdminOnly
+    @Operation(summary = "[АДМИНИСТРАТОР] Получить статистику пользователей", description = "Возвращает полную статистику по пользователям. Только для администраторов")
+    @GetMapping("/admin/statistics/full")
+    public ResponseEntity<UserStatistics> getUsersStatistics() {
+        UserStatistics statistics = userService.getUsersStatistics();
+        return ResponseEntity.ok(statistics);
+    }
 
     @AdminOnly
     @Operation(summary = "[АДМИНИСТРАТОР] Найти пользователей по email", description = "Поиск пользователей по email. Только для администраторов")

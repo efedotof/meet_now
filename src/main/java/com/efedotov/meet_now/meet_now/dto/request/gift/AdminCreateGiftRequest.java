@@ -12,4 +12,7 @@ public class AdminCreateGiftRequest {
     private String giftType;
     private UUID rarityId;
     private Integer costPoints;
+    private Integer availableQuantity;
+    private Boolean isLimited;
+    private Integer initialQuantity;
 }

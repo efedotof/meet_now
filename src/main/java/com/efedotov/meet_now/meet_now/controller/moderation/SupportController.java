@@ -1,5 +1,26 @@
 package com.efedotov.meet_now.meet_now.controller.moderation;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.efedotov.meet_now.meet_now.dto.request.moderation.CreateAnswerRequest;
 import com.efedotov.meet_now.meet_now.dto.request.moderation.CreateQuestionRequest;
 import com.efedotov.meet_now.meet_now.dto.response.moderation.AnswerDTO;
@@ -10,7 +31,9 @@ import com.efedotov.meet_now.meet_now.model.moderation.Answer;
 import com.efedotov.meet_now.meet_now.model.moderation.Question;
 import com.efedotov.meet_now.meet_now.model.moderation.QuestionStatus;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.moderation.SupportService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,18 +42,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/support")
@@ -159,8 +170,9 @@ public class SupportController {
         @PostMapping("/questions")
         public ResponseEntity<QuestionDTO> createQuestion(
                         @Valid @RequestBody CreateQuestionRequest request,
-                        @AuthenticationPrincipal UUID userId) {
-                Question question = supportService.createQuestion(request, userId);
+                        Authentication authentication) {
+
+                Question question = supportService.createQuestion(request, authentication);
                 return ResponseEntity.status(HttpStatus.CREATED).body(mapToDTO(question));
         }
 
@@ -197,7 +209,8 @@ public class SupportController {
                         @ApiResponse(responseCode = "200", description = "Список вопросов получен")
         })
         @GetMapping("/questions/my")
-        public ResponseEntity<List<QuestionDTO>> getMyQuestions(@AuthenticationPrincipal UUID userId) {
+        public ResponseEntity<List<QuestionDTO>> getMyQuestions(Authentication authentication) {
+                UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
                 List<Question> questions = supportService.getUserQuestions(userId);
                 return ResponseEntity.ok(questions.stream()
                                 .map(this::mapToDTO)

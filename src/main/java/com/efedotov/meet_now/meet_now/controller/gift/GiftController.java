@@ -21,6 +21,7 @@ import com.efedotov.meet_now.meet_now.dto.request.gift.AdminCreateGiftRarityRequ
 import com.efedotov.meet_now.meet_now.dto.request.gift.AdminCreateGiftRequest;
 import com.efedotov.meet_now.meet_now.dto.request.gift.AdminUpdateGiftRarityRequest;
 import com.efedotov.meet_now.meet_now.dto.request.gift.AdminUpdateGiftRequest;
+import com.efedotov.meet_now.meet_now.dto.request.gift.BuyGiftForSelfRequest;
 import com.efedotov.meet_now.meet_now.dto.request.gift.SendGiftRequest;
 import com.efedotov.meet_now.meet_now.dto.response.gift.AdminGiftDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.AdminGiftRarityDto;
@@ -28,9 +29,11 @@ import com.efedotov.meet_now.meet_now.dto.response.gift.AdminGiftStatsDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.AdminSentGiftDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.AdminUserGiftStatsDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.AdminUserInventoryDto;
+import com.efedotov.meet_now.meet_now.dto.response.gift.BuyGiftResponse;
 import com.efedotov.meet_now.meet_now.dto.response.gift.GiftDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.GiftRarityDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.GiftStatsDto;
+import com.efedotov.meet_now.meet_now.dto.response.gift.GiftTypeDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.SentGiftDto;
 import com.efedotov.meet_now.meet_now.dto.response.gift.UserInventoryDto;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
@@ -39,6 +42,7 @@ import com.efedotov.meet_now.meet_now.service.gift.GiftService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -308,6 +312,55 @@ public class GiftController {
         UUID userId = userDetails.getUserId();
         Integer streak = giftService.getCurrentStreak(userId);
         return ResponseEntity.ok(streak);
+    }
+
+    @PostMapping("/buy-for-self")
+    @Operation(summary = "Купить подарок для себя")
+    public ResponseEntity<BuyGiftResponse> buyGiftForSelf(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid BuyGiftForSelfRequest request) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UUID userId = userDetails.getUserId();
+        BuyGiftResponse response = giftService.buyGiftForSelf(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/limited/available")
+    @Operation(summary = "Получить доступные лимитированные подарки")
+    public ResponseEntity<List<GiftDto>> getAvailableLimitedGifts() {
+        List<GiftDto> gifts = giftService.getAvailableLimitedGifts();
+        return ResponseEntity.ok(gifts);
+    }
+
+    @GetMapping("/limited/sold-out")
+    @Operation(summary = "Получить распроданные лимитированные подарки")
+    public ResponseEntity<List<GiftDto>> getSoldOutGifts() {
+        List<GiftDto> gifts = giftService.getSoldOutGifts();
+        return ResponseEntity.ok(gifts);
+    }
+
+    @GetMapping("/{giftId}/availability")
+    @Operation(summary = "Проверить доступность подарка для покупки")
+    public ResponseEntity<Boolean> checkGiftAvailability(@PathVariable UUID giftId) {
+        boolean isAvailable = giftService.checkGiftAvailability(giftId);
+        return ResponseEntity.ok(isAvailable);
+    }
+
+    @GetMapping("/daily/types")
+    @Operation(summary = "Получить типы подарков")
+    public ResponseEntity<List<GiftTypeDto>> getTypeGift(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            log.error("UserDetails is null - authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<GiftTypeDto> gifts = giftService.getAllGiftTypes();
+        return ResponseEntity.ok(gifts);
+
     }
 
     @GetMapping("/stats")

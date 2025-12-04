@@ -15,4 +15,7 @@ public class AdminGiftStatsDto {
     private Long totalInventoryItems;
     private Long sentGiftsLastWeek;
     private Long dailyGiftsLastWeek;
+    private Long limitedGifts;
+    private Long availableLimitedGifts;
+    private Long soldOutGifts;
 }

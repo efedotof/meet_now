@@ -48,6 +48,13 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @AdminOnly
+    @PostMapping("/user/allUserNotifications")
+    public ResponseEntity<?> sendAllUserNotification(@RequestBody NotificationRequest request){
+        notificationService.sendAllNotificationToAllUser(request.getMessage(), request.getTitle());
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/register-token")
     public ResponseEntity<?> registerPushToken(
             @RequestBody PushTokenRequest request) {

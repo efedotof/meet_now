@@ -18,4 +18,9 @@ public class AdminGiftDto {
     private String animationUrl;
     private Boolean isActive;
     private LocalDateTime createdAt;
+    private Integer availableQuantity;
+    private Boolean isLimited;
+    private Boolean isSoldOut;
+    private Integer initialQuantity;
+    private Integer soldCount;
 }

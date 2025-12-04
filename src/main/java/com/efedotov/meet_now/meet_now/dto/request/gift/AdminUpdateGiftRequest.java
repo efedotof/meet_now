@@ -13,4 +13,9 @@ public class AdminUpdateGiftRequest {
     private UUID rarityId;
     private Integer costPoints;
     private Boolean isActive;
+    private Integer availableQuantity;
+    private Boolean isLimited;
+    private Boolean isSoldOut;
+    private Integer initialQuantity;
+    private Integer soldCount;
 }

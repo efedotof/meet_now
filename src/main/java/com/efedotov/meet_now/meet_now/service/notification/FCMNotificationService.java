@@ -1,14 +1,19 @@
 package com.efedotov.meet_now.meet_now.service.notification;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FCMNotificationService {
 
     private final PushTokenService pushTokenService;
+    private final UserRepository userRepository;
 
     @AdminOnly
     public void sendNotificationToUser(UUID userId, String message, String title) {
@@ -34,6 +40,30 @@ public class FCMNotificationService {
         } catch (Exception e) {
             log.error("Failed to send FCM notification to user: {}", userId, e);
             throw new RuntimeException("Failed to send FCM notification", e);
+        }
+    }
+
+    @AdminOnly
+    public void sendAllNotificationToAllUser(String message, String title) {
+        try {
+            List<User> usersWithTokens = userRepository.findByEncryptedPushTokenIsNotNull();
+
+            if (usersWithTokens.isEmpty()) {
+                log.warn("No users with push tokens found");
+                return;
+            }
+
+            List<String> tokens = usersWithTokens.stream()
+                    .map(User::getEncryptedPushToken)
+                    .collect(Collectors.toList());
+
+            log.info("Sending notification to {} users", tokens.size());
+
+            sendMulticastNotification(tokens, message, title);
+
+        } catch (Exception e) {
+            log.error("Failed to send FCM notification to all users", e);
+            throw new RuntimeException("Failed to send FCM notification to all users", e);
         }
     }
 
@@ -80,32 +110,38 @@ public class FCMNotificationService {
         }
     }
 
-    public void sendMulticastNotification(java.util.List<String> tokens, String message, String title) {
+    public void sendMulticastNotification(List<String> tokens, String message, String title) {
         try {
+            int batchSize = 500;
             int successCount = 0;
             int failureCount = 0;
 
-            for (String token : tokens) {
+            for (int i = 0; i < tokens.size(); i += batchSize) {
+                int end = Math.min(tokens.size(), i + batchSize);
+                List<String> batchTokens = tokens.subList(i, end);
+
                 try {
-                    Message individualMessage = Message.builder()
-                            .setToken(token)
+                    MulticastMessage multicastMessage = MulticastMessage.builder()
                             .setNotification(Notification.builder()
                                     .setTitle(title != null ? title : "Broadcast Notification")
                                     .setBody(message)
                                     .build())
+                            .addAllTokens(batchTokens)
                             .putData("timestamp", String.valueOf(System.currentTimeMillis()))
+                            .putData("type", "broadcast")
                             .build();
 
-                    FirebaseMessaging.getInstance().send(individualMessage);
-                    successCount++;
+                    FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
+                    successCount += batchTokens.size();
 
                 } catch (FirebaseMessagingException e) {
-                    log.error("Failed to send to token: {}", token, e);
-                    failureCount++;
+                    failureCount += batchTokens.size();
+                    log.error("Failed to send batch starting at index {}", i, e);
                 }
             }
 
-            log.info("FCM multicast notification completed. Success: {}, Failed: {}", successCount, failureCount);
+            log.info("FCM multicast notification completed. Total: {}, Success: {}, Failed: {}",
+                    tokens.size(), successCount, failureCount);
 
         } catch (Exception e) {
             log.error("Failed to send FCM multicast notification", e);
