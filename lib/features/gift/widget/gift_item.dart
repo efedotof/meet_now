@@ -1,105 +1,209 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 
-class GiftItem extends StatelessWidget {
+class GiftItem extends StatefulWidget {
   final Gift gift;
+  final VoidCallback onTap;
+  final VoidCallback? onBuyTap;
   final int? count;
   final bool isInShop;
 
   const GiftItem({
     super.key,
     required this.gift,
+    required this.onTap,
+    this.onBuyTap,
     this.count,
     this.isInShop = false,
   });
 
   @override
+  State<GiftItem> createState() => _GiftItemState();
+}
+
+class _GiftItemState extends State<GiftItem> {
+  bool isBuying = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
+
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(13),
+          color: isDark ? Colors.white70 : Colors.black87,
+        ),
+        child: Stack(
           children: [
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: _getRarityColor(gift.rarity.name),
-                borderRadius: BorderRadius.circular(8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(13),
+              child: CachedNetworkImage(
+                imageUrl: widget.gift.imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                placeholder:
+                    (context, url) => Container(
+                      color: isDark ? Colors.white12 : Colors.black12,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                      ),
+                    ),
+                errorWidget: (context, url, error) {
+                  debugPrint(
+                    'Ошибка загрузки изображения подарка: $url, $error',
+                  );
+
+                  return Container(
+                    color: isDark ? Colors.white24 : Colors.black26,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.g_mobiledata,
+                          size: 40,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Не удалось загрузить',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: isDark ? Colors.white60 : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              alignment: Alignment.center,
-              child: const Text('🎁', style: TextStyle(fontSize: 40)),
             ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              gift.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            Text(
-              gift.description,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (isInShop) ...[
-                  Text('${gift.costPoints} ₽'),
-                  IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    onPressed: () => _showSendGiftDialog(context, gift),
+            Positioned(
+              left: 3,
+              top: 3,
+              right: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(13),
+                      color: isDark ? Colors.white70 : Colors.black87,
+                    ),
+                    padding: const EdgeInsets.all(3),
+                    child: Text(
+                      " ${widget.gift.costPoints} points",
+                      style: TextStyle(
+                        color: isDark ? Colors.black : Colors.white,
+                      ),
+                    ),
                   ),
-                ] else
-                  Text('×$count'),
-              ],
+                  if (widget.isInShop && widget.onBuyTap != null)
+                    GestureDetector(
+                      onTap: isBuying ? null : widget.onBuyTap,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(13),
+                          color:
+                              isBuying
+                                  ? Colors.grey
+                                  : isDark
+                                  ? Colors.white70
+                                  : Colors.black87,
+                        ),
+                        padding: const EdgeInsets.all(3),
+                        child:
+                            isBuying
+                                ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : Icon(
+                                  Icons.shopping_bag,
+                                  color: isDark ? Colors.black : Colors.white,
+                                ),
+                      ),
+                    ),
+                ],
+              ),
             ),
+
+            if (!widget.isInShop && widget.count != null && widget.count! > 1)
+              Positioned(
+                right: 3,
+                bottom: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    color: Colors.blue.withAlpha(80),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  child: Text(
+                    '×${widget.count}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+            if (widget.gift.isLimited)
+              Positioned(
+                left: 3,
+                bottom: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    color: Colors.orange.withAlpha(80),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  child: const Text(
+                    'Ограниченный',
+                    style: TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                ),
+              ),
+
+            if (widget.gift.isSoldOut)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    color: Colors.black54,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'РАСПРОДАНО',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-    );
-  }
-
-  Color _getRarityColor(String rarity) {
-    switch (rarity.toLowerCase()) {
-      case 'common':
-        return Colors.grey[300]!;
-      case 'rare':
-        return Colors.blue[100]!;
-      case 'epic':
-        return Colors.purple[100]!;
-      case 'legendary':
-        return Colors.orange[100]!;
-      default:
-        return Colors.grey[300]!;
-    }
-  }
-
-  void _showSendGiftDialog(BuildContext context, Gift gift) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Отправить ${gift.name}'),
-            content: const Text(
-              'Функция отправки подарка будет реализована позже',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('ОК'),
-              ),
-            ],
-          ),
     );
   }
 }

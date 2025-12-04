@@ -79,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                       left: 12,
                       top: 12,
                       child: Material(
-                        color: Colors.black54,
+                        color: Colors.black87,
                         shape: const CircleBorder(),
                         child: InkWell(
                           customBorder: const CircleBorder(),
@@ -100,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
                       right: 12,
                       top: 12,
                       child: Material(
-                        color: Colors.black54,
+                        color: Colors.black87,
                         shape: const CircleBorder(),
                         child: InkWell(
                           customBorder: const CircleBorder(),

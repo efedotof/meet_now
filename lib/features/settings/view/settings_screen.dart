@@ -1,287 +1,225 @@
-import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
+import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
+import 'package:meet_now_app/features/settings/cubit/user_date_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 
 @RoutePage()
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserDateCubit>().loadUser();
+      context.read<GamePointsCubit>().loadPoints();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = context.read<UserModelAppInterface>().user!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).settings),
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-              return TextButton(
-                onPressed: () => context.pushRoute(GiftRoute()),
-                child: Text(
-                  "${context.read<UserModelAppInterface>().user!.gamePoints} points",
-                ),
+      body: Stack(
+        children: [
+          BlocConsumer<UserDateCubit, UserDateState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                error: (message, _) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
               );
             },
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => context.read<SettingsCubit>().getCurrentUser(),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: GestureDetector(
-                  onTap: () => context.pushRoute(ProfileRoute()),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          UserAvatar(avatarKey: user.avatar, radius: 32),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
+            builder: (context, state) {
+              return state.when(
+                initial: () => Loading(),
+                loading: () => Loading(),
+                loaded:
+                    (user) => SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<UserDateCubit>().refreshUser();
+                          context.read<GamePointsCubit>().refreshPoints();
+                        },
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                              ),
+                              ProfileCard(user: user),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      '${user.firstname} ${user.subname}',
-                                      style:
+                                    AccountSettingsSection(),
+                                    const SizedBox(height: 24),
+
+                                    AppSettingsSection(),
+                                    const SizedBox(height: 24),
+
+                                    AboutAppSection(),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Center(
+                                  child: Text(
+                                    S.of(context).version('1.0.0'),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.copyWith(
+                                      color:
                                           Theme.of(
                                             context,
-                                          ).textTheme.titleLarge,
-                                      maxLines: 1,
+                                          ).colorScheme.secondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                refreshing:
+                    (previousUser) => Center(
+                      child: Container(
+                        color: Colors.black87,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                S.of(context).updating,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                error: (message, user) {
+                  if (user != null) {
+                    return Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          color: Colors.red.shade50,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Ошибка загрузки',
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      message.length > 100
+                                          ? '${message.substring(0, 100)}...'
+                                          : message,
+                                      style: TextStyle(
+                                        color: Colors.red.shade600,
+                                      ),
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(width: 4),
-                                    if (user.verified)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Image.asset(
-                                          'assets/verify.png',
-                                          width: 16,
-                                          height: 16,
-                                          filterQuality: FilterQuality.none,
-                                          cacheWidth: 32,
-                                          cacheHeight: 32,
-                                        ),
-                                      ),
-                                    if (user.roles.contains("ADMIN"))
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Image.asset(
-                                          'assets/administration.png',
-                                          width: 16,
-                                          height: 16,
-                                          filterQuality: FilterQuality.none,
-                                          cacheWidth: 32,
-                                          cacheHeight: 32,
-                                        ),
-                                      ),
-                                    if (user.roles.contains("MODERATION"))
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Image.asset(
-                                          'assets/moderator.png',
-                                          width: 16,
-                                          height: 16,
-                                          filterQuality: FilterQuality.none,
-                                          cacheWidth: 32,
-                                          cacheHeight: 32,
-                                        ),
-                                      ),
                                   ],
                                 ),
-
-                                const SizedBox(height: 4),
-                                Text(
-                                  '@${user.username}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.refresh,
+                                  color: Colors.red,
                                 ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.people,
-                                      size: 16,
-                                      color: Theme.of(context).iconTheme.color,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      S
-                                          .of(context)
-                                          .friendsCount(
-                                            user.friends?.length ?? 0,
-                                          ),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                onPressed: () {
+                                  context.read<UserDateCubit>().refreshUser();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Ошибка загрузки профиля',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleLarge?.copyWith(color: Colors.red),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              message,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed:
-                                () => context.pushRoute(
-                                  SettingProfileRoute(user: user),
-                                ),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<UserDateCubit>().loadUser();
+                            },
+                            child: const Text('Повторить попытку'),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      S.of(context).accountSettings,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SettingsCard(
-                      items: [
-                        SettingsItem(
-                          icon: Icons.person,
-                          title: S.of(context).profile,
-                          onTap: () => context.pushRoute(ProfileRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.group_add,
-                          title: S.of(context).friendRequests,
-                          onTap: () => context.pushRoute(FriendRequestsRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.people,
-                          title: S.of(context).friend,
-                          onTap: () => context.pushRoute(FriendsRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.report_problem,
-                          title: "Мои жалобы",
-                          onTap: () => context.pushRoute(MyReportRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.language,
-                          title: S.of(context).language,
-                          trailing: Text(
-                            S.of(context).russian,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          onTap: () => context.pushRoute(LanguageRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.qr_code,
-                          title: S.of(context).qrScanner,
-                          onTap: () => context.pushRoute(QrCodeRoute()),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      S.of(context).appSettings,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SettingsCard(
-                      items: [
-                        SettingsItem(
-                          icon: Icons.notifications,
-                          title: S.of(context).notifications,
-                          onTap:
-                              () =>
-                                  context.pushRoute(NotificationSettingRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.security,
-                          title: S.of(context).security,
-                          onTap: () => context.pushRoute(SecurityRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.brightness_6,
-                          title: S.of(context).theme,
-                          onTap: () => context.pushRoute(ThemeRoute()),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      S.of(context).aboutApp,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SettingsCard(
-                      items: [
-                        SettingsItem(
-                          icon: Icons.info,
-                          title: S.of(context).aboutApp,
-                          onTap: () => context.pushRoute(AboutAppRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.support_agent,
-                          title: S.of(context).support,
-                          onTap: () => context.pushRoute(SupportRoute()),
-                        ),
-                        SettingsItem(
-                          icon: Icons.exit_to_app,
-                          title: S.of(context).exit,
-                          titleColor: Colors.red,
-                          onTap:
-                              () => context.read<SettingsCubit>().exit(
-                                context: context,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Text(
-                    S.of(context).version('1.0.0'),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+                    );
+                  }
+                },
+              );
+            },
           ),
-        ),
+
+          const AppBarWidget(),
+        ],
       ),
     );
   }

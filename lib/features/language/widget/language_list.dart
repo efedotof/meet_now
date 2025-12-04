@@ -25,9 +25,8 @@ class LanguageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: supportedLocales.length,
-      itemBuilder: (context, index) {
+    return Wrap(
+      children: List.generate(supportedLocales.length, (index) {
         final locale = supportedLocales[index];
         return ListTile(
           title: Text(_getLanguageName(locale)),
@@ -39,7 +38,23 @@ class LanguageList extends StatelessWidget {
             context.read<LanguageCubit>().changeLanguage(locale);
           },
         );
-      },
+      }),
     );
+    // return ListView.builder(
+    //   itemCount: supportedLocales.length,
+    //   itemBuilder: (context, index) {
+    //     final locale = supportedLocales[index];
+    // return ListTile(
+    //   title: Text(_getLanguageName(locale)),
+    //   trailing:
+    //       currentLocale.languageCode == locale.languageCode
+    //           ? const Icon(Icons.check)
+    //           : null,
+    //   onTap: () {
+    //     context.read<LanguageCubit>().changeLanguage(locale);
+    //   },
+    // );
+    //   },
+    // );
   }
 }

@@ -342,22 +342,6 @@ class NotificationRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [NotificationSettingScreen]
-class NotificationSettingRoute extends PageRouteInfo<void> {
-  const NotificationSettingRoute({List<PageRouteInfo>? children})
-    : super(NotificationSettingRoute.name, initialChildren: children);
-
-  static const String name = 'NotificationSettingRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const NotificationSettingScreen();
-    },
-  );
-}
-
-/// generated route for
 /// [PinCodeScreen]
 class PinCodeRoute extends PageRouteInfo<void> {
   const PinCodeRoute({List<PageRouteInfo>? children})

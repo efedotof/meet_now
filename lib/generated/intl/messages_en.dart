@@ -182,6 +182,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "music": MessageLookupByLibrary.simpleMessage("Music"),
     "myInterests": MessageLookupByLibrary.simpleMessage("My Interests"),
     "myProfile": MessageLookupByLibrary.simpleMessage("My Profile"),
+    "my_question_support": MessageLookupByLibrary.simpleMessage(
+      "Мои вопросы в поддержку",
+    ),
+    "my_report": MessageLookupByLibrary.simpleMessage("Мои жалобы"),
     "newpassword": MessageLookupByLibrary.simpleMessage("newPassword"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
@@ -197,6 +201,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "noInterestsAdded",
     ),
     "nopurposesadded": MessageLookupByLibrary.simpleMessage("noPurposesAdded"),
+    "notification_settings": MessageLookupByLibrary.simpleMessage(
+      "Настройки уведомлений",
+    ),
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "offline": MessageLookupByLibrary.simpleMessage("offline"),
     "oldpassword": MessageLookupByLibrary.simpleMessage("oldPassword"),
@@ -305,6 +312,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeSelection": MessageLookupByLibrary.simpleMessage("Theme Selection"),
     "timerSeconds": MessageLookupByLibrary.simpleMessage("Timer:"),
     "typing": MessageLookupByLibrary.simpleMessage("typing..."),
+    "updating": MessageLookupByLibrary.simpleMessage("Обновление..."),
     "uploadingavatar": MessageLookupByLibrary.simpleMessage("uploadingAvatar"),
     "userblocked": MessageLookupByLibrary.simpleMessage("userBlocked"),
     "username": MessageLookupByLibrary.simpleMessage("Username"),

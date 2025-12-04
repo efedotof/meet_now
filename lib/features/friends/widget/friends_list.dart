@@ -26,14 +26,14 @@ class FriendsList extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: friends.length,
-              itemBuilder:
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: FriendCard(friend: friends[index]),
-                  ),
+
+          Wrap(
+            children: List.generate(
+              friends.length,
+              (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: FriendCard(friend: friends[index]),
+              ),
             ),
           ),
         ],

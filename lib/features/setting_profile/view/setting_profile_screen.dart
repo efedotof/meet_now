@@ -1,13 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 import 'package:meet_now_app/features/setting_profile/cubit/setting_profile_cubit.dart';
 import 'package:meet_now_app/features/setting_profile/widget/widget.dart';
-import 'package:meet_now_app/features/settings/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()

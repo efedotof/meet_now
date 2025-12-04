@@ -190,5 +190,9 @@
   "avataruploadfailed": "avatarUploadFailed",
   "avatarupdatedsuccessfully": "avatarUpdatedSuccessfully",
   "uploadingavatar": "uploadingAvatar",
-  "searching": "Searching"
+  "searching": "Searching",
+  "updating": "Обновление...",
+  "my_report": "Мои жалобы",
+  "notification_settings": "Настройки уведомлений",
+  "my_question_support": "Мои вопросы в поддержку"
 }

@@ -51,11 +51,26 @@ class _MessagesListState extends State<MessagesList> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    // final isDark = theme.brightness == Brightness.dark;
+    // if (widget.messages == []) {
+    //   return Center(
+    //     child: Container(
+    //       decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(25),
+    //         color: isDark ? Colors.black87 : Colors.white70,
+    //       ),
+    //       alignment: Alignment.center,
+    //       padding: EdgeInsets.all(16),
+    //       child: Column(
+    //         children: [Text("Начните общение, используя /iceb_random")],
+    //       ),
+    //     ),
+    //   );
+    // } else {
     return CustomScrollView(
       controller: widget.scrollController,
       slivers: [
-        const SliverToBoxAdapter(child: SizedBox(height: 60)),
+        const SliverToBoxAdapter(child: SizedBox(height: 80)),
 
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -112,6 +127,7 @@ class _MessagesListState extends State<MessagesList> {
       ],
     );
   }
+  // }
 
   bool _shouldShowTime(Message current, Message next) {
     if (current.senderId != next.senderId) {

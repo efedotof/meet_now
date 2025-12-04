@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
 import 'package:meet_now_app/features/gift/cubit/gift_cubit.dart';
-
-import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app/features/gift/widget/skeleton_points.dart';
 
 class AppBarWidget extends StatefulWidget {
   const AppBarWidget({super.key});
@@ -22,8 +22,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
 
     return BlocBuilder<GiftCubit, GiftState>(
       builder: (context, state) {
-        final currentView = state.maybeWhen(
-          loaded: (_, __, ___, ____, _____, ______, view) => view.name,
+        final currentView = state.maybeMap(
+          loaded: (loadedState) => loadedState.currentView.name,
           orElse: () => 'Магазин',
         );
 
@@ -50,7 +50,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
 
               Container(
                 height: 45,
-                width: MediaQuery.of(context).size.width * 0.6,
+                width: MediaQuery.of(context).size.width * 0.5,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   color: isDark ? Colors.white70 : Colors.black87,
@@ -112,10 +112,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       );
                     }).toList();
                   },
-
                   splashRadius: 20,
                   tooltip: 'Выберите раздел',
-
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Row(
@@ -143,21 +141,100 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 ),
               ),
 
-              Container(
-                height: 45,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: isDark ? Colors.white70 : Colors.black87,
-                ),
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.center,
-                child: Text(
-                  "${context.read<UserModelAppInterface>().user!.gamePoints.toString()} points",
-                  style: TextStyle(
-                    color: isDark ? Colors.black : Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              BlocBuilder<GamePointsCubit, GamePointsState>(
+                builder: (context, state) {
+                  return state.when(
+                    initial: () => SkeletonPoints(),
+                    loading: () => SkeletonPoints(),
+                    loaded:
+                        (int points, String? lastError) => Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: isDark ? Colors.white70 : Colors.black87,
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.currency_bitcoin,
+                                size: 20,
+                                color: isDark ? Colors.black : Colors.white,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                "$points points",
+                                style: TextStyle(
+                                  color: isDark ? Colors.black : Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    refreshing:
+                        () => Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: isDark ? Colors.white70 : Colors.black87,
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "points",
+                                style: TextStyle(
+                                  color: isDark ? Colors.black : Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    error:
+                        (e) => Container(
+                          height: 45,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.red.withAlpha(80),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          alignment: Alignment.center,
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                "Ошибка",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                  );
+                },
               ),
             ],
           ),
