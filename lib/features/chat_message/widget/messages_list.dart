@@ -51,22 +51,6 @@ class _MessagesListState extends State<MessagesList> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final isDark = theme.brightness == Brightness.dark;
-    // if (widget.messages == []) {
-    //   return Center(
-    //     child: Container(
-    //       decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(25),
-    //         color: isDark ? Colors.black87 : Colors.white70,
-    //       ),
-    //       alignment: Alignment.center,
-    //       padding: EdgeInsets.all(16),
-    //       child: Column(
-    //         children: [Text("Начните общение, используя /iceb_random")],
-    //       ),
-    //     ),
-    //   );
-    // } else {
     return CustomScrollView(
       controller: widget.scrollController,
       slivers: [

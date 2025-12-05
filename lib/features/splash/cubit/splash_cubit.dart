@@ -28,6 +28,7 @@ class SplashCubit extends Cubit<SplashState> {
   final PurpAndInteresInterface _purpAndInteresInterface;
   final FirstOpenAppInterface _firstOpenAppInterface;
 
+  //Проверка на наличие сохраненных данных
   Future<void> checkAutoLogin({required BuildContext context}) async {
     try {
       if (_firstOpenAppInterface.isFirstOpenApp()) {
@@ -62,6 +63,14 @@ class SplashCubit extends Cubit<SplashState> {
       if (user == null) {
         debugPrint('Автологин не удался: пользователь null');
         context.replaceRoute(const AuthRoute());
+        return;
+      }
+
+      // Проверяем наличие аватара
+      final hasAvatar = user.avatar != null && user.avatar!.isNotEmpty;
+      if (!hasAvatar) {
+        debugPrint('Аватар отсутствует, переходим на экран загрузки аватара');
+        context.replaceRoute(UploadsAvatarsRoute());
         return;
       }
 
