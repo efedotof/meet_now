@@ -110,11 +110,27 @@ public class MessageProcessingService {
         try {
             String notificationMessage = generateNotificationMessage(messageDto);
             String senderName = generateSenderName(sender);
-            internalNotificationService.sendNewMessageNotification(
-                    recipientId,
-                    senderId,
-                    senderName,
-                    notificationMessage);
+
+            if (isTemporary) {
+                internalNotificationService.sendNewMessageNotification(
+                        recipientId,
+                        senderId,
+                        senderName,
+                        notificationMessage,
+                        null,
+                        finalChatId,
+                        isTemporary);
+            } else {
+                internalNotificationService.sendNewMessageNotification(
+                        recipientId,
+                        senderId,
+                        senderName,
+                        notificationMessage,
+                        finalChatId,
+                        null,
+                        isTemporary);
+            }
+
             log.info("Push-уведомление отправлено пользователю {} от {}", recipient.getUsername(),
                     sender.getUsername());
         } catch (Exception e) {

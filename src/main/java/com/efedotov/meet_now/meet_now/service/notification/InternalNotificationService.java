@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.service.chat.WebSocketSessionService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class InternalNotificationService {
     private final FCMNotificationService fcmNotificationService;
     private final PushTokenService pushTokenService;
     private final UserRepository userRepository;
+    private final WebSocketSessionService webSocketSessionService;
 
     public void sendSystemNotification(UUID userId, String message, String title) {
         try {
@@ -31,22 +33,41 @@ public class InternalNotificationService {
         }
     }
 
-    public void sendNewMessageNotification(UUID recipientId, UUID senderId, String senderName, String messagePreview) {
+     public void sendNewMessageNotification(UUID recipientId, UUID senderId, String senderName, 
+                                          String messagePreview, UUID chatId, UUID tempChatId, boolean isTemporary) {
         try {
+            UUID targetChatId = isTemporary ? tempChatId : chatId;
+            
+            if (targetChatId != null && webSocketSessionService.isUserActiveInChat(recipientId, targetChatId)) {
+                log.info("Пользователь {} активен в чате {}, уведомление не отправляется", 
+                        recipientId, targetChatId);
+                return;
+            }
+            
             User sender = userRepository.findById(senderId)
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
 
             String avatarUrl = sender.getAvatar();
-            String title = senderName;
+            
+            String displayName = isTemporary ? "Анонимный пользователь" : senderName;
+            String title = displayName;
             String message = messagePreview.length() > 100 ? messagePreview.substring(0, 100) + "..." : messagePreview;
 
             Map<String, String> data = new HashMap<>();
             data.put("type", "new_message");
             data.put("senderId", senderId.toString());
-            data.put("senderName", senderName);
+            data.put("senderName", displayName); 
+            data.put("isTemporary", String.valueOf(isTemporary));
             data.put("action", "open_chat");
+            
+            if (chatId != null) {
+                data.put("chatId", chatId.toString());
+            }
+            if (tempChatId != null) {
+                data.put("tempChatId", tempChatId.toString());
+            }
 
-            if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+            if (avatarUrl != null && !avatarUrl.trim().isEmpty() && !isTemporary) {
                 data.put("avatarUrl", avatarUrl);
                 data.put("image", avatarUrl);
             }
@@ -54,7 +75,8 @@ public class InternalNotificationService {
             String pushToken = pushTokenService.getDecryptedPushToken(recipientId);
             if (pushToken != null) {
                 fcmNotificationService.sendDataNotificationToToken(pushToken, message, title, data);
-                log.info("New message notification with avatar sent to user: {}", recipientId);
+                log.info("New message notification sent to user: {}, temporary: {}, chatId: {}", 
+                        recipientId, isTemporary, targetChatId);
             } else {
                 log.warn("No push token found for user: {}", recipientId);
             }

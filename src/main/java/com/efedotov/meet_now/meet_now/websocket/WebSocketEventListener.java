@@ -50,6 +50,11 @@ public class WebSocketEventListener {
 
             log.info("Подключение: sessionId={}, userId={}, активных сессий={}",
                     sessionId, userId, sessionService.getActiveSessionCount(userId));
+
+            var activeChats = sessionService.getActiveChatsForUser(userId);
+            if (activeChats != null && !activeChats.isEmpty()) {
+                log.debug("Пользователь {} имеет активные чаты: {}", userId, activeChats);
+            }
         } else {
             log.warn("Не удалось получить аутентификацию, sessionId={}", sessionId);
         }
@@ -62,6 +67,12 @@ public class WebSocketEventListener {
         UUID userId = sessionService.getUserIdBySessionId(sessionId);
 
         if (userId != null) {
+            var sessionChats = sessionService.getActiveChatsForSession(sessionId);
+            if (sessionChats != null && !sessionChats.isEmpty()) {
+                log.debug("Удаление сессии {} пользователя {} с активными чатами: {}",
+                        sessionId, userId, sessionChats);
+            }
+
             sessionService.removeSession(sessionId);
             int remainingSessions = sessionService.getActiveSessionCount(userId);
 
