@@ -63,12 +63,6 @@ class MediaPreviewSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Text(
-                //   'Выбрано медиа: ${state.selectedMedia.length}',
-                //   style: theme.textTheme.bodySmall?.copyWith(
-                //     color: theme.colorScheme.onSurfaceVariant,
-                //   ),
-                // ),
                 const SizedBox(height: 8),
                 SizedBox(
                   height: 80,

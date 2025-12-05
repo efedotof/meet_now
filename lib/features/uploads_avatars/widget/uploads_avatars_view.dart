@@ -1,9 +1,10 @@
+import 'dart:typed_data';
 import 'package:auto_route/auto_route.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'avatar_page.dart';
 import 'gallery_page.dart';
 
@@ -18,25 +19,49 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
   final PageController _pageController = PageController();
   bool _avatarConfirmed = false;
   int _currentPage = 0;
-
+  final DeviceMediaLibrary mediaLibrary = DeviceMediaLibrary();
   UploadsAvatarsCubit get _cubit => context.read<UploadsAvatarsCubit>();
 
-  Future<void> _pickAvatar() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null && result.files.single.path != null) {
-      _cubit.selectAvatar(result.files.single.path!);
-    }
-  }
-
-  Future<void> _pickImages() async {
-    final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      type: FileType.image,
+  void _showMediaPickerBottomSheet({bool isAvatar = false}) async {
+    final selectedItems = await showModalBottomSheet<List<MediaItem>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => MediaPickerBottomSheet(
+            initialSelection: const [],
+            maxSelection: isAvatar ? 1 : 10,
+            allowMultiple: !isAvatar,
+            showVideos: false,
+            initialChildSize: 0.7,
+            minChildSize: 0.4,
+            showSelectionIndicators: true,
+            maxChildSize: 0.9,
+          ),
     );
-    if (result != null) {
-      final paths = result.paths.whereType<String>().toList();
-      if (paths.isNotEmpty) {
-        _cubit.selectGalleryImages(paths);
+
+    if (selectedItems != null && selectedItems.isNotEmpty) {
+      // Загружаем байты для каждого выбранного изображения
+      final mediaList = <MapEntry<String, Uint8List>>[];
+
+      for (final item in selectedItems) {
+        try {
+          final bytes = await mediaLibrary.getFileBytes(item.uri);
+          if (bytes != null) {
+            mediaList.add(MapEntry(item.uri, bytes));
+          }
+        } catch (e) {
+          print('Ошибка загрузки изображения: $e');
+        }
+      }
+
+      if (mediaList.isNotEmpty) {
+        if (isAvatar) {
+          // Для аватара берем первое изображение
+          _cubit.selectAvatar(mediaList.first.key, mediaList.first.value);
+        } else {
+          _cubit.selectGalleryImages(mediaList);
+        }
       }
     }
   }
@@ -99,9 +124,9 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
       listener: (context, state) {
         state.whenOrNull(
           error: (message) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message), backgroundColor: Colors.red),
+            );
           },
           avatarUploadSuccess: (_) {
             setState(() => _avatarConfirmed = true);
@@ -116,20 +141,33 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
       child: BlocBuilder<UploadsAvatarsCubit, UploadsAvatarsState>(
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(title: const Text("Загрузка изображений")),
+            appBar: AppBar(
+              title: const Text("Загрузка изображений"),
+              leading:
+                  _currentPage == 1
+                      ? IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() {
+                            _currentPage = 0;
+                          });
+                        },
+                      )
+                      : null,
+            ),
             body: PageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
               children: [
                 AvatarPage(
                   state: state,
                   cubit: _cubit,
-                  onPickAvatar: _pickAvatar,
+                  onPickAvatar:
+                      () => _showMediaPickerBottomSheet(isAvatar: true),
                   avatarConfirmed: _avatarConfirmed,
                   onAvatarConfirmedChange:
                       (value) => setState(() => _avatarConfirmed = value),
@@ -137,7 +175,8 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
                 GalleryPage(
                   state: state,
                   cubit: _cubit,
-                  onPickImages: _pickImages,
+                  onPickImages:
+                      () => _showMediaPickerBottomSheet(isAvatar: false),
                   onNavigateToMainHome: _navigateToMainHome,
                 ),
               ],

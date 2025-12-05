@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 
-class GalleryPage extends StatelessWidget {
+class GalleryPage extends StatefulWidget {
   final UploadsAvatarsState state;
   final UploadsAvatarsCubit cubit;
   final VoidCallback onPickImages;
@@ -17,17 +16,23 @@ class GalleryPage extends StatelessWidget {
   });
 
   @override
+  State<GalleryPage> createState() => _GalleryPageState();
+}
+
+class _GalleryPageState extends State<GalleryPage> {
+  @override
   Widget build(BuildContext context) {
-    final isLoading = state.maybeWhen(
+    final isLoading = widget.state.maybeWhen(
       imagesLoading: () => true,
       orElse: () => false,
     );
-    final displayImages =
-        cubit.selectedGalleryPaths.isNotEmpty
-            ? cubit.selectedGalleryPaths
-            : cubit.galleryImages;
 
-    final areImagesUploaded = state.maybeWhen(
+    final displayUris =
+        widget.cubit.selectedGalleryUris.isNotEmpty
+            ? widget.cubit.selectedGalleryUris
+            : widget.cubit.galleryImages;
+
+    final areImagesUploaded = widget.state.maybeWhen(
       imagesUploadSuccess: (urls) => true,
       orElse: () => false,
     );
@@ -37,16 +42,16 @@ class GalleryPage extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            '${displayImages.length}/10 изображений',
+            '${displayUris.length}/10 изображений',
             style: TextStyle(
-              color: displayImages.length >= 10 ? Colors.red : Colors.grey,
+              color: displayUris.length >= 10 ? Colors.red : Colors.grey,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
           Expanded(
             child:
-                displayImages.isEmpty
+                displayUris.isEmpty
                     ? const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -57,7 +62,10 @@ class GalleryPage extends StatelessWidget {
                             color: Colors.grey,
                           ),
                           SizedBox(height: 16),
-                          Text("Добавьте изображения в галерею"),
+                          Text(
+                            "Добавьте изображения в галерею",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ],
                       ),
                     )
@@ -68,79 +76,13 @@ class GalleryPage extends StatelessWidget {
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
                           ),
-                      itemCount: displayImages.length,
-                      itemBuilder: (_, index) {
-                        final imagePath =
-                            cubit.selectedGalleryPaths.isNotEmpty
-                                ? cubit.selectedGalleryPaths[index]
-                                : cubit.galleryImages[index];
-                        final isLocalImage = cubit.selectedGalleryPaths
-                            .contains(imagePath);
-                        return Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.grey[300],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child:
-                                    isLocalImage
-                                        ? Image.file(
-                                          File(imagePath),
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (_, __, ___) =>
-                                                  const Icon(Icons.error),
-                                        )
-                                        : FutureBuilder<String>(
-                                          future: cubit.getPresignedUrl(
-                                            imagePath,
-                                          ),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData &&
-                                                snapshot.data!.isNotEmpty) {
-                                              return Image.network(
-                                                snapshot.data!,
-                                                fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (_, __, ___) =>
-                                                        const Icon(Icons.error),
-                                              );
-                                            } else {
-                                              return const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              );
-                                            }
-                                          },
-                                        ),
-                              ),
-                            ),
-                            if (isLocalImage)
-                              Positioned(
-                                right: 4,
-                                top: 4,
-                                child: GestureDetector(
-                                  onTap: () => cubit.removeGalleryImage(index),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    padding: const EdgeInsets.all(4),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        );
+                      itemCount: displayUris.length,
+                      itemBuilder: (context, index) {
+                        final uri = displayUris[index];
+                        final isLocalImage = widget.cubit.selectedGalleryUris
+                            .contains(uri);
+
+                        return _buildImageItem(uri, isLocalImage, index);
                       },
                     ),
           ),
@@ -151,28 +93,29 @@ class GalleryPage extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed:
-                    (isLoading || displayImages.length >= 10)
+                    (isLoading || displayUris.length >= 10)
                         ? null
-                        : onPickImages,
+                        : widget.onPickImages,
                 child: Text(
-                  displayImages.isNotEmpty
+                  displayUris.isNotEmpty
                       ? "Добавить еще изображения"
                       : "Добавить изображения",
                 ),
               ),
-              if (displayImages.length >= 10) ...[
+              if (displayUris.length >= 10) ...[
                 const SizedBox(height: 8),
                 const Text(
                   'Достигнут лимит в 10 изображений',
                   style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ],
-              if (areImagesUploaded && cubit.selectedGalleryPaths.isEmpty) ...[
+              if (areImagesUploaded &&
+                  widget.cubit.selectedGalleryUris.isEmpty) ...[
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: onNavigateToMainHome,
+                  onPressed: widget.onNavigateToMainHome,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                   ),
                   child: const Text("Перейти на главный экран"),
@@ -183,5 +126,84 @@ class GalleryPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImageItem(String uri, bool isLocalImage, int index) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.grey[200],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child:
+                isLocalImage ? _buildLocalImage(uri) : _buildNetworkImage(uri),
+          ),
+        ),
+        if (isLocalImage)
+          Positioned(
+            right: 4,
+            top: 4,
+            child: GestureDetector(
+              onTap: () => widget.cubit.removeGalleryImage(index),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(4),
+                child: const Icon(Icons.close, color: Colors.white, size: 14),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLocalImage(String uri) {
+    final bytes = widget.cubit.selectedGalleryBytes[uri];
+    if (bytes != null) {
+      return Image.memory(bytes, fit: BoxFit.cover);
+    }
+    return _buildErrorWidget();
+  }
+
+  Widget _buildNetworkImage(String imageUrl) {
+    return FutureBuilder<String>(
+      future: widget.cubit.getPresignedUrl(imageUrl),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildLoadingWidget();
+        }
+
+        if (snapshot.hasError ||
+            snapshot.data == null ||
+            snapshot.data!.isEmpty) {
+          return _buildErrorWidget();
+        }
+
+        final presignedUrl = snapshot.data!;
+        return Image.network(
+          presignedUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return _buildLoadingWidget();
+          },
+          errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+  }
+
+  Widget _buildErrorWidget() {
+    return const Center(child: Icon(Icons.error, color: Colors.red));
   }
 }

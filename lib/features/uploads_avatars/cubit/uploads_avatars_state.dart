@@ -3,8 +3,10 @@ part of 'uploads_avatars_cubit.dart';
 @freezed
 class UploadsAvatarsState with _$UploadsAvatarsState {
   const factory UploadsAvatarsState.initial() = _Initial;
-  const factory UploadsAvatarsState.avatarSelected(String filePath) =
-      _AvatarSelected;
+  const factory UploadsAvatarsState.avatarSelected(
+    String uri,
+    Uint8List bytes,
+  ) = _AvatarSelected;
   const factory UploadsAvatarsState.avatarLoading() = _AvatarLoading;
   const factory UploadsAvatarsState.imagesLoading() = _ImagesLoading;
   const factory UploadsAvatarsState.avatarUploadSuccess(String url) =
