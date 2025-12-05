@@ -8,6 +8,8 @@ abstract class ChatState with _$ChatState {
     @Default(false) bool isLoading,
     String? error,
     String? currentUserId,
-    @Default(ChatType.all) ChatType selectedChatType, 
+    @Default(ChatType.all) ChatType selectedChatType,
   }) = _ChatState;
 }
+
+enum ChatType { all, permanent, temporary }

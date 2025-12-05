@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'user_network_image.dart';
 
 class UserPhotosSection extends StatelessWidget {
@@ -20,7 +21,7 @@ class UserPhotosSection extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Фотографии',
+                    S.of(context).photo,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -68,12 +69,14 @@ class UserPhotosSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Пока нет фотографий',
+                        S.of(context).there_are_no_photos_yet,
                         style: TextStyle(color: Colors.grey[600], fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Добавьте фото, чтобы другие пользователи могли вас узнать',
+                        S
+                            .of(context)
+                            .add_a_photo_so_that_other_users_can_recognize_you,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey[500], fontSize: 14),
                       ),

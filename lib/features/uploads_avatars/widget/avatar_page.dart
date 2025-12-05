@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class AvatarPage extends StatefulWidget {
   final UploadsAvatarsState state;
@@ -173,50 +174,50 @@ class _AvatarPageState extends State<AvatarPage> {
   Widget _buildStatusText() {
     return widget.state.when(
       initial:
-          () => const Text(
-            "Добавьте аватар профиля",
+          () => Text(
+            S.of(context).add_a_profile_avatar,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       avatarSelected:
-          (uri, bytes) => const Text(
-            "Аватар выбран. Подтвердите загрузку.",
+          (uri, bytes) => Text(
+            S.of(context).the_avatar_is_selected_confirm_the_upload,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       avatarLoading:
-          () => const Text(
-            "Загрузка аватара...",
+          () => Text(
+            S.of(context).uploading_an_avatar,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       avatarUploadSuccess:
-          (url) => const Text(
-            "Аватар успешно загружен!",
+          (url) => Text(
+            S.of(context).the_avatar_has_been_uploaded_successfully,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       gallerySelected:
-          (paths) => const Text(
-            "Добавьте аватар профиля",
+          (paths) => Text(
+            S.of(context).add_a_profile_avatar,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       imagesUploadSuccess:
-          (urls) => const Text(
-            "Добавьте аватар профиля",
+          (urls) => Text(
+            S.of(context).add_a_profile_avatar,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       imagesLoading:
-          () => const Text(
-            "Добавьте аватар профиля",
+          () => Text(
+            S.of(context).add_a_profile_avatar,
             style: TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
       error:
           (message) => Text(
-            "Ошибка: $message",
+            "${S.of(context).error} $message",
             style: const TextStyle(fontSize: 16, color: Colors.red),
             textAlign: TextAlign.center,
           ),
@@ -228,19 +229,19 @@ class _AvatarPageState extends State<AvatarPage> {
       initial:
           () => ElevatedButton(
             onPressed: widget.onPickAvatar,
-            child: const Text("Выбрать аватар"),
+            child: Text(S.of(context).choose_an_avatar),
           ),
       avatarSelected:
           (uri, bytes) => Column(
             children: [
               ElevatedButton(
                 onPressed: () => widget.cubit.confirmAndUploadAvatar(),
-                child: const Text("Подтвердить и загрузить аватар"),
+                child: Text(S.of(context).confirm_and_upload_your_avatar),
               ),
               const SizedBox(height: 10),
               OutlinedButton(
                 onPressed: widget.cubit.removeAvatar,
-                child: const Text("Удалить аватар"),
+                child: Text(S.of(context).delete_an_avatar),
               ),
             ],
           ),
@@ -249,7 +250,7 @@ class _AvatarPageState extends State<AvatarPage> {
             children: [
               ElevatedButton(
                 onPressed: widget.onPickAvatar,
-                child: const Text("Изменить аватар"),
+                child: Text(S.of(context).change_your_avatar),
               ),
               const SizedBox(height: 10),
               OutlinedButton(
@@ -257,29 +258,29 @@ class _AvatarPageState extends State<AvatarPage> {
                   widget.cubit.removeAvatar();
                   widget.onAvatarConfirmedChange(false);
                 },
-                child: const Text("Удалить аватар"),
+                child: Text(S.of(context).delete_an_avatar),
               ),
             ],
           ),
       gallerySelected:
           (paths) => ElevatedButton(
             onPressed: widget.onPickAvatar,
-            child: const Text("Выбрать аватар"),
+            child: Text(S.of(context).choose_an_avatar),
           ),
       imagesUploadSuccess:
           (urls) => ElevatedButton(
             onPressed: widget.onPickAvatar,
-            child: const Text("Выбрать аватар"),
+            child: Text(S.of(context).choose_an_avatar),
           ),
       imagesLoading:
           () => ElevatedButton(
             onPressed: widget.onPickAvatar,
-            child: const Text("Выбрать аватар"),
+            child: Text(S.of(context).choose_an_avatar),
           ),
       error:
           (message) => ElevatedButton(
             onPressed: widget.onPickAvatar,
-            child: const Text("Выбрать аватар"),
+            child: Text(S.of(context).choose_an_avatar),
           ),
       avatarLoading: () => const SizedBox(),
     );

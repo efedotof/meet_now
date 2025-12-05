@@ -57,8 +57,8 @@ class _CredentialsPageState extends State<CredentialsPage> {
               const SizedBox(height: 16),
               TextFormField(
                 initialValue: widget.formData.email,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                decoration: InputDecoration(
+                  labelText: S.of(context).email,
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
                 validator: (value) {

@@ -84,7 +84,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        //AppBar
                         const SizedBox(height: 12),
                         Center(
                           child: Container(
@@ -124,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        // Stats Bar
+
                         FilterCard(
                           padding: const EdgeInsets.all(16),
                           child: BlocBuilder<UserStatsCubit, UserStatsState>(
@@ -143,7 +142,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // Gender Selection
                         FilterCard(
                           child: Column(
                             children: [
@@ -155,7 +153,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // Age Selection
                         if (state.gender.isNotEmpty) ...[
                           FilterCard(
                             child: Column(
@@ -180,13 +177,11 @@ class _SearchScreenState extends State<SearchScreen> {
                           const SizedBox(height: 32),
                         ],
 
-                        // Additional Filters
                         if (state.gender.isNotEmpty &&
                             state.ageFrom != null) ...[
                           FilterCard(
                             child: Column(
                               children: [
-                                // City Search
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -300,7 +295,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                                 const SizedBox(height: 20),
 
-                                // Verified Checkbox
                                 AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   decoration: BoxDecoration(
@@ -374,7 +368,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                                 const SizedBox(height: 20),
 
-                                // Interests
                                 ValueListenableBuilder<Box>(
                                   valueListenable:
                                       context
@@ -430,7 +423,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                                 const SizedBox(height: 16),
 
-                                // Purposes
                                 ValueListenableBuilder<Box>(
                                   valueListenable:
                                       context

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class SearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -33,7 +34,7 @@ class SearchField extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 isCollapsed: true,
                 isDense: true,
-                hintText: "Search",
+                hintText: S.of(context).search,
                 hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 16),
               ),
             ),

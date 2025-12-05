@@ -18,18 +18,21 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   final FriendInterface _friendInterface;
   final UploadImageInterface _uploadImageInterface;
   final SocketServiceInterface _socketInterface;
+  final ChatInterface _chatInterface;
   String? _currentChatId;
   String? _senderId;
   String? _recipientId;
   bool? _isTemporary;
 
   ChatMessageCubit({
+    required ChatInterface chatInterface,
     required UploadImageInterface uploadImageInterface,
     required SocketServiceInterface socketInterface,
     required GamesInterface gamesInterface,
     required FriendInterface friendInterface,
     required MessageInterface messageInterface,
-  }) : _socketInterface = socketInterface,
+  }) : _chatInterface = chatInterface,
+       _socketInterface = socketInterface,
        _uploadImageInterface = uploadImageInterface,
        _friendInterface = friendInterface,
        _messageInterface = messageInterface,
@@ -599,6 +602,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         return 'video';
       default:
         return 'file';
+    }
+  }
+
+  Future<void> finishTempChat({required TemporaryChat? temporaryModel}) async {
+    try {
+      if (temporaryModel != null) {
+        _chatInterface.finistTemporaryChat(tempChat: temporaryModel);
+      }
+    } catch (e) {
+      debugPrint("Ошибка завершения чата: $e");
     }
   }
 

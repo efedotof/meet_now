@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 import 'base_card.dart';
@@ -19,19 +20,23 @@ class AccountInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Аккаунт", style: theme.textTheme.titleMedium),
+          Text(S.of(context).account, style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
           InfoRow(
             icon: Icons.calendar_today,
-            title: "Дата регистрации:",
+            title: S.of(context).registration_date,
             value: user.createdAt.toLocal().toString().split(' ')[0],
           ),
           if (user.floor.isNotEmpty)
-            InfoRow(icon: Icons.home, title: "Пол:", value: user.floor),
+            InfoRow(
+              icon: Icons.home,
+              title: S.of(context).gender,
+              value: user.floor,
+            ),
           if (user.roles.isNotEmpty)
             InfoRow(
               icon: Icons.security,
-              title: "Роли:",
+              title: S.of(context).roles,
               value: user.roles.join(", "),
             ),
         ],

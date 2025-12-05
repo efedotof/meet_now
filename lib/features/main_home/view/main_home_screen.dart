@@ -41,7 +41,7 @@ class MainHomeScreen extends StatelessWidget {
                               ),
                               NavigationRailDestination(
                                 icon: Icon(Icons.gamepad),
-                                label: Text("Game"),
+                                label: Text(S.of(context).game),
                               ),
                               NavigationRailDestination(
                                 icon: Icon(Icons.settings),
@@ -70,7 +70,7 @@ class MainHomeScreen extends StatelessWidget {
                             icon: Icon(Icons.message),
                           ),
                           BottomNavigationBarItem(
-                            label: "Game",
+                            label: S.of(context).game,
                             icon: Icon(Icons.gamepad),
                           ),
                           BottomNavigationBarItem(

@@ -120,6 +120,7 @@ class AppBloc extends StatelessWidget {
                 friendInterface: context.read<FriendInterface>(),
                 uploadImageInterface: context.read<UploadImageInterface>(),
                 socketInterface: context.read<SocketServiceInterface>(),
+                chatInterface: context.read<ChatInterface>(),
               ),
         ),
         BlocProvider(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
@@ -118,7 +119,7 @@ class _InventoryItemDetailsSheetState extends State<InventoryItemDetailsSheet> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Не удалось загрузить',
+                                    S.of(context).failed_to_upload,
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
                                       fontSize: 12,
@@ -149,19 +150,19 @@ class _InventoryItemDetailsSheetState extends State<InventoryItemDetailsSheet> {
                   ),
                   const SizedBox(width: 8),
                   if (inventoryItem.receivedFromId != null)
-                    const Chip(
-                      label: Text('От друга'),
+                    Chip(
+                      label: Text(S.of(context).from_a_friend),
                       avatar: Icon(Icons.person, size: 16),
                     ),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
-                'Получено: ${_formatDate(inventoryItem.receivedAt)}',
+                '${S.of(context).received} ${_formatDate(inventoryItem.receivedAt)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               Text(
-                'Количество: ${inventoryItem.quantity}',
+                '${S.of(context).quantity} ${inventoryItem.quantity}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

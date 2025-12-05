@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
 import 'package:meet_now_app/features/support/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
@@ -40,8 +41,10 @@ class SupportScreen extends StatelessWidget {
                   state.whenOrNull(
                     questionCreated: (question) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Вопрос успешно создан'),
+                        SnackBar(
+                          content: Text(
+                            S.of(context).the_question_was_created_successfully,
+                          ),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -49,8 +52,8 @@ class SupportScreen extends StatelessWidget {
                     },
                     statusUpdated: (_) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Статус обновлен'),
+                        SnackBar(
+                          content: Text(S.of(context).status_updated),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -82,13 +85,13 @@ class SupportScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Вопросов пока нет',
+                                S.of(context).no_questions_yet,
                                 style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(color: Colors.grey[600]),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Нажмите "+" чтобы создать вопрос',
+                                S.of(context).click_plus_to_create_a_question,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: Colors.grey[500]),
                                 textAlign: TextAlign.center,
@@ -121,7 +124,7 @@ class SupportScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Произошла ошибка',
+                                S.of(context).an_error_has_occurred,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const SizedBox(height: 8),
@@ -142,7 +145,7 @@ class SupportScreen extends StatelessWidget {
                                         context
                                             .read<SupportCubit>()
                                             .getMyQuestions(),
-                                child: const Text('Попробовать снова'),
+                                child: Text(S.of(context).try_again),
                               ),
                             ],
                           ),

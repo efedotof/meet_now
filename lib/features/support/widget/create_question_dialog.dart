@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/supports/create_question_request/create_question_request.dart';
 
 class CreateQuestionDialog extends StatefulWidget {
@@ -37,7 +38,7 @@ class _CreateQuestionDialogState extends State<CreateQuestionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Создать вопрос'),
+      title: Text(S.of(context).create_a_question),
       content: Form(
         key: _formKey,
         child: Column(
@@ -45,28 +46,30 @@ class _CreateQuestionDialogState extends State<CreateQuestionDialog> {
           children: [
             TextFormField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Заголовок',
+              decoration: InputDecoration(
+                labelText: S.of(context).heading,
                 border: OutlineInputBorder(),
               ),
               validator:
                   (v) =>
                       v == null || v.trim().isEmpty
-                          ? 'Введите заголовок'
+                          ? S.of(context).enter_the_title
                           : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Описание',
+              decoration: InputDecoration(
+                labelText: S.of(context).description,
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
               maxLines: 5,
               validator:
                   (v) =>
-                      v == null || v.trim().isEmpty ? 'Введите описание' : null,
+                      v == null || v.trim().isEmpty
+                          ? S.of(context).enter_a_description
+                          : null,
             ),
           ],
         ),
@@ -74,11 +77,11 @@ class _CreateQuestionDialogState extends State<CreateQuestionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Отмена'),
+          child: Text(S.of(context).cancel),
         ),
         ElevatedButton(
           onPressed: _createQuestion,
-          child: const Text('Создать'),
+          child: Text(S.of(context).to_create),
         ),
       ],
     );

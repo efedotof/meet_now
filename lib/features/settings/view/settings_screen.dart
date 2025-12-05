@@ -143,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Ошибка загрузки',
+                                      S.of(context).download_error,
                                       style: TextStyle(
                                         color: Colors.red.shade700,
                                         fontWeight: FontWeight.bold,
@@ -188,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Ошибка загрузки профиля',
+                            S.of(context).profile_upload_error,
                             style: Theme.of(
                               context,
                             ).textTheme.titleLarge?.copyWith(color: Colors.red),
@@ -207,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onPressed: () {
                               context.read<UserDateCubit>().loadUser();
                             },
-                            child: const Text('Повторить попытку'),
+                            child: Text(S.of(context).try_again),
                           ),
                         ],
                       ),

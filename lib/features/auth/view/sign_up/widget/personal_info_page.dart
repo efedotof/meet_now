@@ -123,8 +123,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   controller: _cityController,
                   focusNode: _cityFocusNode,
                   decoration: InputDecoration(
-                    labelText: 'Город',
-                    hintText: 'Начните вводить название города',
+                    labelText: S.of(context).city,
+                    hintText: S.of(context).start_entering_the_name_of_the_city,
                     prefixIcon: const Icon(Icons.location_city_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -133,7 +133,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     fillColor: Colors.grey[50],
                   ),
                   onChanged: _searchCities,
-                  validator: (value) => value!.isEmpty ? 'Введите город' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enter_the_city : null,
                 ),
               ),
               if (_showDropdown) ...[
@@ -161,7 +163,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                               ? Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  'Города не найдены',
+                                  S.of(context).cities_not_found,
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               )

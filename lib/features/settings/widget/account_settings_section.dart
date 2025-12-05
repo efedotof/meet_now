@@ -41,7 +41,7 @@ class AccountSettingsSection extends StatelessWidget {
             ),
             SettingsItem(
               icon: Icons.report_problem,
-              title: "Мои жалобы",
+              title: S.of(context).my_complaints,
               onTap: () => context.pushRoute(const MyReportRoute()),
             ),
             SettingsItem(

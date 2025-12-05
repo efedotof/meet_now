@@ -8,6 +8,7 @@ import 'package:meet_now_app/features/gift/widget/daily_gift_card.dart';
 import 'package:meet_now_app/features/gift/widget/inventory_grid.dart';
 import 'package:meet_now_app/features/gift/widget/rarity_filter_widget.dart';
 import 'package:meet_now_app/features/gift/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/gifts/buy_gift_response/buy_gift_response.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 import 'package:meet_now_app_server/model/gifts/gift_rarity/gift_rarity.dart';
@@ -28,23 +29,25 @@ class _GiftScreenState extends State<GiftScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Покупка успешна!'),
+            title: Text(S.of(context).the_purchase_was_successful),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Вы приобрели подарок: ${response.inventoryItem.gift.name}',
+                  '${S.of(context).you_have_purchased_a_gift} ${response.inventoryItem.gift.name}',
                 ),
                 const SizedBox(height: 8),
-                Text('Потрачено поинтов: ${response.spentPoints}'),
-                Text('Новый баланс: ${response.newBalance}'),
+                Text('${S.of(context).points_spent} ${response.spentPoints}'),
+                Text(
+                  '${S.of(context).new_balance_sheet} ${response.newBalance}',
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+                child: Text(S.of(context).ok),
               ),
             ],
           ),
@@ -61,7 +64,7 @@ class _GiftScreenState extends State<GiftScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Недостаточно очков для покупки. Нужно: ${gift.costPoints}',
+            '${S.of(context).not_enough_points_to_purchase_you_need} ${gift.costPoints}',
             style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.red,
@@ -75,24 +78,26 @@ class _GiftScreenState extends State<GiftScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Подтверждение покупки'),
+            title: Text(S.of(context).purchase_confirmation),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Вы хотите купить "${gift.name}"?'),
+                Text('${S.of(context).do_you_want_to_buy}"${gift.name}"?'),
                 const SizedBox(height: 8),
-                Text('Стоимость: ${gift.costPoints} поинтов'),
+                Text(
+                  '${S.of(context).cost} ${gift.costPoints} ${S.of(context).points}',
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Отмена'),
+                child: Text(S.of(context).cancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Купить'),
+                child: Text(S.of(context).buy),
               ),
             ],
           ),
@@ -119,7 +124,7 @@ class _GiftScreenState extends State<GiftScreen> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Ошибка при покупке: $e'),
+              content: Text('${S.of(context).purchase_error} $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -240,8 +245,9 @@ class _GiftScreenState extends State<GiftScreen> {
                               child: CircularProgressIndicator(),
                             ),
                         error:
-                            (message) =>
-                                Center(child: Text('Ошибка: $message')),
+                            (message) => Center(
+                              child: Text('${S.of(context).error} $message'),
+                            ),
                         orElse:
                             () => const Center(
                               child: CircularProgressIndicator(),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
-import 'package:meet_now_app/features/chat/widget/chat_type.dart';
 import 'package:meet_now_app/features/chat/widget/widget.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/chat/chat_interface.dart';
@@ -56,25 +55,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 scrolledUnderElevation: 0,
                 surfaceTintColor: Colors.transparent,
                 actions: [
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(
-                  //     horizontal: 12,
-                  //     vertical: 6,
-                  //   ),
-                  //   decoration: BoxDecoration(
-                  //     color: isDark ? Colors.white : Colors.black,
-                  //     borderRadius: BorderRadius.circular(30),
-                  //   ),
-                  //   child: Text(
-                  //     'Select',
-                  //     style: TextStyle(
-                  //       color: isDark ? Colors.black : Colors.white,
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.w500,
-                  //     ),
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 15),
                   RawMaterialButton(
                     fillColor: isDark ? Colors.white : Colors.black,
                     onPressed: () => context.pushRoute(FriendsRoute()),
@@ -89,36 +69,39 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
 
-              body: SingleChildScrollView(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SearchField(controller: _searchController),
-                    const SizedBox(height: 10),
+              body: RefreshIndicator(
+                onRefresh: () => context.read<ChatCubit>().refresh(),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SearchField(controller: _searchController),
+                      const SizedBox(height: 10),
 
-                    Wrap(
-                      spacing: 8,
-                      children:
-                          chatTypes.map((type) {
-                            return ChoiceChip(
-                              label: Text(type.$2),
-                              selected: state.selectedChatType == type.$1,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  context.read<ChatCubit>().changeChatType(
-                                    type.$1,
-                                  );
-                                }
-                              },
-                            );
-                          }).toList(),
-                    ),
+                      Wrap(
+                        spacing: 8,
+                        children:
+                            chatTypes.map((type) {
+                              return ChoiceChip(
+                                label: Text(type.$2),
+                                selected: state.selectedChatType == type.$1,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    context.read<ChatCubit>().changeChatType(
+                                      type.$1,
+                                    );
+                                  }
+                                },
+                              );
+                            }).toList(),
+                      ),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                    MyBody(state: state),
-                  ],
+                      MyBody(state: state),
+                    ],
+                  ),
                 ),
               ),
             );

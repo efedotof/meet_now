@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/auth/login/login.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
@@ -40,7 +41,11 @@ class SignInCubit extends Cubit<SignInState> {
 
     if (un.isEmpty || pass.isEmpty) {
       debugPrint("nullldata");
-      emit(const SignInState.error(error: 'Введите логин и пароль'));
+      emit(
+        SignInState.error(
+          error: S.of(context).enter_your_username_and_password,
+        ),
+      );
       return;
     }
     emit(SignInState.loading());

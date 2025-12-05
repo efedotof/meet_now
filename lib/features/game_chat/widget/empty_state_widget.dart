@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   const EmptyStateWidget({super.key});
@@ -15,8 +16,8 @@ class EmptyStateWidget extends StatelessWidget {
             color: Colors.grey[300],
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Пока нет доступных игр',
+          Text(
+            S.of(context).there_are_no_games_available_yet,
             style: TextStyle(fontSize: 18, color: Colors.grey),
           ),
         ],

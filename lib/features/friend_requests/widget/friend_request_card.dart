@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/friend_requests/cubit/friend_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/friends_request/friend_request.dart';
 
 class FriendRequestCard extends StatelessWidget {
@@ -48,7 +49,7 @@ class FriendRequestCard extends StatelessWidget {
                     Text(
                       [
                         if (friendRequest.age != null)
-                          '${friendRequest.age} лет',
+                          '${friendRequest.age} ${S.of(context).years}',
                         friendRequest.city,
                       ].where((e) => e != null).join(', '),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
 import 'package:meet_now_app/features/gift/cubit/gift_cubit.dart';
 import 'package:meet_now_app/features/gift/widget/skeleton_points.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class AppBarWidget extends StatefulWidget {
   const AppBarWidget({super.key});
@@ -24,7 +25,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       builder: (context, state) {
         final currentView = state.maybeMap(
           loaded: (loadedState) => loadedState.currentView.name,
-          orElse: () => 'Магазин',
+          orElse: () => S.of(context).shop,
         );
 
         return Container(
@@ -113,7 +114,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     }).toList();
                   },
                   splashRadius: 20,
-                  tooltip: 'Выберите раздел',
+                  tooltip: S.of(context).select_a_section,
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Row(
@@ -165,7 +166,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                "$points points",
+                                "$points ${S.of(context).points}",
                                 style: TextStyle(
                                   color: isDark ? Colors.black : Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -196,7 +197,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "points",
+                                S.of(context).points,
                                 style: TextStyle(
                                   color: isDark ? Colors.black : Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -214,17 +215,17 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                           ),
                           padding: const EdgeInsets.all(8),
                           alignment: Alignment.center,
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.error_outline,
                                 size: 20,
                                 color: Colors.white,
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
-                                "Ошибка",
+                                S.of(context).error,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,

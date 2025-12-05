@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 import 'package:meet_now_app_server/model/social/question/question.dart';
 
@@ -30,15 +31,15 @@ class QuestionDetail extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          InfoCard('Описание', question.description),
+          InfoCard(S.of(context).description, question.description),
           const SizedBox(height: 16),
           InfoCard(
-            'Информация',
+            S.of(context).information,
             null,
             children: [
-              InfoRow('Создан', _formatDate(question.createdAt)),
-              InfoRow('Обновлен', _formatDate(question.updatedAt)),
-              InfoRow('ID вопроса', question.id),
+              InfoRow(S.of(context).generated, _formatDate(question.createdAt)),
+              InfoRow(S.of(context).updated, _formatDate(question.updatedAt)),
+              InfoRow(S.of(context).question_id, question.id),
             ],
           ),
           const SizedBox(height: 16),
@@ -51,7 +52,7 @@ class QuestionDetail extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Ответы (${question.answers.length})',
+                        ' ${S.of(context).answers} (${question.answers.length})',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const Spacer(),
@@ -59,16 +60,16 @@ class QuestionDetail extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () => _showAddAnswerDialog(context),
                           icon: const Icon(Icons.reply),
-                          label: const Text('Добавить ответ'),
+                          label: Text(S.of(context).add_a_response),
                         ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   ...question.answers.map((a) => AnswerCard(answer: a)),
                   if (question.answers.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text('Ответов пока нет'),
+                      child: Text(S.of(context).there_are_no_answers_yet),
                     ),
                 ],
               ),
@@ -85,20 +86,20 @@ class QuestionDetail extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Добавить ответ'),
+            title: Text(S.of(context).add_a_response),
             content: TextField(
               controller: controller,
               autofocus: true,
               maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: 'Введите ваш ответ...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: S.of(context).enter_your_answer,
+                border: const OutlineInputBorder(),
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Отмена'),
+                child: Text(S.of(context).cancel),
               ),
             ],
           ),

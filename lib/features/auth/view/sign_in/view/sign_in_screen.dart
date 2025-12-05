@@ -65,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     _showSnackBar(context, error, error: true);
                   },
                   success: () {
-                    _showSnackBar(context, "Вход успешный");
+                    _showSnackBar(context, S.of(context).login_is_successful);
                   },
                   orElse: () {},
                 );

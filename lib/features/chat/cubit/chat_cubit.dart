@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/features/chat/widget/chat_type.dart';
 import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
 import 'package:meet_now_app_server/model/chats/delete_temporary_chat_request/delete_temporary_chat_request.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
@@ -109,6 +108,22 @@ class ChatCubit extends Cubit<ChatState> {
     } catch (e) {
       emit(state.copyWith(error: 'Ошибка при удалении чата: ${e.toString()}'));
     }
+  }
+
+  void openChat({required String chatId}) {
+    _socketServiceInterface.openChat(chatId: chatId);
+  }
+
+  void openTempChat({required String tempChatId}) {
+    _socketServiceInterface.openTempChat(tempChatId: tempChatId);
+  }
+
+  void closeChat({required String chatId}) {
+    _socketServiceInterface.closeChat(chatId: chatId);
+  }
+
+  void closeTempChat({required String tempChatId}) {
+    _socketServiceInterface.closeTempChat(tempChatId: tempChatId);
   }
 
   Future<void> refresh() async {

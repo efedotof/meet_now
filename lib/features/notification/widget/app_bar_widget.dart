@@ -17,27 +17,29 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Сбросить настройки?'),
-            content: const Text(
-              'Все настройки уведомлений будут сброшены к значениям по умолчанию.',
+            title: Text(S.of(context).reset_the_settings),
+            content: Text(
+              S
+                  .of(context)
+                  .all_notification_settings_will_be_reset_to_their_default_values,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Отмена'),
+                child: Text(S.of(context).cancel),
               ),
               TextButton(
                 onPressed: () {
                   context.read<NotificationCubit>().resetToDefaults();
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Настройки сброшены'),
+                    SnackBar(
+                      content: Text(S.of(context).settings_have_been_reset),
                       duration: Duration(seconds: 2),
                     ),
                   );
                 },
-                child: const Text('Сбросить'),
+                child: Text(S.of(context).throw_off),
               ),
             ],
           ),

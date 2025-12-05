@@ -6,6 +6,8 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app_server/model/social/user_activity/user_activity.dart';
 
+import 'status_text.dart';
+
 class AppBarWidget extends StatefulWidget {
   const AppBarWidget({
     super.key,
@@ -18,7 +20,6 @@ class AppBarWidget extends StatefulWidget {
     this.onDeleteChat,
     this.onBlockUser,
     this.onReportUser,
-    this.onContinueChat,
     this.onRequestFriend,
   });
 
@@ -32,7 +33,6 @@ class AppBarWidget extends StatefulWidget {
   final VoidCallback? onDeleteChat;
   final VoidCallback? onBlockUser;
   final VoidCallback? onReportUser;
-  final VoidCallback? onContinueChat;
 
   @override
   State<AppBarWidget> createState() => _AppBarWidgetState();
@@ -75,7 +75,6 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       context: context,
       position: position,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: theme.dialogBackgroundColor,
       items: [
         if (widget.chatModel != null)
           PopupMenuItem<String>(
@@ -85,21 +84,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 Icon(Icons.person_add, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
-                  'Добавить в друзья',
-                  style: TextStyle(color: theme.colorScheme.primary),
-                ),
-              ],
-            ),
-          ),
-        if (widget.isTemporary && widget.onContinueChat != null)
-          PopupMenuItem<String>(
-            value: 'continue_chat',
-            child: Row(
-              children: [
-                Icon(Icons.access_time, color: theme.colorScheme.primary),
-                const SizedBox(width: 12),
-                Text(
-                  'Продолжить чат',
+                  S.of(context).add_to_friends,
                   style: TextStyle(color: theme.colorScheme.primary),
                 ),
               ],
@@ -175,9 +160,6 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       case "friend_request":
         _showFriendRequest();
         break;
-      case 'continue_chat':
-        widget.onContinueChat?.call();
-        break;
       case 'clear_history':
         _showClearHistoryConfirmation();
         break;
@@ -188,7 +170,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         _showBlockUserConfirmation();
         break;
       case 'report_user':
-        _showReportUserDialog();
+        widget.onReportUser;
         break;
     }
   }
@@ -199,9 +181,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text("Добавить в друзья?"),
+            title: Text(S.of(context).add_to_friends),
             content: Text(
-              "Хотите отправить заявку в друзья пользователю ${_getOtherUserName()}?",
+              "${S.of(context).would_you_like_to_send_a_friend_request_to_a_user} ${_getOtherUserName()}?",
             ),
             actions: [
               TextButton(
@@ -218,12 +200,14 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                   widget.onRequestFriend?.call();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text("Заявка в друзья отправлена"),
+                      content: Text(
+                        S.of(context).the_friend_request_has_been_sent,
+                      ),
                       backgroundColor: theme.colorScheme.primary,
                     ),
                   );
                 },
-                child: const Text("Отправить"),
+                child: Text(S.of(context).send),
               ),
             ],
           ),
@@ -335,101 +319,6 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     );
   }
 
-  void _showReportUserDialog() {
-    String? selectedReason;
-    final commentController = TextEditingController();
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder:
-          (_) => StatefulBuilder(
-            builder:
-                (context, setState) => AlertDialog(
-                  title: Text(S.of(context).reportuser),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(S.of(context).reportuserdescription),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.of(context).selectreason,
-                          style: theme.textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        ..._getReportReasons().map(
-                          (reason) => RadioListTile<String>(
-                            title: Text(reason),
-                            value: reason,
-                            groupValue: selectedReason,
-                            onChanged:
-                                (value) =>
-                                    setState(() => selectedReason = value),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: commentController,
-                          decoration: InputDecoration(
-                            labelText: S.of(context).additionalcomments,
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(S.of(context).cancel),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error,
-                        foregroundColor: theme.colorScheme.onError,
-                      ),
-                      onPressed: () {
-                        if (selectedReason == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                "Пожалуйста, выберите причину жалобы",
-                              ),
-                              backgroundColor: theme.colorScheme.error,
-                            ),
-                          );
-                          return;
-                        }
-                        Navigator.pop(context);
-                        widget.onReportUser?.call();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(S.of(context).reportsubmitted),
-                            backgroundColor: theme.colorScheme.primary,
-                          ),
-                        );
-                      },
-                      child: Text(S.of(context).submitreport),
-                    ),
-                  ],
-                ),
-          ),
-    );
-  }
-
-  List<String> _getReportReasons() {
-    return [
-      S.of(context).spam,
-      S.of(context).harassment,
-      S.of(context).inappropriatecontent,
-      S.of(context).fakeprofile,
-      S.of(context).other,
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -519,7 +408,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (widget.isTemporary) _buildStatusText(state, theme),
+                        if (widget.isTemporary)
+                          StatusText(state: state, userId: widget.userId),
                       ],
                     ),
                   ],
@@ -559,47 +449,6 @@ class _AppBarWidgetState extends State<AppBarWidget> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildStatusText(UserActivityState state, ThemeData theme) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
-      child: state.when(
-        initial: () {
-          return Text(
-            S.of(context).connecting,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          );
-        },
-        activity: (UserActivity activity) {
-          if (activity.userId == widget.userId) return const SizedBox();
-
-          final statusText = switch (activity.activityType) {
-            ActivityType.TYPING => S.of(context).typing,
-            ActivityType.OFFLINE => S.of(context).offline,
-            ActivityType.SENDING_FILE => S.of(context).sendingFile,
-            ActivityType.SENDING_IMAGE => S.of(context).sendingImage,
-            ActivityType.ONLINE => S.of(context).online,
-          };
-
-          final statusColor =
-              activity.activityType == ActivityType.ONLINE
-                  ? Colors.green
-                  : theme.colorScheme.onPrimaryContainer;
-
-          return Text(
-            statusText,
-            style: theme.textTheme.labelSmall?.copyWith(color: statusColor),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          );
-        },
-      ),
     );
   }
 }

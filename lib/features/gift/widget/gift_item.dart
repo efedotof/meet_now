@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 
 class GiftItem extends StatefulWidget {
@@ -72,7 +73,7 @@ class _GiftItemState extends State<GiftItem> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Не удалось загрузить',
+                          S.of(context).failed_to_upload,
                           style: TextStyle(
                             fontSize: 10,
                             color: isDark ? Colors.white60 : Colors.black54,
@@ -98,7 +99,7 @@ class _GiftItemState extends State<GiftItem> {
                     ),
                     padding: const EdgeInsets.all(3),
                     child: Text(
-                      " ${widget.gift.costPoints} points",
+                      " ${widget.gift.costPoints} ${S.of(context).points}",
                       style: TextStyle(
                         color: isDark ? Colors.black : Colors.white,
                       ),
@@ -175,8 +176,8 @@ class _GiftItemState extends State<GiftItem> {
                     horizontal: 6,
                     vertical: 3,
                   ),
-                  child: const Text(
-                    'Ограниченный',
+                  child: Text(
+                    S.of(context).limited,
                     style: TextStyle(color: Colors.white, fontSize: 10),
                   ),
                 ),
@@ -189,9 +190,9 @@ class _GiftItemState extends State<GiftItem> {
                     borderRadius: BorderRadius.circular(13),
                     color: Colors.black54,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'РАСПРОДАНО',
+                      S.of(context).sold_out,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
