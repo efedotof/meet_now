@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/supports/answer/answer.dart';
 
 class AnswerCard extends StatelessWidget {
@@ -22,7 +23,7 @@ class AnswerCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Автор: ${answer.createdBy}',
+                  '${S.of(context).author} ${answer.createdBy}',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const Spacer(),

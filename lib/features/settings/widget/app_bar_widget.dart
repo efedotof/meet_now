@@ -68,7 +68,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                "$points points",
+                                "$points ${S.of(context).points}",
                                 style: TextStyle(
                                   color: isDark ? Colors.black : Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -100,7 +100,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "points",
+                              S.of(context).points,
                               style: TextStyle(
                                 color: isDark ? Colors.black : Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -118,17 +118,17 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                         ),
                         padding: const EdgeInsets.all(8),
                         alignment: Alignment.center,
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.error_outline,
                               size: 20,
                               color: Colors.white,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              "Ошибка",
+                              S.of(context).error,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 import 'stat_widget.dart';
@@ -25,18 +26,18 @@ class ProfileStats extends StatelessWidget {
             StatWidget(
               icon: Icons.favorite,
               count: user.purposes.length,
-              label: "Цели",
+              label: S.of(context).goals,
             ),
             StatWidget(
               icon: Icons.star,
               count: user.interests.length,
-              label: "Интересы",
+              label: S.of(context).interests,
             ),
             if (user.images != null)
               StatWidget(
                 icon: Icons.photo_library,
                 count: user.images!.length,
-                label: "Фото",
+                label: S.of(context).photo,
               ),
           ],
         ),

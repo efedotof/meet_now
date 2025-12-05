@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 class UserNetworkImage extends StatefulWidget {
@@ -68,7 +69,7 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
       child = Center(
         child: IconButton(
           icon: const Icon(Icons.refresh, color: Colors.red),
-          tooltip: 'Ошибка загрузки. Нажмите для повтора',
+          tooltip: S.of(context).download_error_click_to_repeat,
           onPressed: _loadPresignedUrl,
         ),
       );
@@ -85,8 +86,7 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
                 (context, error, stackTrace) => Center(
                   child: IconButton(
                     icon: const Icon(Icons.broken_image, color: Colors.grey),
-                    tooltip:
-                        'Не удалось загрузить изображение. Нажмите для повтора',
+                    tooltip: S.of(context).failed_to_load_image_click_to_retry,
                     onPressed: _loadPresignedUrl,
                   ),
                 ),

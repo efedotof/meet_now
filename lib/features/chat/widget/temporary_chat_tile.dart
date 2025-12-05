@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
 
@@ -177,6 +178,7 @@ class TemporaryChatTile extends StatelessWidget {
                 ),
 
         onTap: () {
+          context.read<ChatCubit>().openTempChat(tempChatId: chat.tempChatId);
           context.pushRoute(ChatMessageRoute(temporaryChatModel: chat));
         },
 
@@ -185,14 +187,16 @@ class TemporaryChatTile extends StatelessWidget {
             context: context,
             builder:
                 (_) => AlertDialog(
-                  title: const Text('Удалить чат'),
-                  content: const Text(
-                    'Вы уверены, что хотите удалить этот временный чат?',
+                  title: Text(S.of(context).delete_a_chat),
+                  content: Text(
+                    S
+                        .of(context)
+                        .are_you_sure_you_want_to_delete_this_temporary_chat,
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Отмена'),
+                      child: Text(S.of(context).cancel),
                     ),
                     TextButton(
                       onPressed: () {
@@ -203,14 +207,14 @@ class TemporaryChatTile extends StatelessWidget {
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Временный чат удален'),
+                          SnackBar(
+                            content: Text(S.of(context).temporary_chat_deleted),
                             duration: Duration(seconds: 2),
                           ),
                         );
                       },
-                      child: const Text(
-                        'Удалить',
+                      child: Text(
+                        S.of(context).delete,
                         style: TextStyle(color: Colors.red),
                       ),
                     ),

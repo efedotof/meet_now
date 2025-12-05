@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class StatusChip extends StatelessWidget {
   final String status;
@@ -14,17 +15,17 @@ class StatusChip extends StatelessWidget {
       case "PENDING":
         bg = Colors.orange.withAlpha(30);
         fg = Colors.orange;
-        text = 'ОЖИДАЕТ';
+        text = S.of(context).AWAITING;
         break;
       case "RECEIVED":
         bg = Colors.blue.withAlpha(30);
         fg = Colors.blue;
-        text = 'ПОЛУЧЕНО';
+        text = S.of(context).RECEIVED;
         break;
       case "RESOLVED":
         bg = Colors.green.withAlpha(30);
         fg = Colors.green;
-        text = 'РЕШЕНО';
+        text = S.of(context).ITSDECIDED;
         break;
       default:
         bg = Colors.grey.withAlpha(30);

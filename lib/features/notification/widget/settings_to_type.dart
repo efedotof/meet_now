@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/notification/cubit/notification_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 import 'switch_item.dart';
 
@@ -21,14 +22,14 @@ class SettingsToType extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Типы уведомлений',
+          Text(
+            S.of(context).types_of_notifications,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           SwitchItem(
-            title: 'Сообщения',
-            subtitle: 'Новые сообщения в чатах',
+            title: S.of(context).messages,
+            subtitle: S.of(context).new_chat_messages,
             value: messageNotifications,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleActionSetting(
@@ -40,8 +41,8 @@ class SettingsToType extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Запросы в друзья',
-            subtitle: 'Новые запросы на добавление в друзья',
+            title: S.of(context).friend_requests,
+            subtitle: S.of(context).new_friend_requests,
             value: friendRequestNotifications,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleActionSetting(
@@ -53,8 +54,8 @@ class SettingsToType extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Системные уведомления',
-            subtitle: 'Обновления и системные сообщения',
+            title: S.of(context).system_notifications,
+            subtitle: S.of(context).updates_and_system_messages,
             value: systemNotifications,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleActionSetting(

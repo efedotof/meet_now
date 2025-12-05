@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:meet_now_app/features/gift/cubit/gift_cubit.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/gifts/buy_gift_response/buy_gift_response.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
@@ -56,12 +57,11 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
     final gamePointsCubit = context.read<GamePointsCubit>();
     final gift = widget.gift;
 
-    // Проверяем, достаточно ли очков
     if (!gamePointsCubit.hasEnoughPoints(gift.costPoints)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Недостаточно очков для покупки. Нужно: ${gift.costPoints}',
+            '${S.of(context).not_enough_points_to_purchase_you_need} ${gift.costPoints}',
             style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.red,
@@ -71,33 +71,34 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
       return;
     }
 
-    // Показываем подтверждение покупки
     final shouldBuy = await showDialog<bool>(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Подтверждение покупки'),
+            title: Text(S.of(context).purchase_confirmation),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Вы хотите купить "${gift.name}"?'),
+                Text('${S.of(context).do_you_want_to_buy} "${gift.name}"?'),
                 const SizedBox(height: 8),
-                Text('Стоимость: ${gift.costPoints} поинтов'),
+                Text(
+                  '${S.of(context).cost} ${gift.costPoints} ${S.of(context).points}',
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  'Ваш баланс: ${gamePointsCubit.currentPoints ?? 0} поинтов',
+                  '${S.of(context).your_balance} ${gamePointsCubit.currentPoints ?? 0} ${S.of(context).points}',
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Отмена'),
+                child: Text(S.of(context).cancel),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Купить'),
+                child: Text(S.of(context).buy),
               ),
             ],
           ),
@@ -128,7 +129,7 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Ошибка при покупке: $e'),
+              content: Text('${S.of(context).purchase_error} $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -146,23 +147,25 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Покупка успешна!'),
+            title: Text(S.of(context).the_purchase_was_successful),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Вы приобрели подарок: ${response.inventoryItem.gift.name}',
+                  '${S.of(context).you_have_purchased_a_gift} ${response.inventoryItem.gift.name}',
                 ),
                 const SizedBox(height: 8),
-                Text('Потрачено поинтов: ${response.spentPoints}'),
-                Text('Новый баланс: ${response.newBalance}'),
+                Text('${S.of(context).points_spent} ${response.spentPoints}'),
+                Text(
+                  '${S.of(context).new_balance_sheet} ${response.newBalance}',
+                ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+                child: Text(S.of(context).ok),
               ),
             ],
           ),
@@ -177,7 +180,6 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
         final gift = snapshot.data ?? widget.gift;
         final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
-        // Получаем текущие очки пользователя
         final currentPoints = context.read<GamePointsCubit>().currentPoints;
         final hasEnoughPoints =
             currentPoints != null && currentPoints >= gift.costPoints;
@@ -240,7 +242,7 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Не удалось загрузить',
+                                    S.of(context).failed_to_upload,
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
                                       fontSize: 12,
@@ -270,13 +272,15 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                     labelStyle: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(width: 8),
-                  Chip(label: Text('${gift.costPoints} поинтов')),
+                  Chip(
+                    label: Text('${gift.costPoints} ${S.of(context).points}'),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               if (currentPoints != null)
                 Text(
-                  'Ваш баланс: $currentPoints поинтов',
+                  '${S.of(context).your_balance} $currentPoints ${S.of(context).points}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: hasEnoughPoints ? Colors.green : Colors.red,
                     fontWeight: FontWeight.bold,
@@ -284,12 +288,12 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                 ),
               if (gift.availableQuantity != null)
                 Text(
-                  'Доступно: ${gift.availableQuantity} шт.',
+                  '${S.of(context).available} ${gift.availableQuantity} ${S.of(context).pc}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               if (gift.isLimited)
                 Chip(
-                  label: const Text('Ограниченный тираж'),
+                  label: Text(S.of(context).limited_edition),
                   backgroundColor: Colors.orange.withAlpha(80),
                   labelStyle: const TextStyle(color: Colors.white),
                 ),
@@ -325,8 +329,8 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                               ),
                               child: Text(
                                 hasEnoughPoints
-                                    ? 'Купить'
-                                    : 'Недостаточно очков',
+                                    ? S.of(context).buy
+                                    : S.of(context).not_enough_points,
                                 style: TextStyle(
                                   color:
                                       hasEnoughPoints
@@ -348,9 +352,9 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'РАСПРОДАНО',
+                        S.of(context).sold_out,
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,

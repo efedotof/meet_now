@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/user_stats/user_stats.dart';
 import 'stat_item.dart';
 
@@ -18,12 +19,12 @@ class StatsBar extends StatelessWidget {
           StatItem(
             icon: Icons.circle,
             count: userStats.onlineCount,
-            label: "Online",
+            label: S.of(context).online,
           ),
           StatItem(
             icon: Icons.circle_outlined,
             count: userStats.searchingCount,
-            label: "Searching",
+            label: S.of(context).searching,
           ),
         ],
       ),

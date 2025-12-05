@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class ReportWrap extends StatelessWidget {
@@ -18,14 +19,14 @@ class ReportWrap extends StatelessWidget {
     }
   }
 
-  String _statusText(ReportStatus status) {
+  String _statusText(BuildContext context, ReportStatus status) {
     switch (status) {
       case ReportStatus.SENT:
-        return "Отправлено";
+        return S.of(context).shipped;
       case ReportStatus.IN_PROCESS:
-        return "В обработке";
+        return S.of(context).in_processing;
       case ReportStatus.COMPLETED:
-        return "Завершено";
+        return S.of(context).completed;
     }
   }
 
@@ -48,12 +49,12 @@ class ReportWrap extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Причина: ${report.reason}",
+                      "${S.of(context).reason} ${report.reason}",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Дата: ${report.createdAt.toLocal()}",
+                      "${S.of(context).date} ${report.createdAt.toLocal()}",
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 12),
@@ -61,7 +62,7 @@ class ReportWrap extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Chip(
-                          label: Text(_statusText(report.status)),
+                          label: Text(_statusText(context, report.status)),
                           backgroundColor: _statusColor(report.status),
                           labelStyle: TextStyle(
                             color: Colors.white,
@@ -76,8 +77,8 @@ class ReportWrap extends StatelessWidget {
                               );
                             },
                             icon: const Icon(Icons.cancel, color: Colors.red),
-                            label: const Text(
-                              "Отозвать",
+                            label: Text(
+                              S.of(context).revoke,
                               style: TextStyle(color: Colors.red),
                             ),
                           ),

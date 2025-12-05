@@ -24,8 +24,8 @@ class ProfileHeader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white, width: 2),
                   ),
-                  child: const Text(
-                    'Online',
+                  child: Text(
+                    S.of(context).online,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -82,7 +82,7 @@ class ProfileHeader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Tooltip(
-                    message: 'Подтвержден',
+                    message: S.of(context).confirmed,
                     child: Image.asset(
                       'assets/verify.png',
                       width: 20,
@@ -95,7 +95,7 @@ class ProfileHeader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Tooltip(
-                    message: 'Администратор',
+                    message: S.of(context).administrator,
                     child: Image.asset(
                       'assets/administration.png',
                       width: 20,
@@ -108,7 +108,7 @@ class ProfileHeader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Tooltip(
-                    message: 'Модератор',
+                    message: S.of(context).moderator,
                     child: Image.asset(
                       'assets/moderator.png',
                       width: 20,

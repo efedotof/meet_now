@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
@@ -41,29 +42,29 @@ class _ChatTileState extends State<ChatTile> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Удалить чат'),
-          content: const Text('Выберите вариант удаления:'),
+          title: Text(S.of(context).delete_a_chat),
+          content: Text(S.of(context).select_the_deletion_option),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteChat(forBoth: false);
               },
-              child: const Text('Только для меня'),
+              child: Text(S.of(context).just_for_me),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _showConfirmDeleteForBothDialog();
               },
-              child: const Text(
-                'Для обоих',
+              child: Text(
+                S.of(context).for_both,
                 style: TextStyle(color: Colors.red),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Отмена'),
+              child: Text(S.of(context).cancel),
             ),
           ],
         );
@@ -76,21 +77,26 @@ class _ChatTileState extends State<ChatTile> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Удалить для обоих'),
-          content: const Text(
-            'Это действие нельзя отменить. Чат будет удален для всех участников.',
+          title: Text(S.of(context).delete_for_both),
+          content: Text(
+            S
+                .of(context)
+                .this_action_cannot_be_undone_the_chat_will_be_deleted_for_all_participants,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Отмена'),
+              child: Text(S.of(context).cancel),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteChat(forBoth: true);
               },
-              child: const Text('Удалить', style: TextStyle(color: Colors.red)),
+              child: Text(
+                S.of(context).delete,
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );
@@ -129,7 +135,7 @@ class _ChatTileState extends State<ChatTile> {
     if (d == today) {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     } else if (d == today.subtract(const Duration(days: 1))) {
-      return 'Вчера';
+      return S.of(context).yesterday;
     } else {
       return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}';
     }
@@ -179,6 +185,9 @@ class _ChatTileState extends State<ChatTile> {
                           ? null
                           : () {
                             if (widget.chat != null) {
+                              context.read<ChatCubit>().openChat(
+                                chatId: widget.chat!.chatId,
+                              );
                               context.pushRoute(
                                 ChatMessageRoute(
                                   chatModel: widget.chat,
@@ -186,6 +195,9 @@ class _ChatTileState extends State<ChatTile> {
                                 ),
                               );
                             } else {
+                              context.read<ChatCubit>().openTempChat(
+                                tempChatId: widget.temporaryChat!.tempChatId,
+                              );
                               context.pushRoute(
                                 ChatMessageRoute(
                                   chatModel: null,

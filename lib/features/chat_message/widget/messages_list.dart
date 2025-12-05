@@ -55,7 +55,6 @@ class _MessagesListState extends State<MessagesList> {
       controller: widget.scrollController,
       slivers: [
         const SliverToBoxAdapter(child: SizedBox(height: 80)),
-
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           sliver: SliverList(
@@ -107,11 +106,10 @@ class _MessagesListState extends State<MessagesList> {
           ),
         ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+        const SliverToBoxAdapter(child: SizedBox(height: 40)),
       ],
     );
   }
-  // }
 
   bool _shouldShowTime(Message current, Message next) {
     if (current.senderId != next.senderId) {

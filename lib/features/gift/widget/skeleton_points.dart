@@ -10,7 +10,7 @@ class SkeletonPoints extends StatelessWidget {
       height: 45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        color: Colors.grey.shade300, // Серый фон
+        color: Colors.grey.shade300,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: SkeletonTheme(

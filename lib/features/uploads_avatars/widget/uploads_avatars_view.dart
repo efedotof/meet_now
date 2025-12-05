@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'avatar_page.dart';
@@ -41,7 +42,6 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
     );
 
     if (selectedItems != null && selectedItems.isNotEmpty) {
-      // Загружаем байты для каждого выбранного изображения
       final mediaList = <MapEntry<String, Uint8List>>[];
 
       for (final item in selectedItems) {
@@ -51,13 +51,12 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
             mediaList.add(MapEntry(item.uri, bytes));
           }
         } catch (e) {
-          print('Ошибка загрузки изображения: $e');
+          debugPrint('Ошибка загрузки изображения: $e');
         }
       }
 
       if (mediaList.isNotEmpty) {
         if (isAvatar) {
-          // Для аватара берем первое изображение
           _cubit.selectAvatar(mediaList.first.key, mediaList.first.value);
         } else {
           _cubit.selectGalleryImages(mediaList);
@@ -142,7 +141,7 @@ class _UploadsAvatarsViewState extends State<UploadsAvatarsView> {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Загрузка изображений"),
+              title: Text(S.of(context).uploading_images),
               leading:
                   _currentPage == 1
                       ? IconButton(

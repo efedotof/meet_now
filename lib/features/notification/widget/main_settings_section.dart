@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/notification/cubit/notification_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 import 'switch_item.dart';
 
@@ -29,19 +30,21 @@ class MainSettingsSection extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Настройка тихих часов'),
-            content: const Column(
+            title: Text(S.of(context).setting_up_a_quiet_clock),
+            content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Настройка тихих часов будет добавлена в следующем обновлении.',
+                  S
+                      .of(context)
+                      .the_quiet_clock_setting_will_be_added_in_the_next_update,
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Закрыть'),
+                child: Text(S.of(context).close),
               ),
             ],
           ),
@@ -55,13 +58,13 @@ class MainSettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Основные настройки',
+          Text(
+            S.of(context).basic_settings,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           SwitchItem(
-            title: 'Включить уведомления',
+            title: S.of(context).enable_notifications,
             value: enableNotifications,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -73,7 +76,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Звук',
+            title: S.of(context).sound,
             value: enableSound,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -85,7 +88,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Вибрация',
+            title: S.of(context).vibration,
             value: enableVibration,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -97,7 +100,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Значок счётчика',
+            title: S.of(context).the_counter_icon,
             value: enableBadge,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -109,7 +112,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Показывать содержимое',
+            title: S.of(context).show_content,
             value: enablePreviews,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -121,7 +124,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Тихий режим',
+            title: S.of(context).quiet_mode,
             value: silentMode,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -133,7 +136,7 @@ class MainSettingsSection extends StatelessWidget {
           ),
 
           SwitchItem(
-            title: 'Тихие часы',
+            title: S.of(context).quiet_hours,
             value: quietHoursEnabled,
             onChanged: (value) {
               context.read<NotificationCubit>().toggleSetting(
@@ -148,7 +151,7 @@ class MainSettingsSection extends StatelessWidget {
                       onPressed: () {
                         _showQuietHoursDialog(context);
                       },
-                      child: const Text('Настроить'),
+                      child: Text(S.of(context).to_configure),
                     )
                     : null,
           ),

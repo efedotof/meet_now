@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/interes/interest.dart';
 
 import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
@@ -97,7 +98,7 @@ class _InterestPageState extends State<InterestPage> {
 
             return Column(
               children: [
-                Text("Укажите свои Интересы:"),
+                Text(S.of(context).specify_your_interests),
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,

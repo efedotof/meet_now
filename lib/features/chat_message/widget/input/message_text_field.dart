@@ -44,6 +44,8 @@ class MessageTextField extends StatelessWidget {
                     color: isDark ? Colors.white : Colors.black,
                   ),
                   border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
                   isCollapsed: false,
                   fillColor: Colors.transparent,
                   filled: false,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class GalleryPage extends StatefulWidget {
   final UploadsAvatarsState state;
@@ -42,7 +43,7 @@ class _GalleryPageState extends State<GalleryPage> {
       child: Column(
         children: [
           Text(
-            '${displayUris.length}/10 изображений',
+            '${displayUris.length}/${S.of(context).ten_images}',
             style: TextStyle(
               color: displayUris.length >= 10 ? Colors.red : Colors.grey,
               fontWeight: FontWeight.bold,
@@ -52,18 +53,18 @@ class _GalleryPageState extends State<GalleryPage> {
           Expanded(
             child:
                 displayUris.isEmpty
-                    ? const Center(
+                    ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.photo_library,
                             size: 64,
                             color: Colors.grey,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
-                            "Добавьте изображения в галерею",
+                            S.of(context).add_images_to_the_gallery,
                             style: TextStyle(color: Colors.grey),
                           ),
                         ],
@@ -98,14 +99,14 @@ class _GalleryPageState extends State<GalleryPage> {
                         : widget.onPickImages,
                 child: Text(
                   displayUris.isNotEmpty
-                      ? "Добавить еще изображения"
-                      : "Добавить изображения",
+                      ? S.of(context).add_more_images
+                      : S.of(context).add_Images,
                 ),
               ),
               if (displayUris.length >= 10) ...[
                 const SizedBox(height: 8),
-                const Text(
-                  'Достигнут лимит в 10 изображений',
+                Text(
+                  S.of(context).the_limit_of_ten_images_has_been_reached,
                   style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ],
@@ -118,7 +119,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text("Перейти на главный экран"),
+                  child: Text(S.of(context).go_to_the_main_screen),
                 ),
               ],
             ],

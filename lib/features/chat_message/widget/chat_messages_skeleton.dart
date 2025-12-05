@@ -61,7 +61,7 @@ class ChatMessagesSkeleton extends StatelessWidget {
                           children: [
                             SkeletonParagraph(
                               style: SkeletonParagraphStyle(
-                                lines: index % 3 + 1, // 1-3 lines
+                                lines: index % 3 + 1,
                                 spacing: 4,
                                 lineStyle: SkeletonLineStyle(
                                   randomLength: true,
@@ -74,8 +74,7 @@ class ChatMessagesSkeleton extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (index % 4 == 0) // Some messages with media
-                              const SizedBox(height: 8),
+                            if (index % 4 == 0) const SizedBox(height: 8),
                             if (index % 4 == 0)
                               const SkeletonAvatar(
                                 style: SkeletonAvatarStyle(

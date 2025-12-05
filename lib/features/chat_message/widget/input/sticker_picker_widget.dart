@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
@@ -87,7 +88,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                           child: Row(
                             children: [
                               Text(
-                                'Стикеры',
+                                S.of(context).stickers,
                                 style: Theme.of(
                                   context,
                                 ).textTheme.titleSmall?.copyWith(
@@ -123,7 +124,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Ошибка загрузки стикеров: $_error',
+                                          "${S.of(context).sticker_loading_error} $_error",
                                           style: TextStyle(
                                             color:
                                                 isDark
@@ -134,7 +135,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                         const SizedBox(height: 10),
                                         ElevatedButton(
                                           onPressed: _loadStickers,
-                                          child: const Text('Повторить'),
+                                          child: Text(S.of(context).repeat),
                                         ),
                                       ],
                                     ),
@@ -142,7 +143,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                   : _stickers.isEmpty
                                   ? Center(
                                     child: Text(
-                                      'Стикеры не найдены',
+                                      S.of(context).stickers_not_found,
                                       style: TextStyle(
                                         color:
                                             isDark

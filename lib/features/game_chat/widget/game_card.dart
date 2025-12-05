@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/chats/game_response/game_response.dart';
 
 import 'game_web_view_screen.dart';
@@ -123,12 +124,12 @@ class GameCard extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder:
-          (context) => const AlertDialog(
+          (context) => AlertDialog(
             content: Row(
               children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 16),
-                Text('Подготовка игры...'),
+                const CircularProgressIndicator(),
+                const SizedBox(width: 16),
+                Text(S.of(context).game_preparation),
               ],
             ),
           ),
@@ -150,8 +151,11 @@ class GameCard extends StatelessWidget {
         } else {
           scaffoldMessenger.showSnackBar(
             SnackBar(
-              content: const Text('Не удалось получить ссылку на игру'),
-              action: SnackBarAction(label: 'Понятно', onPressed: () {}),
+              content: Text(S.of(context).couldnt_get_the_link_to_the_game),
+              action: SnackBarAction(
+                label: S.of(context).clear,
+                onPressed: () {},
+              ),
             ),
           );
         }
@@ -161,8 +165,11 @@ class GameCard extends StatelessWidget {
         Navigator.of(context).pop();
         scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text('Ошибка: $e'),
-            action: SnackBarAction(label: 'Понятно', onPressed: () {}),
+            content: Text('${S.of(context).error}: $e'),
+            action: SnackBarAction(
+              label: S.of(context).clear,
+              onPressed: () {},
+            ),
           ),
         );
       }

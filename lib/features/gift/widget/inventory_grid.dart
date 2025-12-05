@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
 
 import 'inventory_item.dart';
@@ -16,11 +17,11 @@ class InventoryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (inventory.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(
-            'У вас еще нет купленных подарков',
+            S.of(context).you_havent_bought_any_gifts_yet,
             style: TextStyle(fontSize: 16, color: Colors.grey),
             textAlign: TextAlign.center,
           ),

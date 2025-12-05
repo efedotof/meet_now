@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/chats/message/message.dart';
 
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
@@ -99,7 +100,7 @@ class _StickerMessageState extends State<StickerMessage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Ошибка',
+                        S.of(context).error,
                         style: widget.theme.textTheme.labelSmall?.copyWith(
                           color: widget.theme.colorScheme.error,
                         ),
@@ -140,7 +141,7 @@ class _StickerMessageState extends State<StickerMessage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Стикер',
+                              S.of(context).sticker,
                               style: widget.theme.textTheme.labelSmall
                                   ?.copyWith(
                                     color: widget.theme.colorScheme.onSurface

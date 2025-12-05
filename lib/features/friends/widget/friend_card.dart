@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendCard extends StatelessWidget {
@@ -60,7 +61,9 @@ class FriendCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        friend.isOnline ? "онлайн" : "оффлайн",
+                        friend.isOnline
+                            ? S.of(context).online
+                            : S.of(context).offline,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: friend.isOnline ? Colors.green : Colors.red,
                         ),

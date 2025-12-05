@@ -15,7 +15,6 @@ import 'messages_list.dart';
 class BuildScaffold extends StatefulWidget {
   const BuildScaffold({
     super.key,
-
     required this.currentUserId,
     this.chatModel,
     required this.onBackPressed,
@@ -28,6 +27,9 @@ class BuildScaffold extends StatefulWidget {
     required this.scrollController,
     required this.onAddAttach,
     required this.onContinueChat,
+    this.onAddTimeChat,
+    this.onReportUser,
+    this.onRequestFriend,
   });
 
   final String currentUserId;
@@ -42,6 +44,9 @@ class BuildScaffold extends StatefulWidget {
   final ScrollController scrollController;
   final VoidCallback? onAddAttach;
   final VoidCallback? onContinueChat;
+  final VoidCallback? onAddTimeChat;
+  final VoidCallback? onReportUser;
+  final VoidCallback? onRequestFriend;
   @override
   State<BuildScaffold> createState() => _BuildScaffoldState();
 }
@@ -187,6 +192,7 @@ class _BuildScaffoldState extends State<BuildScaffold> {
             userId: widget.currentUserId,
             onBackPressed: widget.onBackPressed,
             isTemporary: widget.isTemporary,
+            onRequestFriend: widget.onRequestFriend,
             onClearHistory: () {},
             onDeleteChat: () {},
             onBlockUser: () {},
@@ -196,7 +202,6 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                       (SyncTimerCubit cubit) => cubit.state.formattedTime,
                     )
                     : null,
-            onContinueChat: widget.onContinueChat,
           ),
         ),
 
@@ -221,6 +226,9 @@ class _BuildScaffoldState extends State<BuildScaffold> {
               _scrollToBottomImmediately();
             },
             isTemporary: widget.isTemporary,
+            onContinueChat: widget.onContinueChat,
+            onAddTimeChat: widget.onAddTimeChat,
+            onReportUser: widget.onReportUser,
           ),
         ),
       ],

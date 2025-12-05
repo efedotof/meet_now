@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/question/question.dart';
 
 class SupportQuestionsList extends StatelessWidget {
@@ -11,7 +12,7 @@ class SupportQuestionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (questions.isEmpty) {
-      return const Center(child: Text('Вопросы не найдены'));
+      return Center(child: Text(S.of(context).no_questions_found));
     }
 
     return ListView.builder(
@@ -38,10 +39,10 @@ class SupportQuestionsList extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    _buildStatusChip(question.status),
+                    _buildStatusChip(context, question.status),
                     const Spacer(),
                     Text(
-                      'Ответов: ${question.answers.length}',
+                      '${S.of(context).responses} ${question.answers.length}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -56,8 +57,7 @@ class SupportQuestionsList extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(String status) {
-    // Инициализация при объявлении
+  Widget _buildStatusChip(BuildContext context, String status) {
     Color backgroundColor = Colors.grey.withAlpha(20);
     Color textColor = Colors.grey;
     String statusText = status;
@@ -66,17 +66,17 @@ class SupportQuestionsList extends StatelessWidget {
       case "PENDING":
         backgroundColor = Colors.orange.withAlpha(20);
         textColor = Colors.orange;
-        statusText = 'ОЖИДАЕТ';
+        statusText = S.of(context).AWAITING;
         break;
       case "RECEIVED":
         backgroundColor = Colors.blue.withAlpha(20);
         textColor = Colors.blue;
-        statusText = 'ПОЛУЧЕНО';
+        statusText = S.of(context).RECEIVED;
         break;
       case "RESOLVED":
         backgroundColor = Colors.green.withAlpha(20);
         textColor = Colors.green;
-        statusText = 'РЕШЕНО';
+        statusText = S.of(context).ITSDECIDED;
         break;
     }
 

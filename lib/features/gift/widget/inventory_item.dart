@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
@@ -60,7 +61,6 @@ class _InventoryItemState extends State<InventoryItem> {
 
       return widget.inventoryItem.copyWith(gift: processedGift);
     } catch (e) {
-      debugPrint('Ошибка при обработке URL для подарка ${gift.id}: $e');
       return widget.inventoryItem;
     }
   }
@@ -95,7 +95,7 @@ class _InventoryItemState extends State<InventoryItem> {
                   const Icon(Icons.error_outline, color: Colors.red, size: 30),
                   const SizedBox(height: 8),
                   Text(
-                    'Ошибка загрузки',
+                    S.of(context).download_error,
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                       fontSize: 12,
@@ -133,10 +133,6 @@ class _InventoryItemState extends State<InventoryItem> {
                           ),
                         ),
                     errorWidget: (context, url, error) {
-                      debugPrint(
-                        'Ошибка загрузки изображения инвентаря: $url, $error',
-                      );
-
                       return Container(
                         color: isDark ? Colors.white24 : Colors.black26,
                         child: Column(
@@ -149,7 +145,7 @@ class _InventoryItemState extends State<InventoryItem> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Не удалось загрузить',
+                              S.of(context).download_error,
                               style: TextStyle(
                                 fontSize: 10,
                                 color: isDark ? Colors.white60 : Colors.black54,
@@ -255,16 +251,16 @@ class _InventoryItemState extends State<InventoryItem> {
 
     if (difference.inDays > 365) {
       final years = (difference.inDays / 365).floor();
-      return '$years г.';
+      return '$years ${S.of(context).year}';
     } else if (difference.inDays > 30) {
       final months = (difference.inDays / 30).floor();
-      return '$months мес.';
+      return '$months ${S.of(context).month}';
     } else if (difference.inDays > 0) {
-      return '${difference.inDays} д.';
+      return '${difference.inDays} ${S.of(context).day}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ч.';
+      return '${difference.inHours} ${S.of(context).hour}';
     } else {
-      return 'только что';
+      return S.of(context).just_now;
     }
   }
 }

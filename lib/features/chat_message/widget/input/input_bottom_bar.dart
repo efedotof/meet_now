@@ -14,15 +14,19 @@ class InputBottomBar extends StatelessWidget {
     required this.textFieldFocusNode,
     required this.isTemporary,
     super.key,
+    required this.onTempMenu,
+    this.menuKey,
   });
 
   final TextEditingController controller;
   final String chatId;
   final VoidCallback? onAddAttach;
   final VoidCallback onSend;
+  final VoidCallback onTempMenu;
   final StickerCubit stickerCubit;
   final FocusNode textFieldFocusNode;
   final bool isTemporary;
+  final Key? menuKey;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,23 @@ class InputBottomBar extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          if (isTemporary)
+            Container(
+              key: menuKey,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.black87 : Colors.white70,
+                shape: BoxShape.circle,
+              ),
+              padding: EdgeInsets.all(6),
+              child: GestureDetector(
+                onTap: onTempMenu,
+                child: Icon(
+                  Icons.more_vert,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+
           if (!isTemporary && onAddAttach != null)
             Container(
               decoration: BoxDecoration(

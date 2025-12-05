@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 class InformationSection extends StatelessWidget {
   const InformationSection({super.key});
@@ -8,7 +9,9 @@ class InformationSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
-        'Настройки сохраняются автоматически и применяются к новым уведомлениям.',
+        S
+            .of(context)
+            .settings_are_saved_automatically_and_applied_to_new_notifications,
         style: Theme.of(
           context,
         ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),

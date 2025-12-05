@@ -731,8 +731,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4c070b63e90d3980766aec3b4ebfaa84ad74bf06"
-      resolved-ref: "4c070b63e90d3980766aec3b4ebfaa84ad74bf06"
+      ref: a90dda606a0b233f4a88da7b5c2c79904e40cd89
+      resolved-ref: a90dda606a0b233f4a88da7b5c2c79904e40cd89
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"

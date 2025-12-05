@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 import 'file_size_formatter.dart';
@@ -125,7 +126,7 @@ class _ImageMessageState extends State<ImageMessage> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Загрузка...',
+                              S.of(context).loading,
                               style: TextStyle(
                                 color:
                                     widget.theme.colorScheme.onSurfaceVariant,
@@ -225,7 +226,7 @@ class _ImageMessageState extends State<ImageMessage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Ошибка загрузки',
+                                    S.of(context).download_error,
                                     style: TextStyle(
                                       color:
                                           widget
@@ -266,7 +267,7 @@ class _ImageMessageState extends State<ImageMessage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Изображение недоступно',
+                              S.of(context).the_image_is_unavailable,
                               style: TextStyle(
                                 color:
                                     widget.theme.colorScheme.onSurfaceVariant,

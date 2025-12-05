@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
-import 'package:meet_now_app/features/chat/widget/chat_type.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sync_timer/sync_timer_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
@@ -45,9 +44,9 @@ class MyBody extends StatelessWidget {
 
     if (permanentChats.isEmpty && temporaryChats.isEmpty) {
       String message = switch (state.selectedChatType) {
-        ChatType.all => 'Нет чатов',
-        ChatType.permanent => 'Нет постоянных чатов',
-        ChatType.temporary => 'Нет временных чатов',
+        ChatType.all => S.of(context).there_are_no_chats,
+        ChatType.permanent => S.of(context).there_are_no_permanent_chats,
+        ChatType.temporary => S.of(context).there_are_no_temporary_chats,
       };
 
       return SizedBox(
@@ -85,8 +84,8 @@ class MyBody extends StatelessWidget {
           if (state.selectedChatType == ChatType.all)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const Text(
-                'Постоянные чаты',
+              child: Text(
+                S.of(context).constant_chats,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
@@ -111,7 +110,8 @@ class MyBody extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     child: ChatTile(
                       name: name,
-                      lastMessage: chat.lastMessage ?? "Начните общение",
+                      lastMessage:
+                          chat.lastMessage ?? S.of(context).start_chatting,
                       unreadCount: chat.unreadCount,
                       avatar: avatar,
                       chat: chat,
@@ -126,8 +126,8 @@ class MyBody extends StatelessWidget {
           if (state.selectedChatType == ChatType.all)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const Text(
-                'Временные чаты',
+              child: Text(
+                S.of(context).temporary_chats,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
@@ -137,7 +137,7 @@ class MyBody extends StatelessWidget {
             runSpacing: 12,
             children:
                 temporaryChats.map((chat) {
-                  const name = 'Анонимный чат';
+                  final name = S.of(context).anonymous_chat;
 
                   return SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -156,7 +156,8 @@ class MyBody extends StatelessWidget {
                         builder: (context, timerState) {
                           return TemporaryChatTile(
                             name: name,
-                            lastMessage: "Это анонимный чат",
+                            lastMessage:
+                                S.of(context).this_is_an_anonymous_chat,
                             unreadCount: 0,
                             avatar: null,
                             chat: chat,

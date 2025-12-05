@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
 import 'package:meet_now_app/features/my_report/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
@@ -59,10 +60,17 @@ class _MyReportScreenState extends State<MyReportScreen> {
                     return state.when(
                       initial: () => const ReportsSkeleton(),
                       loading: () => const ReportsSkeleton(),
-                      error: (msg) => Center(child: Text("Ошибка: $msg")),
+                      error:
+                          (msg) => Center(
+                            child: Text("${S.of(context).error} $msg"),
+                          ),
                       loaded: (reports) {
                         if (reports.isEmpty) {
-                          return const Center(child: Text("Жалоб пока нет"));
+                          return Center(
+                            child: Text(
+                              S.of(context).there_are_no_complaints_yet,
+                            ),
+                          );
                         }
                         return ReportWrap(reports: reports);
                       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/purpose/purpose.dart';
 
 import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
@@ -73,14 +74,14 @@ class _PurposesSearchDialogState extends State<PurposesSearchDialog> {
         child: Column(
           children: [
             Text(
-              'Выберите цели',
+              S.of(context).select_goals,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _searchController,
-              decoration: const InputDecoration(
-                hintText: 'Поиск целей...',
+              decoration: InputDecoration(
+                hintText: S.of(context).goal_search,
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -119,14 +120,14 @@ class _PurposesSearchDialogState extends State<PurposesSearchDialog> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Отмена'),
+                    child: Text(S.of(context).cancel),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _applySelection,
-                    child: const Text('Применить'),
+                    child: Text(S.of(context).apply),
                   ),
                 ),
               ],

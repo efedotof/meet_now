@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/notification/cubit/notification_cubit.dart';
 import 'package:meet_now_app/features/notification/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class NotificationScreen extends StatefulWidget {
@@ -88,7 +89,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('Ошибка: $message'),
+                              Text('${S.of(context).error} $message'),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: () {
@@ -96,7 +97,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       .read<NotificationCubit>()
                                       .loadSettings();
                                 },
-                                child: const Text('Повторить'),
+                                child: Text(S.of(context).repeat),
                               ),
                             ],
                           ),
