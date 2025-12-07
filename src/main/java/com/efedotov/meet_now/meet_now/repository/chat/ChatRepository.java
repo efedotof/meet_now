@@ -34,4 +34,19 @@ public interface ChatRepository extends JpaRepository<Chat, UUID> {
         long countByIsOpenedTrue();
 
         long countByDeletedByUser1TrueOrDeletedByUser2True();
+
+        @Query("SELECT c FROM Chat c WHERE " +
+                        "(c.user1.id = :user1Id AND c.user2.id = :user2Id) OR " +
+                        "(c.user1.id = :user2Id AND c.user2.id = :user1Id)")
+        Optional<Chat> findChatByTwoUsers(@Param("user1Id") UUID user1Id,
+                        @Param("user2Id") UUID user2Id);
+
+        @Query("SELECT c FROM Chat c WHERE " +
+                        "((c.user1.id = :user1Id AND c.user2.id = :user2Id) OR " +
+                        "(c.user1.id = :user2Id AND c.user2.id = :user1Id)) AND " +
+                        "((c.user1.id = :userId AND c.deletedByUser1 = false) OR " +
+                        "(c.user2.id = :userId AND c.deletedByUser2 = false))")
+        Optional<Chat> findNonDeletedChatByTwoUsers(@Param("user1Id") UUID user1Id,
+                        @Param("user2Id") UUID user2Id,
+                        @Param("userId") UUID userId);
 }

@@ -2,17 +2,23 @@ package com.efedotov.meet_now.meet_now.service.chat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.PaginatedMessagesResponse;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.content.StickerDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserActivityDto;
@@ -137,6 +143,47 @@ public class WebSocketMessageService {
                 responseDto.getMedia() != null ? responseDto.getMedia().size() : 0);
 
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedMessagesResponse getPaginatedMessages(UUID chatId, int page, int size) {
+        log.info("Getting paginated messages: chatId={}, page={}, size={}", chatId, page, size);
+
+        boolean isPermanentChat = chatRepository.existsById(chatId);
+        boolean isTemporaryChat = temporaryChatRepository.existsById(chatId);
+
+        if (!isPermanentChat && !isTemporaryChat) {
+            throw new RuntimeException("Chat not found");
+        }
+
+        Page<Message> messagePage;
+        long totalMessages;
+
+        if (isPermanentChat) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            messagePage = messageRepository.findMessagesByChatId(chatId, pageable);
+            totalMessages = messageRepository.countByChatId(chatId);
+        } else {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            messagePage = messageRepository.findMessagesByTempChatId(chatId, pageable);
+            totalMessages = messageRepository.countByTempChatId(chatId);
+        }
+
+        List<Message> messages = new ArrayList<>(messagePage.getContent());
+        Collections.reverse(messages);
+
+        List<MessageDto> dtos = messages.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        PaginatedMessagesResponse response = new PaginatedMessagesResponse();
+        response.setMessages(dtos);
+        response.setCurrentPage(page);
+        response.setTotalPages(messagePage.getTotalPages());
+        response.setTotalMessages((int) totalMessages);
+        response.setHasNext(messagePage.hasNext());
+
+        return response;
     }
 
     private void saveMessageMedia(Message message, List<MessageMediaDto> mediaDtos) {

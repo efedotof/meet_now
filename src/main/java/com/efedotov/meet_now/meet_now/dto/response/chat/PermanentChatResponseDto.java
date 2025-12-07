@@ -24,5 +24,4 @@ public class PermanentChatResponseDto {
     private LocalDateTime lastMessageAt;
     private Long unreadCount;
     private Long totalMessages;
-
 }

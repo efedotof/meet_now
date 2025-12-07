@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.CreatePermanentChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreateTemporaryChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteMessageRequest;
@@ -38,7 +39,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/chat")
 @Tag(name = "Chat", description = "Управление чатами: создание временного чата, завершение чата, получение списка активных чатов, история сообщений")
@@ -150,6 +153,40 @@ public class ChatController {
         return ResponseEntity.ok(tempChat);
     }
 
+    @Operation(summary = "Создать или получить постоянный чат")
+    @PostMapping("/permanent")
+    public ResponseEntity<PermanentChatResponseDto> createOrGetPermanentChat(
+            @RequestBody CreatePermanentChatRequest request) {
+
+        try {
+            Chat chat = chatService.createOrGetPermanentChat(
+                    request.getUser1Id(),
+                    request.getUser2Id());
+
+            PermanentChatResponseDto dto = mapToPermanentChatDto(chat, request.getUser1Id());
+            return ResponseEntity.ok(dto);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Operation(summary = "Создать или получить постоянный чат (версия с параметрами)")
+    @PostMapping("/permanent/{user1Id}/{user2Id}")
+    public ResponseEntity<PermanentChatResponseDto> createOrGetPermanentChat(
+            @PathVariable UUID user1Id,
+            @PathVariable UUID user2Id) {
+
+        try {
+            Chat chat = chatService.createOrGetPermanentChat(user1Id, user2Id);
+            PermanentChatResponseDto dto = mapToPermanentChatDto(chat, user1Id);
+            return ResponseEntity.ok(dto);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @Operation(summary = "Завершить временный чат")
     @PostMapping("/temporary/{tempChatId}/finish")
     public ResponseEntity<Void> finishTemporaryChat(@PathVariable UUID tempChatId) {
@@ -203,8 +240,26 @@ public class ChatController {
     @Operation(summary = "Удалить постоянный чат")
     @DeleteMapping("/permanent")
     public ResponseEntity<Void> deletePermanentChat(@RequestBody DeleteChatRequest request) {
-        chatService.deletePermanentChat(request.getChatId(), request.getUserId(), request.isDeleteForBoth());
-        return ResponseEntity.ok().build();
+        if (request.getChatId() == null) {
+            log.error("chatId is null in deletePermanentChat request");
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (request.getUserId() == null) {
+            log.error("userId is null in deletePermanentChat request");
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            chatService.deletePermanentChat(request.getChatId(), request.getUserId(), request.isDeleteForBoth());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid argument in deletePermanentChat: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (IllegalStateException e) {
+            log.error("Illegal state in deletePermanentChat: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Operation(summary = "Удалить временный чат")

@@ -161,6 +161,52 @@ public class ChatService {
     }
 
     @Transactional
+    public Chat createOrGetPermanentChat(UUID user1Id, UUID user2Id) {
+        log.info("Создание или получение постоянного чата между {} и {}", user1Id, user2Id);
+
+        if (user1Id.equals(user2Id)) {
+            throw new IllegalArgumentException("Нельзя создать чат с самим собой");
+        }
+
+        User user1 = userRepository.findById(user1Id)
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь 1 не найден: " + user1Id));
+
+        User user2 = userRepository.findById(user2Id)
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь 2 не найден: " + user2Id));
+
+        Optional<Chat> existingChat = chatRepository.findChatByTwoUsers(user1Id, user2Id);
+
+        if (existingChat.isPresent()) {
+            Chat chat = existingChat.get();
+
+            boolean isActive = !Boolean.TRUE.equals(chat.getDeletedByUser1()) &&
+                    !Boolean.TRUE.equals(chat.getDeletedByUser2()) &&
+                    Boolean.TRUE.equals(chat.getIsOpened());
+
+            if (isActive) {
+                log.info("Найден существующий активный постоянный чат: {}", chat.getChatId());
+                return chat;
+            }
+
+            log.info("Чат найден, но не активен (удален или закрыт). Создаем новый.");
+        }
+
+        Chat chat = new Chat();
+        chat.setUser1(user1);
+        chat.setUser2(user2);
+        chat.setCreatedAt(LocalDateTime.now());
+        chat.setIsOpened(true);
+        chat.setDeletedByUser1(false);
+        chat.setDeletedByUser2(false);
+        chat.setDeletedAt(null);
+
+        chatRepository.save(chat);
+        log.info("Создан новый постоянный чат между {} и {}", user1Id, user2Id);
+
+        return chat;
+    }
+
+    @Transactional
     public void finishTemporaryChat(UUID tempChatId) {
         temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
             if (!tempChat.getIsFinished()) {
@@ -278,6 +324,16 @@ public class ChatService {
 
     @Transactional
     public void deletePermanentChat(UUID chatId, UUID userId, boolean deleteForBoth) {
+        if (chatId == null) {
+            log.error("chatId is null in deletePermanentChat");
+            throw new IllegalArgumentException("chatId must not be null");
+        }
+
+        if (userId == null) {
+            log.error("userId is null in deletePermanentChat");
+            throw new IllegalArgumentException("userId must not be null");
+        }
+
         chatRepository.findById(chatId).ifPresent(chat -> {
             if (!isUserParticipant(chat, userId)) {
                 throw new IllegalStateException("Пользователь не является участником чата");
@@ -287,6 +343,7 @@ public class ChatService {
                 chat.setDeletedByUser1(true);
                 chat.setDeletedByUser2(true);
                 chat.setDeletedAt(LocalDateTime.now());
+                chat.setIsOpened(false);
                 log.info("Чат {} удален для обоих пользователей", chatId);
             } else {
                 if (chat.getUser1().getId().equals(userId)) {
@@ -295,6 +352,7 @@ public class ChatService {
                     chat.setDeletedByUser2(true);
                 }
                 chat.setDeletedAt(LocalDateTime.now());
+                chat.setIsOpened(false);
                 log.info("Чат {} удален для пользователя {}", chatId, userId);
             }
 

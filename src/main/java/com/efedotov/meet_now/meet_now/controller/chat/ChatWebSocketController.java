@@ -15,8 +15,10 @@ import org.springframework.stereotype.Controller;
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatWebSocketRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.ChatMessagesRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.MarkMessagesReadRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.PaginatedMessagesRequest;
 import com.efedotov.meet_now.meet_now.dto.response.chat.AgreeChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.PaginatedMessagesResponse;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserActivityDto;
@@ -120,6 +122,27 @@ public class ChatWebSocketController {
         dto.setIsFinished(chat.getIsFinished());
         dto.setBothAgreed(chat.getBothAgreed());
         return dto;
+    }
+
+    @MessageMapping("/chat.getMessages.paginated")
+    public void getPaginatedMessages(@Payload PaginatedMessagesRequest request, Principal principal) {
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID userId = userDetails.getUserId();
+        String username = principal.getName();
+
+        log.info("Received getPaginatedMessages request: chatId={}, page={}, size={}, userId={}",
+                request.getChatId(), request.getPage(), request.getSize(), userId);
+
+        PaginatedMessagesResponse response = messageQueryService.getPaginatedMessagesForChat(
+                request.getChatId(), request.getPage(), request.getSize());
+
+        messagingTemplate.convertAndSendToUser(
+                username,
+                "queue/chat.messages.paginated",
+                response);
+
+        log.info("Sent paginated messages for chatId={}, page={} to username={}",
+                request.getChatId(), request.getPage(), username);
     }
 
     @MessageMapping("/chat.markAsRead")

@@ -17,6 +17,7 @@ public class MessageDto {
     private String text;
     private LocalDateTime createdAt;
     private boolean isRead;
-    private String contentType = "text"; 
+    private String contentType = "text";
     private List<MessageMediaDto> media = new ArrayList<>();
+
 }

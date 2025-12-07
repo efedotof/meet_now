@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
 import com.efedotov.meet_now.meet_now.model.chat.Message;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
@@ -35,4 +37,21 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     @Query("SELECT m FROM Message m WHERE m.isDeleted = false AND m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt ASC")
     List<Message> findNonDeletedMessagesByTempChatId(@Param("tempChatId") UUID tempChatId);
 
+    @Query("SELECT m FROM Message m WHERE m.chat.chatId = :chatId ORDER BY m.createdAt DESC")
+    Page<Message> findMessagesByChatId(@Param("chatId") UUID chatId, Pageable pageable);
+
+    @Query("SELECT m FROM Message m WHERE m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt DESC")
+    Page<Message> findMessagesByTempChatId(@Param("tempChatId") UUID tempChatId, Pageable pageable);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.chat.chatId = :chatId")
+    Long countByChatId(@Param("chatId") UUID chatId);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.temporaryChat.tempChatId = :tempChatId")
+    Long countByTempChatId(@Param("tempChatId") UUID tempChatId);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.chat.chatId = :chatId AND m.isDeleted = false")
+    Long countNonDeletedByChatId(@Param("chatId") UUID chatId);
+
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.temporaryChat.tempChatId = :tempChatId AND m.isDeleted = false")
+    Long countNonDeletedByTempChatId(@Param("tempChatId") UUID tempChatId);
 }

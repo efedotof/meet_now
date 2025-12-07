@@ -82,4 +82,5 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
+
 }
