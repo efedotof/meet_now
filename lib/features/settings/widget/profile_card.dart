@@ -13,7 +13,7 @@ class ProfileCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GestureDetector(
-        onTap: () => context.pushRoute(const ProfileRoute()),
+        onTap: () => context.pushRoute(ProfileRoute()),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

@@ -3189,6 +3189,51 @@ class S {
       args: [],
     );
   }
+
+  /// `Постоянные`
+  String get permanent {
+    return Intl.message('Постоянные', name: 'permanent', desc: '', args: []);
+  }
+
+  /// `Временные`
+  String get temporary {
+    return Intl.message('Временные', name: 'temporary', desc: '', args: []);
+  }
+
+  /// `Все`
+  String get all {
+    return Intl.message('Все', name: 'all', desc: '', args: []);
+  }
+
+  /// `Удалить фото`
+  String get delete_photo {
+    return Intl.message(
+      'Удалить фото',
+      name: 'delete_photo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Вы уверены, что хотите удалить это фото?`
+  String get are_you_sure_you_want_to_delete_this_photo {
+    return Intl.message(
+      'Вы уверены, что хотите удалить это фото?',
+      name: 'are_you_sure_you_want_to_delete_this_photo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Подтвердите удаление`
+  String get confirm_delete {
+    return Intl.message(
+      'Подтвердите удаление',
+      name: 'confirm_delete',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

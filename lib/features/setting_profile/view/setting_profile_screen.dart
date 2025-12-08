@@ -24,6 +24,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   late final MediaSelectionCubit _mediaSelectionCubit;
+  final DeviceMediaLibrary mediaLibrary = DeviceMediaLibrary();
 
   @override
   void initState() {
@@ -129,44 +130,62 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
     });
   }
 
-  void _handleAvatarSelection(MediaItem selectedMedia) {
+  void _handleAvatarSelection(MediaItem selectedMedia) async {
     final cubit = context.read<SettingProfileCubit>();
+    final currentContext = context;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const CircularProgressIndicator(strokeWidth: 2),
-            const SizedBox(width: 16),
-            Text(S.of(context).uploadingavatar),
-          ],
+    if (currentContext.mounted) {
+      ScaffoldMessenger.of(currentContext).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(strokeWidth: 2),
+              const SizedBox(width: 16),
+              Text(S.of(currentContext).uploadingavatar),
+            ],
+          ),
+          duration: const Duration(seconds: 5),
         ),
-        duration: const Duration(seconds: 5),
-      ),
-    );
+      );
+    }
 
-    cubit
-        .uploadAvatar(selectedMedia.uri)
-        .then((_) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    try {
+      final bytes = await mediaLibrary.getFileBytes(selectedMedia.uri);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(S.of(context).avatarupdatedsuccessfully),
-              backgroundColor: Colors.green,
-            ),
-          );
-        })
-        .catchError((error) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      if (!currentContext.mounted) return;
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${S.of(context).avataruploadfailed}: $error'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        });
+      if (bytes == null) {
+        throw Exception('Failed to load image bytes');
+      }
+
+      await cubit.uploadAvatar(bytes);
+
+      if (!currentContext.mounted) return;
+
+      ScaffoldMessenger.of(currentContext).hideCurrentSnackBar();
+
+      if (currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text(S.of(currentContext).avatarupdatedsuccessfully),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (error) {
+      if (!currentContext.mounted) return;
+
+      ScaffoldMessenger.of(currentContext).hideCurrentSnackBar();
+
+      if (currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text('${S.of(currentContext).avataruploadfailed}: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -279,10 +298,14 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.camera_alt,
                                 size: 20,
-                                color: Colors.white,
+                                color:
+                                    Theme.brightnessOf(context) ==
+                                            Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white,
                               ),
                               onPressed: _showMediaPickerBottomSheet,
                             ),

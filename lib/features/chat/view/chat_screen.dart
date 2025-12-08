@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/chat/widget/widget.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
@@ -46,39 +47,38 @@ class _ChatScreenState extends State<ChatScreen> {
         child: BlocBuilder<ChatCubit, ChatState>(
           builder: (context, state) {
             final chatTypes = [
-              (ChatType.all, "Все"),
-              (ChatType.permanent, "Постоянные"),
-              (ChatType.temporary, "Временные"),
+              (ChatType.all, S.of(context).all),
+              (ChatType.permanent, S.of(context).permanent),
+              (ChatType.temporary, S.of(context).temporary),
             ];
-            return Scaffold(
-              appBar: AppBar(
-                scrolledUnderElevation: 0,
-                surfaceTintColor: Colors.transparent,
-                actions: [
-                  RawMaterialButton(
-                    fillColor: isDark ? Colors.white : Colors.black,
-                    onPressed: () => context.pushRoute(FriendsRoute()),
-                    elevation: 2.0,
-                    shape: const CircleBorder(),
-                    constraints: const BoxConstraints(minWidth: 0.0),
-                    child: Icon(
-                      Icons.add,
-                      color: isDark ? Colors.black : Colors.white,
+            return RefreshIndicator(
+              onRefresh: () => context.read<ChatCubit>().refresh(),
+              child: Scaffold(
+                appBar: AppBar(
+                  scrolledUnderElevation: 0,
+                  surfaceTintColor: Colors.transparent,
+                  actions: [
+                    RawMaterialButton(
+                      fillColor: isDark ? Colors.white : Colors.black,
+                      onPressed: () => context.pushRoute(FriendsRoute()),
+                      elevation: 2.0,
+                      shape: const CircleBorder(),
+                      constraints: const BoxConstraints(minWidth: 0.0),
+                      child: Icon(
+                        Icons.add,
+                        color: isDark ? Colors.black : Colors.white,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              body: RefreshIndicator(
-                onRefresh: () => context.read<ChatCubit>().refresh(),
-                child: SingleChildScrollView(
+                body: SingleChildScrollView(
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SearchField(controller: _searchController),
                       const SizedBox(height: 10),
-
                       Wrap(
                         spacing: 8,
                         children:
@@ -86,6 +86,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               return ChoiceChip(
                                 label: Text(type.$2),
                                 selected: state.selectedChatType == type.$1,
+                                iconTheme: IconThemeData(
+                                  color: isDark ? Colors.black : Colors.white,
+                                ),
+                                checkmarkColor:
+                                    isDark ? Colors.black : Colors.white,
                                 onSelected: (selected) {
                                   if (selected) {
                                     context.read<ChatCubit>().changeChatType(
@@ -96,9 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                             }).toList(),
                       ),
-
                       const SizedBox(height: 10),
-
                       MyBody(state: state),
                     ],
                   ),

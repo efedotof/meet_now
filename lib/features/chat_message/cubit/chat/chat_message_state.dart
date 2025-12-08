@@ -7,6 +7,8 @@ abstract class ChatMessageState with _$ChatMessageState {
   const factory ChatMessageState.loaded({
     required List<Message> messages,
     @Default(false) bool isLoadingMore,
+    @Default(true) bool hasMore,
+    @Default(0) int currentPage,
     required bool isTemporary,
     @Default(false) bool showContinueRequest,
     @Default(false) bool isWaitingForResponse,

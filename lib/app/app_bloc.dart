@@ -121,6 +121,7 @@ class AppBloc extends StatelessWidget {
                 uploadImageInterface: context.read<UploadImageInterface>(),
                 socketInterface: context.read<SocketServiceInterface>(),
                 chatInterface: context.read<ChatInterface>(),
+                userInterface: context.read<UserInterface>(),
               ),
         ),
         BlocProvider(
@@ -199,6 +200,8 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => StickerCubit(
                 stickerParksInterface: context.read<StikersParksInterface>(),
+                // giftInterface: context.read<GiftInterface>(),
+                messageInterface: context.read<MessageInterface>(),
               ),
         ),
         BlocProvider(

@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app_server/repository/user/user_interface.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'setting_profile_state.dart';
 part 'setting_profile_cubit.freezed.dart';
@@ -20,6 +21,7 @@ class SettingProfileCubit extends Cubit<SettingProfileState> {
 
   final UserInterface _userInterface;
   final UploadImageInterface _uploadImageInterface;
+
   void initialize(User user) {
     emit(
       state.copyWith(
@@ -148,34 +150,40 @@ class SettingProfileCubit extends Cubit<SettingProfileState> {
     }
   }
 
-  Future<void> uploadAvatar(String avatarUri) async {
+  Future<void> uploadAvatar(Uint8List avatarBytes) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
+      final tempFile = await _createTempFileFromBytes(avatarBytes);
 
-      final file = File(avatarUri);
-      final imageData = await file.readAsBytes();
-      setTempAvatar(imageData);
+      setTempAvatar(avatarBytes);
 
-      final fileUrls = await _uploadImageInterface.uploadMultipleMedia([
-        avatarUri,
-      ]);
+      try {
+        final fileUrls = await _uploadImageInterface.uploadAvatar(
+          tempFile.path,
+        );
 
-      if (fileUrls.isEmpty) {
-        throw Exception('No URL received after upload');
+        if (fileUrls.isEmpty) {
+          throw Exception('No URL received after upload');
+        }
+
+        final avatarUrl = fileUrls;
+        final updatedUser = state.user!.copyWith(avatar: avatarUrl);
+        await _userInterface.putUserProfile(user: updatedUser);
+
+        await tempFile.delete();
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            user: updatedUser,
+            isSuccess: true,
+            tempAvatarData: null,
+          ),
+        );
+      } catch (e) {
+        await tempFile.delete();
+        rethrow;
       }
-
-      final avatarUrl = fileUrls.first;
-      final updatedUser = state.user!.copyWith(avatar: avatarUrl);
-      await _userInterface.putUserProfile(user: updatedUser);
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          user: updatedUser,
-          isSuccess: true,
-          tempAvatarData: null,
-        ),
-      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -185,6 +193,14 @@ class SettingProfileCubit extends Cubit<SettingProfileState> {
         ),
       );
     }
+  }
+
+  Future<File> _createTempFileFromBytes(Uint8List bytes) async {
+    final tempDir = await getTemporaryDirectory();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final tempFile = File('${tempDir.path}/avatar_$timestamp.jpg');
+    await tempFile.writeAsBytes(bytes);
+    return tempFile;
   }
 
   void setTempAvatar(Uint8List imageData) {

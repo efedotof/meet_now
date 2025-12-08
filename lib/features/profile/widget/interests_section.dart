@@ -20,20 +20,23 @@ class InterestsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children:
-              user.interests
-                  .map(
-                    (interest) => Chip(
-                      label: Text(interest),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                user.interests
+                    .map(
+                      (interest) => Chip(
+                        label: Text(interest),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                    )
+                    .toList(),
+          ),
         ),
       ],
     );

@@ -47,6 +47,7 @@ class BuildScaffold extends StatefulWidget {
   final VoidCallback? onAddTimeChat;
   final VoidCallback? onReportUser;
   final VoidCallback? onRequestFriend;
+
   @override
   State<BuildScaffold> createState() => _BuildScaffoldState();
 }
@@ -123,6 +124,7 @@ class _BuildScaffoldState extends State<BuildScaffold> {
           height: MediaQuery.of(context).size.height,
           child: Image.asset("assets/chat_bg/fone2.png", fit: BoxFit.fill),
         ),
+
         Expanded(
           child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
             builder: (context, state) {
@@ -147,6 +149,8 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                   loaded: (
                     messages,
                     isLoadingMore,
+                    hasMore,
+                    currentPage,
                     isTemporary,
                     showContinueRequest,
                     isWaitingForResponse,
@@ -160,21 +164,9 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                       }
                     });
 
-                    return Column(
-                      children: [
-                        if (isLoadingMore)
-                          const LinearProgressIndicator(
-                            minHeight: 2,
-                            color: Colors.blueAccent,
-                          ),
-                        Expanded(
-                          child: MessagesList(
-                            messages: messages,
-                            scrollController: _scrollController,
-                            currentUserId: widget.currentUserId,
-                          ),
-                        ),
-                      ],
+                    return MessagesList(
+                      scrollController: _scrollController,
+                      currentUserId: widget.currentUserId,
                     );
                   },
                 ),
@@ -229,8 +221,20 @@ class _BuildScaffoldState extends State<BuildScaffold> {
             onContinueChat: widget.onContinueChat,
             onAddTimeChat: widget.onAddTimeChat,
             onReportUser: widget.onReportUser,
+            recipientId: widget.recipientId,
+            tempChatId: widget.chatId,
           ),
         ),
+
+        if (_showScrollToBottomButton)
+          Positioned(
+            bottom: 80,
+            right: 16,
+            child: FloatingActionButton.small(
+              onPressed: _scrollToBottomImmediately,
+              child: const Icon(Icons.arrow_downward),
+            ),
+          ),
       ],
     );
   }

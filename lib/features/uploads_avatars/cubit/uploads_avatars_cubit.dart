@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
@@ -16,7 +17,7 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
 
   final UploadImageInterface _uploadImageInterface;
   String? _avatarUrl;
-  List<String> _galleryImages = [];
+  final List<String> _galleryImages = [];
   String? _selectedAvatarUri;
   Uint8List? _selectedAvatarBytes;
   final List<String> _selectedGalleryUris = [];
@@ -69,6 +70,22 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
 
     await tempFile.writeAsBytes(bytes);
     return tempFile;
+  }
+
+  Future<void> deleatUserImage({required String imageUrl}) async {
+    try {
+      await _uploadImageInterface.deleatImage(imageUrl: imageUrl);
+    } catch (e) {
+      debugPrint("Произошла ошибка: $e");
+    }
+  }
+
+  Future<void> deleatAlluserImage() async {
+    try {
+      await _uploadImageInterface.deleatAllImage();
+    } catch (e) {
+      debugPrint("Произошла ошибка: $e");
+    }
   }
 
   void removeAvatar() {

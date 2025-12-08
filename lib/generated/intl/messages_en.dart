@@ -67,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "administrator": MessageLookupByLibrary.simpleMessage("Администратор"),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
+    "all": MessageLookupByLibrary.simpleMessage("Все"),
     "all_messages_are_saved": MessageLookupByLibrary.simpleMessage(
       "Все сообщения сохранены.",
     ),
@@ -87,6 +88,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "answers": MessageLookupByLibrary.simpleMessage("Ответы"),
     "appSettings": MessageLookupByLibrary.simpleMessage("App Settings"),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
+    "are_you_sure_you_want_to_delete_this_photo":
+        MessageLookupByLibrary.simpleMessage(
+          "Вы уверены, что хотите удалить это фото?",
+        ),
     "are_you_sure_you_want_to_delete_this_temporary_chat":
         MessageLookupByLibrary.simpleMessage(
           "Вы уверены, что хотите удалить этот временный чат?",
@@ -162,6 +167,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirm_and_upload_your_avatar": MessageLookupByLibrary.simpleMessage(
       "Подтвердить и загрузить аватар",
     ),
+    "confirm_delete": MessageLookupByLibrary.simpleMessage(
+      "Подтвердите удаление",
+    ),
     "confirmed": MessageLookupByLibrary.simpleMessage("Подтвержден"),
     "connecting": MessageLookupByLibrary.simpleMessage("connecting..."),
     "constant_chats": MessageLookupByLibrary.simpleMessage("Постоянные чаты"),
@@ -197,6 +205,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "delete_for_both": MessageLookupByLibrary.simpleMessage(
       "Удалить для обоих",
     ),
+    "delete_photo": MessageLookupByLibrary.simpleMessage("Удалить фото"),
     "deletechat": MessageLookupByLibrary.simpleMessage("DeleteChat"),
     "deletechatconfirmation": MessageLookupByLibrary.simpleMessage(
       "deleteChatConfirmation",
@@ -418,6 +427,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "passwordChangedSuccessfully",
     ),
     "pc": MessageLookupByLibrary.simpleMessage("шт."),
+    "permanent": MessageLookupByLibrary.simpleMessage("Постоянные"),
     "permanentChats": MessageLookupByLibrary.simpleMessage("Permanent Chats"),
     "permanent_chat_has_been_created": MessageLookupByLibrary.simpleMessage(
       "Постоянный чат создан",
@@ -595,6 +605,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tellAboutYourselfValidation": MessageLookupByLibrary.simpleMessage(
       "Tell us about yourself",
     ),
+    "temporary": MessageLookupByLibrary.simpleMessage("Временные"),
     "temporaryChats": MessageLookupByLibrary.simpleMessage("Temporary Chats"),
     "temporary_chat_deleted": MessageLookupByLibrary.simpleMessage(
       "Временный чат удален",

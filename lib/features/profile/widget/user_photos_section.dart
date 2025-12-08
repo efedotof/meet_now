@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meet_now_app/features/uploads_avatars/uploads_avatars.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'empty_state.dart';
 import 'user_network_image.dart';
 
 class UserPhotosSection extends StatelessWidget {
@@ -9,79 +11,113 @@ class UserPhotosSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasImages = images.isNotEmpty;
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250),
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
+        color: Theme.of(context).cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    S.of(context).photo,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (hasImages) ...[
-                    const SizedBox(width: 8),
-                    Chip(
-                      label: Text('${images.length}'),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 12),
-              if (hasImages)
-                SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: images.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: UserNetworkImage(
-                            imageKey: images[index],
-                            width: 100,
-                            height: 120,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              else
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: Column(
+                  Row(
                     children: [
-                      Icon(
-                        Icons.photo_library_outlined,
-                        size: 48,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 12),
                       Text(
-                        S.of(context).there_are_no_photos_yet,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                        S.of(context).photo,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        S
-                            .of(context)
-                            .add_a_photo_so_that_other_users_can_recognize_you,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey[500], fontSize: 14),
-                      ),
+                      if (hasImages) ...[
+                        const SizedBox(width: 8),
+                        Chip(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
+                          label: Text('${images.length}'),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
                     ],
                   ),
+
+                  RawMaterialButton(
+                    fillColor: isDark ? Colors.white : Colors.black,
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        barrierColor: Colors.black54,
+                        builder: (context) {
+                          return FractionallySizedBox(
+                            heightFactor: 0.92,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(22),
+                              ),
+                              child: Material(
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                child: UploadsAvatarsScreen(
+                                  isSkip: true,
+                                  currentPhotosCount: images.length,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    elevation: 2.0,
+                    shape: const CircleBorder(),
+                    constraints: const BoxConstraints(minWidth: 0.0),
+                    child: Icon(
+                      Icons.add,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              if (!hasImages)
+                const EmptyState()
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    double space = 12;
+                    double maxWidth = constraints.maxWidth;
+                    final count = maxWidth <= 380 ? 2 : 3;
+                    final itemWidth = (maxWidth - space * (count - 1)) / count;
+
+                    return Wrap(
+                      spacing: space,
+                      runSpacing: space,
+                      children: List.generate(
+                        images.length,
+                        (index) => SizedBox(
+                          width: itemWidth,
+                          height: itemWidth * 1.05,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: UserNetworkImage(imageKey: images[index]),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
             ],
           ),

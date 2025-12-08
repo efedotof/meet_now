@@ -8,12 +8,14 @@ part 'friend_state.dart';
 part 'friend_cubit.freezed.dart';
 
 class FriendCubit extends Cubit<FriendState> {
-  FriendCubit({required this.friendInterface}) : super(FriendState.initial());
-  final FriendInterface friendInterface;
+  FriendCubit({required FriendInterface friendInterface})
+    : _friendInterface = friendInterface,
+      super(FriendState.initial());
+  final FriendInterface _friendInterface;
 
   Future<void> getIncomeFriend() async {
     try {
-      final friendRequest = await friendInterface.getIncomingRequests();
+      final friendRequest = await _friendInterface.getIncomingRequests();
       if (friendRequest.isEmpty) {
         emit(FriendState.emptyFriendRequest());
       } else {
@@ -26,7 +28,7 @@ class FriendCubit extends Cubit<FriendState> {
 
   Future<void> acceptRequest(String requesterId) async {
     try {
-      await friendInterface.requestAccept(requesterId: requesterId);
+      await _friendInterface.requestAccept(requesterId: requesterId);
       await getIncomeFriend();
     } catch (e) {
       debugPrint("Ошибка при принятии запроса: $e");
@@ -35,7 +37,7 @@ class FriendCubit extends Cubit<FriendState> {
 
   Future<void> rejectRequest(String requesterId) async {
     try {
-      await friendInterface.requestReject(requesterId: requesterId);
+      await _friendInterface.requestReject(requesterId: requesterId);
       await getIncomeFriend();
     } catch (e) {
       debugPrint("Ошибка при отклонении запроса: $e");

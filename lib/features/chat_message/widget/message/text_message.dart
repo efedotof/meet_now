@@ -21,7 +21,13 @@ class TextMessage extends StatelessWidget {
         color:
             message.isSticker
                 ? theme.colorScheme.onSurface
-                : (isMe ? Colors.white : theme.colorScheme.onSurface),
+                : (theme.brightness == Brightness.dark
+                    ? isMe
+                        ? Colors.black
+                        : Colors.white
+                    : isMe
+                    ? Colors.white
+                    : Colors.black),
         height: 1.4,
       ),
     );

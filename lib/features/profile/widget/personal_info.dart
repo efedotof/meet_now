@@ -15,15 +15,6 @@ class PersonalInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.email, color: theme.iconTheme.color),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(user.email, style: theme.textTheme.bodyLarge),
-              ),
-            ],
-          ),
           if (user.description != null) ...[
             const Divider(height: 24, thickness: 0.5),
             Text(S.of(context).about_me, style: theme.textTheme.titleMedium),
