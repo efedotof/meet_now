@@ -12,6 +12,7 @@ class RarityFilterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
     return BlocBuilder<GiftCubit, GiftState>(
       builder: (context, state) {
         return state.maybeWhen(
@@ -45,6 +46,10 @@ class RarityFilterWidget extends StatelessWidget {
                       left: index == 0 ? 0 : 0,
                     ),
                     child: ChoiceChip(
+                      iconTheme: IconThemeData(
+                        color: isDark ? Colors.black : Colors.white,
+                      ),
+
                       label: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -59,7 +64,7 @@ class RarityFilterWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: isDark ? Colors.white70 : Colors.black87,
                       selectedColor: _parseColor(rarity.color),
                       selected: isSelected,
                       onSelected: (selected) {

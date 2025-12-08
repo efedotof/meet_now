@@ -100,6 +100,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Form(
@@ -124,14 +125,22 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   focusNode: _cityFocusNode,
                   decoration: InputDecoration(
                     labelText: S.of(context).city,
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                     hintText: S.of(context).start_entering_the_name_of_the_city,
-                    prefixIcon: const Icon(Icons.location_city_outlined),
+
+                    prefixIcon: Icon(
+                      Icons.location_city_outlined,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],
                   ),
+                  style: TextStyle(color: isDark ? Colors.black : Colors.white),
                   onChanged: _searchCities,
                   validator:
                       (value) =>
@@ -180,7 +189,13 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                     ),
                                     title: Text(
                                       city.nameCity,
-                                      style: const TextStyle(fontSize: 16),
+                                      style: TextStyle(
+                                        color:
+                                            isDark
+                                                ? Colors.black
+                                                : Colors.white,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                     onTap: () => _onCitySelected(city),
                                   );
@@ -197,9 +212,19 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   initialValue: widget.formData.firstname,
                   decoration: InputDecoration(
                     labelText: S.of(context).firstName,
-                    prefixIcon: const Icon(Icons.person_outline),
+                    prefixIcon: Icon(
+                      Icons.person_outline,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],
@@ -217,13 +242,23 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   initialValue: widget.formData.subname,
                   decoration: InputDecoration(
                     labelText: S.of(context).lastName,
-                    prefixIcon: const Icon(Icons.person_outline),
+                    prefixIcon: Icon(
+                      Icons.person_outline,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],
                   ),
+                  style: TextStyle(color: isDark ? Colors.black : Colors.white),
                   validator:
                       (value) =>
                           value!.isEmpty ? S.of(context).enterLastName : null,
@@ -240,9 +275,15 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                           : '',
                   decoration: InputDecoration(
                     labelText: S.of(context).age,
-                    prefixIcon: const Icon(Icons.cake_outlined),
+                    prefixIcon: Icon(
+                      Icons.cake_outlined,
+                      color: isDark ? Colors.black : Colors.white,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.black : Colors.white,
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],

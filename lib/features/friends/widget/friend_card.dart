@@ -1,5 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
 
 class FriendCard extends StatelessWidget {
@@ -9,7 +13,16 @@ class FriendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        final chat = await context.read<ChatCubit>().createPermomentChat(
+          user2id: friend.id,
+        );
+        if (chat != null && context.mounted) {
+          context.pushRoute(
+            ChatMessageRoute(chatModel: chat, temporaryChatModel: null),
+          );
+        }
+      },
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

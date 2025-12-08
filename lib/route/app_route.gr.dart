@@ -359,18 +359,65 @@ class PinCodeRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [ProfileScreen]
-class ProfileRoute extends PageRouteInfo<void> {
-  const ProfileRoute({List<PageRouteInfo>? children})
-    : super(ProfileRoute.name, initialChildren: children);
+class ProfileRoute extends PageRouteInfo<ProfileRouteArgs> {
+  ProfileRoute({
+    Key? key,
+    FriendRequest? friendRequest,
+    User? otherUser,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ProfileRoute.name,
+         args: ProfileRouteArgs(
+           key: key,
+           friendRequest: friendRequest,
+           otherUser: otherUser,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'ProfileRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const ProfileScreen();
+      final args = data.argsAs<ProfileRouteArgs>(
+        orElse: () => const ProfileRouteArgs(),
+      );
+      return ProfileScreen(
+        key: args.key,
+        friendRequest: args.friendRequest,
+        otherUser: args.otherUser,
+      );
     },
   );
+}
+
+class ProfileRouteArgs {
+  const ProfileRouteArgs({this.key, this.friendRequest, this.otherUser});
+
+  final Key? key;
+
+  final FriendRequest? friendRequest;
+
+  final User? otherUser;
+
+  @override
+  String toString() {
+    return 'ProfileRouteArgs{key: $key, friendRequest: $friendRequest, otherUser: $otherUser}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ProfileRouteArgs) return false;
+    return key == other.key &&
+        friendRequest == other.friendRequest &&
+        otherUser == other.otherUser;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^ friendRequest.hashCode ^ otherUser.hashCode;
 }
 
 /// generated route for
@@ -566,16 +613,67 @@ class ThemeRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [UploadsAvatarsScreen]
-class UploadsAvatarsRoute extends PageRouteInfo<void> {
-  const UploadsAvatarsRoute({List<PageRouteInfo>? children})
-    : super(UploadsAvatarsRoute.name, initialChildren: children);
+class UploadsAvatarsRoute extends PageRouteInfo<UploadsAvatarsRouteArgs> {
+  UploadsAvatarsRoute({
+    Key? key,
+    bool? isSkip,
+    int? currentPhotosCount,
+    List<PageRouteInfo>? children,
+  }) : super(
+         UploadsAvatarsRoute.name,
+         args: UploadsAvatarsRouteArgs(
+           key: key,
+           isSkip: isSkip,
+           currentPhotosCount: currentPhotosCount,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'UploadsAvatarsRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const UploadsAvatarsScreen();
+      final args = data.argsAs<UploadsAvatarsRouteArgs>(
+        orElse: () => const UploadsAvatarsRouteArgs(),
+      );
+      return UploadsAvatarsScreen(
+        key: args.key,
+        isSkip: args.isSkip,
+        currentPhotosCount: args.currentPhotosCount,
+      );
     },
   );
+}
+
+class UploadsAvatarsRouteArgs {
+  const UploadsAvatarsRouteArgs({
+    this.key,
+    this.isSkip,
+    this.currentPhotosCount,
+  });
+
+  final Key? key;
+
+  final bool? isSkip;
+
+  final int? currentPhotosCount;
+
+  @override
+  String toString() {
+    return 'UploadsAvatarsRouteArgs{key: $key, isSkip: $isSkip, currentPhotosCount: $currentPhotosCount}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! UploadsAvatarsRouteArgs) return false;
+    return key == other.key &&
+        isSkip == other.isSkip &&
+        currentPhotosCount == other.currentPhotosCount;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^ isSkip.hashCode ^ currentPhotosCount.hashCode;
 }

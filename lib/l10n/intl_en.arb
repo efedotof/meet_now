@@ -393,5 +393,11 @@
   "add_Images": "Добавить изображения",
   "the_limit_of_ten_images_has_been_reached": "Достигнут лимит в 10 изображений",
   "go_to_the_main_screen": "Перейти на главный экран",
-  "uploading_images": "Загрузка изображений"
+  "uploading_images": "Загрузка изображений",
+  "permanent": "Постоянные",
+  "temporary": "Временные",
+  "all": "Все",
+  "delete_photo": "Удалить фото",
+  "are_you_sure_you_want_to_delete_this_photo": "Вы уверены, что хотите удалить это фото?",
+  "confirm_delete": "Подтвердите удаление"
 }

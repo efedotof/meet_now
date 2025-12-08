@@ -1,1 +1,2 @@
-export 'uploads_avatars_view.dart';
+export 'avatar_page.dart';
+export 'gallery_page.dart';

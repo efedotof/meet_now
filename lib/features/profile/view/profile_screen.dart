@@ -9,12 +9,20 @@ import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.friendRequest, this.otherUser});
+  final FriendRequest? friendRequest;
+  final User? otherUser;
+
+  User? _getUser(BuildContext context) {
+    if (friendRequest != null) return friendRequest!.toUser();
+    if (otherUser != null) return otherUser!;
+    return context.read<UserModelAppInterface>().user;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final user = context.read<UserModelAppInterface>().user;
+    final userModel = _getUser(context);
 
     return SkeletonTheme(
       shimmerGradient: const LinearGradient(
@@ -43,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
               child: SafeArea(
                 child: Stack(
                   children: [
-                    user == null
+                    userModel == null
                         ? const ProfileSkeleton()
                         : SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(
@@ -53,24 +61,21 @@ class ProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              const SizedBox(height: 30),
+                              ProfileHeader(user: userModel),
                               const SizedBox(height: 10),
-                              ProfileHeader(user: user),
-                              const SizedBox(height: 20),
-                              if (user.images != null &&
-                                  user.images!.isNotEmpty) ...[
-                                UserPhotosSection(images: user.images!),
+                              PersonalInfo(theme: theme, user: userModel),
+                              const SizedBox(height: 16),
+                              InterestsSection(theme: theme, user: userModel),
+                              const SizedBox(height: 16),
+                              PurposesSection(theme: theme, user: userModel),
+                              const SizedBox(height: 16),
+                              if (userModel.images != null &&
+                                  userModel.images!.isNotEmpty &&
+                                  otherUser == null) ...[
+                                UserPhotosSection(images: userModel.images!),
                                 const SizedBox(height: 20),
                               ],
-                              ProfileStats(user: user),
-                              const SizedBox(height: 20),
-                              PersonalInfo(theme: theme, user: user),
-                              const SizedBox(height: 16),
-                              InterestsSection(theme: theme, user: user),
-                              const SizedBox(height: 16),
-                              PurposesSection(theme: theme, user: user),
-                              const SizedBox(height: 16),
-                              AccountInfoSection(theme: theme, user: user),
-                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
@@ -95,35 +100,35 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    Positioned(
-                      right: 12,
-                      top: 12,
-                      child: Material(
-                        color: Colors.black87,
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap:
-                              () => context.pushRoute(
-                                SettingProfileRoute(
-                                  user:
-                                      context
-                                          .read<UserModelAppInterface>()
-                                          .user!,
+                    if (friendRequest == null && otherUser == null)
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: Material(
+                          color: Colors.black87,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap:
+                                () => context.pushRoute(
+                                  SettingProfileRoute(
+                                    user:
+                                        context
+                                            .read<UserModelAppInterface>()
+                                            .user!,
+                                  ),
                                 ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 18,
                               ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 18,
                             ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -131,6 +136,32 @@ class ProfileScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+extension FriendRequestToUser on FriendRequest {
+  User toUser() {
+    return User(
+      id: id,
+      username: username,
+      firstname: firstname,
+      subname: subname,
+      description: description,
+      avatar: avatar,
+      city: city,
+      age: age,
+      purposes: purposes,
+      interests: interests,
+      verified: verified,
+      roles: roles,
+      isOnline: isOnline,
+      floor: floor,
+      friends: friends,
+      createdAt: createdAt,
+      isSearchable: isSearchable,
+      email: '',
+      gamePoints: 0,
     );
   }
 }

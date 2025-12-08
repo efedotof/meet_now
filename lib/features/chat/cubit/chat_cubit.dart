@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
@@ -69,12 +70,16 @@ class ChatCubit extends Cubit<ChatState> {
     emit(state.copyWith(selectedChatType: chatType));
   }
 
-  Future<void> deletePermanentChat(String chatId, bool deleteForBoth) async {
+  Future<void> deletePermanentChat(
+    String chatId,
+    String userId,
+    bool deleteForBoth,
+  ) async {
     try {
       await _chatInterface.deletePermanentChat(
         request: DeleteChatRequest(
           chatId: chatId,
-          userId: state.currentUserId!,
+          userId: userId,
           deleteForBoth: deleteForBoth,
         ),
       );
@@ -130,6 +135,25 @@ class ChatCubit extends Cubit<ChatState> {
     emit(state.copyWith(isLoading: true, error: null));
     _socketServiceInterface.getPermanent();
     _socketServiceInterface.getActiveTemporary();
+  }
+
+  Future<PermanentChatResponseDto?> createPermomentChat({
+    required String user2id,
+  }) async {
+    try {
+      final chat = await _chatInterface.createOrGetPermanentChat(
+        user2id: user2id,
+      );
+
+      if (chat.chatId != "") {
+        return chat;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint("Произошла ошибка создания чата: $e");
+      return null;
+    }
   }
 
   @override

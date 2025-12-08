@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:meet_now_app_server/repository/message/paginated_messages_response.dart';
 
 part 'chat_message_state.dart';
 part 'chat_message_cubit.freezed.dart';
@@ -10,6 +11,7 @@ part 'chat_message_cubit.freezed.dart';
 class ChatMessageCubit extends Cubit<ChatMessageState> {
   StreamSubscription<List<Message>>? _messagesSubscription;
   StreamSubscription<Message>? _singleMessageSubscription;
+  StreamSubscription<PaginatedMessagesResponse>? _paginatedMessagesSubscription;
   StreamSubscription<AgreeChatResponse>? _chatAgreeNotificationSubscription;
   StreamSubscription<AgreeChatResponse>? _chatAgreeResponseSubscription;
   StreamSubscription<AgreeChatResponse>? _chatPermanentCreatedSubscription;
@@ -19,19 +21,31 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   final UploadImageInterface _uploadImageInterface;
   final SocketServiceInterface _socketInterface;
   final ChatInterface _chatInterface;
+  final UserInterface _userInterface;
+
   String? _currentChatId;
   String? _senderId;
   String? _recipientId;
   bool? _isTemporary;
 
+  final int _pageSize = 20;
+  bool _isLoadingMore = false;
+  bool _hasMoreMessages = true;
+  int _currentPage = 0;
+
+  final List<String> _unreadMessagesIds = [];
+  Timer? _markAsReadTimer;
+
   ChatMessageCubit({
+    required UserInterface userInterface,
     required ChatInterface chatInterface,
     required UploadImageInterface uploadImageInterface,
     required SocketServiceInterface socketInterface,
     required GamesInterface gamesInterface,
     required FriendInterface friendInterface,
     required MessageInterface messageInterface,
-  }) : _chatInterface = chatInterface,
+  }) : _userInterface = userInterface,
+       _chatInterface = chatInterface,
        _socketInterface = socketInterface,
        _uploadImageInterface = uploadImageInterface,
        _friendInterface = friendInterface,
@@ -56,62 +70,26 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _senderId = senderId;
     _recipientId = recipientId;
 
+    _resetPagination();
+
     _disposeSubscriptions();
     emit(const ChatMessageState.loading());
 
     try {
-      _messagesSubscription = _messageInterface.messagesStream.listen(
-        (messages) {
-          if (!isClosed) {
-            emit(
-              ChatMessageState.loaded(
-                messages: messages,
-                isTemporary: isTemporary,
-              ),
-            );
-          }
-        },
-        onError: (e) {
-          if (!isClosed) {
-            emit(ChatMessageState.error(e.toString()));
-          }
-        },
-        cancelOnError: false,
-      );
+      _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
+          .listen(
+            _handlePaginatedMessages,
+            onError: (e) {
+              debugPrint('Paginated messages stream error: $e');
+              if (!isClosed) {
+                emit(ChatMessageState.error('Failed to load messages: $e'));
+              }
+            },
+            cancelOnError: false,
+          );
 
       _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
-        (newMessage) {
-          debugPrint(
-            '🆕 ChatMessageCubit: Получено новое сообщение: ${newMessage.id} от ${newMessage.senderId}',
-          );
-          debugPrint('📝 Текст: ${newMessage.text}');
-          if (!isClosed) {
-            state.maybeMap(
-              loaded: (state) {
-                final existingIndex = state.messages.indexWhere(
-                  (msg) => msg.id == newMessage.id,
-                );
-
-                List<Message> updatedMessages;
-                if (existingIndex != -1) {
-                  updatedMessages = List<Message>.from(state.messages);
-                  updatedMessages[existingIndex] = newMessage;
-                } else {
-                  updatedMessages = [...state.messages, newMessage];
-                }
-
-                emit(state.copyWith(messages: updatedMessages));
-              },
-              orElse:
-                  () => emit(
-                    ChatMessageState.loaded(
-                      messages: [newMessage],
-                      isTemporary: isTemporary,
-                    ),
-                  ),
-            );
-          }
-        },
+        _handleSingleMessage,
         onError: (e) {
           debugPrint('Single message stream error: $e');
           _reconnectMessageSubscriptions();
@@ -119,12 +97,244 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         cancelOnError: false,
       );
 
-      _messageInterface.requestMessages(chatId);
+      _loadInitialMessages();
+
+      _startMarkAsReadTimer();
     } catch (e) {
       if (!isClosed) {
         emit(ChatMessageState.error('Failed to initialize: $e'));
       }
     }
+  }
+
+  void _handlePaginatedMessages(PaginatedMessagesResponse response) {
+    if (!isClosed) {
+      state.maybeMap(
+        loaded: (state) {
+          List<Message> updatedMessages;
+
+          if (response.currentPage == 0) {
+            updatedMessages = response.messages;
+          } else {
+            updatedMessages = [...response.messages, ...state.messages];
+          }
+
+          _collectUnreadMessagesIds(updatedMessages);
+
+          emit(
+            state.copyWith(
+              messages: updatedMessages,
+              hasMore: response.hasNext,
+              currentPage: response.currentPage,
+              isLoadingMore: false,
+            ),
+          );
+        },
+        orElse: () {
+          _collectUnreadMessagesIds(response.messages);
+
+          emit(
+            ChatMessageState.loaded(
+              messages: response.messages,
+              isTemporary: _isTemporary!,
+              hasMore: response.hasNext,
+              currentPage: response.currentPage,
+              isLoadingMore: false,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void markMessagesAsReadByIds(List<String> messageIds) {
+    final messages = _getMessagesByIds(messageIds);
+    if (messages.isNotEmpty) {
+      markMessagesAsRead(messages);
+    }
+  }
+
+  List<Message> _getMessagesByIds(List<String> messageIds) {
+    return state.maybeMap(
+      loaded:
+          (state) =>
+              state.messages
+                  .where(
+                    (message) =>
+                        message.id != null && messageIds.contains(message.id),
+                  )
+                  .toList(),
+      orElse: () => [],
+    );
+  }
+
+  void _handleSingleMessage(Message newMessage) {
+    debugPrint(
+      '🆕 ChatMessageCubit: Получено новое сообщение: ${newMessage.id} от ${newMessage.senderId}',
+    );
+
+    if (newMessage.chatId != _currentChatId &&
+        newMessage.tempChatId != _currentChatId) {
+      return;
+    }
+
+    if (newMessage.senderId != _senderId && !newMessage.read) {
+      _messageInterface.markMessagesAsRead([newMessage.id!]);
+    }
+
+    if (!isClosed) {
+      state.maybeMap(
+        loaded: (state) {
+          final existingIndex = state.messages.indexWhere(
+            (msg) => msg.id == newMessage.id,
+          );
+
+          List<Message> updatedMessages;
+          if (existingIndex != -1) {
+            updatedMessages = List<Message>.from(state.messages);
+            updatedMessages[existingIndex] = newMessage;
+          } else {
+            updatedMessages = [...state.messages, newMessage];
+          }
+
+          if (newMessage.senderId != _senderId && !newMessage.read) {
+            _unreadMessagesIds.add(newMessage.id!);
+          }
+
+          emit(state.copyWith(messages: updatedMessages));
+        },
+        orElse: () {
+          emit(
+            ChatMessageState.loaded(
+              messages: [newMessage],
+              isTemporary: _isTemporary!,
+              hasMore: false,
+              currentPage: 0,
+              isLoadingMore: false,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _collectUnreadMessagesIds(List<Message> messages) {
+    for (final message in messages) {
+      if (message.senderId != _senderId && !message.read) {
+        _unreadMessagesIds.add(message.id!);
+      }
+    }
+  }
+
+  void _startMarkAsReadTimer() {
+    _markAsReadTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _sendMarkAsRead();
+    });
+  }
+
+  void _sendMarkAsRead() {
+    if (_unreadMessagesIds.isNotEmpty) {
+      final idsToMark = List<String>.from(_unreadMessagesIds);
+      _unreadMessagesIds.clear();
+
+      _messageInterface.markMessagesAsRead(idsToMark);
+      debugPrint(
+        '📨 Отправлена отметка о прочтении для ${idsToMark.length} сообщений',
+      );
+    }
+  }
+
+  void markMessagesAsRead(List<Message> messages) {
+    final unreadMessages =
+        messages
+            .where(
+              (message) =>
+                  (message.senderId != _senderId && !message.read) ||
+                  _unreadMessagesIds.contains(message.id),
+            )
+            .map((message) => message.id)
+            .where((id) => id != null)
+            .cast<String>()
+            .toList();
+
+    if (unreadMessages.isNotEmpty) {
+      _messageInterface.markMessagesAsRead(unreadMessages);
+
+      _unreadMessagesIds.removeWhere((id) => unreadMessages.contains(id));
+
+      state.maybeMap(
+        loaded: (state) {
+          final updatedMessages =
+              state.messages.map((message) {
+                if (unreadMessages.contains(message.id)) {
+                  return message.copyWith(read: true);
+                }
+                return message;
+              }).toList();
+
+          emit(state.copyWith(messages: updatedMessages));
+        },
+        orElse: () {},
+      );
+    }
+  }
+
+  void _loadInitialMessages() {
+    if (_currentChatId == null) return;
+
+    _currentPage = 0;
+    _hasMoreMessages = true;
+
+    _messageInterface.requestPaginatedMessages(
+      _currentChatId!,
+      _currentPage,
+      _pageSize,
+    );
+  }
+
+  void loadMoreMessages() {
+    if (_currentChatId == null ||
+        !_hasMoreMessages ||
+        _isLoadingMore ||
+        state.maybeMap(loaded: (s) => s.isLoadingMore, orElse: () => false)) {
+      return;
+    }
+
+    _isLoadingMore = true;
+
+    state.maybeMap(
+      loaded: (state) {
+        emit(state.copyWith(isLoadingMore: true));
+      },
+      orElse: () {},
+    );
+
+    final nextPage = _currentPage + 1;
+    debugPrint('📤 Загрузка следующих сообщений, страница $nextPage');
+
+    _messageInterface.requestPaginatedMessages(
+      _currentChatId!,
+      nextPage,
+      _pageSize,
+    );
+  }
+
+  Future<User?> getOtherUser({required String otherUser}) async {
+    final user = await _userInterface.getOtherUser(userId: otherUser);
+
+    if (user.id != "") {
+      return user;
+    } else {
+      return null;
+    }
+  }
+
+  void _resetPagination() {
+    _currentPage = 0;
+    _hasMoreMessages = true;
+    _isLoadingMore = false;
+    _unreadMessagesIds.clear();
+    _markAsReadTimer?.cancel();
   }
 
   void _setupChatAgreeSubscriptions() {
@@ -645,53 +855,23 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void _reconnectMessageSubscriptions() {
     _disposeMessageSubscriptions();
 
-    _messagesSubscription = _messageInterface.messagesStream.listen(
-      (messages) {
-        if (!isClosed) {
-          emit(
-            ChatMessageState.loaded(
-              messages: messages,
-              isTemporary: _isTemporary!,
-            ),
-          );
-        }
-      },
-      onError: (e) {
-        debugPrint('Messages stream error: $e');
-        Future.delayed(Duration(seconds: 3), () {
-          if (!isClosed) _reconnectMessageSubscriptions();
-        });
-      },
-      cancelOnError: false,
-    );
+    _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
+        .listen(
+          _handlePaginatedMessages,
+          onError: (e) {
+            debugPrint('Paginated messages stream error: $e');
+            Future.delayed(const Duration(seconds: 3), () {
+              if (!isClosed) _reconnectMessageSubscriptions();
+            });
+          },
+          cancelOnError: false,
+        );
 
     _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
-      (newMessage) {
-        if (!isClosed) {
-          state.maybeMap(
-            loaded: (state) {
-              final updatedMessages =
-                  state.messages.map((existingMessage) {
-                    if (existingMessage.id?.startsWith('temp') ?? false) {
-                      return newMessage;
-                    }
-                    return existingMessage;
-                  }).toList();
-              emit(state.copyWith(messages: updatedMessages));
-            },
-            orElse:
-                () => emit(
-                  ChatMessageState.loaded(
-                    messages: [newMessage],
-                    isTemporary: _isTemporary!,
-                  ),
-                ),
-          );
-        }
-      },
+      _handleSingleMessage,
       onError: (e) {
         debugPrint('Single message stream error: $e');
-        Future.delayed(Duration(seconds: 3), () {
+        Future.delayed(const Duration(seconds: 3), () {
           if (!isClosed) _reconnectMessageSubscriptions();
         });
       },
@@ -699,13 +879,13 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
 
     if (_currentChatId != null) {
-      _messageInterface.requestMessages(_currentChatId!);
+      _loadInitialMessages();
     }
   }
 
   void _disposeMessageSubscriptions() {
-    _messagesSubscription?.cancel();
-    _messagesSubscription = null;
+    _paginatedMessagesSubscription?.cancel();
+    _paginatedMessagesSubscription = null;
     _singleMessageSubscription?.cancel();
     _singleMessageSubscription = null;
   }
@@ -713,6 +893,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void _disposeSubscriptions() {
     _messagesSubscription?.cancel();
     _messagesSubscription = null;
+    _paginatedMessagesSubscription?.cancel();
+    _paginatedMessagesSubscription = null;
     _singleMessageSubscription?.cancel();
     _singleMessageSubscription = null;
     _chatAgreeNotificationSubscription?.cancel();
@@ -721,10 +903,14 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _chatAgreeResponseSubscription = null;
     _chatPermanentCreatedSubscription?.cancel();
     _chatPermanentCreatedSubscription = null;
+
+    _markAsReadTimer?.cancel();
+    _markAsReadTimer = null;
   }
 
   @override
   Future<void> close() {
+    _sendMarkAsRead();
     _disposeSubscriptions();
     return super.close();
   }

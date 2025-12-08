@@ -26,6 +26,8 @@ class InputArea extends StatefulWidget {
     this.onContinueChat,
     this.onReportUser,
     this.onAddTimeChat,
+    required this.recipientId,
+    required this.tempChatId,
   });
 
   final TextEditingController controller;
@@ -38,6 +40,8 @@ class InputArea extends StatefulWidget {
   final VoidCallback? onContinueChat;
   final VoidCallback? onReportUser;
   final VoidCallback? onAddTimeChat;
+  final String recipientId;
+  final String tempChatId;
 
   @override
   State<InputArea> createState() => _InputAreaState();
@@ -315,7 +319,12 @@ class _InputAreaState extends State<InputArea> {
         child: Column(
           children: [
             CommandSuggestionsWidget(controller: widget.controller),
-            StickerPickerWidget(onStickerSelected: _handleStickerSelected),
+            StickerPickerWidget(
+              onStickerSelected: _handleStickerSelected,
+              // recipientId: widget.recipientId,
+              // chatId: widget.chatId,
+              // tempChatId: widget.tempChatId,
+            ),
 
             if (!widget.isTemporary)
               MediaPreviewSection(

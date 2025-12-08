@@ -27,7 +27,7 @@ class AccountSettingsSection extends StatelessWidget {
             SettingsItem(
               icon: Icons.person,
               title: S.of(context).profile,
-              onTap: () => context.pushRoute(const ProfileRoute()),
+              onTap: () => context.pushRoute(ProfileRoute()),
             ),
             SettingsItem(
               icon: Icons.group_add,
@@ -44,15 +44,7 @@ class AccountSettingsSection extends StatelessWidget {
               title: S.of(context).my_complaints,
               onTap: () => context.pushRoute(const MyReportRoute()),
             ),
-            SettingsItem(
-              icon: Icons.language,
-              title: S.of(context).language,
-              trailing: Text(
-                S.of(context).russian,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              onTap: () => context.pushRoute(const LanguageRoute()),
-            ),
+
             SettingsItem(
               icon: Icons.qr_code,
               title: S.of(context).qrScanner,

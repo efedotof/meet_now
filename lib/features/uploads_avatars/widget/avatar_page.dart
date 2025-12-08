@@ -1,7 +1,13 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
-import 'package:meet_now_app/generated/l10n.dart';
+
+import 'action_buttons.dart';
+import 'default_avatar.dart';
+import 'loading_avatar.dart';
+import 'selected_avatar.dart';
+import 'status_text.dart';
+import 'uploaded_avatar.dart';
 
 class AvatarPage extends StatefulWidget {
   final UploadsAvatarsState state;
@@ -86,203 +92,37 @@ class _AvatarPageState extends State<AvatarPage> {
             alignment: Alignment.center,
             children: [
               widget.state.when(
-                initial: () => _buildDefaultAvatar(),
-                avatarSelected: (uri, bytes) => _buildSelectedAvatar(bytes),
-                avatarLoading: () => _buildLoadingAvatar(),
-                avatarUploadSuccess: (url) => _buildUploadedAvatar(url),
-                gallerySelected: (paths) => _buildDefaultAvatar(),
-                imagesUploadSuccess: (urls) => _buildDefaultAvatar(),
-                imagesLoading: () => _buildDefaultAvatar(),
-                error: (message) => _buildDefaultAvatar(),
+                initial: () => DefaultAvatar(),
+                avatarSelected:
+                    (uri, bytes) =>
+                        SelectedAvatar(bytes: bytes, cubit: widget.cubit),
+                avatarLoading: () => LoadingAvatar(),
+                avatarUploadSuccess:
+                    (url) => UploadedAvatar(
+                      url: url,
+                      cubit: widget.cubit,
+                      onAvatarConfirmedChange: widget.onAvatarConfirmedChange,
+                    ),
+                gallerySelected: (paths) => DefaultAvatar(),
+                imagesUploadSuccess: (urls) => DefaultAvatar(),
+                imagesLoading: () => DefaultAvatar(),
+                error: (message) => DefaultAvatar(),
               ),
               if (isLoading || _isLoading) const CircularProgressIndicator(),
             ],
           ),
           const SizedBox(height: 20),
-          _buildStatusText(),
+          StatusText(state: widget.state),
           const SizedBox(height: 20),
-          if (!isLoading && !_isLoading) _buildActionButtons(),
+          if (!isLoading && !_isLoading)
+            ActionButtons(
+              state: widget.state,
+              cubit: widget.cubit,
+              onPickAvatar: widget.onPickAvatar,
+              onAvatarConfirmedChange: widget.onAvatarConfirmedChange,
+            ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDefaultAvatar() {
-    return CircleAvatar(
-      radius: 70,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      child: const Icon(Icons.person, size: 70, color: Colors.white),
-    );
-  }
-
-  Widget _buildSelectedAvatar(Uint8List bytes) {
-    return Stack(
-      children: [
-        CircleAvatar(radius: 70, backgroundImage: MemoryImage(bytes)),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            onPressed: widget.cubit.removeAvatar,
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(Icons.close),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoadingAvatar() {
-    return const CircleAvatar(radius: 70, child: CircularProgressIndicator());
-  }
-
-  Widget _buildUploadedAvatar(String url) {
-    return Stack(
-      children: [
-        CircleAvatar(
-          radius: 70,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          backgroundImage:
-              _presignedUrl != null ? NetworkImage(_presignedUrl!) : null,
-          child:
-              _presignedUrl == null
-                  ? const Icon(Icons.person, size: 70, color: Colors.white)
-                  : null,
-        ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: IconButton(
-            onPressed: () {
-              widget.cubit.removeAvatar();
-              widget.onAvatarConfirmedChange(false);
-            },
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(Icons.close),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatusText() {
-    return widget.state.when(
-      initial:
-          () => Text(
-            S.of(context).add_a_profile_avatar,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      avatarSelected:
-          (uri, bytes) => Text(
-            S.of(context).the_avatar_is_selected_confirm_the_upload,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      avatarLoading:
-          () => Text(
-            S.of(context).uploading_an_avatar,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      avatarUploadSuccess:
-          (url) => Text(
-            S.of(context).the_avatar_has_been_uploaded_successfully,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      gallerySelected:
-          (paths) => Text(
-            S.of(context).add_a_profile_avatar,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      imagesUploadSuccess:
-          (urls) => Text(
-            S.of(context).add_a_profile_avatar,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      imagesLoading:
-          () => Text(
-            S.of(context).add_a_profile_avatar,
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-      error:
-          (message) => Text(
-            "${S.of(context).error} $message",
-            style: const TextStyle(fontSize: 16, color: Colors.red),
-            textAlign: TextAlign.center,
-          ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return widget.state.when(
-      initial:
-          () => ElevatedButton(
-            onPressed: widget.onPickAvatar,
-            child: Text(S.of(context).choose_an_avatar),
-          ),
-      avatarSelected:
-          (uri, bytes) => Column(
-            children: [
-              ElevatedButton(
-                onPressed: () => widget.cubit.confirmAndUploadAvatar(),
-                child: Text(S.of(context).confirm_and_upload_your_avatar),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: widget.cubit.removeAvatar,
-                child: Text(S.of(context).delete_an_avatar),
-              ),
-            ],
-          ),
-      avatarUploadSuccess:
-          (url) => Column(
-            children: [
-              ElevatedButton(
-                onPressed: widget.onPickAvatar,
-                child: Text(S.of(context).change_your_avatar),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                onPressed: () {
-                  widget.cubit.removeAvatar();
-                  widget.onAvatarConfirmedChange(false);
-                },
-                child: Text(S.of(context).delete_an_avatar),
-              ),
-            ],
-          ),
-      gallerySelected:
-          (paths) => ElevatedButton(
-            onPressed: widget.onPickAvatar,
-            child: Text(S.of(context).choose_an_avatar),
-          ),
-      imagesUploadSuccess:
-          (urls) => ElevatedButton(
-            onPressed: widget.onPickAvatar,
-            child: Text(S.of(context).choose_an_avatar),
-          ),
-      imagesLoading:
-          () => ElevatedButton(
-            onPressed: widget.onPickAvatar,
-            child: Text(S.of(context).choose_an_avatar),
-          ),
-      error:
-          (message) => ElevatedButton(
-            onPressed: widget.onPickAvatar,
-            child: Text(S.of(context).choose_an_avatar),
-          ),
-      avatarLoading: () => const SizedBox(),
     );
   }
 }

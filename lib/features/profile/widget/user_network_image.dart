@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
@@ -27,6 +28,7 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
   String? _presignedUrl;
   bool _isLoading = false;
   bool _hasError = false;
+  bool _showDeleteIcon = false;
 
   @override
   void didChangeDependencies() {
@@ -60,6 +62,41 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
     }
   }
 
+  Future<void> _requestDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(S.of(context).delete),
+            content: Text(S.of(context).confirm_delete),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(S.of(context).cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(
+                  S.of(context).delete,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      if (context.mounted) {
+        await context.read<UploadsAvatarsCubit>().deleatUserImage(
+          imageUrl: widget.imageKey,
+        );
+      }
+      if (context.mounted) {
+        await context.read<SettingsCubit>().getCurrentUser();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget child;
@@ -77,20 +114,48 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
       child = GestureDetector(
         onTap:
             () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            _presignedUrl!,
-            fit: widget.fit,
-            errorBuilder:
-                (context, error, stackTrace) => Center(
-                  child: IconButton(
-                    icon: const Icon(Icons.broken_image, color: Colors.grey),
-                    tooltip: S.of(context).failed_to_load_image_click_to_retry,
-                    onPressed: _loadPresignedUrl,
+        onLongPress: () {
+          setState(() => _showDeleteIcon = true);
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) setState(() => _showDeleteIcon = false);
+          });
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                _presignedUrl!,
+                fit: widget.fit,
+                errorBuilder:
+                    (context, error, stackTrace) => Center(
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                        ),
+                        tooltip:
+                            S.of(context).failed_to_load_image_click_to_retry,
+                        onPressed: _loadPresignedUrl,
+                      ),
+                    ),
+              ),
+            ),
+            if (_showDeleteIcon)
+              Positioned(
+                right: 6,
+                top: 6,
+                child: GestureDetector(
+                  onTap: _requestDelete,
+                  child: const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.delete, color: Colors.white),
                   ),
                 ),
-          ),
+              ),
+          ],
         ),
       );
     }

@@ -38,6 +38,6 @@ abstract class SettingProfileState with _$SettingProfileState {
     errorMessage: null,
     isSuccess: false,
     isPasswordChanged: false,
-    tempAvatarData: null, // И здесь
+    tempAvatarData: null,
   );
 }
