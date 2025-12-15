@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/model/social/question/question.dart';
-import 'package:meet_now_app_server/model/social/question/question_status.dart';
-import 'package:meet_now_app_server/model/social/report/report.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/model/social/report/report_statistics_dto/report_statistics_dto.dart';
 import 'package:meet_now_app_server/model/social/support_statistics_dto/support_statistics_dto.dart';
 import 'package:meet_now_app_server/model/social/user_question_statistic_cto/user_question_statistic_dto.dart';
@@ -15,60 +13,134 @@ class ModerationCubit extends Cubit<ModerationState> {
   ModerationCubit({required AdminInterface adminInterface})
     : _adminInterface = adminInterface,
       super(ModerationState.initial()) {
-    _loadModerationData();
+    _loadInitialData();
   }
 
   final AdminInterface _adminInterface;
 
-  Future<void> _loadModerationData() async {
+  Future<void> _loadInitialData() async {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final reports = await getAllReports();
-      final statistics = await getReportsStatistics();
-      final supportStatistics = await getSupportStatistics();
+      await Future.wait([
+        _loadReports(),
+        _loadReportsStatistics(),
+        _loadSupportStatistics(),
+        _loadQuestions(),
+        _loadSupportUsers(),
+      ]);
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          reportedContent: reports,
-          reportsStatistics: statistics,
-          supportStatistics: supportStatistics,
-        ),
-      );
+      emit(state.copyWith(isLoading: false, error: null));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
-  Future<List<ReportedContent>> getAllReports() async {
+  Future<void> _loadReports() async {
     try {
       final reportsPage = await _adminInterface.getAllReports(
-        page: state.currentPage,
-        size: 20,
+        page: 0,
+        size: 50,
       );
 
-      return reportsPage.content
-          .map((report) => _convertReportToReportedContent(report))
+      final reportedContent = reportsPage.content
+          .map(_convertReportToReportedContent)
           .toList();
+
+      emit(
+        state.copyWith(
+          reportedContent: reportedContent,
+          totalReports: reportsPage.totalElements,
+        ),
+      );
     } catch (e) {
       throw Exception('Failed to load reports: $e');
     }
   }
 
-  Future<List<ReportedContent>> getReportsByStatus(ReportStatus status) async {
+  Future<void> _loadReportsByStatus(ReportStatus status) async {
     try {
       final reportsPage = await _adminInterface.getReportsByStatus(
         status: status,
-        page: state.currentPage,
+        page: 0,
+        size: 50,
+      );
+
+      final reportedContent = reportsPage.content
+          .map(_convertReportToReportedContent)
+          .toList();
+
+      emit(
+        state.copyWith(
+          reportedContent: reportedContent,
+          totalReports: reportsPage.totalElements,
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to load reports: $e');
+    }
+  }
+
+  Future<void> _loadReportsStatistics() async {
+    try {
+      final statistics = await _adminInterface.getReportsStatistics();
+      emit(state.copyWith(reportsStatistics: statistics));
+    } catch (e) {
+      throw Exception('Failed to load statistics: $e');
+    }
+  }
+
+  Future<void> _loadSupportStatistics() async {
+    try {
+      final statistics = await _adminInterface.getSupportStatistics();
+      emit(state.copyWith(supportStatistics: statistics));
+    } catch (e) {
+      throw Exception('Failed to load support statistics: $e');
+    }
+  }
+
+  Future<void> _loadQuestions() async {
+    try {
+      final questionsPage = await _adminInterface.getAllQuestionsPaginated(
+        status: null,
+        page: 0,
         size: 20,
       );
 
-      return reportsPage.content
-          .map((report) => _convertReportToReportedContent(report))
-          .toList();
+      emit(
+        state.copyWith(
+          questions: questionsPage.content,
+          totalQuestions: questionsPage.totalElements,
+        ),
+      );
     } catch (e) {
-      throw Exception('Failed to load reports by status: $e');
+      throw Exception('Failed to load questions: $e');
+    }
+  }
+
+  Future<void> _loadSupportUsers() async {
+    try {
+      final activeUsers = await _adminInterface.getMostActiveSupportUsers(
+        limit: 10,
+      );
+
+      emit(state.copyWith(activeSupportUsers: activeUsers));
+    } catch (e) {
+      throw Exception('Failed to load support users: $e');
+    }
+  }
+
+  Future<void> loadUnansweredQuestions() async {
+    try {
+      final questions = await _adminInterface.getUnansweredQuestions();
+      emit(
+        state.copyWith(
+          unansweredQuestions: questions,
+          selectedCategory: ModerationCategory.UNANSWERED_QUESTIONS,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: 'Failed to load unanswered questions: $e'));
     }
   }
 
@@ -92,104 +164,173 @@ class ModerationCubit extends Cubit<ModerationState> {
       }).toList();
 
       emit(state.copyWith(reportedContent: updatedContent));
+
+      await _loadReportsStatistics();
     } catch (e) {
-      throw Exception('Failed to update report status: $e');
+      emit(state.copyWith(error: 'Failed to update report: $e'));
     }
   }
 
-  Future<void> deleteReportByAdmin(String reportId) async {
+  Future<void> deleteReport(String reportId) async {
     try {
       await _adminInterface.deleteReportByAdmin(reportId: reportId);
+
       final updatedContent = state.reportedContent
           .where((content) => content.id != reportId)
           .toList();
 
       emit(state.copyWith(reportedContent: updatedContent));
-    } catch (e) {
-      throw Exception('Failed to delete report: $e');
-    }
-  }
 
-  Future<ReportStatisticsDto> getReportsStatistics() async {
-    try {
-      return await _adminInterface.getReportsStatistics();
+      await _loadReportsStatistics();
     } catch (e) {
-      throw Exception('Failed to load reports statistics: $e');
-    }
-  }
-
-  Future<SupportStatisticsDto> getSupportStatistics() async {
-    try {
-      return await _adminInterface.getSupportStatistics();
-    } catch (e) {
-      throw Exception('Failed to load support statistics: $e');
-    }
-  }
-
-  Future<Page<Question>> getAllQuestionsPaginated({
-    required QuestionStatus? status,
-    required int page,
-    required int size,
-  }) async {
-    try {
-      return await _adminInterface.getAllQuestionsPaginated(
-        status: status,
-        page: page,
-        size: size,
-      );
-    } catch (e) {
-      throw Exception('Failed to load questions: $e');
+      emit(state.copyWith(error: 'Failed to delete report: $e'));
     }
   }
 
   Future<void> deleteQuestion(String questionId) async {
     try {
       await _adminInterface.deleteQuestion(questionId: questionId);
+
+      final updatedQuestions = state.questions
+          .where((question) => question.id != questionId)
+          .toList();
+
+      emit(state.copyWith(questions: updatedQuestions));
+
+      await _loadSupportStatistics();
     } catch (e) {
-      throw Exception('Failed to delete question: $e');
+      emit(state.copyWith(error: 'Failed to delete question: $e'));
     }
   }
 
-  Future<void> deleteAnswer(String answerId) async {
+  Future<void> closeQuestion(String questionId) async {
     try {
-      await _adminInterface.deleteAnswer(answerId: answerId);
+      await _adminInterface.forceCloseQuestion(questionId: questionId);
+
+      final updatedQuestions = state.questions.map((question) {
+        if (question.id == questionId) {
+          return question.copyWith(status: 'closed');
+        }
+        return question;
+      }).toList();
+
+      emit(state.copyWith(questions: updatedQuestions));
     } catch (e) {
-      throw Exception('Failed to delete answer: $e');
+      emit(state.copyWith(error: 'Failed to close question: $e'));
     }
   }
 
-  Future<Question> forceCloseQuestion(String questionId) async {
+  Future<void> loadUserQuestions(String userId) async {
     try {
-      return await _adminInterface.forceCloseQuestion(questionId: questionId);
+      final userQuestions = await _adminInterface.getUserQuestionsByAdmin(
+        userId: userId,
+      );
+
+      emit(
+        state.copyWith(
+          userQuestions: userQuestions,
+          selectedCategory: ModerationCategory.USER_QUESTIONS,
+          selectedUserId: userId,
+        ),
+      );
     } catch (e) {
-      throw Exception('Failed to force close question: $e');
+      emit(state.copyWith(error: 'Failed to load user questions: $e'));
     }
   }
 
-  Future<List<Question>> getUserQuestionsByAdmin(String userId) async {
-    try {
-      return await _adminInterface.getUserQuestionsByAdmin(userId: userId);
-    } catch (e) {
-      throw Exception('Failed to load user questions: $e');
+  void changeCategory(ModerationCategory category) {
+    emit(state.copyWith(selectedCategory: category, searchQuery: ''));
+  }
+
+  void filterReportsByStatus(ReportStatus? status) {
+    if (status == null) {
+      _loadReports();
+      emit(state.copyWith(selectedReportStatus: null, searchQuery: ''));
+    } else {
+      _loadReportsByStatus(status);
+      emit(state.copyWith(selectedReportStatus: status, searchQuery: ''));
     }
   }
 
-  Future<List<UserQuestionStatisticDto>> getMostActiveSupportUsers({
-    required int limit,
-  }) async {
+  void searchReports(String query) {
+    if (query.isEmpty) {
+      _loadReports();
+      return;
+    }
+
+    final filtered = state.reportedContent.where((content) {
+      return content.title.toLowerCase().contains(query.toLowerCase()) ||
+          content.content.toLowerCase().contains(query.toLowerCase()) ||
+          content.reportedBy.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    emit(state.copyWith(reportedContent: filtered, searchQuery: query));
+  }
+
+  void searchQuestions(String query) {
+    if (query.isEmpty) {
+      _loadQuestions();
+      return;
+    }
+
+    final filtered = state.questions.where((question) {
+      return question.title.toLowerCase().contains(query.toLowerCase()) ||
+          question.description.toLowerCase().contains(query.toLowerCase()) ||
+          question.userId.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    emit(state.copyWith(questions: filtered, searchQuery: query));
+  }
+
+  Future<void> warnUser(String userId, String reason) async {
     try {
-      return await _adminInterface.getMostActiveSupportUsers(limit: limit);
+      final reportId = _findReportByUserId(userId);
+      if (reportId != null) {
+        await updateReportStatus(
+          reportId: reportId,
+          status: ReportStatus.IN_PROCESS,
+        );
+      }
+
+      emit(state.copyWith(error: null));
     } catch (e) {
-      throw Exception('Failed to load active support users: $e');
+      emit(state.copyWith(error: 'Failed to warn user: $e'));
     }
   }
 
-  Future<List<Question>> getUnansweredQuestions() async {
+  Future<void> banUser(String userId, String reason) async {
     try {
-      return await _adminInterface.getUnansweredQuestions();
+      await _adminInterface.blockUser(userId: userId, reason: reason);
+
+      final reportId = _findReportByUserId(userId);
+      if (reportId != null) {
+        await updateReportStatus(
+          reportId: reportId,
+          status: ReportStatus.COMPLETED,
+        );
+
+        final updatedContent = state.reportedContent.map((content) {
+          if (content.userId == userId) {
+            return content.copyWith(status: ModerationStatus.banned);
+          }
+          return content;
+        }).toList();
+
+        emit(state.copyWith(reportedContent: updatedContent));
+      }
+
+      emit(state.copyWith(error: null));
     } catch (e) {
-      throw Exception('Failed to load unanswered questions: $e');
+      emit(state.copyWith(error: 'Failed to ban user: $e'));
     }
+  }
+
+  String? _findReportByUserId(String userId) {
+    final report = state.reportedContent.firstWhere(
+      (content) => content.userId == userId,
+      orElse: () => throw Exception('Report not found for user $userId'),
+    );
+    return report.id;
   }
 
   ReportedContent _convertReportToReportedContent(Report report) {
@@ -204,6 +345,17 @@ class ModerationCubit extends Cubit<ModerationState> {
       reportedBy: report.reporterId,
       reportCount: 1,
       notes: 'Reported user: ${report.reportedId}',
+      metadata: {
+        'reporterId': report.reporterId,
+        'reportedId': report.reportedId,
+        'reportType': report.reason,
+        'originalStatus': report.status.toString(),
+      },
+
+      username: report.reportedId,
+      email: null,
+      violationDetails: report.reason,
+      userId: report.reportedId,
     );
   }
 
@@ -242,72 +394,20 @@ class ModerationCubit extends Cubit<ModerationState> {
     }
   }
 
-  void changeFilter(ModerationFilter filter) {
-    emit(state.copyWith(filter: filter, isLoading: true));
-    _loadModerationData();
-  }
-
-  void search(String query) {
-    emit(state.copyWith(searchQuery: query, isLoading: true));
-    _loadModerationData();
-  }
-
   void approveContent(String contentId) {
-    final updatedContent = state.reportedContent.map((content) {
-      if (content.id == contentId) {
-        return content.copyWith(status: ModerationStatus.approved);
-      }
-      return content;
-    }).toList();
-
-    emit(state.copyWith(reportedContent: updatedContent));
-
     updateReportStatus(reportId: contentId, status: ReportStatus.COMPLETED);
   }
 
   void rejectContent(String contentId) {
-    final updatedContent = state.reportedContent.map((content) {
-      if (content.id == contentId) {
-        return content.copyWith(status: ModerationStatus.rejected);
-      }
-      return content;
-    }).toList();
-
-    emit(state.copyWith(reportedContent: updatedContent));
-
-    // Также обновляем статус в API
     updateReportStatus(reportId: contentId, status: ReportStatus.COMPLETED);
-  }
-
-  void warnUser(String reportId) {
-    final updatedReports = state.userReports.map((report) {
-      if (report.id == reportId) {
-        return report.copyWith(status: ModerationStatus.warned);
-      }
-      return report;
-    }).toList();
-
-    emit(state.copyWith(userReports: updatedReports));
-
-    // Также обновляем статус в API
-    updateReportStatus(reportId: reportId, status: ReportStatus.IN_PROCESS);
-  }
-
-  void banUser(String reportId) {
-    final updatedReports = state.userReports.map((report) {
-      if (report.id == reportId) {
-        return report.copyWith(status: ModerationStatus.banned);
-      }
-      return report;
-    }).toList();
-
-    emit(state.copyWith(userReports: updatedReports));
-
-    updateReportStatus(reportId: reportId, status: ReportStatus.COMPLETED);
   }
 
   Future<void> refresh() async {
     emit(state.copyWith(isLoading: true));
-    await _loadModerationData();
+    await _loadInitialData();
+  }
+
+  void clearError() {
+    emit(state.copyWith(error: null));
   }
 }

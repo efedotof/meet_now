@@ -5,28 +5,48 @@ abstract class ModerationState with _$ModerationState {
   const factory ModerationState({
     required bool isLoading,
     required List<ReportedContent> reportedContent,
-    required List<UserReport> userReports,
-    required ModerationFilter filter,
+    required List<Question> questions,
+    required List<UserQuestionStatisticDto> activeSupportUsers,
+    required ModerationCategory selectedCategory,
+    required ReportStatus? selectedReportStatus,
     required String searchQuery,
-    required int currentPage,
-    required bool hasMore,
+    required int totalReports,
+    required int totalQuestions,
     ReportStatisticsDto? reportsStatistics,
     SupportStatisticsDto? supportStatistics,
+    List<Question>? unansweredQuestions,
+    List<Question>? userQuestions,
+    String? selectedUserId,
     String? error,
   }) = _ModerationState;
 
   factory ModerationState.initial() => ModerationState(
     isLoading: true,
     reportedContent: [],
-    userReports: [],
-    filter: ModerationFilter.PENDING,
+    questions: [],
+    activeSupportUsers: [],
+    selectedCategory: ModerationCategory.REPORTS,
+    selectedReportStatus: null,
     searchQuery: '',
-    currentPage: 1,
-    hasMore: true,
+    totalReports: 0,
+    totalQuestions: 0,
     reportsStatistics: null,
     supportStatistics: null,
+    unansweredQuestions: null,
+    userQuestions: null,
+    selectedUserId: null,
     error: null,
   );
+}
+
+enum ModerationCategory {
+  REPORTS,
+  REPORTS_STATISTICS,
+  SUPPORT_STATISTICS,
+  QUESTIONS,
+  UNANSWERED_QUESTIONS,
+  USER_QUESTIONS,
+  ACTIVE_SUPPORT_USERS,
 }
 
 class ReportedContent {
@@ -40,6 +60,13 @@ class ReportedContent {
   final String reportedBy;
   final int reportCount;
   final String? notes;
+  final Map<String, dynamic> metadata;
+
+  // Добавьте эти поля:
+  final String? username;
+  final String? email;
+  final String? violationDetails;
+  final String? userId; // Для идентификации пользователя
 
   const ReportedContent({
     required this.id,
@@ -52,6 +79,12 @@ class ReportedContent {
     required this.reportedBy,
     required this.reportCount,
     this.notes,
+    this.metadata = const {},
+    // Инициализируйте новые поля:
+    this.username,
+    this.email,
+    this.violationDetails,
+    this.userId,
   });
 
   ReportedContent copyWith({
@@ -65,6 +98,11 @@ class ReportedContent {
     String? reportedBy,
     int? reportCount,
     String? notes,
+    Map<String, dynamic>? metadata,
+    String? username,
+    String? email,
+    String? violationDetails,
+    String? userId,
   }) {
     return ReportedContent(
       id: id ?? this.id,
@@ -77,58 +115,11 @@ class ReportedContent {
       reportedBy: reportedBy ?? this.reportedBy,
       reportCount: reportCount ?? this.reportCount,
       notes: notes ?? this.notes,
-    );
-  }
-}
-
-class UserReport {
-  final String id;
-  final String userId;
-  final String username;
-  final String email;
-  final ReportReason reason;
-  final ModerationStatus status;
-  final DateTime reportedAt;
-  final String reportedBy;
-  final int reportCount;
-  final String? violationDetails;
-
-  const UserReport({
-    required this.id,
-    required this.userId,
-    required this.username,
-    required this.email,
-    required this.reason,
-    required this.status,
-    required this.reportedAt,
-    required this.reportedBy,
-    required this.reportCount,
-    this.violationDetails,
-  });
-
-  UserReport copyWith({
-    String? id,
-    String? userId,
-    String? username,
-    String? email,
-    ReportReason? reason,
-    ModerationStatus? status,
-    DateTime? reportedAt,
-    String? reportedBy,
-    int? reportCount,
-    String? violationDetails,
-  }) {
-    return UserReport(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
+      metadata: metadata ?? this.metadata,
       username: username ?? this.username,
       email: email ?? this.email,
-      reason: reason ?? this.reason,
-      status: status ?? this.status,
-      reportedAt: reportedAt ?? this.reportedAt,
-      reportedBy: reportedBy ?? this.reportedBy,
-      reportCount: reportCount ?? this.reportCount,
       violationDetails: violationDetails ?? this.violationDetails,
+      userId: userId ?? this.userId,
     );
   }
 }
@@ -145,5 +136,3 @@ enum ReportReason {
 }
 
 enum ModerationStatus { pending, approved, rejected, warned, banned }
-
-enum ModerationFilter { PENDING, RECEIVED, RESOLVED, }

@@ -19,8 +19,6 @@ class MeetNowAdminPanel extends StatefulWidget {
   State<MeetNowAdminPanel> createState() => _MeetNowAdminPanelState();
 }
 
-
-
 class _MeetNowAdminPanelState extends State<MeetNowAdminPanel> {
   final _appRouter = AppRouter();
 
@@ -32,5 +30,3 @@ class _MeetNowAdminPanelState extends State<MeetNowAdminPanel> {
     );
   }
 }
-
-

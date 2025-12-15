@@ -1,6 +1,7 @@
+// user_ui_models.dart
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
-enum UsersFilter { all, active, inactive, premium, suspended, banned }
+enum UsersFilter { all, active, inactive, premium, blocked }
 
 enum UserSort { newest, oldest, mostActive, leastActive, nameAZ, nameZA }
 
@@ -9,14 +10,14 @@ class UsersStats {
   final int activeUsers;
   final int newUsers;
   final int premiumUsers;
-  final int bannedUsers;
+  final int blockedUsers;
 
   const UsersStats({
     required this.totalUsers,
     required this.activeUsers,
     required this.newUsers,
     required this.premiumUsers,
-    required this.bannedUsers,
+    required this.blockedUsers,
   });
 
   factory UsersStats.empty() => const UsersStats(
@@ -24,7 +25,7 @@ class UsersStats {
     activeUsers: 0,
     newUsers: 0,
     premiumUsers: 0,
-    bannedUsers: 0,
+    blockedUsers: 0,
   );
 
   factory UsersStats.fromUsers(List<User> users) {
@@ -37,10 +38,8 @@ class UsersStats {
       newUsers: users
           .where((user) => user.createdAt.isAfter(thirtyDaysAgo))
           .length,
-      premiumUsers: users
-          .where((user) => user.roles.contains('premium'))
-          .length,
-      bannedUsers: 0,
+      premiumUsers: users.where((user) => user.isPremium).length,
+      blockedUsers: users.where((user) => user.isBlocked == true).length,
     );
   }
 }
@@ -63,6 +62,7 @@ extension UserExtensions on User {
   bool get isModerator => roles.contains('moderator');
 
   String get status {
+    if (isBlocked == true) return 'Blocked';
     if (!isOnline) return 'Offline';
     return 'Online';
   }

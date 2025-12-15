@@ -17,7 +17,9 @@ class LoginCubit extends Cubit<LoginState> {
     emit(
       state.copyWith(
         username: username,
-        usernameError: _validateUsername(username) ? null : "Username must be at least 3 characters",
+        usernameError: _validateUsername(username)
+            ? null
+            : "Username must be at least 3 characters",
       ),
     );
   }
@@ -50,7 +52,8 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   bool _validateForm() {
-    return _validateUsername(state.username) && _validatePassword(state.password);
+    return _validateUsername(state.username) &&
+        _validatePassword(state.password);
   }
 
   Future<void> login() async {
@@ -105,6 +108,8 @@ class LoginCubit extends Cubit<LoginState> {
               floor: "admin",
               gamePoints: 1000,
               images: [],
+              isBlocked: null,
+              blockReason: '',
             ),
             loginSuccess: true,
           ),

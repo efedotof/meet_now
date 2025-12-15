@@ -34,11 +34,12 @@ part 'content_cubit.freezed.dart';
 class ContentCubit extends Cubit<ContentState> {
   ContentCubit({required AdminInterface adminInterface})
     : _adminInterface = adminInterface,
-      super(ContentState.initial());
+      super(ContentState.initial()) {
+    _loadContent();
+  }
 
   final AdminInterface _adminInterface;
 
-  // Общие методы
   void changeContentType(ContentType contentType) {
     emit(
       state.copyWith(
@@ -147,7 +148,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Интересы
   Future<void> createInterest(InterestCreateRequest request) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -194,7 +194,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Цели
   Future<void> createPurpose(PurposeCreateRequest request) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -241,7 +240,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Стикеры и наборы стикеров
   Future<void> createStickerPack(StickerPackCreateRequest request) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -311,7 +309,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Игры
   Future<void> bulkDeleteGames(List<String> gameIds) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -332,7 +329,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Подарки
   Future<void> createGift(AdminCreateGiftRequest request) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -373,7 +369,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Редкости подарков
   Future<void> createGiftRarity(AdminCreateGiftRarityRequest request) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -410,7 +405,6 @@ class ContentCubit extends Cubit<ContentState> {
     }
   }
 
-  // Загрузка контента
   Future<void> _loadContent() async {
     try {
       switch (state.currentContentType) {

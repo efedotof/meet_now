@@ -28,9 +28,50 @@ class DashboardScreen extends StatelessWidget {
             onRefresh: () => context.read<DashboardCubit>().refresh(),
             child: CustomScrollView(
               slivers: [
-                const DashboardHeader(),
                 SliverPadding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  sliver: SliverAppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    expandedHeight: 80,
+                    flexibleSpace: FlexibleSpaceBar(
+                      titlePadding: const EdgeInsets.symmetric(
+                        horizontal: 0,
+                        vertical: 8,
+                      ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Dashboard Overview',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey[900],
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Real-time system monitoring',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   sliver: SliverToBoxAdapter(
                     child: _buildContent(context, state),
                   ),
@@ -45,7 +86,22 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, DashboardState state) {
     if (state.isLoading) {
-      return const DashboardLoading();
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(strokeWidth: 2),
+              SizedBox(height: 12),
+              Text(
+                'Loading dashboard...',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     if (state.error != null) {
@@ -53,82 +109,162 @@ class DashboardScreen extends StatelessWidget {
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
+        _buildRealTimeStats(state),
+        const SizedBox(height: 12),
         StatsGrid(state: state),
-        const SizedBox(height: 24),
-        MeetingActivityChart(meetingStats: state.meetingStats),
-        const SizedBox(height: 24),
-        SystemAlerts(alerts: state.alerts),
-        const SizedBox(height: 24),
-        _buildAdditionalStats(state),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 7,
+              child: MeetingActivityChart(meetingStats: state.meetingStats),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              flex: 5,
+              child: Column(
+                children: [
+                  SystemAlerts(alerts: state.alerts),
+                  const SizedBox(height: 12),
+                  _buildSystemHealthCard(state),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         LastUpdated(lastUpdated: state.lastUpdated),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-          const SizedBox(height: 16),
-          Text(
-            'Failed to load dashboard',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+  Widget _buildRealTimeStats(DashboardState state) {
+    return Card(
+      elevation: 1,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildMiniStat(
+              icon: Icons.people_outline,
+              value: state.onlineUsers.toString(),
+              label: 'Online',
+              color: Colors.green,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            error,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => context.read<DashboardCubit>().refresh(),
-            child: const Text('Try Again'),
-          ),
-        ],
+            _buildMiniStat(
+              icon: Icons.person_add_outlined,
+              value: state.newUsers.toString(),
+              label: 'New (24h)',
+              color: Colors.blue,
+            ),
+            _buildMiniStat(
+              icon: Icons.chat_outlined,
+              value: state.totalMeetings.toString(),
+              label: 'Meetings',
+              color: Colors.orange,
+            ),
+            _buildMiniStat(
+              icon: Icons.videocam_outlined,
+              value: state.activeSessions.toString(),
+              label: 'Sessions',
+              color: Colors.purple,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildAdditionalStats(DashboardState state) {
+  Widget _buildMiniStat({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[900],
+          ),
+        ),
+        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+      ],
+    );
+  }
+
+  Widget _buildSystemHealthCard(DashboardState state) {
     return Card(
-      elevation: 2,
+      elevation: 1,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Real-time Statistics',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[900],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            Row(
               children: [
-                _buildStatChip('Online Users', state.onlineUsers.toString()),
-                _buildStatChip('New Users (24h)', state.newUsers.toString()),
-                _buildStatChip('Active Chats', state.totalMeetings.toString()),
-                _buildStatChip(
+                Icon(
+                  Icons.health_and_safety_outlined,
+                  size: 14,
+                  color: Colors.grey[700],
+                ),
+                const SizedBox(width: 6),
+                Text(
                   'System Health',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[900],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: state.systemHealth / 100,
+              backgroundColor: Colors.grey[200],
+              color: _getHealthColor(state.systemHealth),
+              borderRadius: BorderRadius.circular(4),
+              minHeight: 6,
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
                   '${state.systemHealth.toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _getHealthColor(state.systemHealth),
+                  ),
+                ),
+                Text(
+                  _getHealthStatus(state.systemHealth),
+                  style: TextStyle(fontSize: 10, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -138,34 +274,57 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatChip(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green[100]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.green[700],
-              fontWeight: FontWeight.w500,
+  Color _getHealthColor(double health) {
+    if (health >= 90) return Colors.green;
+    if (health >= 70) return Colors.orange;
+    return Colors.red;
+  }
+
+  String _getHealthStatus(double health) {
+    if (health >= 90) return 'Excellent';
+    if (health >= 70) return 'Good';
+    return 'Needs attention';
+  }
+
+  Widget _buildErrorState(BuildContext context, String error) {
+    return Padding(
+      padding: const EdgeInsets.all(40),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 40, color: Colors.red[300]),
+            const SizedBox(height: 12),
+            Text(
+              'Failed to load',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
             ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.green[900],
-              fontWeight: FontWeight.w600,
+            const SizedBox(height: 6),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => context.read<DashboardCubit>().refresh(),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              child: const Text('Try Again', style: TextStyle(fontSize: 12)),
+            ),
+          ],
+        ),
       ),
     );
   }

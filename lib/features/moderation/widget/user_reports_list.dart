@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_admin_panel/features/moderation/cubit/moderation_cubit.dart';
 
 class UserReportsList extends StatelessWidget {
-  final List<UserReport> userReports;
+  final List<ReportedContent> userReports;
 
   const UserReportsList({super.key, required this.userReports});
 
@@ -27,7 +27,7 @@ class UserReportsList extends StatelessWidget {
         const SizedBox(height: 16),
         ListView.separated(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: userReports.length,
           separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
@@ -40,7 +40,7 @@ class UserReportsList extends StatelessWidget {
 }
 
 class UserReportCard extends StatelessWidget {
-  final UserReport userReport;
+  final ReportedContent userReport;
 
   const UserReportCard({super.key, required this.userReport});
 
@@ -60,7 +60,10 @@ class UserReportCard extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: Colors.blue[100],
                   child: Text(
-                    userReport.username[0].toUpperCase(),
+                    // Исправление: проверка на null и использование безопасного доступа
+                    (userReport.username?.isNotEmpty ?? false)
+                        ? userReport.username![0].toUpperCase()
+                        : '?',
                     style: TextStyle(color: Colors.blue[600]),
                   ),
                 ),
@@ -70,7 +73,8 @@ class UserReportCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userReport.username,
+                        // Исправление: использование значения по умолчанию для nullable поля
+                        userReport.username ?? 'Unknown User',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -78,7 +82,8 @@ class UserReportCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        userReport.email,
+                        // Исправление: использование значения по умолчанию для nullable поля
+                        userReport.email ?? 'No email provided',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
@@ -197,8 +202,16 @@ class UserReportCard extends StatelessWidget {
       children: [
         if (userReport.status == ModerationStatus.pending) ...[
           ElevatedButton(
-            onPressed: () =>
-                context.read<ModerationCubit>().warnUser(userReport.id),
+            onPressed: () {
+              // Исправление: передаем оба аргумента
+              final userId = userReport.userId ?? userReport.reportedBy;
+              _showReasonDialog(
+                context,
+                'Warn User',
+                (reason) =>
+                    context.read<ModerationCubit>().warnUser(userId, reason),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.yellow[50],
               foregroundColor: Colors.yellow[700],
@@ -212,8 +225,16 @@ class UserReportCard extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           ElevatedButton(
-            onPressed: () =>
-                context.read<ModerationCubit>().banUser(userReport.id),
+            onPressed: () {
+              // Исправление: передаем оба аргумента
+              final userId = userReport.userId ?? userReport.reportedBy;
+              _showReasonDialog(
+                context,
+                'Ban User',
+                (reason) =>
+                    context.read<ModerationCubit>().banUser(userId, reason),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red[50],
               foregroundColor: Colors.red[700],
@@ -229,9 +250,142 @@ class UserReportCard extends StatelessWidget {
         const Spacer(),
         IconButton(
           icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-          onPressed: () {},
+          onPressed: () {
+            _showMoreOptions(context);
+          },
         ),
       ],
+    );
+  }
+
+  void _showReasonDialog(
+    BuildContext context,
+    String title,
+    Function(String) onConfirm,
+  ) {
+    final TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'Enter reason...',
+            border: OutlineInputBorder(),
+          ),
+          maxLines: 3,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final reason = controller.text.trim();
+              if (reason.isNotEmpty) {
+                onConfirm(reason);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMoreOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.remove_red_eye),
+            title: const Text('View Details'),
+            onTap: () {
+              Navigator.pop(context);
+              _showReportDetails(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text('Delete Report'),
+            onTap: () {
+              Navigator.pop(context);
+              _showDeleteConfirmation(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Report Details'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Title: ${userReport.title}'),
+              const SizedBox(height: 8),
+              Text('Content: ${userReport.content}'),
+              const SizedBox(height: 8),
+              Text('Type: ${userReport.type}'),
+              const SizedBox(height: 8),
+              Text('Reason: ${userReport.reason}'),
+              const SizedBox(height: 8),
+              Text('Reported by: ${userReport.reportedBy}'),
+              const SizedBox(height: 8),
+              Text('Date: ${_formatDate(userReport.reportedAt)}'),
+              if (userReport.notes != null) ...[
+                const SizedBox(height: 8),
+                Text('Notes: ${userReport.notes}'),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Report'),
+        content: const Text('Are you sure you want to delete this report?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<ModerationCubit>().deleteReport(userReport.id);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[50],
+              foregroundColor: Colors.red[700],
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 

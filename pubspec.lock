@@ -392,7 +392,7 @@ packages:
     source: hosted
     version: "5.0.0"
   flutter_local_notifications:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_local_notifications
       sha256: "19ffb0a8bb7407875555e5e98d7343a633bb73707bae6c6a5f37c90014077875"
@@ -646,8 +646,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "186b5d49721f7b6834f329a1b999eab3f22ec525"
-      resolved-ref: "186b5d49721f7b6834f329a1b999eab3f22ec525"
+      ref: "394e5b1a894d4c1f60f7a88faee8f9a009f1491a"
+      resolved-ref: "394e5b1a894d4c1f60f7a88faee8f9a009f1491a"
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"

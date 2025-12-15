@@ -35,7 +35,7 @@ dependencies:
     git:
       url: https://github.com/efedotof/meet_now_app_server.git
       path: .
-      ref: 186b5d49721f7b6834f329a1b999eab3f22ec525
+      ref: 394e5b1a894d4c1f60f7a88faee8f9a009f1491a
 
   
   # The following adds the Cupertino Icons font to your application.
@@ -48,6 +48,7 @@ dependencies:
   auto_route: ^10.2.0
   encrypt: ^5.0.3
   shared_preferences: ^2.5.3
+  flutter_local_notifications: ^19.5.0
 
 dev_dependencies:
   flutter_test:

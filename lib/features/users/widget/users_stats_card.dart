@@ -1,3 +1,4 @@
+// users_stats_card.dart
 import 'package:flutter/material.dart';
 
 import 'user_ui_models.dart';
@@ -46,8 +47,8 @@ class UsersStatsCard extends StatelessWidget {
             ),
             const VerticalDivider(),
             _buildStatItem(
-              'Banned',
-              stats.bannedUsers.toString(),
+              'Blocked',
+              stats.blockedUsers.toString(),
               Icons.block,
               Colors.red,
             ),
@@ -69,7 +70,7 @@ class UsersStatsCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withAlpha(1),
+              color: color.withAlpha(20),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),

@@ -1,3 +1,4 @@
+// users_filters.dart
 import 'package:flutter/material.dart';
 import 'package:meet_now_admin_panel/features/users/widget/user_ui_models.dart';
 
@@ -43,12 +44,8 @@ class UsersFilters extends StatelessWidget {
                     child: Text('Premium'),
                   ),
                   DropdownMenuItem(
-                    value: UsersFilter.suspended,
-                    child: Text('Suspended'),
-                  ),
-                  DropdownMenuItem(
-                    value: UsersFilter.banned,
-                    child: Text('Banned'),
+                    value: UsersFilter.blocked,
+                    child: Text('Blocked'),
                   ),
                 ],
                 onChanged: (filter) {

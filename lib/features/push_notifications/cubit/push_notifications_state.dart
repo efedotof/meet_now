@@ -6,20 +6,47 @@ abstract class PushNotificationsState with _$PushNotificationsState {
     required bool isLoading,
     required bool isSending,
     required NotificationCompose composeData,
-    required List<SentNotification> sentNotifications,
-    required NotificationStats stats,
+    required List<NotificationHistoryDto> notificationHistory,
+    required List<UserWithTokenDto> usersWithTokens,
+    NotificationStatisticsDto? notificationStatistics,
+    TokenCoverageDto? tokenCoverage,
+    NotificationHistoryStatsDto? notificationHistoryStats,
+    List<UserWithTokenDto>? onlineUsersWithTokens,
+    UserTokenStatusDto? selectedUserTokenStatus,
+    List<NotificationHistoryDto>? filteredHistory,
+    NotificationFilter? currentFilter,
+    String? filterValue,
     required String searchQuery,
+    required int currentPage,
+    required int totalPages,
+    required int pageSize,
+    String? errorMessage,
+    String? successMessage,
   }) = _PushNotificationsState;
 
   factory PushNotificationsState.initial() => PushNotificationsState(
     isLoading: true,
     isSending: false,
     composeData: NotificationCompose.empty(),
-    sentNotifications: [],
-    stats: NotificationStats.empty(),
+    notificationHistory: [],
+    usersWithTokens: [],
     searchQuery: '',
+    currentPage: 0,
+    totalPages: 0,
+    pageSize: 10,
   );
 }
+
+enum NotificationTarget {
+  allUsers,
+  specificUser,
+  specificToken,
+  dataNotification,
+}
+
+enum NotificationPriority { low, normal, high, urgent }
+
+enum NotificationFilter { byType, byStatus, byUser }
 
 class NotificationCompose {
   final String title;
@@ -28,7 +55,8 @@ class NotificationCompose {
   final NotificationPriority priority;
   final DateTime? scheduledTime;
   final String? deepLink;
-  final String? imageUrl;
+  final String? targetUserId;
+  final String? targetPushToken;
 
   const NotificationCompose({
     required this.title,
@@ -37,7 +65,8 @@ class NotificationCompose {
     required this.priority,
     this.scheduledTime,
     this.deepLink,
-    this.imageUrl,
+    this.targetUserId,
+    this.targetPushToken,
   });
 
   factory NotificationCompose.empty() => const NotificationCompose(
@@ -54,7 +83,8 @@ class NotificationCompose {
     NotificationPriority? priority,
     DateTime? scheduledTime,
     String? deepLink,
-    String? imageUrl,
+    String? targetUserId,
+    String? targetPushToken,
   }) {
     return NotificationCompose(
       title: title ?? this.title,
@@ -63,87 +93,8 @@ class NotificationCompose {
       priority: priority ?? this.priority,
       scheduledTime: scheduledTime ?? this.scheduledTime,
       deepLink: deepLink ?? this.deepLink,
-      imageUrl: imageUrl ?? this.imageUrl,
+      targetUserId: targetUserId ?? this.targetUserId,
+      targetPushToken: targetPushToken ?? this.targetPushToken,
     );
   }
 }
-
-class SentNotification {
-  final String id;
-  final String title;
-  final String message;
-  final NotificationTarget target;
-  final NotificationPriority priority;
-  final DateTime sentAt;
-  final int totalRecipients;
-  final int delivered;
-  final int opened;
-  final NotificationStatus status;
-
-  const SentNotification({
-    required this.id,
-    required this.title,
-    required this.message,
-    required this.target,
-    required this.priority,
-    required this.sentAt,
-    required this.totalRecipients,
-    required this.delivered,
-    required this.opened,
-    required this.status,
-  });
-}
-
-class NotificationStats {
-  final int totalSent;
-  final int totalDelivered;
-  final int totalOpened;
-  final double deliveryRate;
-  final double openRate;
-  final List<DailyStats> dailyStats;
-
-  const NotificationStats({
-    required this.totalSent,
-    required this.totalDelivered,
-    required this.totalOpened,
-    required this.deliveryRate,
-    required this.openRate,
-    required this.dailyStats,
-  });
-
-  factory NotificationStats.empty() => const NotificationStats(
-    totalSent: 0,
-    totalDelivered: 0,
-    totalOpened: 0,
-    deliveryRate: 0.0,
-    openRate: 0.0,
-    dailyStats: [],
-  );
-}
-
-class DailyStats {
-  final DateTime date;
-  final int sent;
-  final int delivered;
-  final int opened;
-
-  const DailyStats({
-    required this.date,
-    required this.sent,
-    required this.delivered,
-    required this.opened,
-  });
-}
-
-enum NotificationTarget {
-  allUsers,
-  activeUsers,
-  inactiveUsers,
-  premiumUsers,
-  newUsers,
-  customSegment,
-}
-
-enum NotificationPriority { low, normal, high, urgent }
-
-enum NotificationStatus { scheduled, sending, sent, failed, cancelled }

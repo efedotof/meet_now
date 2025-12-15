@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/statistics/admin_system_statistics_dto/admin_system_statistics_dto.dart';
 import 'package:meet_now_app_server/model/statistics/realtime_statistics_dto/realtime_statistics_dto.dart';
 import 'package:meet_now_app_server/repository/admin/admin_interface.dart';
-import 'package:meet_now_app_server/repository/admin/admin_repository.dart';
 
 part 'dashboard_state.dart';
 part 'dashboard_cubit.freezed.dart';

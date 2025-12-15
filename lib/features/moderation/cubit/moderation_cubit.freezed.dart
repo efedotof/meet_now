@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ModerationState {
 
- bool get isLoading; List<ReportedContent> get reportedContent; List<UserReport> get userReports; ModerationFilter get filter; String get searchQuery; int get currentPage; bool get hasMore; ReportStatisticsDto? get reportsStatistics; SupportStatisticsDto? get supportStatistics; String? get error;
+ bool get isLoading; List<ReportedContent> get reportedContent; List<Question> get questions; List<UserQuestionStatisticDto> get activeSupportUsers; ModerationCategory get selectedCategory; ReportStatus? get selectedReportStatus; String get searchQuery; int get totalReports; int get totalQuestions; ReportStatisticsDto? get reportsStatistics; SupportStatisticsDto? get supportStatistics; List<Question>? get unansweredQuestions; List<Question>? get userQuestions; String? get selectedUserId; String? get error;
 /// Create a copy of ModerationState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ModerationStateCopyWith<ModerationState> get copyWith => _$ModerationStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModerationState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.reportedContent, reportedContent)&&const DeepCollectionEquality().equals(other.userReports, userReports)&&(identical(other.filter, filter) || other.filter == filter)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.reportsStatistics, reportsStatistics) || other.reportsStatistics == reportsStatistics)&&(identical(other.supportStatistics, supportStatistics) || other.supportStatistics == supportStatistics)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ModerationState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.reportedContent, reportedContent)&&const DeepCollectionEquality().equals(other.questions, questions)&&const DeepCollectionEquality().equals(other.activeSupportUsers, activeSupportUsers)&&(identical(other.selectedCategory, selectedCategory) || other.selectedCategory == selectedCategory)&&(identical(other.selectedReportStatus, selectedReportStatus) || other.selectedReportStatus == selectedReportStatus)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.totalReports, totalReports) || other.totalReports == totalReports)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&(identical(other.reportsStatistics, reportsStatistics) || other.reportsStatistics == reportsStatistics)&&(identical(other.supportStatistics, supportStatistics) || other.supportStatistics == supportStatistics)&&const DeepCollectionEquality().equals(other.unansweredQuestions, unansweredQuestions)&&const DeepCollectionEquality().equals(other.userQuestions, userQuestions)&&(identical(other.selectedUserId, selectedUserId) || other.selectedUserId == selectedUserId)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(reportedContent),const DeepCollectionEquality().hash(userReports),filter,searchQuery,currentPage,hasMore,reportsStatistics,supportStatistics,error);
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(reportedContent),const DeepCollectionEquality().hash(questions),const DeepCollectionEquality().hash(activeSupportUsers),selectedCategory,selectedReportStatus,searchQuery,totalReports,totalQuestions,reportsStatistics,supportStatistics,const DeepCollectionEquality().hash(unansweredQuestions),const DeepCollectionEquality().hash(userQuestions),selectedUserId,error);
 
 @override
 String toString() {
-  return 'ModerationState(isLoading: $isLoading, reportedContent: $reportedContent, userReports: $userReports, filter: $filter, searchQuery: $searchQuery, currentPage: $currentPage, hasMore: $hasMore, reportsStatistics: $reportsStatistics, supportStatistics: $supportStatistics, error: $error)';
+  return 'ModerationState(isLoading: $isLoading, reportedContent: $reportedContent, questions: $questions, activeSupportUsers: $activeSupportUsers, selectedCategory: $selectedCategory, selectedReportStatus: $selectedReportStatus, searchQuery: $searchQuery, totalReports: $totalReports, totalQuestions: $totalQuestions, reportsStatistics: $reportsStatistics, supportStatistics: $supportStatistics, unansweredQuestions: $unansweredQuestions, userQuestions: $userQuestions, selectedUserId: $selectedUserId, error: $error)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ModerationStateCopyWith<$Res>  {
   factory $ModerationStateCopyWith(ModerationState value, $Res Function(ModerationState) _then) = _$ModerationStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, List<ReportedContent> reportedContent, List<UserReport> userReports, ModerationFilter filter, String searchQuery, int currentPage, bool hasMore, ReportStatisticsDto? reportsStatistics, SupportStatisticsDto? supportStatistics, String? error
+ bool isLoading, List<ReportedContent> reportedContent, List<Question> questions, List<UserQuestionStatisticDto> activeSupportUsers, ModerationCategory selectedCategory, ReportStatus? selectedReportStatus, String searchQuery, int totalReports, int totalQuestions, ReportStatisticsDto? reportsStatistics, SupportStatisticsDto? supportStatistics, List<Question>? unansweredQuestions, List<Question>? userQuestions, String? selectedUserId, String? error
 });
 
 
@@ -62,18 +62,23 @@ class _$ModerationStateCopyWithImpl<$Res>
 
 /// Create a copy of ModerationState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? reportedContent = null,Object? userReports = null,Object? filter = null,Object? searchQuery = null,Object? currentPage = null,Object? hasMore = null,Object? reportsStatistics = freezed,Object? supportStatistics = freezed,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? reportedContent = null,Object? questions = null,Object? activeSupportUsers = null,Object? selectedCategory = null,Object? selectedReportStatus = freezed,Object? searchQuery = null,Object? totalReports = null,Object? totalQuestions = null,Object? reportsStatistics = freezed,Object? supportStatistics = freezed,Object? unansweredQuestions = freezed,Object? userQuestions = freezed,Object? selectedUserId = freezed,Object? error = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,reportedContent: null == reportedContent ? _self.reportedContent : reportedContent // ignore: cast_nullable_to_non_nullable
-as List<ReportedContent>,userReports: null == userReports ? _self.userReports : userReports // ignore: cast_nullable_to_non_nullable
-as List<UserReport>,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
-as ModerationFilter,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
-as int,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
-as bool,reportsStatistics: freezed == reportsStatistics ? _self.reportsStatistics : reportsStatistics // ignore: cast_nullable_to_non_nullable
+as List<ReportedContent>,questions: null == questions ? _self.questions : questions // ignore: cast_nullable_to_non_nullable
+as List<Question>,activeSupportUsers: null == activeSupportUsers ? _self.activeSupportUsers : activeSupportUsers // ignore: cast_nullable_to_non_nullable
+as List<UserQuestionStatisticDto>,selectedCategory: null == selectedCategory ? _self.selectedCategory : selectedCategory // ignore: cast_nullable_to_non_nullable
+as ModerationCategory,selectedReportStatus: freezed == selectedReportStatus ? _self.selectedReportStatus : selectedReportStatus // ignore: cast_nullable_to_non_nullable
+as ReportStatus?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,totalReports: null == totalReports ? _self.totalReports : totalReports // ignore: cast_nullable_to_non_nullable
+as int,totalQuestions: null == totalQuestions ? _self.totalQuestions : totalQuestions // ignore: cast_nullable_to_non_nullable
+as int,reportsStatistics: freezed == reportsStatistics ? _self.reportsStatistics : reportsStatistics // ignore: cast_nullable_to_non_nullable
 as ReportStatisticsDto?,supportStatistics: freezed == supportStatistics ? _self.supportStatistics : supportStatistics // ignore: cast_nullable_to_non_nullable
-as SupportStatisticsDto?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as SupportStatisticsDto?,unansweredQuestions: freezed == unansweredQuestions ? _self.unansweredQuestions : unansweredQuestions // ignore: cast_nullable_to_non_nullable
+as List<Question>?,userQuestions: freezed == userQuestions ? _self.userQuestions : userQuestions // ignore: cast_nullable_to_non_nullable
+as List<Question>?,selectedUserId: freezed == selectedUserId ? _self.selectedUserId : selectedUserId // ignore: cast_nullable_to_non_nullable
+as String?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -183,10 +188,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<ReportedContent> reportedContent,  List<UserReport> userReports,  ModerationFilter filter,  String searchQuery,  int currentPage,  bool hasMore,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<ReportedContent> reportedContent,  List<Question> questions,  List<UserQuestionStatisticDto> activeSupportUsers,  ModerationCategory selectedCategory,  ReportStatus? selectedReportStatus,  String searchQuery,  int totalReports,  int totalQuestions,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  List<Question>? unansweredQuestions,  List<Question>? userQuestions,  String? selectedUserId,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ModerationState() when $default != null:
-return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.filter,_that.searchQuery,_that.currentPage,_that.hasMore,_that.reportsStatistics,_that.supportStatistics,_that.error);case _:
+return $default(_that.isLoading,_that.reportedContent,_that.questions,_that.activeSupportUsers,_that.selectedCategory,_that.selectedReportStatus,_that.searchQuery,_that.totalReports,_that.totalQuestions,_that.reportsStatistics,_that.supportStatistics,_that.unansweredQuestions,_that.userQuestions,_that.selectedUserId,_that.error);case _:
   return orElse();
 
 }
@@ -204,10 +209,10 @@ return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.fi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<ReportedContent> reportedContent,  List<UserReport> userReports,  ModerationFilter filter,  String searchQuery,  int currentPage,  bool hasMore,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<ReportedContent> reportedContent,  List<Question> questions,  List<UserQuestionStatisticDto> activeSupportUsers,  ModerationCategory selectedCategory,  ReportStatus? selectedReportStatus,  String searchQuery,  int totalReports,  int totalQuestions,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  List<Question>? unansweredQuestions,  List<Question>? userQuestions,  String? selectedUserId,  String? error)  $default,) {final _that = this;
 switch (_that) {
 case _ModerationState():
-return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.filter,_that.searchQuery,_that.currentPage,_that.hasMore,_that.reportsStatistics,_that.supportStatistics,_that.error);case _:
+return $default(_that.isLoading,_that.reportedContent,_that.questions,_that.activeSupportUsers,_that.selectedCategory,_that.selectedReportStatus,_that.searchQuery,_that.totalReports,_that.totalQuestions,_that.reportsStatistics,_that.supportStatistics,_that.unansweredQuestions,_that.userQuestions,_that.selectedUserId,_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +229,10 @@ return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.fi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<ReportedContent> reportedContent,  List<UserReport> userReports,  ModerationFilter filter,  String searchQuery,  int currentPage,  bool hasMore,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<ReportedContent> reportedContent,  List<Question> questions,  List<UserQuestionStatisticDto> activeSupportUsers,  ModerationCategory selectedCategory,  ReportStatus? selectedReportStatus,  String searchQuery,  int totalReports,  int totalQuestions,  ReportStatisticsDto? reportsStatistics,  SupportStatisticsDto? supportStatistics,  List<Question>? unansweredQuestions,  List<Question>? userQuestions,  String? selectedUserId,  String? error)?  $default,) {final _that = this;
 switch (_that) {
 case _ModerationState() when $default != null:
-return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.filter,_that.searchQuery,_that.currentPage,_that.hasMore,_that.reportsStatistics,_that.supportStatistics,_that.error);case _:
+return $default(_that.isLoading,_that.reportedContent,_that.questions,_that.activeSupportUsers,_that.selectedCategory,_that.selectedReportStatus,_that.searchQuery,_that.totalReports,_that.totalQuestions,_that.reportsStatistics,_that.supportStatistics,_that.unansweredQuestions,_that.userQuestions,_that.selectedUserId,_that.error);case _:
   return null;
 
 }
@@ -239,7 +244,7 @@ return $default(_that.isLoading,_that.reportedContent,_that.userReports,_that.fi
 
 
 class _ModerationState implements ModerationState {
-  const _ModerationState({required this.isLoading, required final  List<ReportedContent> reportedContent, required final  List<UserReport> userReports, required this.filter, required this.searchQuery, required this.currentPage, required this.hasMore, this.reportsStatistics, this.supportStatistics, this.error}): _reportedContent = reportedContent,_userReports = userReports;
+  const _ModerationState({required this.isLoading, required final  List<ReportedContent> reportedContent, required final  List<Question> questions, required final  List<UserQuestionStatisticDto> activeSupportUsers, required this.selectedCategory, required this.selectedReportStatus, required this.searchQuery, required this.totalReports, required this.totalQuestions, this.reportsStatistics, this.supportStatistics, final  List<Question>? unansweredQuestions, final  List<Question>? userQuestions, this.selectedUserId, this.error}): _reportedContent = reportedContent,_questions = questions,_activeSupportUsers = activeSupportUsers,_unansweredQuestions = unansweredQuestions,_userQuestions = userQuestions;
   
 
 @override final  bool isLoading;
@@ -250,19 +255,46 @@ class _ModerationState implements ModerationState {
   return EqualUnmodifiableListView(_reportedContent);
 }
 
- final  List<UserReport> _userReports;
-@override List<UserReport> get userReports {
-  if (_userReports is EqualUnmodifiableListView) return _userReports;
+ final  List<Question> _questions;
+@override List<Question> get questions {
+  if (_questions is EqualUnmodifiableListView) return _questions;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_userReports);
+  return EqualUnmodifiableListView(_questions);
 }
 
-@override final  ModerationFilter filter;
+ final  List<UserQuestionStatisticDto> _activeSupportUsers;
+@override List<UserQuestionStatisticDto> get activeSupportUsers {
+  if (_activeSupportUsers is EqualUnmodifiableListView) return _activeSupportUsers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_activeSupportUsers);
+}
+
+@override final  ModerationCategory selectedCategory;
+@override final  ReportStatus? selectedReportStatus;
 @override final  String searchQuery;
-@override final  int currentPage;
-@override final  bool hasMore;
+@override final  int totalReports;
+@override final  int totalQuestions;
 @override final  ReportStatisticsDto? reportsStatistics;
 @override final  SupportStatisticsDto? supportStatistics;
+ final  List<Question>? _unansweredQuestions;
+@override List<Question>? get unansweredQuestions {
+  final value = _unansweredQuestions;
+  if (value == null) return null;
+  if (_unansweredQuestions is EqualUnmodifiableListView) return _unansweredQuestions;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<Question>? _userQuestions;
+@override List<Question>? get userQuestions {
+  final value = _userQuestions;
+  if (value == null) return null;
+  if (_userQuestions is EqualUnmodifiableListView) return _userQuestions;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override final  String? selectedUserId;
 @override final  String? error;
 
 /// Create a copy of ModerationState
@@ -275,16 +307,16 @@ _$ModerationStateCopyWith<_ModerationState> get copyWith => __$ModerationStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModerationState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._reportedContent, _reportedContent)&&const DeepCollectionEquality().equals(other._userReports, _userReports)&&(identical(other.filter, filter) || other.filter == filter)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.currentPage, currentPage) || other.currentPage == currentPage)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.reportsStatistics, reportsStatistics) || other.reportsStatistics == reportsStatistics)&&(identical(other.supportStatistics, supportStatistics) || other.supportStatistics == supportStatistics)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ModerationState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._reportedContent, _reportedContent)&&const DeepCollectionEquality().equals(other._questions, _questions)&&const DeepCollectionEquality().equals(other._activeSupportUsers, _activeSupportUsers)&&(identical(other.selectedCategory, selectedCategory) || other.selectedCategory == selectedCategory)&&(identical(other.selectedReportStatus, selectedReportStatus) || other.selectedReportStatus == selectedReportStatus)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.totalReports, totalReports) || other.totalReports == totalReports)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&(identical(other.reportsStatistics, reportsStatistics) || other.reportsStatistics == reportsStatistics)&&(identical(other.supportStatistics, supportStatistics) || other.supportStatistics == supportStatistics)&&const DeepCollectionEquality().equals(other._unansweredQuestions, _unansweredQuestions)&&const DeepCollectionEquality().equals(other._userQuestions, _userQuestions)&&(identical(other.selectedUserId, selectedUserId) || other.selectedUserId == selectedUserId)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(_reportedContent),const DeepCollectionEquality().hash(_userReports),filter,searchQuery,currentPage,hasMore,reportsStatistics,supportStatistics,error);
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(_reportedContent),const DeepCollectionEquality().hash(_questions),const DeepCollectionEquality().hash(_activeSupportUsers),selectedCategory,selectedReportStatus,searchQuery,totalReports,totalQuestions,reportsStatistics,supportStatistics,const DeepCollectionEquality().hash(_unansweredQuestions),const DeepCollectionEquality().hash(_userQuestions),selectedUserId,error);
 
 @override
 String toString() {
-  return 'ModerationState(isLoading: $isLoading, reportedContent: $reportedContent, userReports: $userReports, filter: $filter, searchQuery: $searchQuery, currentPage: $currentPage, hasMore: $hasMore, reportsStatistics: $reportsStatistics, supportStatistics: $supportStatistics, error: $error)';
+  return 'ModerationState(isLoading: $isLoading, reportedContent: $reportedContent, questions: $questions, activeSupportUsers: $activeSupportUsers, selectedCategory: $selectedCategory, selectedReportStatus: $selectedReportStatus, searchQuery: $searchQuery, totalReports: $totalReports, totalQuestions: $totalQuestions, reportsStatistics: $reportsStatistics, supportStatistics: $supportStatistics, unansweredQuestions: $unansweredQuestions, userQuestions: $userQuestions, selectedUserId: $selectedUserId, error: $error)';
 }
 
 
@@ -295,7 +327,7 @@ abstract mixin class _$ModerationStateCopyWith<$Res> implements $ModerationState
   factory _$ModerationStateCopyWith(_ModerationState value, $Res Function(_ModerationState) _then) = __$ModerationStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, List<ReportedContent> reportedContent, List<UserReport> userReports, ModerationFilter filter, String searchQuery, int currentPage, bool hasMore, ReportStatisticsDto? reportsStatistics, SupportStatisticsDto? supportStatistics, String? error
+ bool isLoading, List<ReportedContent> reportedContent, List<Question> questions, List<UserQuestionStatisticDto> activeSupportUsers, ModerationCategory selectedCategory, ReportStatus? selectedReportStatus, String searchQuery, int totalReports, int totalQuestions, ReportStatisticsDto? reportsStatistics, SupportStatisticsDto? supportStatistics, List<Question>? unansweredQuestions, List<Question>? userQuestions, String? selectedUserId, String? error
 });
 
 
@@ -312,18 +344,23 @@ class __$ModerationStateCopyWithImpl<$Res>
 
 /// Create a copy of ModerationState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? reportedContent = null,Object? userReports = null,Object? filter = null,Object? searchQuery = null,Object? currentPage = null,Object? hasMore = null,Object? reportsStatistics = freezed,Object? supportStatistics = freezed,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? reportedContent = null,Object? questions = null,Object? activeSupportUsers = null,Object? selectedCategory = null,Object? selectedReportStatus = freezed,Object? searchQuery = null,Object? totalReports = null,Object? totalQuestions = null,Object? reportsStatistics = freezed,Object? supportStatistics = freezed,Object? unansweredQuestions = freezed,Object? userQuestions = freezed,Object? selectedUserId = freezed,Object? error = freezed,}) {
   return _then(_ModerationState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,reportedContent: null == reportedContent ? _self._reportedContent : reportedContent // ignore: cast_nullable_to_non_nullable
-as List<ReportedContent>,userReports: null == userReports ? _self._userReports : userReports // ignore: cast_nullable_to_non_nullable
-as List<UserReport>,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
-as ModerationFilter,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
-as String,currentPage: null == currentPage ? _self.currentPage : currentPage // ignore: cast_nullable_to_non_nullable
-as int,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
-as bool,reportsStatistics: freezed == reportsStatistics ? _self.reportsStatistics : reportsStatistics // ignore: cast_nullable_to_non_nullable
+as List<ReportedContent>,questions: null == questions ? _self._questions : questions // ignore: cast_nullable_to_non_nullable
+as List<Question>,activeSupportUsers: null == activeSupportUsers ? _self._activeSupportUsers : activeSupportUsers // ignore: cast_nullable_to_non_nullable
+as List<UserQuestionStatisticDto>,selectedCategory: null == selectedCategory ? _self.selectedCategory : selectedCategory // ignore: cast_nullable_to_non_nullable
+as ModerationCategory,selectedReportStatus: freezed == selectedReportStatus ? _self.selectedReportStatus : selectedReportStatus // ignore: cast_nullable_to_non_nullable
+as ReportStatus?,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,totalReports: null == totalReports ? _self.totalReports : totalReports // ignore: cast_nullable_to_non_nullable
+as int,totalQuestions: null == totalQuestions ? _self.totalQuestions : totalQuestions // ignore: cast_nullable_to_non_nullable
+as int,reportsStatistics: freezed == reportsStatistics ? _self.reportsStatistics : reportsStatistics // ignore: cast_nullable_to_non_nullable
 as ReportStatisticsDto?,supportStatistics: freezed == supportStatistics ? _self.supportStatistics : supportStatistics // ignore: cast_nullable_to_non_nullable
-as SupportStatisticsDto?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as SupportStatisticsDto?,unansweredQuestions: freezed == unansweredQuestions ? _self._unansweredQuestions : unansweredQuestions // ignore: cast_nullable_to_non_nullable
+as List<Question>?,userQuestions: freezed == userQuestions ? _self._userQuestions : userQuestions // ignore: cast_nullable_to_non_nullable
+as List<Question>?,selectedUserId: freezed == selectedUserId ? _self.selectedUserId : selectedUserId // ignore: cast_nullable_to_non_nullable
+as String?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

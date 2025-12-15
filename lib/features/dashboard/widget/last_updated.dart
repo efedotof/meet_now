@@ -8,21 +8,21 @@ class LastUpdated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.update, size: 16, color: Colors.grey[500]),
-          const SizedBox(width: 8),
+          Icon(Icons.update, size: 12, color: Colors.grey[500]),
+          const SizedBox(width: 6),
           Text(
             lastUpdated != null
-                ? 'Last updated: ${_formatDateTime(lastUpdated!)}'
+                ? 'Updated: ${_formatDateTime(lastUpdated!)}'
                 : 'Never updated',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 10, color: Colors.grey[600]),
           ),
         ],
       ),

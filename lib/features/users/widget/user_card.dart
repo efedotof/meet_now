@@ -4,6 +4,8 @@ import 'package:meet_now_admin_panel/features/users/cubit/users_cubit.dart';
 import 'package:meet_now_admin_panel/features/users/widget/user_ui_models.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
+import 'block_user_dialog.dart';
+
 class UserCard extends StatelessWidget {
   final User user;
 
@@ -11,10 +13,19 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBlocked = user.isBlocked == true;
+
     return Card(
       elevation: 2,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isBlocked ? Colors.red.withOpacity(0.3) : Colors.transparent,
+          width: isBlocked ? 2 : 0,
+        ),
+      ),
+      color: isBlocked ? Colors.red[50] : Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -29,13 +40,33 @@ class UserCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          user.username,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[900],
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.username,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[900],
+                              ),
+                            ),
+                            if (user.blockReason != null &&
+                                user.blockReason!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'Blocked: ${user.blockReason}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.red[700],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                       _buildStatusBadge(),
@@ -52,6 +83,7 @@ class UserCard extends StatelessWidget {
                     runSpacing: 4,
                     children: [
                       _buildRoleBadges(),
+                      if (isBlocked) _buildBlockedBadge(),
                       _buildVerificationBadge(),
                       if (user.city != null) _buildCityBadge(),
                     ],
@@ -74,17 +106,23 @@ class UserCard extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
+    final isBlocked = user.isBlocked == true;
+
     return Container(
       width: 50,
       height: 50,
-      decoration: BoxDecoration(color: _getUserColor(), shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: _getUserColor(),
+        shape: BoxShape.circle,
+        border: isBlocked ? Border.all(color: Colors.red, width: 2) : null,
+      ),
       child: Center(
         child: Text(
           user.username[0].toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: isBlocked ? Colors.white : Colors.white,
           ),
         ),
       ),
@@ -93,11 +131,16 @@ class UserCard extends StatelessWidget {
 
   Widget _buildStatusBadge() {
     final isOnline = user.isOnline;
+    final isBlocked = user.isBlocked == true;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isOnline ? Colors.green[50]! : Colors.grey[200]!,
+        color: isBlocked
+            ? Colors.red[100]!
+            : isOnline
+            ? Colors.green[50]!
+            : Colors.grey[200]!,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -107,16 +150,50 @@ class UserCard extends StatelessWidget {
             width: 6,
             height: 6,
             decoration: BoxDecoration(
-              color: isOnline ? Colors.green : Colors.grey,
+              color: isBlocked
+                  ? Colors.red
+                  : isOnline
+                  ? Colors.green
+                  : Colors.grey,
               shape: BoxShape.circle,
             ),
           ),
           const SizedBox(width: 4),
           Text(
-            isOnline ? 'Online' : 'Offline',
+            isBlocked ? 'Blocked' : (isOnline ? 'Online' : 'Offline'),
             style: TextStyle(
               fontSize: 10,
-              color: isOnline ? Colors.green[700]! : Colors.grey[700]!,
+              color: isBlocked
+                  ? Colors.red[700]!
+                  : isOnline
+                  ? Colors.green[700]!
+                  : Colors.grey[700]!,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBlockedBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.red[50]!,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.red[100]!, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.block, size: 12, color: Colors.red[700]!),
+          const SizedBox(width: 2),
+          Text(
+            'Blocked',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.red[700]!,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -255,9 +332,11 @@ class UserCard extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final isBlocked = user.isBlocked == true;
+
     return Row(
       children: [
-        if (!user.isModerator) ...[
+        if (!user.isModerator && !isBlocked) ...[
           ElevatedButton(
             onPressed: () =>
                 context.read<UsersCubit>().upgradeToPremium(user.id),
@@ -275,6 +354,23 @@ class UserCard extends StatelessWidget {
           ),
           const SizedBox(width: 8),
         ],
+        if (isBlocked) ...[
+          ElevatedButton(
+            onPressed: () => context.read<UsersCubit>().unblockUser(user.id),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[50],
+              foregroundColor: Colors.green[700],
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.green[100]!),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            ),
+            child: const Text('Unblock'),
+          ),
+          const SizedBox(width: 8),
+        ],
         IconButton(
           icon: Icon(Icons.more_vert, color: Colors.grey[600]),
           onPressed: () {
@@ -286,6 +382,7 @@ class UserCard extends StatelessWidget {
   }
 
   Color _getUserColor() {
+    if (user.isBlocked == true) return Colors.red;
     if (user.isPremium) return Colors.purple;
     if (user.isAdmin) return Colors.red;
     if (user.isModerator) return Colors.green;
@@ -303,6 +400,8 @@ class UserCard extends StatelessWidget {
   }
 
   void _showMoreOptions(BuildContext context) {
+    final isBlocked = user.isBlocked == true;
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -310,29 +409,24 @@ class UserCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit User'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.email),
-                title: const Text('Send Message'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: Implement send message
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.block, color: Colors.orange),
-                title: const Text('Block User'),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.read<UsersCubit>().blockUser(user.id);
-                },
-              ),
+              if (!isBlocked)
+                ListTile(
+                  leading: const Icon(Icons.block, color: Colors.orange),
+                  title: const Text('Block User'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showBlockDialog(context);
+                  },
+                ),
+              if (isBlocked)
+                ListTile(
+                  leading: const Icon(Icons.lock_open, color: Colors.green),
+                  title: const Text('Unblock User'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.read<UsersCubit>().unblockUser(user.id);
+                  },
+                ),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
                 title: const Text(
@@ -348,6 +442,19 @@ class UserCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showBlockDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => BlockUserDialog(
+        username: user.username,
+        initialReason: user.blockReason,
+        onBlock: (reason) {
+          context.read<UsersCubit>().blockUser(user.id, reason);
+        },
+      ),
     );
   }
 }

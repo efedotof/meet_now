@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
-import 'empty_users.dart';
 import 'user_card.dart';
 
 class UsersList extends StatelessWidget {
@@ -12,17 +11,20 @@ class UsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (users.isEmpty) {
-      return const EmptyUsers();
+      return const Center(
+        child: Text('No users found', style: TextStyle(color: Colors.grey)),
+      );
     }
 
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: users.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        return UserCard(user: users[index]);
-      },
+    return Column(
+      children: users
+          .map(
+            (user) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: UserCard(user: user),
+            ),
+          )
+          .toList(),
     );
   }
 }
