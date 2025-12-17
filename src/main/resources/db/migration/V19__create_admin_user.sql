@@ -3,7 +3,7 @@ INSERT INTO users (id, username, password, email, firstname, subname, descriptio
 (
     '550e8400-e29b-41d4-a716-446655440002',
     'admin',
-    '7a23aeb3b4db90f7c4669df7827713b94f560489446b9619f3dd96d3e778112f', 
+    '07f1359f5cbc1037a20475c42c105d6d08865ea6d0ccd309ea2450778b3c9646', 
     'admin@example.com',
     'Администратор',
     'Системы',

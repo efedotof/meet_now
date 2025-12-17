@@ -30,4 +30,6 @@ public class UserDto {
     private String floor;
     private int gamePoints;
     private List<String> images;
+    private Boolean isBlocked;
+    private String blockReason;
 }

@@ -91,9 +91,9 @@ public class UserController {
     @AdminOnly
     @Operation(summary = "[АДМИНИСТРАТОР] Заблокировать пользователя", description = "Блокирует пользователя. Только для администраторов")
     @PostMapping("/admin/{userId}/block")
-    public ResponseEntity<Void> blockUser(
-            @PathVariable UUID userId) {
-        userService.blockUser(userId);
+    public ResponseEntity<Void> blockUser(@PathVariable UUID userId,
+            @RequestParam(required = false, defaultValue = "Blocked by administrator") String reason) {
+        userService.blockUser(userId, reason);
         return ResponseEntity.ok().build();
     }
 

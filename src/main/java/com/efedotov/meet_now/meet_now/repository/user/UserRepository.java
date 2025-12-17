@@ -100,30 +100,30 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
         Page<User> findByIsOnlineTrue(Pageable pageable);
 
-        @Query(value = "SELECT COUNT(*) FROM user_friends", nativeQuery = true)
+        @Query(value = "SELECT COUNT(*) FROM friendships", nativeQuery = true)
         long countTotalFriendships();
 
         @Query("SELECT COUNT(DISTINCT f.user.id) FROM Friendship f")
         long countUsersWithFriends();
 
         @Query(value = "SELECT AVG(friend_count) FROM (" +
-                        "SELECT user_id, COUNT(friend_id) as friend_count FROM user_friends GROUP BY user_id" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
                         ") as counts", nativeQuery = true)
         Double getAverageFriendsPerUser();
 
         @Query(value = "SELECT MAX(friend_count) FROM (" +
-                        "SELECT user_id, COUNT(friend_id) as friend_count FROM user_friends GROUP BY user_id" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
                         ") as counts", nativeQuery = true)
         Integer getMaxFriendsCount();
 
         @Query(value = "SELECT COUNT(*) FROM (" +
-                        "SELECT user_id FROM user_friends GROUP BY user_id HAVING COUNT(friend_id) BETWEEN :min AND :max"
+                        "SELECT user_id FROM friendships GROUP BY user_id HAVING COUNT(friend_id) BETWEEN :min AND :max"
                         +
                         ") as users_in_range", nativeQuery = true)
         long countUsersWithFriendsBetween(@Param("min") int min, @Param("max") int max);
 
         @Query(value = "SELECT COUNT(*) FROM (" +
-                        "SELECT user_id FROM user_friends GROUP BY user_id HAVING COUNT(friend_id) > :min" +
+                        "SELECT user_id FROM friendships GROUP BY user_id HAVING COUNT(friend_id) > :min" +
                         ") as users_more_than", nativeQuery = true)
         long countUsersWithFriendsMoreThan(@Param("min") int min);
 

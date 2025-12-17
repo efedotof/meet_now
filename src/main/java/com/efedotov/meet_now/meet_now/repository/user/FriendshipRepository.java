@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,26 +13,30 @@ import com.efedotov.meet_now.meet_now.model.user.Friendship;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, UUID> {
 
-    Optional<Friendship> findByUserIdAndFriendId(UUID userId, UUID friendId);
+        Optional<Friendship> findByUserIdAndFriendId(UUID userId, UUID friendId);
 
-    List<Friendship> findByUserId(UUID userId);
+        List<Friendship> findByUserId(UUID userId);
 
-    List<Friendship> findByFriendId(UUID friendId);
+        List<Friendship> findByFriendId(UUID friendId);
 
-    boolean existsByUserIdAndFriendId(UUID userId, UUID friendId);
+        boolean existsByUserIdAndFriendId(UUID userId, UUID friendId);
 
-    void deleteByUserIdAndFriendId(UUID userId, UUID friendId);
+        void deleteByUserIdAndFriendId(UUID userId, UUID friendId);
 
-    @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.id = :userId")
-    long countByUserId(@Param("userId") UUID userId);
+        @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.id = :userId")
+        long countByUserId(@Param("userId") UUID userId);
 
-    @Query(value = "SELECT AVG(friend_count) FROM (" +
-            "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
-            ") as counts", nativeQuery = true)
-    Double getAverageFriendsPerUser();
+        @Query(value = "SELECT AVG(friend_count) FROM (" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
+                        ") as counts", nativeQuery = true)
+        Double getAverageFriendsPerUser();
 
-    @Query(value = "SELECT MAX(friend_count) FROM (" +
-            "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
-            ") as counts", nativeQuery = true)
-    Integer getMaxFriendsCount();
+        @Query(value = "SELECT MAX(friend_count) FROM (" +
+                        "SELECT user_id, COUNT(friend_id) as friend_count FROM friendships GROUP BY user_id" +
+                        ") as counts", nativeQuery = true)
+        Integer getMaxFriendsCount();
+
+        @Modifying
+        @Query("DELETE FROM Friendship f WHERE f.user.id = :userId OR f.friend.id = :friendId")
+        void deleteByUserIdOrFriendId(@Param("userId") UUID userId, @Param("friendId") UUID friendId);
 }

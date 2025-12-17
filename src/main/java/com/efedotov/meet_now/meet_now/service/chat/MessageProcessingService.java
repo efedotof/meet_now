@@ -12,18 +12,24 @@ import org.springframework.stereotype.Service;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
 import com.efedotov.meet_now.meet_now.dto.response.content.StickerDto;
+import com.efedotov.meet_now.meet_now.dto.response.gift.GiftDto;
+import com.efedotov.meet_now.meet_now.dto.response.gift.GiftRarityDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.Message;
 import com.efedotov.meet_now.meet_now.model.chat.MessageMedia;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.content.MessageContentType;
 import com.efedotov.meet_now.meet_now.model.content.Sticker;
+import com.efedotov.meet_now.meet_now.model.gift.Gift;
+import com.efedotov.meet_now.meet_now.model.gift.UserInventory;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.content.MessageContentTypeRepository;
 import com.efedotov.meet_now.meet_now.repository.content.StickerRepository;
+import com.efedotov.meet_now.meet_now.repository.gift.GiftRepository;
+import com.efedotov.meet_now.meet_now.repository.gift.UserInventoryRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.service.notification.InternalNotificationService;
 
@@ -40,11 +46,13 @@ public class MessageProcessingService {
     private final ChatRepository chatRepository;
     private final TemporaryChatRepository temporaryChatRepository;
     private final UserRepository userRepository;
+    private final GiftRepository giftRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageContentTypeRepository contentTypeRepository;
     private final StickerRepository stickerRepository;
     private final PermanentChatUpdateService permanentChatUpdateService;
     private final InternalNotificationService internalNotificationService;
+    private final UserInventoryRepository userInventoryRepository;
 
     @Transactional
     public MessageDto processMessageDto(MessageDto messageDto) {
@@ -89,7 +97,15 @@ public class MessageProcessingService {
             }
         }
 
-        Message message = createMessage(sender, recipient, messageDto, chat, tempChat);
+        final UUID finalGiftId = messageDto.getGiftId() != null ? messageDto.getGiftId()
+                : (messageDto.getGift() != null ? messageDto.getGift().getId() : null);
+
+        if (finalGiftId != null) {
+            processGiftTransfer(sender.getId(), recipient.getId(), finalGiftId);
+            messageDto.setGiftId(finalGiftId);
+        }
+
+        Message message = createMessage(sender, recipient, messageDto, chat, tempChat, finalGiftId);
         message = messageRepository.save(message);
 
         if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
@@ -153,9 +169,60 @@ public class MessageProcessingService {
         return responseDto;
     }
 
-    private String generateNotificationMessage(MessageDto messageDto) {
-        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
+    @Transactional
+    private void processGiftTransfer(UUID senderId, UUID recipientId, UUID giftId) {
+        Optional<UserInventory> senderInventoryOpt = userInventoryRepository.findByUserIdAndGiftId(senderId, giftId);
 
+        if (senderInventoryOpt.isEmpty()) {
+            log.warn("Пользователь {} не имеет подарка {}", senderId, giftId);
+            throw new RuntimeException("У пользователя нет этого подарка в инвентаре");
+        }
+
+        UserInventory senderInventory = senderInventoryOpt.get();
+
+        int newQuantity = senderInventory.getQuantity() - 1;
+
+        if (newQuantity <= 0) {
+            userInventoryRepository.delete(senderInventory);
+            log.info("Подарок {} удален из инвентаря отправителя {}", giftId, senderId);
+        } else {
+            senderInventory.setQuantity(newQuantity);
+            userInventoryRepository.save(senderInventory);
+            log.info("Количество подарка {} уменьшено до {} у отправителя {}",
+                    giftId, newQuantity, senderId);
+        }
+
+        Optional<UserInventory> recipientInventoryOpt = userInventoryRepository
+                .findByUserAndGiftAndReceivedFrom(recipientId, giftId, senderId);
+
+        if (recipientInventoryOpt.isPresent()) {
+            UserInventory recipientInventory = recipientInventoryOpt.get();
+            recipientInventory.setQuantity(recipientInventory.getQuantity() + 1);
+            userInventoryRepository.save(recipientInventory);
+            log.info("Количество подарка {} увеличено до {} у получателя {}",
+                    giftId, recipientInventory.getQuantity(), recipientId);
+        } else {
+            User recipientUser = userRepository.getReferenceById(recipientId);
+            User senderUser = userRepository.getReferenceById(senderId);
+            Gift gift = giftRepository.getReferenceById(giftId);
+
+            UserInventory recipientInventory = new UserInventory();
+            recipientInventory.setUser(recipientUser);
+            recipientInventory.setGift(gift);
+            recipientInventory.setQuantity(1);
+            recipientInventory.setReceivedFrom(senderUser);
+
+            userInventoryRepository.save(recipientInventory);
+            log.info("Подарок {} добавлен получателю {}", giftId, recipientId);
+        }
+    }
+
+    private String generateNotificationMessage(MessageDto messageDto) {
+        if (messageDto.getGiftId() != null) {
+            return "Отправил(а) подарок";
+        }
+
+        if (messageDto.getMedia() != null && !messageDto.getMedia().isEmpty()) {
             MessageMediaDto firstMedia = messageDto.getMedia().get(0);
             if (firstMedia.getStickerId() != null) {
                 return "Отправил(а) стикер";
@@ -291,7 +358,7 @@ public class MessageProcessingService {
     }
 
     private Message createMessage(User sender, User recipient, MessageDto messageDto,
-            Chat chat, TemporaryChat tempChat) {
+            Chat chat, TemporaryChat tempChat, UUID giftId) {
         Message message = new Message();
         message.setSender(sender);
         message.setRecipient(recipient);
@@ -299,7 +366,14 @@ public class MessageProcessingService {
         message.setCreatedAt(LocalDateTime.now());
         message.setRead(false);
 
-        MessageContentType contentType = determineMessageContentType(messageDto);
+        if (giftId != null) {
+            Gift gift = giftRepository.findById(giftId)
+                    .orElseThrow(() -> new RuntimeException("Gift not found: " + giftId));
+            message.setGift(gift);
+            log.info("🎁 Добавлен подарок к сообщению: giftId={}, giftName={}", giftId, gift.getName());
+        }
+
+        MessageContentType contentType = determineMessageContentType(messageDto, giftId);
         message.setContentType(contentType);
 
         if (chat != null) {
@@ -311,11 +385,18 @@ public class MessageProcessingService {
         return message;
     }
 
-    private MessageContentType determineMessageContentType(MessageDto messageDto) {
+    private MessageContentType determineMessageContentType(MessageDto messageDto, UUID giftId) {
         log.info(
                 "🔍 MESSAGE_PROCESSING_SERVICE: DETERMINE_MESSAGE_CONTENT_TYPE: message contentType={}, media count={}",
                 messageDto.getContentType(),
                 messageDto.getMedia() != null ? messageDto.getMedia().size() : 0);
+
+        if (giftId != null) {
+            log.info("🔍 MESSAGE_PROCESSING_SERVICE: Определен тип сообщения: gift, giftId={}", giftId);
+            return contentTypeRepository.findByTypeName("gift")
+                    .orElseGet(() -> contentTypeRepository.findByTypeName("text")
+                            .orElseThrow(() -> new RuntimeException("Default text content type not found")));
+        }
 
         if (messageDto.getContentType() != null && !messageDto.getContentType().equals("text")) {
             String contentType = messageDto.getContentType().toLowerCase();
@@ -352,6 +433,7 @@ public class MessageProcessingService {
 
     private MessageDto createResponseDto(Message message, UUID finalChatId, boolean isTemporary) {
         MessageDto dto = new MessageDto();
+
         dto.setId(message.getId());
         dto.setText(message.getText());
         dto.setCreatedAt(message.getCreatedAt());
@@ -359,14 +441,23 @@ public class MessageProcessingService {
         dto.setRecipientId(message.getRecipient().getId());
         dto.setRead(message.isRead());
 
+        if (message.getGift() != null) {
+            Gift gift = message.getGift();
+
+            dto.setGiftId(gift.getId());
+            dto.setGift(convertGiftToGiftDto(gift));
+            dto.setContentType("gift");
+        }
+
         if (message.getContentType() != null) {
             dto.setContentType(message.getContentType().getTypeName());
         }
 
         if (message.getMedia() != null && !message.getMedia().isEmpty()) {
-            dto.setMedia(message.getMedia().stream()
-                    .map(this::convertMediaToDto)
-                    .collect(Collectors.toList()));
+            dto.setMedia(
+                    message.getMedia().stream()
+                            .map(this::convertMediaToDto)
+                            .toList());
         }
 
         if (isTemporary) {
@@ -376,6 +467,39 @@ public class MessageProcessingService {
         }
 
         return dto;
+    }
+
+    private GiftDto convertGiftToGiftDto(Gift gift) {
+        GiftRarityDto rarityDto = null;
+
+        if (gift.getRarity() != null) {
+            rarityDto = GiftRarityDto.builder()
+                    .id(gift.getRarity().getId())
+                    .name(gift.getRarity().getName())
+                    .displayName(gift.getRarity().getDisplayName())
+                    .color(gift.getRarity().getColor())
+                    .multiplier(gift.getRarity().getMultiplier())
+                    .probability(gift.getRarity().getProbability())
+                    .minPoints(gift.getRarity().getMinPoints())
+                    .maxPoints(gift.getRarity().getMaxPoints())
+                    .isActive(gift.getRarity().getIsActive())
+                    .build();
+        }
+
+        return GiftDto.builder()
+                .id(gift.getId())
+                .name(gift.getName())
+                .description(gift.getDescription())
+                .imageUrl(gift.getImageUrl())
+                .giftType(gift.getGiftType() != null ? gift.getGiftType().getTypeName() : null)
+                .rarity(rarityDto)
+                .costPoints(gift.getCostPoints())
+                .animationUrl(gift.getAnimationUrl())
+                .availableQuantity(gift.getAvailableQuantity())
+                .isLimited(gift.getIsLimited())
+                .isSoldOut(gift.getIsSoldOut())
+                .soldCount(gift.getSoldCount())
+                .build();
     }
 
     private MessageMediaDto convertMediaToDto(MessageMedia media) {
@@ -416,8 +540,9 @@ public class MessageProcessingService {
 
         UUID chatId = null;
 
+        final UUID finalUserId = userId;
         messages.stream()
-                .filter(msg -> msg.getRecipient().getId().equals(userId))
+                .filter(msg -> msg.getRecipient().getId().equals(finalUserId))
                 .forEach(msg -> {
                     if (!msg.isRead()) {
                         msg.setRead(true);

@@ -59,7 +59,7 @@ public class ChatWebSocketController {
         messageProcessingService.processMessageDto(messageDto);
         log.info("Processed sendMessage for chatId={}", messageDto.getChatId());
     }
-
+    
     @MessageMapping("/chat.getMessages")
     public void getChatMessages(@Payload ChatMessagesRequest request, Principal principal) {
         CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();

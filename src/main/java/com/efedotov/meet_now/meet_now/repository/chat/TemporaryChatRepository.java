@@ -34,4 +34,7 @@ public interface TemporaryChatRepository extends JpaRepository<TemporaryChat, UU
 
         long countByIsFinishedFalse();
 
+        @Modifying
+        @Query("DELETE FROM TemporaryChat t WHERE t.sender.id = :userId OR t.recipient.id = :userId")
+        void deleteBySenderIdOrRecipientId(@Param("userId") UUID userId, @Param("userId2") UUID userId2);
 }

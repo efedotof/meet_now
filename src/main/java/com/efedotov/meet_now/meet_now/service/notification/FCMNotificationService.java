@@ -26,6 +26,7 @@ public class FCMNotificationService {
 
     private final PushTokenService pushTokenService;
     private final UserRepository userRepository;
+    private final NotificationStatisticsService notificationStatisticsService;
 
     @AdminOnly
     public void sendNotificationToUser(UUID userId, String message, String title) {
@@ -33,11 +34,19 @@ public class FCMNotificationService {
             String pushToken = pushTokenService.getDecryptedPushToken(userId);
             if (pushToken != null) {
                 sendNotificationToToken(pushToken, message, title);
+
+                notificationStatisticsService.logNotification(
+                        userId, title, message, "user", true, null);
+
                 log.info("FCM notification sent to user: {}", userId);
             } else {
+                notificationStatisticsService.logNotification(
+                        userId, title, message, "user", false, "No push token found");
                 log.warn("No push token found for user: {}", userId);
             }
         } catch (Exception e) {
+            notificationStatisticsService.logNotification(
+                    userId, title, message, "user", false, e.getMessage());
             log.error("Failed to send FCM notification to user: {}", userId, e);
             throw new RuntimeException("Failed to send FCM notification", e);
         }
@@ -60,6 +69,11 @@ public class FCMNotificationService {
             log.info("Sending notification to {} users", tokens.size());
 
             sendMulticastNotification(tokens, message, title);
+
+            for (User user : usersWithTokens) {
+                notificationStatisticsService.logNotification(
+                        user.getId(), title, message, "multicast", true, null);
+            }
 
         } catch (Exception e) {
             log.error("Failed to send FCM notification to all users", e);

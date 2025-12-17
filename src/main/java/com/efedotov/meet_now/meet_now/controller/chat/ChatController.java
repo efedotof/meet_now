@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreatePermanentChatRequest;
@@ -32,6 +31,7 @@ import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 import com.efedotov.meet_now.meet_now.service.chat.MessageService;
 

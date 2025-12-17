@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.UUID;
 
 import com.efedotov.meet_now.meet_now.model.content.MessageContentType;
+import com.efedotov.meet_now.meet_now.model.gift.Gift;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -63,6 +65,20 @@ public class Message {
     @OrderBy("sortOrder ASC")
     private List<MessageMedia> media = new ArrayList<>();
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "gift_id")
+    private Gift gift;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+
     public void addMedia(MessageMedia mediaItem) {
         mediaItem.setMessage(this);
         this.media.add(mediaItem);
@@ -72,15 +88,4 @@ public class Message {
         mediaItem.setMessage(null);
         this.media.remove(mediaItem);
     }
-
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "deleted_by")
-    private User deletedBy;
-
 }

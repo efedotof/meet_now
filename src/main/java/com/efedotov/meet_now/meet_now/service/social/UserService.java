@@ -16,17 +16,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.security.AdminOnly;
-import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.dto.response.statistics.UserStatistics;
+import com.efedotov.meet_now.meet_now.model.user.Friendship;
 import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.repository.moderation.AnswerRepository;
+import com.efedotov.meet_now.meet_now.repository.moderation.QuestionRepository;
+import com.efedotov.meet_now.meet_now.repository.moderation.ReportRepository;
 import com.efedotov.meet_now.meet_now.repository.moderation.RoleRepository;
+import com.efedotov.meet_now.meet_now.repository.user.FriendRequestRepository;
+import com.efedotov.meet_now.meet_now.repository.user.FriendshipRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.util.EncryptionUtils;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +48,15 @@ public class UserService {
     private final EncryptionUtils encryptionUtils;
     private final RoleRepository roleRepository;
     private final StatisticsService statisticsService;
+    private final AnswerRepository answerRepository;
+    private final QuestionRepository questionRepository;
+    private final ReportRepository reportRepository;
+    private final FriendshipRepository friendshipRepository;
+    private final FriendRequestRepository friendRequestRepository;
+    private final TemporaryChatRepository temporaryChatRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @AdminOnly
     @Transactional(readOnly = true)
@@ -89,27 +107,49 @@ public class UserService {
         if (adminId.equals(userId)) {
             throw new RuntimeException("Cannot delete yourself");
         }
+        deleteSecondChanceByUserId(userId);
+
+        temporaryChatRepository.deleteBySenderIdOrRecipientId(userId, userId);
+
+        questionRepository.deleteByUserId(userId);
+        answerRepository.deleteByUserId(userId);
+        reportRepository.deleteByReporterIdOrReportedId(userId, userId);
+        friendshipRepository.deleteByUserIdOrFriendId(userId, userId);
+        friendRequestRepository.deleteByFromUserIdOrToUserId(userId, userId);
 
         userRepository.delete(user);
         log.info("User {} deleted by admin {}", userId, adminId);
     }
 
+    private void deleteSecondChanceByUserId(UUID userId) {
+        String sql = "DELETE FROM second_chance sc " +
+                "WHERE sc.temp_chat_id IN (" +
+                "  SELECT tc.temp_chat_id FROM temporary_chats tc " +
+                "  WHERE tc.sender_id = :userId OR tc.recipient_id = :userId" +
+                ")";
+
+        entityManager.createNativeQuery(sql)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
+
     @AdminOnly
     @Transactional
-    public void blockUser(UUID userId) {
+    public void blockUser(UUID userId, String reason) {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        addRoleToUserAdministrationMethod(userId, "BLOCKED");
+        user.setIsBlocked(true);
+        user.setBlockReason(reason);
         user.setIsSearchable(false);
         user.setIsOnline(false);
         user.setIsSearching(false);
 
         userRepository.save(user);
-        log.info("User {} blocked by admin {}", userId, adminId);
+        log.info("User {} blocked by admin {} with reason: {}", userId, adminId, reason);
     }
 
     @AdminOnly
@@ -121,7 +161,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        removeRoleFromUser(userId, "BLOCKED");
+        user.setIsBlocked(false);
+        user.setBlockReason(null);
         user.setIsSearchable(true);
 
         userRepository.save(user);
@@ -572,6 +613,20 @@ public class UserService {
         dto.setIsOnline(user.getIsOnline());
         dto.setGamePoints(user.getGamePoints());
         dto.setImages(user.getImages());
+        dto.setFloor(user.getFloor());
+        dto.setIsBlocked(user.getIsBlocked());
+        dto.setBlockReason(user.getBlockReason());
+
+        dto.setPurposes(user.getPurposes() != null ? new ArrayList<>(user.getPurposes()) : new ArrayList<>());
+        dto.setInterests(user.getInterests() != null ? new ArrayList<>(user.getInterests()) : new ArrayList<>());
+
+        List<UUID> friendIds = new ArrayList<>();
+        if (user.getFriendships() != null) {
+            for (Friendship friendship : user.getFriendships()) {
+                friendIds.add(friendship.getFriend().getId());
+            }
+        }
+        dto.setFriends(friendIds);
 
         if (user.getRoles() != null) {
             Set<String> roles = user.getRoles().stream()

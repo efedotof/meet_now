@@ -1,30 +1,33 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
-import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
-import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
-import com.efedotov.meet_now.meet_now.dto.response.chat.PaginatedMessagesResponse;
-import com.efedotov.meet_now.meet_now.model.chat.Message;
-import com.efedotov.meet_now.meet_now.model.chat.MessageMedia;
-import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
-import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
-import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.MessageMediaDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.PaginatedMessagesResponse;
+import com.efedotov.meet_now.meet_now.dto.response.gift.GiftDto;
+import com.efedotov.meet_now.meet_now.dto.response.gift.GiftRarityDto;
+import com.efedotov.meet_now.meet_now.model.chat.Message;
+import com.efedotov.meet_now.meet_now.model.chat.MessageMedia;
+import com.efedotov.meet_now.meet_now.model.gift.Gift;
+import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
+import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -42,10 +45,10 @@ public class MessageQueryService {
         log.info("Запрос пользователя {} на получение сообщений чата {}", username, chatId);
 
         if (chatRepository.existsById(chatId)) {
-            messages = messageRepository.findByChat_ChatIdOrderByCreatedAtAsc(chatId);
+            messages = messageRepository.findNonDeletedMessagesWithGiftByChatId(chatId);
             log.info("Пользователь {} запросил сообщения из обычного чата {}", username, chatId);
         } else if (temporaryChatRepository.existsById(chatId)) {
-            messages = messageRepository.findByTemporaryChat_TempChatIdOrderByCreatedAtAsc(chatId);
+            messages = messageRepository.findNonDeletedMessagesWithGiftByTempChatId(chatId);
             log.info("Пользователь {} запросил сообщения из временного чата {}", username, chatId);
         } else {
             log.warn("Чат с ID {} не найден для пользователя {}", chatId, username);
@@ -80,11 +83,11 @@ public class MessageQueryService {
 
         if (isPermanentChat) {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            messagePage = messageRepository.findMessagesByChatId(chatId, pageable);
+            messagePage = messageRepository.findMessagesWithGiftByChatId(chatId, pageable);
             totalMessages = messageRepository.countNonDeletedByChatId(chatId);
         } else {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            messagePage = messageRepository.findMessagesByTempChatId(chatId, pageable);
+            messagePage = messageRepository.findMessagesWithGiftByTempChatId(chatId, pageable);
             totalMessages = messageRepository.countNonDeletedByTempChatId(chatId);
         }
 
@@ -128,6 +131,14 @@ public class MessageQueryService {
                     message.getId());
         }
 
+        if (message.getGift() != null) {
+            dto.setGiftId(message.getGift().getId());
+            dto.setGift(convertGiftToGiftDto(message.getGift()));
+            dto.setContentType("gift");
+            log.info("🔍 MESSAGE_QUERY_SERVICE: Сообщение {} содержит подарок: {}",
+                    message.getId(), message.getGift().getId());
+        }
+
         if (message.getMedia() != null && !message.getMedia().isEmpty()) {
             dto.setMedia(message.getMedia().stream()
                     .map(this::convertMediaToDto)
@@ -148,6 +159,39 @@ public class MessageQueryService {
         }
 
         return dto;
+    }
+
+    private GiftDto convertGiftToGiftDto(Gift gift) {
+        GiftRarityDto rarityDto = null;
+
+        if (gift.getRarity() != null) {
+            rarityDto = GiftRarityDto.builder()
+                    .id(gift.getRarity().getId())
+                    .name(gift.getRarity().getName())
+                    .displayName(gift.getRarity().getDisplayName())
+                    .color(gift.getRarity().getColor())
+                    .multiplier(gift.getRarity().getMultiplier())
+                    .probability(gift.getRarity().getProbability())
+                    .minPoints(gift.getRarity().getMinPoints())
+                    .maxPoints(gift.getRarity().getMaxPoints())
+                    .isActive(gift.getRarity().getIsActive())
+                    .build();
+        }
+
+        return GiftDto.builder()
+                .id(gift.getId())
+                .name(gift.getName())
+                .description(gift.getDescription())
+                .imageUrl(gift.getImageUrl())
+                .giftType(gift.getGiftType() != null ? gift.getGiftType().getTypeName() : null)
+                .rarity(rarityDto)
+                .costPoints(gift.getCostPoints())
+                .animationUrl(gift.getAnimationUrl())
+                .availableQuantity(gift.getAvailableQuantity())
+                .isLimited(gift.getIsLimited())
+                .isSoldOut(gift.getIsSoldOut())
+                .soldCount(gift.getSoldCount())
+                .build();
     }
 
     @Transactional(readOnly = true)

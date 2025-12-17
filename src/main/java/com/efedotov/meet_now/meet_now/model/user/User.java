@@ -4,9 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,6 +61,12 @@ public class User {
     @Column(name = "is_searchable")
     private Boolean isSearchable = true;
 
+    @Column(name = "is_blocked")
+    private Boolean isBlocked = false;
+
+    @Column(name = "block_reason", columnDefinition = "TEXT")
+    private String blockReason;
+
     @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<FriendRequest> sentFriendRequests = new ArrayList<>();
@@ -102,10 +109,10 @@ public class User {
     @JoinTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_url")
     private List<String> images = Collections.synchronizedList(new ArrayList<>());
+
     @Column(name = "encrypted_push_token")
     private String encryptedPushToken;
 
     @Column(name = "push_token_salt")
     private String pushTokenSalt;
-
 }

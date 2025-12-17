@@ -1,6 +1,10 @@
 package com.efedotov.meet_now.meet_now.repository.chat;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,8 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
 import com.efedotov.meet_now.meet_now.model.chat.Message;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
@@ -19,9 +21,11 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     List<Message> findByRecipient_Id(UUID recipientId);
 
-    List<Message> findByChat_ChatIdOrderByCreatedAtAsc(UUID chatId);
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.chat.chatId = :chatId ORDER BY m.createdAt ASC")
+    List<Message> findByChat_ChatIdOrderByCreatedAtAsc(@Param("chatId") UUID chatId);
 
-    List<Message> findByTemporaryChat_TempChatIdOrderByCreatedAtAsc(UUID tempChatId);
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt ASC")
+    List<Message> findByTemporaryChat_TempChatIdOrderByCreatedAtAsc(@Param("tempChatId") UUID tempChatId);
 
     @Query("SELECT m FROM Message m WHERE m.id IN :messageIds")
     List<Message> findAllByIds(@Param("messageIds") List<UUID> messageIds);
@@ -31,16 +35,16 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     Long countByChat_ChatId(UUID chatId);
 
-    @Query("SELECT m FROM Message m WHERE m.isDeleted = false AND m.chat.chatId = :chatId ORDER BY m.createdAt ASC")
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.isDeleted = false AND m.chat.chatId = :chatId ORDER BY m.createdAt ASC")
     List<Message> findNonDeletedMessagesByChatId(@Param("chatId") UUID chatId);
 
-    @Query("SELECT m FROM Message m WHERE m.isDeleted = false AND m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt ASC")
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.isDeleted = false AND m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt ASC")
     List<Message> findNonDeletedMessagesByTempChatId(@Param("tempChatId") UUID tempChatId);
 
-    @Query("SELECT m FROM Message m WHERE m.chat.chatId = :chatId ORDER BY m.createdAt DESC")
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.chat.chatId = :chatId ORDER BY m.createdAt DESC")
     Page<Message> findMessagesByChatId(@Param("chatId") UUID chatId, Pageable pageable);
 
-    @Query("SELECT m FROM Message m WHERE m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt DESC")
+    @Query("SELECT m FROM Message m LEFT JOIN FETCH m.gift WHERE m.temporaryChat.tempChatId = :tempChatId ORDER BY m.createdAt DESC")
     Page<Message> findMessagesByTempChatId(@Param("tempChatId") UUID tempChatId, Pageable pageable);
 
     @Query("SELECT COUNT(m) FROM Message m WHERE m.chat.chatId = :chatId")
@@ -54,4 +58,33 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     @Query("SELECT COUNT(m) FROM Message m WHERE m.temporaryChat.tempChatId = :tempChatId AND m.isDeleted = false")
     Long countNonDeletedByTempChatId(@Param("tempChatId") UUID tempChatId);
+
+    @Query("SELECT m FROM Message m " +
+            "LEFT JOIN FETCH m.gift " +
+            "LEFT JOIN FETCH m.media " +
+            "LEFT JOIN FETCH m.contentType " +
+            "WHERE m.chat.chatId = :chatId AND m.isDeleted = false " +
+            "ORDER BY m.createdAt ASC")
+    List<Message> findNonDeletedMessagesWithGiftByChatId(@Param("chatId") UUID chatId);
+
+    @Query("SELECT m FROM Message m " +
+            "LEFT JOIN FETCH m.gift " +
+            "LEFT JOIN FETCH m.media " +
+            "LEFT JOIN FETCH m.contentType " +
+            "WHERE m.temporaryChat.tempChatId = :tempChatId AND m.isDeleted = false " +
+            "ORDER BY m.createdAt ASC")
+    List<Message> findNonDeletedMessagesWithGiftByTempChatId(@Param("tempChatId") UUID tempChatId);
+
+    @Query("SELECT m FROM Message m " +
+            "LEFT JOIN FETCH m.gift " +
+            "WHERE m.chat.chatId = :chatId " +
+            "ORDER BY m.createdAt DESC")
+    Page<Message> findMessagesWithGiftByChatId(@Param("chatId") UUID chatId, Pageable pageable);
+
+    @Query("SELECT m FROM Message m " +
+            "LEFT JOIN FETCH m.gift " +
+            "WHERE m.temporaryChat.tempChatId = :tempChatId " +
+            "ORDER BY m.createdAt DESC")
+    Page<Message> findMessagesWithGiftByTempChatId(@Param("tempChatId") UUID tempChatId, Pageable pageable);
+
 }
