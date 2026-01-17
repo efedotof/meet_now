@@ -1,10 +1,9 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/route/app_route.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class UserNetworkImage extends StatefulWidget {
   const UserNetworkImage({
@@ -113,7 +112,16 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
     } else {
       child = GestureDetector(
         onTap:
-            () => context.pushRoute(FullImageRoute(imageUrl: _presignedUrl!)),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => FullscreenMediaView(
+                      urlMedia: true,
+                      urlMedial: _presignedUrl,
+                    ),
+              ),
+            ),
         onLongPress: () {
           setState(() => _showDeleteIcon = true);
           Future.delayed(const Duration(seconds: 2), () {

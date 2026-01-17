@@ -883,6 +883,53 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
   }
 
+  void sendGiftMessage(Gift gift) {
+    debugPrint(
+      '🎁 ChatMessageCubit.sendGiftMessage: Начало отправки подарка ${gift.id}',
+    );
+
+    if (_senderId == null || _recipientId == null || _isTemporary == null) {
+      debugPrint('❌ ChatMessageCubit not initialized');
+      return;
+    }
+
+    debugPrint(
+      '✅ Параметры: senderId=$_senderId, recipientId=$_recipientId, '
+      'chatId=$_currentChatId, isTemporary=$_isTemporary',
+    );
+
+    final message = Message(
+      senderId: _senderId!,
+      recipientId: _recipientId!,
+      text: '🎁 Подарок!',
+      createdAt: DateTime.now(),
+      chatId: _isTemporary! ? null : _currentChatId,
+      tempChatId: _isTemporary! ? _currentChatId : null,
+      read: false,
+      contentType: 'gift',
+      media: [],
+      gift: gift,
+    );
+
+    debugPrint(
+      '📝 Создано сообщение с подарком: ${message.id}',
+    );
+
+    state.maybeMap(
+      loaded: (state) {
+        final optimisticMessage = message.copyWith(createdAt: DateTime.now());
+        debugPrint('➕ Добавляем оптимистичное сообщение в UI');
+        emit(state.copyWith(messages: [...state.messages, optimisticMessage]));
+        debugPrint('📤 Отправляем сообщение через MessageInterface');
+        _messageInterface.sendMessage(message);
+      },
+      orElse: () {
+        debugPrint('📤 Отправляем сообщение без оптимистичного обновления');
+        _messageInterface.sendMessage(message);
+      },
+    );
+  }
+
   void _disposeMessageSubscriptions() {
     _paginatedMessagesSubscription?.cancel();
     _paginatedMessagesSubscription = null;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/friends/cubit/friends_cubit.dart';
 import 'package:meet_now_app/features/friends/widget/friend_card.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/friend_dto/friend_dto.dart';
@@ -9,34 +11,37 @@ class FriendsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: S.of(context).searchFriendsHint,
-              prefixIcon: const Icon(Icons.search),
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
+    return RefreshIndicator(
+      onRefresh: () => context.read<FriendsCubit>().getFriendsList(),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                hintText: S.of(context).searchFriendsHint,
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          Wrap(
-            children: List.generate(
-              friends.length,
-              (index) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: FriendCard(friend: friends[index]),
+            Wrap(
+              children: List.generate(
+                friends.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: FriendCard(friend: friends[index]),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

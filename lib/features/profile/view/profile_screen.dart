@@ -162,6 +162,8 @@ extension FriendRequestToUser on FriendRequest {
       isSearchable: isSearchable,
       email: '',
       gamePoints: 0,
+      isBlocked: false,
+      blockReason: null,
     );
   }
 }

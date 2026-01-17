@@ -52,9 +52,7 @@ class SignInCubit extends Cubit<SignInState> {
     try {
       final loginData = Login(username: un, password: pass);
       final user = await _authInterface.login(login: loginData);
-      debugPrint("user: user:$user      loginData: $loginData");
       emit(SignInState.success());
-      debugPrint("Login successful, navigating to MainHomeRoute");
 
       if (context.mounted) {
         _checkAvatarUser(user: user, context: context);
@@ -70,6 +68,8 @@ class SignInCubit extends Cubit<SignInState> {
   }) async {
     if (user.avatar == null || user.avatar == "") {
       context.replaceRoute(UploadsAvatarsRoute());
+    } else if (user.isBlocked != null && user.isBlocked == true) {
+      context.replaceRoute(LockedRoute());
     } else {
       context.router.replaceAll([MainHomeRoute()]);
     }

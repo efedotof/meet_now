@@ -223,6 +223,7 @@ class _BuildScaffoldState extends State<BuildScaffold> {
             onReportUser: widget.onReportUser,
             recipientId: widget.recipientId,
             tempChatId: widget.chatId,
+            senderId: widget.senderID,
           ),
         ),
 

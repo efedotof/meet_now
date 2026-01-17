@@ -9,10 +9,12 @@ class UploadedAvatar extends StatelessWidget {
     this.presignedUrl,
     required this.onAvatarConfirmedChange,
   });
+
   final String url;
   final UploadsAvatarsCubit cubit;
   final String? presignedUrl;
   final ValueChanged<bool> onAvatarConfirmedChange;
+
   @override
   Widget build(BuildContext context) {
     return Stack(

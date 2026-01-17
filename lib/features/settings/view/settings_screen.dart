@@ -129,7 +129,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
-                          color: Colors.red.shade50,
                           child: Row(
                             children: [
                               const Icon(

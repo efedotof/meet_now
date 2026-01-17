@@ -399,5 +399,19 @@
   "all": "Все",
   "delete_photo": "Удалить фото",
   "are_you_sure_you_want_to_delete_this_photo": "Вы уверены, что хотите удалить это фото?",
-  "confirm_delete": "Подтвердите удаление"
+  "confirm_delete": "Подтвердите удаление",
+  "please_select_city_from_list": "Please select a city from the list",
+  "enter_valid_age": "Please enter a valid age",
+  "min_age_18": "Minimum age is 18 years",
+  "max_age_65": "Maximum age is 65 years",
+  "all_interests_loaded": "all_interests_loaded",
+  "interest_load_error": "interest_load_error",
+  "purpose_load_error": "purpose_load_error",
+  "tryDifferentSearch": "Попробуйте другой поисковый запрос",
+  "nothingFound": "Ничего не найдено",
+  "soon": "скоро",
+  "Minuttt": "м",
+  "status": "Status:",
+  "reportDetails": "Report Details",
+  "inProcessing": "In processing"
 }

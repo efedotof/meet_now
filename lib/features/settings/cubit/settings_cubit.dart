@@ -14,7 +14,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     required UserModelAppInterface userModelAppInterface,
     required PasswordStorageInterface passwordStorageInterface,
     required UserStorageInterface userStorageInterface,
-  }) : _userInterface = userInterface,
+    required FCMServiceInterface fcmServiceInterface,
+  }) : _fcmServiceInterface = fcmServiceInterface,
+       _userInterface = userInterface,
        _userModelAppInterface = userModelAppInterface,
        _userStorageInterface = userStorageInterface,
        _passwordStorageInterface = passwordStorageInterface,
@@ -26,10 +28,13 @@ class SettingsCubit extends Cubit<SettingsState> {
   final UserStorageInterface _userStorageInterface;
   final UserInterface _userInterface;
 
+  final FCMServiceInterface _fcmServiceInterface;
+
   Future<void> exit({required BuildContext context}) async {
     _userStorageInterface.clearUser();
     _userModelAppInterface.user = null;
     _passwordStorageInterface.clearPassword();
+    _fcmServiceInterface.deleteFCMToken();
     if (context.mounted) {
       context.replaceRoute(AuthRoute());
     }

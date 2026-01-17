@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app_server/model/chats/message/message.dart';
 
-import 'file_message.dart';
+import 'gift_message.dart';
 import 'image_message.dart';
 import 'sticker_message.dart';
 import 'text_message.dart';
@@ -26,6 +26,8 @@ class MessageContent extends StatelessWidget {
 
     if (message.isSticker) {
       return StickerMessage(message: message, theme: theme, isMe: isMe);
+    } else if (message.isGift) {
+      return GiftMessage(message: message, theme: theme, isMe: isMe);
     } else if (message.isImage && hasMedia) {
       return ImageMessage(
         message: message,
@@ -41,7 +43,7 @@ class MessageContent extends StatelessWidget {
         isMe: isMe,
       );
     } else if (message.isFile && hasMedia) {
-      return FileMessage(theme: theme, media: media!, isMe: isMe);
+      return Container();
     } else {
       return TextMessage(message: message, isMe: isMe, theme: theme);
     }

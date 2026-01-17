@@ -682,6 +682,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 temporaryModel: widget.temporaryChatModel!,
               );
               context.read<ChatCubit>().closeTempChat(tempChatId: _chatId);
+              context.read<ChatCubit>().deleteTemporaryChat(_chatId, true);
               Navigator.of(context).pop();
               context.router.pop();
             },

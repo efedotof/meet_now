@@ -1,8 +1,6 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app_server/repository/purp_and_int/purp_and_interes_interface.dart';
 import 'package:meet_now_app_server/storage/first_open_app/first_open_app_interface.dart';
@@ -21,56 +19,59 @@ class SplashCubit extends Cubit<SplashState> {
        _purpAndInteresInterface = purpAndInteresInterface,
        _pincodeStorageInterface = pincodeStorageInterface,
        _authInterface = authInterface,
-       super(SplashState.initial());
+       super(const SplashState.initial());
 
   final AuthInterface _authInterface;
   final PincodeStorageInterface _pincodeStorageInterface;
   final PurpAndInteresInterface _purpAndInteresInterface;
   final FirstOpenAppInterface _firstOpenAppInterface;
 
-  //Проверка на наличие сохраненных данных
-  Future<void> checkAutoLogin({required BuildContext context}) async {
+  Future<void> checkAutoLogin() async {
     try {
       if (_firstOpenAppInterface.isFirstOpenApp()) {
-        await _handleFirstLaunch(context);
+        await _handleFirstLaunch();
       } else {
-        await _handleRegularLaunch(context);
+        await _handleRegularLaunch();
       }
     } catch (e) {
       debugPrint('Ошибка в checkAutoLogin: $e');
-      if (context.mounted) context.replaceRoute(const AuthRoute());
+      emit(const SplashState.navigateToAuth());
     }
   }
 
-  Future<void> _handleFirstLaunch(BuildContext context) async {
+  Future<void> _handleFirstLaunch() async {
     try {
       await _purpAndInteresInterface.getAllInterest();
       await _purpAndInteresInterface.getAllPurpose();
       await _firstOpenAppInterface.setValue(value: false);
 
-      if (context.mounted) await _handleRegularLaunch(context);
+      await _handleRegularLaunch();
     } catch (e) {
       debugPrint('Ошибка при первом запуске: $e');
-      if (context.mounted) context.replaceRoute(const AuthRoute());
+      emit(const SplashState.navigateToAuth());
     }
   }
 
-  Future<void> _handleRegularLaunch(BuildContext context) async {
+  Future<void> _handleRegularLaunch() async {
     try {
       final user = await _authInterface.autoLogin();
-      if (!context.mounted) return;
 
       if (user == null) {
         debugPrint('Автологин не удался: пользователь null');
-        context.replaceRoute(const AuthRoute());
+        emit(const SplashState.navigateToAuth());
         return;
       }
 
-      // Проверяем наличие аватара
+      if (user.isBlocked == true) {
+        debugPrint('Пользователь заблокирован');
+        emit(const SplashState.navigateToLocked());
+        return;
+      }
+
       final hasAvatar = user.avatar != null && user.avatar!.isNotEmpty;
       if (!hasAvatar) {
         debugPrint('Аватар отсутствует, переходим на экран загрузки аватара');
-        context.replaceRoute(UploadsAvatarsRoute());
+        emit(const SplashState.navigateToUploadAvatar());
         return;
       }
 
@@ -79,7 +80,7 @@ class SplashCubit extends Cubit<SplashState> {
         pinCode = _pincodeStorageInterface.getPinCode();
       } catch (e) {
         debugPrint('Пинкод не установлен, переходим на главный экран');
-        context.replaceRoute(const MainHomeRoute());
+        emit(const SplashState.navigateToMainHome());
         return;
       }
 
@@ -87,14 +88,14 @@ class SplashCubit extends Cubit<SplashState> {
 
       if (hasPinCode) {
         debugPrint('Пинкод установлен, переходим на экран пинкода');
-        context.replaceRoute(const PinCodeRoute());
+        emit(const SplashState.navigateToPinCode());
       } else {
         debugPrint('Пинкод не установлен, переходим на главный экран');
-        context.replaceRoute(const MainHomeRoute());
+        emit(const SplashState.navigateToMainHome());
       }
     } catch (e) {
       debugPrint('Ошибка при обычном запуске: $e');
-      if (context.mounted) context.replaceRoute(const AuthRoute());
+      emit(const SplashState.navigateToAuth());
     }
   }
 }

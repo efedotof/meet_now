@@ -3234,6 +3234,131 @@ class S {
       args: [],
     );
   }
+
+  /// `Please select a city from the list`
+  String get please_select_city_from_list {
+    return Intl.message(
+      'Please select a city from the list',
+      name: 'please_select_city_from_list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid age`
+  String get enter_valid_age {
+    return Intl.message(
+      'Please enter a valid age',
+      name: 'enter_valid_age',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Minimum age is 18 years`
+  String get min_age_18 {
+    return Intl.message(
+      'Minimum age is 18 years',
+      name: 'min_age_18',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum age is 65 years`
+  String get max_age_65 {
+    return Intl.message(
+      'Maximum age is 65 years',
+      name: 'max_age_65',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `all_interests_loaded`
+  String get all_interests_loaded {
+    return Intl.message(
+      'all_interests_loaded',
+      name: 'all_interests_loaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `interest_load_error`
+  String get interest_load_error {
+    return Intl.message(
+      'interest_load_error',
+      name: 'interest_load_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `purpose_load_error`
+  String get purpose_load_error {
+    return Intl.message(
+      'purpose_load_error',
+      name: 'purpose_load_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Попробуйте другой поисковый запрос`
+  String get tryDifferentSearch {
+    return Intl.message(
+      'Попробуйте другой поисковый запрос',
+      name: 'tryDifferentSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ничего не найдено`
+  String get nothingFound {
+    return Intl.message(
+      'Ничего не найдено',
+      name: 'nothingFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `скоро`
+  String get soon {
+    return Intl.message('скоро', name: 'soon', desc: '', args: []);
+  }
+
+  /// `м`
+  String get Minuttt {
+    return Intl.message('м', name: 'Minuttt', desc: '', args: []);
+  }
+
+  /// `Status:`
+  String get status {
+    return Intl.message('Status:', name: 'status', desc: '', args: []);
+  }
+
+  /// `Report Details`
+  String get reportDetails {
+    return Intl.message(
+      'Report Details',
+      name: 'reportDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In processing`
+  String get inProcessing {
+    return Intl.message(
+      'In processing',
+      name: 'inProcessing',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

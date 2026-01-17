@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app_server/model/chats/message/message.dart';
+import 'message/gift_message.dart';
 import 'message/message_bubble.dart';
 
 class MessagesList extends StatefulWidget {
@@ -43,11 +44,9 @@ class _MessagesListState extends State<MessagesList> {
 
   void _onScroll() {
     if (_isLoadingMore || !_hasMore) return;
-    // Изменили логику для reverse: true
     final maxScroll = widget.scrollController.position.maxScrollExtent;
     final currentScroll = widget.scrollController.position.pixels;
 
-    // При reverse: true, когда мы в начале (внизу списка), загружаем старые сообщения
     if (maxScroll - currentScroll <= _scrollThreshold &&
         widget.scrollController.position.atEdge) {
       _loadMoreMessages();
@@ -134,7 +133,7 @@ class _MessagesListState extends State<MessagesList> {
   void _scrollToBottom() {
     if (widget.scrollController.hasClients) {
       widget.scrollController.animateTo(
-        0.0, // При reverse: true 0.0 - это низ списка (самые новые сообщения)
+        0.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -176,33 +175,50 @@ class _MessagesListState extends State<MessagesList> {
               controller: widget.scrollController,
               reverse: false,
               slivers: [
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+
                 SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final message = messages[index];
                     final isMe = message.senderId == widget.currentUserId;
                     final showTime = _shouldShowTime(index, messages);
-
+                    if (message.isGift) {
+                      debugPrint("Получен подарок: $message");
+                    }
                     return Column(
                       key:
                           message.id != null ? _messageKeys[message.id!] : null,
                       crossAxisAlignment:
-                          isMe
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
+                          message.isGift
+                              ? CrossAxisAlignment.center
+                              : (isMe
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start),
+
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: isMe ? 60 : 16,
-                            right: isMe ? 16 : 60,
-                            top: 4,
-                            bottom: showTime ? 4 : 8,
+                        if (message.isGift)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: GiftMessage(
+                              message: message,
+                              isMe: isMe,
+                              theme: Theme.of(context),
+                            ),
+                          )
+                        else
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: isMe ? 60 : 16,
+                              right: isMe ? 16 : 60,
+                              top: 4,
+                              bottom: showTime ? 4 : 8,
+                            ),
+                            child: MessageBubble(
+                              message: message,
+                              isMe: isMe,
+                              theme: Theme.of(context),
+                            ),
                           ),
-                          child: MessageBubble(
-                            message: message,
-                            isMe: isMe,
-                            theme: Theme.of(context),
-                          ),
-                        ),
                         if (showTime)
                           Padding(
                             padding: EdgeInsets.only(
@@ -235,7 +251,7 @@ class _MessagesListState extends State<MessagesList> {
                     ),
                   ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 40)),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             );
           },

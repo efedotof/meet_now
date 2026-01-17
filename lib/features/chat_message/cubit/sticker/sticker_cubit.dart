@@ -1,33 +1,25 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
-import 'package:meet_now_app_server/repository/message/message_interface.dart';
 import 'package:meet_now_app_server/repository/stikers_parks/stikers_parks_interface.dart';
-// TODO: Временно отключен функционал подарков
-// import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
-// import 'package:meet_now_app_server/repository/gift/gift_interface.dart';
-// import 'package:meet_now_app_server/model/chats/send_gift_in_chat_request/send_gift_in_chat_request.dart';
+import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
+import 'package:meet_now_app_server/repository/gift/gift_interface.dart';
 
 part 'sticker_state.dart';
 part 'sticker_cubit.freezed.dart';
 
 class StickerCubit extends Cubit<StickerState> {
   StickerCubit({
-    required MessageInterface messageInterface,
     required StikersParksInterface stickerParksInterface,
-    // TODO: Временно отключен функционал подарков
-    // required GiftInterface giftInterface,
-  }) : _messageInterface = messageInterface,
-       _stickerParksInterface = stickerParksInterface,
-       // TODO: Временно отключен функционал подарков
-       // _giftInterface = giftInterface,
+    required GiftInterface giftInterface,
+  }) : _stickerParksInterface = stickerParksInterface,
+       _giftInterface = giftInterface,
        super(const StickerState.hidden());
 
   final StikersParksInterface _stickerParksInterface;
-  // TODO: Временно отключен функционал подарков
-  // final GiftInterface _giftInterface;
-  final MessageInterface _messageInterface;
+  final GiftInterface _giftInterface;
 
   void showStickers() {
     emit(const StickerState.visible());
@@ -77,48 +69,21 @@ class StickerCubit extends Cubit<StickerState> {
     }
   }
 
-  // TODO: Временно отключен функционал подарков
-  /*
-  // Получение подарков пользователя из инвентаря
   Future<List<UserInventory>> getUserGifts() async {
     try {
+      debugPrint('🔄 StickerCubit: Загрузка подарков пользователя');
       final inventory = await _giftInterface.getInventory();
+      debugPrint('✅ StickerCubit: Загружено ${inventory.length} подарков');
+      for (var item in inventory) {
+        debugPrint(
+          '   - ${item.id}: gift=${item.gift.id}, quantity=${item.quantity}',
+        );
+      }
       return inventory;
     } catch (e) {
+      debugPrint('❌ StickerCubit: Ошибка загрузки подарков: $e');
       throw Exception('Failed to load user gifts: $e');
     }
-  }
-
-  // Отправка подарка в чат
-  Future<void> sendGiftToChat({
-    required UserInventory inventory,
-    required String recipientId,
-    required String chatId,
-    required String tempChatId,
-    String message = '',
-    bool isAnonymous = false,
-  }) async {
-    try {
-      final request = SendGiftInChatRequest(
-        recipientId: recipientId,
-        giftId: inventory.gift.id,
-        chatId: chatId,
-        tempChatId: tempChatId,
-        message: message,
-        isAnonymous: isAnonymous,
-      );
-
-      _giftInterface.sendGiftInChat(request: request);
-
-      _updateLocalInventoryAfterSending(inventory);
-    } catch (e) {
-      throw Exception('Failed to send gift: $e');
-    }
-  }
-
-  void _updateLocalInventoryAfterSending(UserInventory sentInventory) {
-    // Этот метод может быть использован для обновления UI без перезагрузки данных
-    // Например, можно создать событие или обновить состояние
   }
 
   Sticker _convertGiftToSticker(UserInventory inventory) {
@@ -137,5 +102,4 @@ class StickerCubit extends Cubit<StickerState> {
       throw Exception('Failed to load gifts as stickers: $e');
     }
   }
-  */
 }

@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "AWAITING": MessageLookupByLibrary.simpleMessage("ОЖИДАЕТ"),
     "ITSDECIDED": MessageLookupByLibrary.simpleMessage("РЕШЕНО"),
+    "Minuttt": MessageLookupByLibrary.simpleMessage("м"),
     "RECEIVED": MessageLookupByLibrary.simpleMessage("ПОЛУЧЕНО"),
     "a_daily_gift": MessageLookupByLibrary.simpleMessage("Ежедневный подарок"),
     "aboutApp": MessageLookupByLibrary.simpleMessage("О приложении"),
@@ -70,6 +71,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "administrator": MessageLookupByLibrary.simpleMessage("Администратор"),
     "age": MessageLookupByLibrary.simpleMessage("Возраст"),
     "all": MessageLookupByLibrary.simpleMessage("Все"),
+    "all_interests_loaded": MessageLookupByLibrary.simpleMessage(
+      "all_interests_loaded",
+    ),
     "all_messages_are_saved": MessageLookupByLibrary.simpleMessage(
       "Все сообщения сохранены.",
     ),
@@ -259,6 +263,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "enter_the_title": MessageLookupByLibrary.simpleMessage(
       "Введите заголовок",
     ),
+    "enter_valid_age": MessageLookupByLibrary.simpleMessage(
+      "Пожалуйста, введите корректный возраст",
+    ),
     "enter_your_answer": MessageLookupByLibrary.simpleMessage(
       "Введите ваш ответ...",
     ),
@@ -316,6 +323,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "heading": MessageLookupByLibrary.simpleMessage("Заголовок"),
     "historycleared": MessageLookupByLibrary.simpleMessage("historyCleared"),
     "hour": MessageLookupByLibrary.simpleMessage("ч."),
+    "inProcessing": MessageLookupByLibrary.simpleMessage("In processing"),
     "in_processing": MessageLookupByLibrary.simpleMessage("В обработке"),
     "inappropriatecontent": MessageLookupByLibrary.simpleMessage(
       "inappropriateContent",
@@ -325,6 +333,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Неверный PIN-код",
     ),
     "information": MessageLookupByLibrary.simpleMessage("Информация"),
+    "interest_load_error": MessageLookupByLibrary.simpleMessage(
+      "interest_load_error",
+    ),
     "interests": MessageLookupByLibrary.simpleMessage("Интересы"),
     "invalidEmail": MessageLookupByLibrary.simpleMessage("Некорректный email"),
     "just_for_me": MessageLookupByLibrary.simpleMessage("Только для меня"),
@@ -349,12 +360,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "love": MessageLookupByLibrary.simpleMessage("Любовь"),
     "male": MessageLookupByLibrary.simpleMessage("Мужской"),
+    "max_age_65": MessageLookupByLibrary.simpleMessage(
+      "Максимальный возраст - 65 лет",
+    ),
     "messageHint": MessageLookupByLibrary.simpleMessage("Сообщение..."),
     "messages": MessageLookupByLibrary.simpleMessage("Сообщения"),
     "minAge": MessageLookupByLibrary.simpleMessage(
       "Минимальный возраст 14 лет",
     ),
     "minPassword": MessageLookupByLibrary.simpleMessage("Минимум 6 символов"),
+    "min_age_18": MessageLookupByLibrary.simpleMessage(
+      "Минимальный возраст - 18 лет",
+    ),
     "mines": MessageLookupByLibrary.simpleMessage("мин"),
     "minutes_to_chat": MessageLookupByLibrary.simpleMessage("минут к чату."),
     "moderator": MessageLookupByLibrary.simpleMessage("Модератор"),
@@ -405,6 +422,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Недостаточно очков для покупки. Нужно:",
         ),
+    "nothingFound": MessageLookupByLibrary.simpleMessage("Ничего не найдено"),
     "notification_settings": MessageLookupByLibrary.simpleMessage(
       "Настройки уведомлений",
     ),
@@ -446,6 +464,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "pinSetSuccess": MessageLookupByLibrary.simpleMessage(
       "PIN-код успешно установлен",
     ),
+    "please_select_city_from_list": MessageLookupByLibrary.simpleMessage(
+      "Пожалуйста, выберите город из списка",
+    ),
     "please_select_the_reason_for_the_complaint":
         MessageLookupByLibrary.simpleMessage(
           "Пожалуйста, выберите причину жалобы",
@@ -469,6 +490,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "purchase_error": MessageLookupByLibrary.simpleMessage(
       "Ошибка при покупке:",
+    ),
+    "purpose_load_error": MessageLookupByLibrary.simpleMessage(
+      "purpose_load_error",
     ),
     "purposes": MessageLookupByLibrary.simpleMessage("Цели"),
     "qrNoValue": MessageLookupByLibrary.simpleMessage(
@@ -497,6 +521,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "reject": MessageLookupByLibrary.simpleMessage("Отклонить"),
     "removeFriend": MessageLookupByLibrary.simpleMessage("Удалить из друзей"),
     "repeat": MessageLookupByLibrary.simpleMessage("Повторить"),
+    "reportDetails": MessageLookupByLibrary.simpleMessage("Report Details"),
     "reportsubmitted": MessageLookupByLibrary.simpleMessage("reportSubmitted"),
     "reportuser": MessageLookupByLibrary.simpleMessage("ReportUser"),
     "reportuserdescription": MessageLookupByLibrary.simpleMessage(
@@ -560,6 +585,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "signIn": MessageLookupByLibrary.simpleMessage("Войти"),
     "signUp": MessageLookupByLibrary.simpleMessage("Зарегистрироваться"),
     "sold_out": MessageLookupByLibrary.simpleMessage("РАСПРОДАНО"),
+    "soon": MessageLookupByLibrary.simpleMessage("скоро"),
     "sound": MessageLookupByLibrary.simpleMessage("Звук"),
     "spam": MessageLookupByLibrary.simpleMessage("spam"),
     "specify_your_goals": MessageLookupByLibrary.simpleMessage(
@@ -580,6 +606,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "start_entering_the_name_of_the_city": MessageLookupByLibrary.simpleMessage(
       "Начните вводить название города",
     ),
+    "status": MessageLookupByLibrary.simpleMessage("Status:"),
     "status_updated": MessageLookupByLibrary.simpleMessage("Статус обновлен"),
     "sticker": MessageLookupByLibrary.simpleMessage("Стикер"),
     "sticker_loading_error": MessageLookupByLibrary.simpleMessage(
@@ -699,6 +726,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "to_accept": MessageLookupByLibrary.simpleMessage("Принять"),
     "to_configure": MessageLookupByLibrary.simpleMessage("Настроить"),
     "to_create": MessageLookupByLibrary.simpleMessage("Создать"),
+    "tryDifferentSearch": MessageLookupByLibrary.simpleMessage(
+      "Попробуйте другой поисковый запрос",
+    ),
     "try_again": MessageLookupByLibrary.simpleMessage("Попробовать снова"),
     "types_of_notifications": MessageLookupByLibrary.simpleMessage(
       "Типы уведомлений",

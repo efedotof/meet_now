@@ -104,6 +104,7 @@ class AppBloc extends StatelessWidget {
                     context.read<PasswordStorageInterface>(),
                 userStorageInterface: context.read<UserStorageInterface>(),
                 userInterface: context.read<UserInterface>(),
+                fcmServiceInterface: context.read<FCMServiceInterface>(),
               ),
         ),
         BlocProvider(
@@ -200,8 +201,8 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => StickerCubit(
                 stickerParksInterface: context.read<StikersParksInterface>(),
-                // giftInterface: context.read<GiftInterface>(),
-                messageInterface: context.read<MessageInterface>(),
+                giftInterface: context.read<GiftInterface>(),
+                // messageInterface: context.read<MessageInterface>(),
               ),
         ),
         BlocProvider(
@@ -210,6 +211,7 @@ class AppBloc extends StatelessWidget {
                 gamesRepository: context.read<GamesInterface>(),
                 tokenInterface: context.read<TokenInterface>(),
                 userInterface: context.read<UserInterface>(),
+                uploadImageInterface: context.read<UploadImageInterface>(),
               ),
         ),
         BlocProvider(create: (context) => MediaSelectionCubit()),

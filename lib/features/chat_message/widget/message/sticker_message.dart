@@ -65,17 +65,7 @@ class _StickerMessageState extends State<StickerMessage> {
         Container(
           width: 140,
           height: 140,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                widget.theme.colorScheme.surfaceContainerHighest.withAlpha(40),
-                widget.theme.colorScheme.surfaceContainerHighest.withAlpha(20),
-              ],
-            ),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
           child: FutureBuilder<String>(
             future: _stickerUrlFuture,
             builder: (context, snapshot) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 
 import 'action_buttons.dart';
@@ -33,8 +32,18 @@ class _AvatarPageState extends State<AvatarPage> {
   String? _presignedUrl;
   bool _isLoading = false;
 
+  final Map<String, String> _presignedUrlCache = {};
+
   void _loadPresignedUrl(String url) async {
     if (_isLoading) return;
+
+    if (_presignedUrlCache.containsKey(url)) {
+      setState(() {
+        _presignedUrl = _presignedUrlCache[url];
+        _isLoading = false;
+      });
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -44,6 +53,7 @@ class _AvatarPageState extends State<AvatarPage> {
       if (mounted) {
         setState(() {
           _presignedUrl = presignedUrl;
+          _presignedUrlCache[url] = presignedUrl;
           _isLoading = false;
         });
       }
@@ -61,7 +71,7 @@ class _AvatarPageState extends State<AvatarPage> {
 
     widget.state.whenOrNull(
       avatarUploadSuccess: (url) {
-        if (_presignedUrl == null || !_presignedUrl!.contains(url)) {
+        if (_presignedUrl == null || !_presignedUrlCache.containsKey(url)) {
           _loadPresignedUrl(url);
         }
       },
@@ -101,6 +111,7 @@ class _AvatarPageState extends State<AvatarPage> {
                     (url) => UploadedAvatar(
                       url: url,
                       cubit: widget.cubit,
+                      presignedUrl: _presignedUrl,
                       onAvatarConfirmedChange: widget.onAvatarConfirmedChange,
                     ),
                 gallerySelected: (paths) => DefaultAvatar(),

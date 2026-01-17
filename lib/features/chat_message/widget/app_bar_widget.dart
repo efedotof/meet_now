@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
-
 import 'package:meet_now_app/features/chat_message/cubit/user_activity/user_activity_cubit.dart';
 import 'package:meet_now_app/features/profile/view/profile_screen.dart';
 import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app_server/model/social/user_activity/user_activity.dart';
+import 'package:random_avatar/random_avatar.dart';
 
 import 'status_text.dart';
 
@@ -24,6 +24,7 @@ class AppBarWidget extends StatefulWidget {
     this.onBlockUser,
     this.onReportUser,
     this.onRequestFriend,
+    this.tempChatId,
   });
 
   final PermanentChatResponseDto? chatModel;
@@ -36,6 +37,7 @@ class AppBarWidget extends StatefulWidget {
   final VoidCallback? onDeleteChat;
   final VoidCallback? onBlockUser;
   final VoidCallback? onReportUser;
+  final String? tempChatId;
 
   @override
   State<AppBarWidget> createState() => _AppBarWidgetState();
@@ -71,6 +73,21 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       return "${widget.chatModel!.user2Avatar}";
     } else {
       return "${widget.chatModel!.user1Avatar}";
+    }
+  }
+
+  bool get _useRandomAvatar {
+    if (widget.isTemporary) return true;
+
+    final avatar = _getOtherAvatar();
+    return avatar.isEmpty || avatar == S.of(context).anonymousUser;
+  }
+
+  String _getAvatarSeed() {
+    if (widget.isTemporary) {
+      return widget.tempChatId ?? 'temporary_${widget.userId}';
+    } else {
+      return _getOtherUserId();
     }
   }
 
@@ -193,7 +210,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         _showBlockUserConfirmation();
         break;
       case 'report_user':
-        widget.onReportUser;
+        widget.onReportUser?.call();
         break;
     }
   }
@@ -379,97 +396,169 @@ class _AppBarWidgetState extends State<AppBarWidget> {
 
               const SizedBox(width: 6),
 
-              GestureDetector(
-                onTap: () async {
-                  final users = await context
-                      .read<ChatMessageCubit>()
-                      .getOtherUser(otherUser: _getOtherUserId());
-
-                  debugPrint("OTHER USER: $users");
-
-                  if (context.mounted) {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      barrierColor: Colors.black54,
-                      builder: (context) {
-                        return FractionallySizedBox(
-                          heightFactor: 0.92,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(22),
-                            ),
-                            child: Material(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              child: ProfileScreen(otherUser: users),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Container(
-                  height: 45,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: isDark ? Colors.black87 : Colors.white70,
-                  ),
-                  padding: const EdgeInsets.all(3),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 40,
-                        height: 45,
-                        child: Stack(
-                          children: [
-                            UserAvatar(
-                              radius: 20,
-                              avatarKey: _getOtherAvatar(),
-                            ),
-                            if (isOnline)
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 2,
-                                      color: theme.colorScheme.surface,
+              widget.isTemporary
+                  ? Container(
+                    height: 45,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: isDark ? Colors.black87 : Colors.white70,
+                    ),
+                    padding: const EdgeInsets.all(3),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          height: 45,
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: RandomAvatar(
+                                  _getAvatarSeed(),
+                                  height: 40,
+                                  width: 40,
+                                ),
+                              ),
+                              if (isOnline)
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        width: 2,
+                                        color: theme.colorScheme.surface,
+                                      ),
                                     ),
                                   ),
                                 ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _getOtherUserName(),
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w600,
                               ),
+                            ),
+                            if (widget.isTemporary)
+                              StatusText(state: state, userId: widget.userId),
                           ],
                         ),
+                      ],
+                    ),
+                  )
+                  : GestureDetector(
+                    onTap: () async {
+                      final users = await context
+                          .read<ChatMessageCubit>()
+                          .getOtherUser(otherUser: _getOtherUserId());
+                      if (context.mounted) {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          barrierColor: Colors.black54,
+                          builder: (context) {
+                            return FractionallySizedBox(
+                              heightFactor: 0.92,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(22),
+                                ),
+                                child: Material(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  child: ProfileScreen(otherUser: users),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Container(
+                      height: 45,
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: isDark ? Colors.black87 : Colors.white70,
                       ),
-                      const SizedBox(width: 6),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      padding: const EdgeInsets.all(3),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            _getOtherUserName(),
-                            style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w600,
+                          SizedBox(
+                            width: 40,
+                            height: 45,
+                            child: Stack(
+                              children: [
+                                if (_useRandomAvatar)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: RandomAvatar(
+                                      _getAvatarSeed(),
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                  )
+                                else
+                                  UserAvatar(
+                                    radius: 20,
+                                    avatarKey: _getOtherAvatar(),
+                                  ),
+                                if (isOnline)
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          width: 2,
+                                          color: theme.colorScheme.surface,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                          if (widget.isTemporary)
-                            StatusText(state: state, userId: widget.userId),
+                          const SizedBox(width: 6),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _getOtherUserName(),
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (widget.isTemporary)
+                                StatusText(state: state, userId: widget.userId),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
               const SizedBox(width: 6),
 

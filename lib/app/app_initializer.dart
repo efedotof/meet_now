@@ -17,6 +17,16 @@ class AppInitializer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final _ = storageHive.interestBox;
+        final _ = storageHive.purposeBox;
+      } catch (e) {
+        debugPrint("Hive box error detected, attempting to fix...");
+        await storageHive.init();
+      }
+    });
+
     return AppRepository(
       config: config,
       storageHive: storageHive,

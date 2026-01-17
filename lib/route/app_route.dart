@@ -37,10 +37,9 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: FriendRequestsRoute.page, path: "/friend_requests"),
     AutoRoute(page: PinCodeRoute.page, path: "/pin_code"),
     AutoRoute(page: QrCodeRoute.page, path: "/qr_code"),
-    // AutoRoute(page: TemporaryChatRoute.page, path: "/temporary_chat"),
     AutoRoute(page: UploadsAvatarsRoute.page, path: "/uploads_avatars"),
-    AutoRoute(page: FullImageRoute.page, path: "/full_image"),
     AutoRoute(page: GiftRoute.page, path: "/gift"),
     AutoRoute(page: FriendsRoute.page, path: "/friends"),
+    AutoRoute(page: LockedRoute.page, path: "/locked"),
   ];
 }
