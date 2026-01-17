@@ -21,6 +21,7 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
     return Center(
       child: Form(
         key: widget.formKey,
@@ -47,6 +48,10 @@ class _AboutPageState extends State<AboutPage> {
                     ChoiceChip(
                       label: Text(S.of(context).male),
                       selected: widget.formData.gender == 'м',
+                      checkmarkColor: isDark ? Colors.black : Colors.white,
+                      iconTheme: IconThemeData(
+                        color: isDark ? Colors.black : Colors.white,
+                      ),
                       onSelected: (selected) {
                         setState(() {
                           widget.formData.gender = selected ? 'м' : '';
@@ -57,6 +62,7 @@ class _AboutPageState extends State<AboutPage> {
                     ChoiceChip(
                       label: Text(S.of(context).female),
                       selected: widget.formData.gender == 'ж',
+                      checkmarkColor: isDark ? Colors.black : Colors.white,
                       onSelected: (selected) {
                         setState(() {
                           widget.formData.gender = selected ? 'ж' : '';
@@ -76,9 +82,11 @@ class _AboutPageState extends State<AboutPage> {
                     alignLabelWithHint: true,
                     border: OutlineInputBorder(),
                   ),
-                  validator: (value) => value!.isEmpty
-                      ? S.of(context).tellAboutYourselfValidation
-                      : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty
+                              ? S.of(context).tellAboutYourselfValidation
+                              : null,
                   onChanged: (value) => widget.formData.description = value,
                 ),
               ],

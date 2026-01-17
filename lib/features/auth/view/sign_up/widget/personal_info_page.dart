@@ -27,13 +27,16 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   bool _isSearching = false;
   bool _showDropdown = false;
   bool _citySelected = false;
+  City? _selectedCity;
   final GlobalKey _cityFieldKey = GlobalKey();
+  String? _cityErrorText;
 
   @override
   void initState() {
     super.initState();
     _cityController.text = widget.formData.city;
     _cityFocusNode.addListener(_handleFocusChange);
+    widget.formData.city = '';
   }
 
   void _handleFocusChange() {
@@ -67,11 +70,17 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   void _onCitySelected(City city) {
     setState(() {
       _cityController.text = city.nameCity;
+      _selectedCity = city;
       widget.formData.city = city.nameCity;
       _showDropdown = false;
       _citySelected = true;
+      _cityErrorText = null;
     });
     _cityFocusNode.unfocus();
+
+    if (widget.formKey.currentState != null) {
+      widget.formKey.currentState!.validate();
+    }
   }
 
   Future<void> _searchCities(String query) async {
@@ -81,15 +90,30 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         _isSearching = false;
         _showDropdown = false;
         _citySelected = false;
+        _selectedCity = null;
+        widget.formData.city = '';
+        _cityErrorText = null;
       });
       return;
     }
+
+    if (_selectedCity != null &&
+        _cityController.text != _selectedCity!.nameCity) {
+      setState(() {
+        _citySelected = false;
+        _selectedCity = null;
+        widget.formData.city = '';
+        _cityErrorText = null;
+      });
+    }
+
     setState(() {
       _isSearching = true;
       _showDropdown = true;
-      _citySelected = false;
     });
+
     final cities = await context.read<SignUpCubit>().searchCities(query);
+
     if (mounted) {
       setState(() {
         _foundCities = cities;
@@ -98,22 +122,70 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     }
   }
 
+  String? _validateCity(String? value) {
+    if (value == null || value.isEmpty) {
+      return S.of(context).enter_the_city;
+    }
+
+    if (!_citySelected) {
+      return S.of(context).please_select_city_from_list;
+    }
+
+    return null;
+  }
+
+  String? _validateAge(String? value) {
+    if (value == null || value.isEmpty) {
+      return S.of(context).enterAge;
+    }
+
+    final age = int.tryParse(value);
+    if (age == null) {
+      return S.of(context).enter_valid_age;
+    }
+
+    if (age < 18) {
+      return S.of(context).min_age_18;
+    }
+
+    if (age > 65) {
+      return S.of(context).max_age_65;
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.brightnessOf(context) == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = theme.colorScheme.onSurface;
+    final errorColor = theme.colorScheme.error;
+    final dropdownTextColor = isDark ? Colors.white : Colors.black;
+
+    final fieldBackgroundColor =
+        isDark
+            ? theme.colorScheme.surfaceContainerHighest.withAlpha(50)
+            : Colors.grey[50];
+
+    final dropdownBackgroundColor =
+        isDark ? theme.colorScheme.surfaceContainerHighest : Colors.white;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Form(
         key: widget.formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 S.of(context).personalInfo,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.blueGrey[800],
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 24),
@@ -123,28 +195,65 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   key: _cityFieldKey,
                   controller: _cityController,
                   focusNode: _cityFocusNode,
+                  readOnly: _citySelected,
                   decoration: InputDecoration(
                     labelText: S.of(context).city,
-                    labelStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
+
                     hintText: S.of(context).start_entering_the_name_of_the_city,
 
-                    prefixIcon: Icon(
-                      Icons.location_city_outlined,
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
+                    prefixIcon: Icon(Icons.location_city_outlined),
+                    suffixIcon:
+                        _citySelected
+                            ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                setState(() {
+                                  _cityController.clear();
+                                  _citySelected = false;
+                                  _selectedCity = null;
+                                  widget.formData.city = '';
+                                  _showDropdown = false;
+                                  _foundCities.clear();
+                                });
+                              },
+                            )
+                            : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.colorScheme.outline),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outline.withAlpha(50),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: errorColor),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: errorColor, width: 2),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[50],
+                    fillColor: fieldBackgroundColor,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    errorText: _cityErrorText,
                   ),
-                  style: TextStyle(color: isDark ? Colors.black : Colors.white),
+                  style: TextStyle(color: textColor),
                   onChanged: _searchCities,
-                  validator:
-                      (value) =>
-                          value!.isEmpty ? S.of(context).enter_the_city : null,
+                  validator: _validateCity,
                 ),
               ),
               if (_showDropdown) ...[
@@ -157,8 +266,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     child: Container(
                       constraints: const BoxConstraints(maxHeight: 200),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: dropdownBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: theme.colorScheme.outline.withAlpha(30),
+                        ),
                       ),
                       child:
                           _isSearching
@@ -173,7 +285,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
                                   S.of(context).cities_not_found,
-                                  style: TextStyle(color: Colors.grey[600]),
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onSurface
+                                        .withAlpha(60),
+                                  ),
                                 ),
                               )
                               : ListView.builder(
@@ -183,17 +298,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                 itemBuilder: (context, index) {
                                   final city = _foundCities[index];
                                   return ListTile(
-                                    leading: const Icon(
+                                    leading: Icon(
                                       Icons.location_on,
-                                      color: Colors.blue,
+                                      color: theme.colorScheme.primary,
                                     ),
                                     title: Text(
                                       city.nameCity,
                                       style: TextStyle(
-                                        color:
-                                            isDark
-                                                ? Colors.black
-                                                : Colors.white,
+                                        color: dropdownTextColor,
                                         fontSize: 16,
                                       ),
                                     ),
@@ -212,23 +324,37 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   initialValue: widget.formData.firstname,
                   decoration: InputDecoration(
                     labelText: S.of(context).firstName,
-                    prefixIcon: Icon(
-                      Icons.person_outline,
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
+
+                    prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.colorScheme.outline),
                     ),
-
-                    hintStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outline.withAlpha(50),
+                      ),
                     ),
-                    labelStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: errorColor),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[50],
+                    fillColor: fieldBackgroundColor,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
+                  style: TextStyle(color: textColor),
                   validator:
                       (value) =>
                           value!.isEmpty ? S.of(context).enterFirstName : null,
@@ -242,23 +368,37 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   initialValue: widget.formData.subname,
                   decoration: InputDecoration(
                     labelText: S.of(context).lastName,
-                    prefixIcon: Icon(
-                      Icons.person_outline,
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
-                    hintStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
+
+                    prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.colorScheme.outline),
                     ),
-                    labelStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outline.withAlpha(50),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: errorColor),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[50],
+                    fillColor: fieldBackgroundColor,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
-                  style: TextStyle(color: isDark ? Colors.black : Colors.white),
+                  style: TextStyle(color: textColor),
                   validator:
                       (value) =>
                           value!.isEmpty ? S.of(context).enterLastName : null,
@@ -275,30 +415,46 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                           : '',
                   decoration: InputDecoration(
                     labelText: S.of(context).age,
-                    prefixIcon: Icon(
-                      Icons.cake_outlined,
-                      color: isDark ? Colors.black : Colors.white,
-                    ),
+
+                    prefixIcon: Icon(Icons.cake_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.colorScheme.outline),
                     ),
-                    labelStyle: TextStyle(
-                      color: isDark ? Colors.black : Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.outline.withAlpha(50),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: errorColor),
                     ),
                     filled: true,
-                    fillColor: Colors.grey[50],
+                    fillColor: fieldBackgroundColor,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                   ),
+                  style: TextStyle(color: textColor),
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return S.of(context).enterAge;
+                  validator: _validateAge,
+                  onChanged: (value) {
+                    final age = int.tryParse(value) ?? 0;
+                    widget.formData.age = age;
+                    if (widget.formKey.currentState != null) {
+                      widget.formKey.currentState!.validate();
                     }
-                    final age = int.tryParse(value);
-                    if (age == null || age < 14) return S.of(context).minAge;
-                    return null;
                   },
-                  onChanged:
-                      (value) => widget.formData.age = int.tryParse(value) ?? 0,
                 ),
               ),
             ],

@@ -1,1 +1,0 @@
-export 'full_image_screen.dart';

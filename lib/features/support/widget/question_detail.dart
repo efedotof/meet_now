@@ -14,69 +14,81 @@ class QuestionDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Column(
+      children: [
+        const SizedBox(height: 100),
+
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  question.title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              StatusChip(status: question.status.toString()),
-            ],
-          ),
-          const SizedBox(height: 16),
-          InfoCard(S.of(context).description, question.description),
-          const SizedBox(height: 16),
-          InfoCard(
-            S.of(context).information,
-            null,
-            children: [
-              InfoRow(S.of(context).generated, _formatDate(question.createdAt)),
-              InfoRow(S.of(context).updated, _formatDate(question.updatedAt)),
-              InfoRow(S.of(context).question_id, question.id),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Row(
+                  Expanded(
+                    child: Text(
+                      question.title,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  StatusChip(status: question.status.toString()),
+                ],
+              ),
+              const SizedBox(height: 16),
+              InfoCard(S.of(context).description, question.description),
+              const SizedBox(height: 16),
+              InfoCard(
+                S.of(context).information,
+                null,
+                children: [
+                  InfoRow(
+                    S.of(context).generated,
+                    _formatDate(question.createdAt),
+                  ),
+                  InfoRow(
+                    S.of(context).updated,
+                    _formatDate(question.updatedAt),
+                  ),
+                  InfoRow(S.of(context).question_id, question.id),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        ' ${S.of(context).answers} (${question.answers.length})',
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Row(
+                        children: [
+                          Text(
+                            ' ${S.of(context).answers} (${question.answers.length})',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const Spacer(),
+                          if (question.status != 'RESOLVED')
+                            ElevatedButton.icon(
+                              onPressed: () => _showAddAnswerDialog(context),
+                              icon: const Icon(Icons.reply),
+                              label: Text(S.of(context).add_a_response),
+                            ),
+                        ],
                       ),
-                      const Spacer(),
-                      if (question.status != 'RESOLVED')
-                        ElevatedButton.icon(
-                          onPressed: () => _showAddAnswerDialog(context),
-                          icon: const Icon(Icons.reply),
-                          label: Text(S.of(context).add_a_response),
+                      const SizedBox(height: 8),
+                      ...question.answers.map((a) => AnswerCard(answer: a)),
+                      if (question.answers.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Text(S.of(context).there_are_no_answers_yet),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  ...question.answers.map((a) => AnswerCard(answer: a)),
-                  if (question.answers.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text(S.of(context).there_are_no_answers_yet),
-                    ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -23,13 +23,34 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
   final TextEditingController _purposeController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
+
+  // Добавляем контроллеры для всех полей
+  late TextEditingController _usernameController;
+  late TextEditingController _firstnameController;
+  late TextEditingController _subnameController;
+  late TextEditingController _cityController;
+  late TextEditingController _ageController;
+  late TextEditingController _descriptionController;
+
   late final MediaSelectionCubit _mediaSelectionCubit;
   final DeviceMediaLibrary mediaLibrary = DeviceMediaLibrary();
+
+  // Флаг для инициализации контроллеров
+  bool _controllersInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _mediaSelectionCubit = MediaSelectionCubit();
+
+    // Инициализируем контроллеры с пустыми значениями
+    _usernameController = TextEditingController();
+    _firstnameController = TextEditingController();
+    _subnameController = TextEditingController();
+    _cityController = TextEditingController();
+    _ageController = TextEditingController();
+    _descriptionController = TextEditingController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SettingProfileCubit>().initialize(widget.user);
     });
@@ -194,6 +215,12 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
     _purposeController.dispose();
     _oldPasswordController.dispose();
     _newPasswordController.dispose();
+    _usernameController.dispose();
+    _firstnameController.dispose();
+    _subnameController.dispose();
+    _cityController.dispose();
+    _ageController.dispose();
+    _descriptionController.dispose();
     _mediaSelectionCubit.close();
     super.dispose();
   }
@@ -207,6 +234,45 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
       value: _mediaSelectionCubit,
       child: BlocListener<SettingProfileCubit, SettingProfileState>(
         listener: (context, state) {
+          // Инициализируем контроллеры при первом получении данных
+          if (!_controllersInitialized && state.user != null) {
+            _usernameController.text = state.username;
+            _firstnameController.text = state.firstname;
+            _subnameController.text = state.subname;
+            _cityController.text = state.city;
+            _ageController.text = state.age;
+            _descriptionController.text = state.description;
+            _controllersInitialized = true;
+          }
+
+          // Обновляем контроллеры только если значения изменились и это не текущее редактирование
+          if (_controllersInitialized) {
+            if (_usernameController.text != state.username &&
+                !_usernameController.selection.isValid) {
+              _usernameController.text = state.username;
+            }
+            if (_firstnameController.text != state.firstname &&
+                !_firstnameController.selection.isValid) {
+              _firstnameController.text = state.firstname;
+            }
+            if (_subnameController.text != state.subname &&
+                !_subnameController.selection.isValid) {
+              _subnameController.text = state.subname;
+            }
+            if (_cityController.text != state.city &&
+                !_cityController.selection.isValid) {
+              _cityController.text = state.city;
+            }
+            if (_ageController.text != state.age &&
+                !_ageController.selection.isValid) {
+              _ageController.text = state.age;
+            }
+            if (_descriptionController.text != state.description &&
+                !_descriptionController.selection.isValid) {
+              _descriptionController.text = state.description;
+            }
+          }
+
           if (state.isSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(S.of(context).profileupdatedsuccessfully)),
@@ -324,9 +390,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                         child: Column(
                           children: [
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.username,
-                              ),
+                              controller: _usernameController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()
@@ -342,9 +406,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.firstname,
-                              ),
+                              controller: _firstnameController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()
@@ -360,9 +422,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.subname,
-                              ),
+                              controller: _subnameController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()
@@ -391,9 +451,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                         child: Column(
                           children: [
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.city,
-                              ),
+                              controller: _cityController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()
@@ -411,9 +469,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.age,
-                              ),
+                              controller: _ageController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()
@@ -430,9 +486,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
-                              controller: TextEditingController(
-                                text: state.description,
-                              ),
+                              controller: _descriptionController,
                               onChanged:
                                   (value) => context
                                       .read<SettingProfileCubit>()

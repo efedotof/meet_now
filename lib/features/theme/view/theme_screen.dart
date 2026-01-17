@@ -13,10 +13,6 @@ class ThemeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(S.of(context).themeSelection),
-      //   centerTitle: true,
-      // ),
       body: Stack(
         children: [
           SizedBox(

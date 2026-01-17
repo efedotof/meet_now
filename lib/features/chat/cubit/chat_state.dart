@@ -9,6 +9,7 @@ abstract class ChatState with _$ChatState {
     String? error,
     String? currentUserId,
     @Default(ChatType.all) ChatType selectedChatType,
+    @Default('') String searchQuery,
   }) = _ChatState;
 }
 

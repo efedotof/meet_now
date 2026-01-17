@@ -27,6 +27,7 @@ class MyBody extends StatelessWidget {
     }
 
     final currentUserId = state.currentUserId;
+    final searchQuery = state.searchQuery.toLowerCase();
 
     List<PermanentChatResponseDto> permanentChats =
         List<PermanentChatResponseDto>.from(state.permanentChat)..sort(
@@ -42,12 +43,46 @@ class MyBody extends StatelessWidget {
     if (state.selectedChatType == ChatType.permanent) temporaryChats = [];
     if (state.selectedChatType == ChatType.temporary) permanentChats = [];
 
+    if (searchQuery.isNotEmpty) {
+      permanentChats =
+          permanentChats.where((chat) {
+            if (currentUserId == chat.user1Id) {
+              final name =
+                  '${chat.user2Firstname} ${chat.user2Subname}'.toLowerCase();
+              return name.contains(searchQuery);
+            } else {
+              final name =
+                  '${chat.user1Firstname} ${chat.user1Subname}'.toLowerCase();
+              return name.contains(searchQuery);
+            }
+          }).toList();
+
+      if (state.selectedChatType != ChatType.permanent) {
+        temporaryChats =
+            temporaryChats.where((chat) {
+              final anonymousChatName =
+                  S.of(context).anonymous_chat.toLowerCase();
+              return anonymousChatName.contains(searchQuery) ||
+                  S
+                      .of(context)
+                      .this_is_an_anonymous_chat
+                      .toLowerCase()
+                      .contains(searchQuery);
+            }).toList();
+      }
+    }
+
     if (permanentChats.isEmpty && temporaryChats.isEmpty) {
-      String message = switch (state.selectedChatType) {
-        ChatType.all => S.of(context).there_are_no_chats,
-        ChatType.permanent => S.of(context).there_are_no_permanent_chats,
-        ChatType.temporary => S.of(context).there_are_no_temporary_chats,
-      };
+      String message;
+      if (searchQuery.isNotEmpty) {
+        message = S.of(context).nothingFound;
+      } else {
+        message = switch (state.selectedChatType) {
+          ChatType.all => S.of(context).there_are_no_chats,
+          ChatType.permanent => S.of(context).there_are_no_permanent_chats,
+          ChatType.temporary => S.of(context).there_are_no_temporary_chats,
+        };
+      }
 
       return SizedBox(
         height: 400,
@@ -56,21 +91,27 @@ class MyBody extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.forum_outlined,
+                searchQuery.isNotEmpty
+                    ? Icons.search_off
+                    : Icons.forum_outlined,
                 size: 64,
                 color: Theme.of(context).colorScheme.secondary,
               ),
               const SizedBox(height: 16),
               Text(message, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  S.of(context).startCommunicationHint,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
+              if (searchQuery.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    S.of(context).tryDifferentSearch,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -109,11 +150,12 @@ class MyBody extends StatelessWidget {
                   return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: ChatTile(
+                      key: ValueKey(chat.chatId),
                       name: name,
                       lastMessage:
                           chat.lastMessage ?? S.of(context).start_chatting,
                       unreadCount: chat.unreadCount,
-                      avatar: avatar,
+                      avatar: avatar ?? '',
                       chat: chat,
                       sendLastMessageAt: chat.lastMessageAt,
                     ),

@@ -156,6 +156,14 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
+  void updateSearchQuery(String query) {
+    emit(state.copyWith(searchQuery: query));
+  }
+
+  void clearSearch() {
+    emit(state.copyWith(searchQuery: ''));
+  }
+
   @override
   Future<void> close() {
     _permanentSub.cancel();

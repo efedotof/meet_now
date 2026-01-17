@@ -7,7 +7,6 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
 import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
-import 'package:meet_now_app_server/repository/repository.dart';
 
 class ChatTile extends StatefulWidget {
   const ChatTile({
@@ -15,7 +14,7 @@ class ChatTile extends StatefulWidget {
     required this.name,
     required this.lastMessage,
     this.unreadCount,
-    this.avatar,
+    required this.avatar,
     this.sendLastMessageAt,
     this.chat,
     this.temporaryChat,
@@ -24,7 +23,7 @@ class ChatTile extends StatefulWidget {
   final String name;
   final String lastMessage;
   final int? unreadCount;
-  final String? avatar;
+  final String avatar;
   final DateTime? sendLastMessageAt;
   final PermanentChatResponseDto? chat;
   final TemporaryChat? temporaryChat;
@@ -34,99 +33,7 @@ class ChatTile extends StatefulWidget {
 }
 
 class _ChatTileState extends State<ChatTile> {
-  bool _isDeleting = false;
-
-  void _showDeleteDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(S.of(context).delete_a_chat),
-          content: Text(S.of(context).select_the_deletion_option),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _deleteChat(forBoth: false);
-              },
-              child: Text(S.of(context).just_for_me),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showConfirmDeleteForBothDialog();
-              },
-              child: Text(
-                S.of(context).for_both,
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(S.of(context).cancel),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showConfirmDeleteForBothDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(S.of(context).delete_for_both),
-          content: Text(
-            S
-                .of(context)
-                .this_action_cannot_be_undone_the_chat_will_be_deleted_for_all_participants,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(S.of(context).cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _deleteChat(forBoth: true);
-              },
-              child: Text(
-                S.of(context).delete,
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteChat({required bool forBoth}) async {
-    if (_isDeleting) return;
-
-    setState(() => _isDeleting = true);
-
-    try {
-      final cubit = context.read<ChatCubit>();
-
-      if (widget.chat != null) {
-        await cubit.deletePermanentChat(
-          widget.chat!.chatId,
-          context.read<UserModelAppInterface>().user!.id,
-          forBoth,
-        );
-      } else if (widget.temporaryChat != null) {
-        await cubit.deleteTemporaryChat(
-          widget.temporaryChat!.tempChatId,
-          forBoth,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isDeleting = false);
-    }
-  }
+  bool isDeleting = false;
 
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';
@@ -146,11 +53,9 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    // final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: GestureDetector(
-        onLongPress: _showDeleteDialog,
         child: SizedBox(
           height: 80,
           child: Stack(
@@ -158,7 +63,7 @@ class _ChatTileState extends State<ChatTile> {
               InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap:
-                    _isDeleting
+                    isDeleting
                         ? null
                         : () {
                           if (widget.chat != null) {
@@ -187,7 +92,17 @@ class _ChatTileState extends State<ChatTile> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      UserAvatar(avatarKey: widget.avatar!, radius: 32),
+                      widget.avatar.isNotEmpty
+                          ? UserAvatar(avatarKey: widget.avatar, radius: 32)
+                          : CircleAvatar(
+                            radius: 32,
+                            backgroundColor: Colors.grey[300],
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                              size: 32,
+                            ),
+                          ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -259,7 +174,7 @@ class _ChatTileState extends State<ChatTile> {
                   ),
                 ),
               ),
-              if (_isDeleting)
+              if (isDeleting)
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(

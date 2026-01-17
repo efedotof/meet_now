@@ -29,7 +29,6 @@ class _CredentialsPageState extends State<CredentialsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.brightnessOf(context) == Brightness.dark;
     return Form(
       key: widget.formKey,
       child: ConstrainedBox(
@@ -49,9 +48,6 @@ class _CredentialsPageState extends State<CredentialsPage> {
                 decoration: InputDecoration(
                   labelText: S.of(context).username,
                   prefixIcon: Icon(Icons.person),
-                  labelStyle: TextStyle(
-                    color: isDark ? Colors.black : Colors.white,
-                  ),
                 ),
                 validator:
                     (value) =>

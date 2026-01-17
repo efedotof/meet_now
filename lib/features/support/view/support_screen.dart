@@ -34,8 +34,9 @@ class SupportScreen extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
-            Container(
-              color: Colors.grey[50],
+            Positioned.fill(
+              top: MediaQuery.of(context).padding.top + 80,
+              bottom: 0,
               child: BlocConsumer<SupportCubit, SupportState>(
                 listener: (context, state) {
                   state.whenOrNull(
@@ -100,18 +101,11 @@ class SupportScreen extends StatelessWidget {
                           ),
                         );
                       }
-                      return Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.1,
-                          ),
-                          QuestionsList(questions),
-                        ],
-                      );
+                      return ExpandedQuestionsList(questions);
                     },
-                    questionDetail: (question) => QuestionDetail(question),
-                    questionCreated: (question) => QuestionDetail(question),
-                    statusUpdated: (question) => QuestionDetail(question),
+                    questionDetail: (question) => QuestionsList([question]),
+                    questionCreated: (question) => QuestionsList([question]),
+                    statusUpdated: (question) => QuestionsList([question]),
                     error:
                         (message) => Center(
                           child: Column(

@@ -20,6 +20,16 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState?.show();
+    });
+  }
 
   @override
   void dispose() {
@@ -44,40 +54,65 @@ class _ChatScreenState extends State<ChatScreen> {
         darkShimmerGradient: const LinearGradient(
           colors: [Color(0xFF2A2A2A), Color(0xFF3A3A3A), Color(0xFF2A2A2A)],
         ),
-        child: BlocBuilder<ChatCubit, ChatState>(
-          builder: (context, state) {
-            final chatTypes = [
-              (ChatType.all, S.of(context).all),
-              (ChatType.permanent, S.of(context).permanent),
-              (ChatType.temporary, S.of(context).temporary),
-            ];
-            return RefreshIndicator(
-              onRefresh: () => context.read<ChatCubit>().refresh(),
-              child: Scaffold(
-                appBar: AppBar(
-                  scrolledUnderElevation: 0,
-                  surfaceTintColor: Colors.transparent,
-                  actions: [
-                    RawMaterialButton(
-                      fillColor: isDark ? Colors.white : Colors.black,
-                      onPressed: () => context.pushRoute(FriendsRoute()),
-                      elevation: 2.0,
-                      shape: const CircleBorder(),
-                      constraints: const BoxConstraints(minWidth: 0.0),
-                      child: Icon(
-                        Icons.add,
-                        color: isDark ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
+        child: Scaffold(
+          appBar: AppBar(
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            actions: [
+              RawMaterialButton(
+                fillColor: isDark ? Colors.white : Colors.black,
+                onPressed: () => context.pushRoute(FriendsRoute()),
+                elevation: 2.0,
+                shape: const CircleBorder(),
+                constraints: const BoxConstraints(minWidth: 0.0),
+                child: Icon(
+                  Icons.add,
+                  color: isDark ? Colors.black : Colors.white,
                 ),
+              ),
+            ],
+          ),
+          body: BlocConsumer<ChatCubit, ChatState>(
+            listener: (context, state) {
+              if (state.error != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error!),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              final chatCubit = context.read<ChatCubit>();
 
-                body: SingleChildScrollView(
+              if (_searchController.text != state.searchQuery) {
+                _searchController.text = state.searchQuery;
+              }
+
+              final chatTypes = [
+                (ChatType.all, S.of(context).all),
+                (ChatType.permanent, S.of(context).permanent),
+                (ChatType.temporary, S.of(context).temporary),
+              ];
+
+              return RefreshIndicator(
+                key: _refreshIndicatorKey,
+                onRefresh: () async {
+                  await chatCubit.refresh();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SearchField(controller: _searchController),
+                      SearchField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          chatCubit.updateSearchQuery(value);
+                        },
+                      ),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -93,9 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     isDark ? Colors.black : Colors.white,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    context.read<ChatCubit>().changeChatType(
-                                      type.$1,
-                                    );
+                                    chatCubit.changeChatType(type.$1);
                                   }
                                 },
                               );
@@ -106,9 +139,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

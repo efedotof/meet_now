@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
-// TODO: Временно отключен функционал подарков
-// import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
+import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
+// Добавляем импорт ChatMessageCubit
 
 class StickerPickerWidget extends StatefulWidget {
   final Function(Sticker) onStickerSelected;
-  // TODO: Временно отключены параметры для подарков
-  // final String recipientId;
-  // final String chatId;
-  // final String tempChatId;
-  // final Function(bool)? onGiftSent;
+  final Function(UserInventory)?
+  onGiftSelected; // Изменено: передаем инвентарь вместо отдельных параметров
 
   const StickerPickerWidget({
     super.key,
     required this.onStickerSelected,
-    // TODO: Временно отключены параметры для подарков
-    // required this.recipientId,
-    // required this.chatId,
-    // required this.tempChatId,
-    // this.onGiftSent,
+    this.onGiftSelected,
   });
 
   @override
@@ -33,26 +27,20 @@ class StickerPickerWidget extends StatefulWidget {
 class _StickerPickerWidgetState extends State<StickerPickerWidget> {
   List<StickerPack> _stickerPacks = [];
   final Map<String, List<Sticker>> _stickersByPack = {};
-  // TODO: Временно отключен функционал подарков
-  // List<UserInventory> _userGifts = [];
+  List<UserInventory> _userGifts = [];
   bool _isLoading = true;
-  // TODO: Временно отключен функционал подарков
-  // bool _isLoadingGifts = false;
+  bool _isLoadingGifts = false;
   String? _error;
   final Map<String, String> _presignedUrlCache = {};
-  // TODO: Временно изменена логика выбора пака (нет подарков)
-  int _selectedPackIndex =
-      0; // Теперь показываем первый пак стикеров по умолчанию
+  int _selectedPackIndex = -1;
   final ScrollController _horizontalScrollController = ScrollController();
-  // TODO: Временно отключен функционал подарков
-  // bool _isSendingGift = false;
+  bool _isSendingGift = false;
 
   @override
   void initState() {
     super.initState();
     _loadStickerPacks();
-    // TODO: Временно отключен функционал подарков
-    // _loadUserGifts();
+    _loadUserGifts();
   }
 
   Future<void> _loadStickerPacks() async {
@@ -66,7 +54,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
       setState(() {
         _stickerPacks = packs;
         _isLoading = false;
-        _selectedPackIndex = 0; // Показываем первый пак стикеров
       });
     } catch (e) {
       setState(() {
@@ -76,8 +63,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
     }
   }
 
-  // TODO: Временно отключен функционал подарков
-  /*
   Future<void> _loadUserGifts() async {
     setState(() {
       _isLoadingGifts = true;
@@ -107,46 +92,45 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
     });
 
     try {
-      final cubit = context.read<StickerCubit>();
-      await cubit.sendGiftToChat(
-        inventory: inventory,
-        recipientId: widget.recipientId,
-        chatId: widget.chatId,
-        tempChatId: widget.tempChatId,
-        message: '🎁 Подарок!',
-        isAnonymous: false,
+      debugPrint(
+        '🎁 Начинаем отправку подарка: inventory=${inventory.id}, gift=${inventory.gift.id}',
       );
 
-      // Обновляем инвентарь после отправки
-      await _loadUserGifts();
+      // Получаем ChatMessageCubit
+      final chatMessageCubit = context.read<ChatMessageCubit>();
+      debugPrint('✅ ChatMessageCubit найден: $chatMessageCubit');
 
-      // Скрываем панель стикеров
+      // Сначала скрываем панель стикеров
       context.read<StickerCubit>().hideStickers();
 
-      // Уведомляем родительский виджет об успешной отправке
-      widget.onGiftSent?.call(true);
+      // Вызываем колбэк
+      widget.onGiftSelected?.call(inventory);
 
+      debugPrint('✅ Колбэк onGiftSelected вызван');
+
+      // Показываем уведомление об успешной отправке
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Подарок отправлен!'),
+          content: Text('Подарок выбран! Отправка...'),
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ Ошибка при отправке подарка: $e');
+      debugPrint('Stack trace: $stackTrace');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ошибка отправки подарка: $e'),
           backgroundColor: Colors.red,
         ),
       );
-      widget.onGiftSent?.call(false);
     } finally {
       setState(() {
         _isSendingGift = false;
       });
     }
   }
-  */
 
   Future<void> _loadStickersForPack(String packId) async {
     if (_stickersByPack.containsKey(packId)) return;
@@ -182,8 +166,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
   }
 
   List<Sticker> _getCurrentStickers() {
-    // TODO: Временно отключен функционал подарков
-    /*
     if (_selectedPackIndex == -1) {
       return _userGifts.map((inventory) {
         return Sticker(
@@ -192,9 +174,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
           imageUrl: inventory.gift.animationUrl ?? inventory.gift.imageUrl,
         );
       }).toList();
-    } else 
-    */
-    if (_selectedPackIndex < _stickerPacks.length) {
+    } else if (_selectedPackIndex < _stickerPacks.length) {
       final packId = _stickerPacks[_selectedPackIndex].id;
       return _stickersByPack[packId] ?? [];
     }
@@ -202,13 +182,9 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
   }
 
   String _getCurrentPackName() {
-    // TODO: Временно отключен функционал подарков
-    /*
     if (_selectedPackIndex == -1) {
       return 'Подарки (${_userGifts.length})';
-    } else 
-    */
-    if (_selectedPackIndex < _stickerPacks.length) {
+    } else if (_selectedPackIndex < _stickerPacks.length) {
       return _stickerPacks[_selectedPackIndex].title;
     }
     return '';
@@ -250,8 +226,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                   color: isDark ? Colors.white : Colors.black,
                                 ),
                               ),
-                              // TODO: Временно отключен функционал подарков
-                              /*
                               if (_isSendingGift)
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
@@ -265,7 +239,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     ),
                                   ),
                                 ),
-                              */
                               const Spacer(),
                               IconButton(
                                 icon: Icon(
@@ -274,10 +247,9 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                   color: isDark ? Colors.white : Colors.black,
                                 ),
                                 onPressed: () {
-                                  // TODO: Временно отключена проверка на отправку подарка
-                                  // if (!_isSendingGift) {
-                                  context.read<StickerCubit>().hideStickers();
-                                  // }
+                                  if (!_isSendingGift) {
+                                    context.read<StickerCubit>().hideStickers();
+                                  }
                                 },
                               ),
                             ],
@@ -286,9 +258,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                         Flexible(
                           fit: FlexFit.loose,
                           child:
-                              // TODO: Временно убрана загрузка подарков
-                              // _isLoading || _isLoadingGifts
-                              _isLoading
+                              _isLoading || _isLoadingGifts
                                   ? const Center(
                                     child: CircularProgressIndicator(),
                                   )
@@ -318,11 +288,9 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                   : _getCurrentStickers().isEmpty
                                   ? Center(
                                     child: Text(
-                                      // TODO: Временно изменен текст (нет подарков)
-                                      // _selectedPackIndex == -1
-                                      //     ? 'У вас пока нет подарков'
-                                      //     :
-                                      S.of(context).stickers_not_found,
+                                      _selectedPackIndex == -1
+                                          ? 'У вас пока нет подарков'
+                                          : S.of(context).stickers_not_found,
                                       style: TextStyle(
                                         color:
                                             isDark
@@ -344,23 +312,19 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     itemBuilder: (context, index) {
                                       final sticker =
                                           _getCurrentStickers()[index];
-                                      // TODO: Временно отключен функционал подарков
-                                      // final isGift = _selectedPackIndex == -1;
+                                      final isGift = _selectedPackIndex == -1;
 
                                       return GestureDetector(
                                         onTap: () {
-                                          // TODO: Временно отключен функционал подарков
-                                          /*
                                           if (isGift) {
                                             final inventory = _userGifts[index];
                                             _sendGift(inventory);
                                           } else {
-                                          */
-                                          widget.onStickerSelected(sticker);
-                                          context
-                                              .read<StickerCubit>()
-                                              .hideStickers();
-                                          // }
+                                            widget.onStickerSelected(sticker);
+                                            context
+                                                .read<StickerCubit>()
+                                                .hideStickers();
+                                          }
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
@@ -398,8 +362,9 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                         loadingProgress,
                                                       ) {
                                                         if (loadingProgress ==
-                                                            null)
+                                                            null) {
                                                           return child;
+                                                        }
                                                         return Center(
                                                           child: CircularProgressIndicator(
                                                             value:
@@ -432,8 +397,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                   }
                                                 },
                                               ),
-                                              // TODO: Временно отключен функционал подарков
-                                              /*
                                               if (isGift)
                                                 Positioned(
                                                   top: 4,
@@ -469,7 +432,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                     size: 16,
                                                   ),
                                                 ),
-                                              */
                                             ],
                                           ),
                                         ),
@@ -486,9 +448,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                             child: Wrap(
                               spacing: 8,
                               children: [
-                                // TODO: Временно удалена вкладка подарков
-                                /*
-                                // Иконка подарка
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -541,8 +500,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     ),
                                   ),
                                 ),
-                                */
-                                // Список паков стикеров
+
                                 ..._stickerPacks.asMap().entries.map((entry) {
                                   final index = entry.key;
                                   final pack = entry.value;
@@ -637,7 +595,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                       ),
                                     ),
                                   );
-                                }).toList(),
+                                }),
                               ],
                             ),
                           ),

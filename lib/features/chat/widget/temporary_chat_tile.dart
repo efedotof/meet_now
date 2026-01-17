@@ -5,6 +5,7 @@ import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'package:random_avatar/random_avatar.dart';
 
 class TemporaryChatTile extends StatelessWidget {
   const TemporaryChatTile({
@@ -30,13 +31,13 @@ class TemporaryChatTile extends StatelessWidget {
     if (!chat.isFinished) {
       if (remainingTime != null && remainingTime! > 0) {
         if (remainingTime! >= 86400) {
-          timeText = '${(remainingTime! / 86400).floor()}д';
+          timeText = '${(remainingTime! / 86400).floor()}${S.of(context).day}';
         } else if (remainingTime! >= 3600) {
-          timeText = '${(remainingTime! / 3600).floor()}ч';
+          timeText = '${(remainingTime! / 3600).floor()}${S.of(context).hour}';
         } else if (remainingTime! >= 60) {
-          timeText = '${(remainingTime! / 60).floor()}м';
+          timeText = '${(remainingTime! / 60).floor()}${S.of(context).Minuttt}';
         } else {
-          timeText = 'скоро';
+          timeText = S.of(context).soon;
         }
       } else {
         final expiresAt = chat.createdAt.add(
@@ -45,13 +46,13 @@ class TemporaryChatTile extends StatelessWidget {
         final diff = expiresAt.difference(DateTime.now());
 
         if (diff.inDays > 0) {
-          timeText = '${diff.inDays}д';
+          timeText = '${diff.inDays}${S.of(context).day}';
         } else if (diff.inHours > 0) {
-          timeText = '${diff.inHours}ч';
+          timeText = '${diff.inHours}${S.of(context).hour}';
         } else if (diff.inMinutes > 0) {
-          timeText = '${diff.inMinutes}м';
+          timeText = '${diff.inMinutes}${S.of(context).Minuttt}';
         } else {
-          timeText = 'скоро';
+          timeText = S.of(context).soon;
         }
       }
     }
@@ -74,28 +75,28 @@ class TemporaryChatTile extends StatelessWidget {
 
         leading: Stack(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.grey[300],
-              backgroundImage: avatar != null ? NetworkImage(avatar!) : null,
-              child:
-                  avatar == null
-                      ? const Icon(Icons.person, size: 24, color: Colors.grey)
-                      : null,
-            ),
+            RandomAvatar(chat.tempChatId.toString(), height: 48, width: 48),
+
             Positioned(
               bottom: 0,
               right: 0,
               child: Container(
-                width: 16,
-                height: 16,
+                width: 18,
+                height: 18,
                 decoration: BoxDecoration(
                   color: Colors.orange,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(9),
                   border: Border.all(
                     color: Theme.of(context).colorScheme.surface,
                     width: 2,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withAlpha(50),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                    ),
+                  ],
                 ),
                 child: const Icon(
                   Icons.access_time,
@@ -156,23 +157,24 @@ class TemporaryChatTile extends StatelessWidget {
                 ? const SizedBox()
                 : Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                    horizontal: 10,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.orange.withAlpha(30),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Colors.orange.withAlpha(76),
-                      width: 1,
+                      color: Colors.orange.withAlpha(100),
+                      width: 1.5,
                     ),
                   ),
                   child: Text(
                     timeText,
                     style: const TextStyle(
                       color: Colors.orange,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),

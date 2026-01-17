@@ -7,37 +7,41 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color bg;
-    Color fg;
-    String text;
+    Color backgroundColor = Colors.grey.withAlpha(20);
+    Color textColor = Colors.grey;
+    String statusText = status;
 
     switch (status) {
       case "PENDING":
-        bg = Colors.orange.withAlpha(30);
-        fg = Colors.orange;
-        text = S.of(context).AWAITING;
+        backgroundColor = Colors.orange.withAlpha(20);
+        textColor = Colors.orange;
+        statusText = S.of(context).AWAITING;
         break;
       case "RECEIVED":
-        bg = Colors.blue.withAlpha(30);
-        fg = Colors.blue;
-        text = S.of(context).RECEIVED;
+        backgroundColor = Colors.blue.withAlpha(20);
+        textColor = Colors.blue;
+        statusText = S.of(context).RECEIVED;
         break;
       case "RESOLVED":
-        bg = Colors.green.withAlpha(30);
-        fg = Colors.green;
-        text = S.of(context).ITSDECIDED;
+        backgroundColor = Colors.green.withAlpha(20);
+        textColor = Colors.green;
+        statusText = S.of(context).ITSDECIDED;
         break;
-      default:
-        bg = Colors.grey.withAlpha(30);
-        fg = Colors.grey;
-        text = status;
     }
 
-    return Chip(
-      backgroundColor: bg,
-      label: Text(
-        text,
-        style: TextStyle(color: fg, fontWeight: FontWeight.bold),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        statusText.toUpperCase(),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

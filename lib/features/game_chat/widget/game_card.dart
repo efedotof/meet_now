@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_chat_cubit.dart';
+import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/model/chats/game_response/game_response.dart';
 
@@ -17,7 +18,6 @@ class GameCard extends StatelessWidget {
     final cardBg = const Color(0xFFF5F7FA);
     final chipBg = const Color(0xFFE8EEF5);
     final textPrimary = const Color(0xFF1C1F26);
-    final textSecondary = const Color(0xFF6C7A89);
 
     return InkWell(
       onTap: () => _onGameTap(context, game),
@@ -88,28 +88,6 @@ class GameCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: cardBg.withAlpha(92),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(14),
-                    bottomRight: Radius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  game.gameDescription,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: textSecondary, fontSize: 12.5),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -142,12 +120,17 @@ class GameCard extends StatelessWidget {
         Navigator.of(context).pop();
 
         if (url != null && url.isNotEmpty) {
-          Navigator.of(context).push(
+          await Navigator.of(context).push(
             MaterialPageRoute(
               builder:
                   (_) => GameWebViewScreen(url: url, gameName: game.gameName),
             ),
           );
+
+          if (context.mounted) {
+            final pointsCubit = context.read<GamePointsCubit>();
+            await pointsCubit.refreshPoints();
+          }
         } else {
           scaffoldMessenger.showSnackBar(
             SnackBar(

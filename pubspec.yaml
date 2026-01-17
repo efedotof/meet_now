@@ -17,7 +17,7 @@ dependencies:
     git:
       url: https://github.com/efedotof/meet_now_app_server.git
       path: .
-      ref: bf2896c8ee8fba9f1b7bf18b61f0eb56dfd5cdb0
+      ref: ee114dccff9410280ae6e58d623f5d93d593e1e6
   cupertino_icons: ^1.0.8
   bloc: ^9.0.0
   flutter_bloc: ^9.1.1
@@ -42,8 +42,8 @@ dependencies:
   url_launcher: ^6.3.2
   photo_view: ^0.15.0
   webview_flutter: ^4.13.0
-  webview_flutter_android: ^4.10.3
-  webview_flutter_wkwebview: ^3.23.1
+  webview_flutter_android: ^4.10.11
+  webview_flutter_wkwebview: ^3.23.5
   mime: ^2.0.0
   video_player: ^2.10.0
   icons_launcher: ^3.0.3
@@ -51,6 +51,7 @@ dependencies:
   firebase_core: ^4.2.1
   firebase_messaging: ^16.0.4
   flutter_local_notifications: ^19.5.0
+  random_avatar: ^0.0.8
 
 
 icons_launcher:

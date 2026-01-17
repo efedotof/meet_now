@@ -37,7 +37,6 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 ),
               ),
             ),
-
             Container(
               height: 45,
               width: MediaQuery.of(context).size.width * 0.5,

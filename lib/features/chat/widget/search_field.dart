@@ -3,8 +3,13 @@ import 'package:meet_now_app/generated/l10n.dart';
 
 class SearchField extends StatelessWidget {
   final TextEditingController controller;
+  final ValueChanged<String> onChanged;
 
-  const SearchField({super.key, required this.controller});
+  const SearchField({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +28,12 @@ class SearchField extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
+              onChanged: onChanged,
+
+              style: const TextStyle(color: Colors.black, fontSize: 16),
+
+              cursorColor: Colors.black,
+
               decoration: InputDecoration(
                 fillColor: Colors.transparent,
                 border: InputBorder.none,

@@ -28,6 +28,7 @@ class InputArea extends StatefulWidget {
     this.onAddTimeChat,
     required this.recipientId,
     required this.tempChatId,
+    required this.senderId,
   });
 
   final TextEditingController controller;
@@ -42,6 +43,7 @@ class InputArea extends StatefulWidget {
   final VoidCallback? onAddTimeChat;
   final String recipientId;
   final String tempChatId;
+  final String senderId;
 
   @override
   State<InputArea> createState() => _InputAreaState();
@@ -97,9 +99,9 @@ class _InputAreaState extends State<InputArea> {
     if (text.isNotEmpty && !text.startsWith('/')) widget.controller.clear();
   }
 
-  void _handleStickerSelected(Sticker sticker) {
-    widget.onStickerSelected(sticker);
-  }
+  // void _handleStickerSelected(Sticker sticker) {
+  //   widget.onStickerSelected(sticker);
+  // }
 
   void _onTempMenu() async {
     final buttonContext = _menuKey.currentContext;
@@ -320,12 +322,19 @@ class _InputAreaState extends State<InputArea> {
           children: [
             CommandSuggestionsWidget(controller: widget.controller),
             StickerPickerWidget(
-              onStickerSelected: _handleStickerSelected,
-              // recipientId: widget.recipientId,
-              // chatId: widget.chatId,
-              // tempChatId: widget.tempChatId,
+              onStickerSelected: (sticker) {
+                debugPrint('🎨 Выбран стикер: ${sticker.id}');
+                context.read<ChatMessageCubit>().sendStickerMessage(sticker);
+              },
+              onGiftSelected: (inventory) {
+                debugPrint(
+                  '🎁 Выбран подарок из инвентаря: ${inventory.id}, gift: ${inventory.gift.id}',
+                );
+                context.read<ChatMessageCubit>().sendGiftMessage(
+                  inventory.gift,
+                );
+              },
             ),
-
             if (!widget.isTemporary)
               MediaPreviewSection(
                 theme: theme,
