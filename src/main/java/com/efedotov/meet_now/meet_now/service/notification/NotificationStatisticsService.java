@@ -1,23 +1,30 @@
 package com.efedotov.meet_now.meet_now.service.notification;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.dto.response.notification.*;
-import com.efedotov.meet_now.meet_now.model.user.User;
-import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
-import com.efedotov.meet_now.meet_now.repository.notification.NotificationHistoryRepository;
+import com.efedotov.meet_now.meet_now.dto.response.notification.NotificationHistoryDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.NotificationHistoryStatsDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.NotificationStatisticsDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.NotificationTypeStatDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.TokenCoverageDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.UserTokenStatusDto;
+import com.efedotov.meet_now.meet_now.dto.response.notification.UserWithTokenDto;
 import com.efedotov.meet_now.meet_now.model.notification.NotificationHistory;
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.notification.NotificationHistoryRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -80,9 +87,9 @@ public class NotificationStatisticsService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .hasPushToken(hasToken)
-                .tokenRegisteredAt(user.getCreatedAt()) // Можно добавить поле для даты регистрации токена
+                .tokenRegisteredAt(user.getCreatedAt()) 
                 .isOnline(user.getIsOnline())
-                .lastSeen(LocalDateTime.now()) // Нужно добавить поле lastSeen в User
+                .lastSeen(LocalDateTime.now()) 
                 .build();
     }
 

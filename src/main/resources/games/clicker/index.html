@@ -1,49 +1,210 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Элегантный Кликер</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crystal Clicker</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <div class="background-particles" id="particles"></div>
+    <div class="floating-crystals">
+        <div class="floating-crystal" style="--i:1"></div>
+        <div class="floating-crystal" style="--i:2"></div>
+        <div class="floating-crystal" style="--i:3"></div>
+        <div class="floating-crystal" style="--i:4"></div>
+    </div>
+
     <div class="game-container">
-        <div class="header">
-            <h1><i class="fas fa-sparkles"></i> Кликер</h1>
-            <p>Кликайте по кристаллу!</p>
+        <div class="burger-menu-btn" id="burger-menu-btn">
+            <i class="fas fa-bars"></i>
         </div>
 
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-label">Очки</div>
-                <div id="score" class="stat-value">0</div>
+        <div class="burger-menu" id="burger-menu">
+            <div class="burger-menu-header">
+                <h3><i class="fas fa-chart-line"></i> Статистика</h3>
+                <button class="burger-menu-close" id="burger-menu-close">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="stat-box">
-                <div class="stat-label">Кликов</div>
-                <div id="total-clicks" class="stat-value">0</div>
+            
+            <div class="burger-stats">
+                <div class="burger-stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <div class="burger-stat-content">
+                        <div class="burger-stat-label">Кликов/сек</div>
+                        <div class="burger-stat-value" id="burger-cps">0</div>
+                    </div>
+                </div>
+                <div class="burger-stat-item">
+                    <i class="fas fa-clock"></i>
+                    <div class="burger-stat-content">
+                        <div class="burger-stat-label">Время игры</div>
+                        <div class="burger-stat-value" id="burger-play-time">00:00</div>
+                    </div>
+                </div>
+                <div class="burger-stat-item">
+                    <i class="fas fa-medal"></i>
+                    <div class="burger-stat-content">
+                        <div class="burger-stat-label">Рекорд</div>
+                        <div class="burger-stat-value" id="burger-high-score">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="burger-progress-section">
+                <div class="burger-progress-header">
+                    <h4><i class="fas fa-trophy"></i> Прогресс</h4>
+                    <div class="burger-goal-text">Цель: <span id="burger-goal-text">10M</span></div>
+                </div>
+                <div class="burger-progress-bar">
+                    <div class="burger-progress-fill" id="burger-progress-bar"></div>
+                </div>
+                <div class="burger-progress-text" id="burger-progress-text">0%</div>
             </div>
         </div>
 
-        <div id="click-area" class="click-area">
-            <div class="crystal"></div>
-            <div class="shine"></div>
-            <div class="click-text">КЛИКНИТЕ!</div>
-        </div>
-        <div class="footer">
-            <div class="progress-container">
-                <div id="progress-bar" class="progress-bar"></div>
+        <header class="game-header">
+            <div class="header-content">
+                <div class="title-wrapper">
+                    <i class="fas fa-gem header-icon"></i>
+                    <h1 class="game-title">Crystal <span class="highlight">Clicker</span></h1>
+                </div>
+                <p class="game-subtitle">Тапайте по кристаллу для получения очков!</p>
+                <div class="token-indicator">
+                    <i class="fas fa-key"></i>
+                    <span id="token-status">Токен получен</span>
+                </div>
             </div>
-            <p>Цель: <span id="goal-text">10 000 000</span> кликов</p>
-            <p class="progress-text">Прогресс: <span id="progress-text">0%</span></p>
-        </div>
+        </header>
 
-        <div class="effects-container" id="effects-container"></div>
+        <div class="main-content">
+            <div class="stats-section">
+                <div class="main-stats">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fas fa-star stat-icon"></i>
+                            <h3>Очки</h3>
+                        </div>
+                        <div class="stat-value" id="score">0</div>
+                        <div class="stat-progress">
+                            <div class="progress-fill" id="score-progress"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fas fa-mouse-pointer stat-icon"></i>
+                            <h3>Клики</h3>
+                        </div>
+                        <div class="stat-value" id="total-clicks">0</div>
+                        <div class="stat-progress">
+                            <div class="progress-fill" id="clicks-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="click-section">
+                <div class="click-area-wrapper">
+                    <div class="click-container" id="click-area">
+                        <div class="crystal-wrapper">
+                            <div class="crystal-base">
+                                <div class="crystal-core"></div>
+                                <div class="crystal-facets">
+                                    <div class="facet f1"></div>
+                                    <div class="facet f2"></div>
+                                    <div class="facet f3"></div>
+                                    <div class="facet f4"></div>
+                                    <div class="facet f5"></div>
+                                    <div class="facet f6"></div>
+                                </div>
+                                <div class="crystal-glow"></div>
+                                <div class="crystal-sparkle"></div>
+                            </div>
+                            <div class="crystal-aura"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tap-indicator">
+                        <i class="fas fa-hand-point-up tap-icon"></i>
+                        <div class="tap-text">ТАПАЙТЕ ЗДЕСЬ!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                <div class="side-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-bolt"></i>
+                        <div>
+                            <div class="stat-label">Кликов/сек</div>
+                            <div class="stat-value-small" id="cps">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <div class="stat-label">Время игры</div>
+                            <div class="stat-value-small" id="play-time">00:00</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-medal"></i>
+                        <div>
+                            <div class="stat-label">Рекорд</div>
+                            <div class="stat-value-small" id="high-score">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <h3><i class="fas fa-trophy"></i> Прогресс игры</h3>
+                        <div class="goal-text">Цель: <span id="goal-text">10,000,000</span> кликов</div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill-main" id="progress-bar">
+                                <div class="progress-shine"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span class="progress-percent" id="progress-text">0%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="effects-container" id="effects-container"></div>
+
+    <div class="modal-overlay" id="completion-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-trophy"></i>
+                <h2>Поздравляем! 🎉</h2>
+            </div>
+            <div class="modal-body">
+                <p>Вы достигли цели игры!</p>
+                <div class="final-score">
+                    <span>Ваш счет:</span>
+                    <div class="score-display" id="final-score">0</div>
+                </div>
+                <p>Очки будут автоматически начислены на ваш аккаунт.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" id="continue-btn">Продолжить играть</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-
 </html>

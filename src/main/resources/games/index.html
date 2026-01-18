@@ -1,33 +1,282 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Games Collection</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { color: #333; }
-        .games-list { display: flex; flex-wrap: wrap; gap: 20px; }
-        .game-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 200px; text-align: center; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNA - Игры</title>
+    
+    <!-- Favicon и иконки -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    
+    <!-- PWA манифест -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Тема браузера -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="msapplication-TileColor" content="#4f46e5">
+    
+    <!-- Мета-теги для разных платформ -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MNA Игры">
+    
+    <!-- Twitter и Open Graph -->
+    <meta name="twitter:card" content="summary">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="MNA - Игры">
+    <meta property="og:description" content="Играйте в мини-игры прямо в чате или отдельно">
+    <meta property="og:image" content="icons/Icon-512.png">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <h1>Welcome to Games Collection</h1>
-    <div class="games-list">
-        <div class="game-card">
-            <h2>Clicker</h2>
-            <a href="/clicker/">Play Now</a>
+    <!-- Шапка с авторизацией -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>MNA</h1>
+                    <span>Игры</span>
+                </div>
+                
+                <div class="auth-section">
+                    <!-- До авторизации -->
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button id="login-btn" class="btn btn-outline">
+                            <i class="fas fa-sign-in-alt"></i> Вход
+                        </button>
+                        <button id="register-btn" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Регистрация
+                        </button>
+                    </div>
+                    
+                    <!-- После авторизации -->
+                    <div id="user-profile" class="user-profile" style="display: none;">
+                        <div class="user-info">
+                            <span id="username">Пользователь</span>
+                            <button id="logout-btn" class="btn btn-outline btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="game-card">
-            <h2>Space Defender</h2>
-            <a href="/space_defender/">Play Now</a>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <div class="page-header">
+                <h2>Коллекция игр</h2>
+                <p>Играйте в мини-игры прямо в чате или отдельно</p>
+            </div>
+
+            <!-- Контейнер для игр -->
+            <div id="games-container" class="games-grid">
+                <!-- Игры будут загружаться через API -->
+            </div>
+
+            <!-- Состояние загрузки -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Загрузка игр...</p>
+            </div>
+
+            <!-- Сообщение об ошибке -->
+            <div id="error-message" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Не удалось загрузить игры. Пожалуйста, попробуйте позже.</p>
+                <button id="retry-btn" class="btn btn-outline">Попробовать снова</button>
+            </div>
         </div>
-        <div class="game-card">
-            <h2>Star Catcher</h2>
-            <a href="/star_catcher/">Play Now</a>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MNA</h3>
+                    <p>Твой мир знакомств и общения</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Ссылки</h4>
+                    <ul>
+                        <li><a href="https://t.me/meetnadev" target="_blank">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </a></li>
+                        <li><a href="mailto:mna_dev@mnapp.ru">
+                            <i class="fas fa-envelope"></i> Поддержка
+                        </a></li>
+                        <li><a href="#" id="user-agreement">
+                            <i class="fas fa-file-contract"></i> Пользовательское соглашение
+                        </a></li>
+                        <li><a href="#" id="privacy-policy">
+                            <i class="fas fa-shield-alt"></i> Политика конфиденциальности
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>Email: mna_dev@mnapp.ru</p>
+                    <p>Telegram: @meetnadev</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 MNA. Все права защищены.</p>
+            </div>
         </div>
-        <div class="game-card">
-            <h2>Treasure Maze</h2>
-            <a href="/treasure_maze/">Play Now</a>
+    </footer>
+
+    <!-- Модальные окна -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Вход в аккаунт</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Имя пользователя</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Регистрация</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="register-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reg-username">Имя пользователя *</label>
+                            <input type="text" id="reg-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Email *</label>
+                            <input type="email" id="reg-email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reg-firstname">Имя</label>
+                            <input type="text" id="reg-firstname">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-subname">Фамилия</label>
+                            <input type="text" id="reg-subname">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-password">Пароль *</label>
+                        <input type="password" id="reg-password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-age">Возраст</label>
+                        <input type="number" id="reg-age" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-city">Город</label>
+                        <input type="text" id="reg-city">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-floor">Пол</label>
+                        <select id="reg-floor">
+                            <option value="">Не указано</option>
+                            <option value="MALE">Мужской</option>
+                            <option value="FEMALE">Женский</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-description">О себе</label>
+                        <textarea id="reg-description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="reg-searchable" checked>
+                            Видимость в поиске
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="agreement-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Пользовательское соглашение</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Контент соглашения -->
+            </div>
+        </div>
+    </div>
+
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Политика конфиденциальности</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Контент политики -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем скрипты -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Регистрация Service Worker для PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

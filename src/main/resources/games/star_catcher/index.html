@@ -1,33 +1,245 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ловец Звезд</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="game-container">
-        <div class="score-board">
-            <div class="score">Счет: <span id="score">0</span></div>
-            <div class="lives">Жизни: <span id="lives">3</span></div>
+    <div class="burger-menu-btn" id="burger-menu-btn">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header">
+            <div class="menu-avatar">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <h3>Ловец Звезд</h3>
+            <button class="menu-close" id="menu-close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        
-        <div id="player" class="player"></div>
-        
-        <div class="game-controls">
-            <button id="start-btn" class="btn">Начать игру</button>
-            <button id="pause-btn" class="btn">Пауза</button>
-            <button id="reset-btn" class="btn">Сброс</button>
+
+        <div class="menu-stats">
+            <div class="stat-item">
+                <i class="fas fa-trophy"></i>
+                <div>
+                    <span class="stat-label">Рекорд</span>
+                    <span class="stat-value" id="menu-highscore">0</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <span class="stat-label">Время</span>
+                    <span class="stat-value" id="menu-playtime">00:00</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-star"></i>
+                <div>
+                    <span class="stat-label">Звезд/сек</span>
+                    <span class="stat-value" id="menu-stars-per-sec">0</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-bolt"></i>
+                <div>
+                    <span class="stat-label">Множитель</span>
+                    <span class="stat-value" id="menu-multiplier">1x</span>
+                </div>
+            </div>
         </div>
-        
-        <div id="game-over" class="game-over">
-            <h2>Игра окончена!</h2>
-            <p>Ваш счет: <span id="final-score">0</span></p>
-            <button id="restart-btn" class="btn">Играть снова</button>
+
+        <div class="menu-progress">
+            <div class="progress-header">
+                <span>До следующего уровня</span>
+                <span id="menu-progress-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="menu-progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="menu-token">
+            <i class="fas fa-key"></i>
+            <span id="token-status">Проверка токена...</span>
+        </div>
+
+        <div class="menu-controls">
+            <button class="menu-btn" id="menu-resume">
+                <i class="fas fa-play"></i> Продолжить
+            </button>
+            <button class="menu-btn" id="menu-restart">
+                <i class="fas fa-redo"></i> Начать заново
+            </button>
         </div>
     </div>
-    
+
+    <div class="game-container">
+        <div class="stars-bg"></div>
+        <div class="planets-bg"></div>
+
+        <div class="top-bar">
+            <div class="score-display">
+                <div class="score-item">
+                    <i class="fas fa-star"></i>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-item">
+                    <i class="fas fa-heart"></i>
+                    <span id="lives">3</span>
+                </div>
+                <div class="score-item">
+                    <i class="fas fa-fire"></i>
+                    <span id="combo">0</span>
+                </div>
+            </div>
+            <div class="level-display">
+                <span>Уровень <span id="current-level">1</span></span>
+                <div class="level-progress">
+                    <div class="level-progress-fill" id="level-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="player" class="player">
+            <div class="player-glow"></div>
+            <div class="player-core">
+                <i class="fas fa-rocket"></i>
+            </div>
+        </div>
+
+        <div id="effects-container" class="effects-container"></div>
+
+        <div class="boosters-container">
+            <div class="booster" id="booster-shield" data-active="false">
+                <i class="fas fa-shield-alt"></i>
+                <div class="booster-timer"></div>
+            </div>
+            <div class="booster" id="booster-magnet" data-active="false">
+                <i class="fas fa-magnet"></i>
+                <div class="booster-timer"></div>
+            </div>
+            <div class="booster" id="booster-multiplier" data-active="false">
+                <i class="fas fa-bolt"></i>
+                <div class="booster-timer"></div>
+            </div>
+        </div>
+
+        <div class="mobile-controls">
+            <div class="mobile-buttons">
+                <button class="mobile-btn btn-start" id="start-btn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="mobile-btn btn-pause" id="pause-btn">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <button class="mobile-btn btn-boost" id="boost-btn">
+                    <i class="fas fa-bolt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="modal game-over-modal" id="game-over-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fas fa-gamepad"></i>
+                    <h2>Игра окончена!</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="final-stats">
+                        <div class="final-stat">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <span class="stat-title">Ваш счет</span>
+                                <span class="stat-value" id="final-score">0</span>
+                            </div>
+                        </div>
+                        <div class="final-stat">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <span class="stat-title">Рекорд</span>
+                                <span class="stat-value" id="final-highscore">0</span>
+                            </div>
+                        </div>
+                        <div class="final-stat">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <span class="stat-title">Время игры</span>
+                                <span class="stat-value" id="final-time">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button class="modal-btn btn-primary" id="restart-btn">
+                            <i class="fas fa-redo"></i>
+                            Играть снова
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal start-modal" id="start-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fas fa-rocket"></i>
+                    <h2>Ловец Звезд</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="instructions">
+                        <div class="instruction-item">
+                            <i class="fas fa-hand-pointer"></i>
+                            <span>Перемещайте ракету пальцем</span>
+                        </div>
+                        <div class="instruction-item">
+                            <i class="fas fa-star"></i>
+                            <span>Ловите падающие звезды</span>
+                        </div>
+                        <div class="instruction-item">
+                            <i class="fas fa-heart"></i>
+                            <span>Избегайте пропусков</span>
+                        </div>
+                        <div class="instruction-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Используйте бусты</span>
+                        </div>
+                    </div>
+
+                    <div class="difficulty-selector">
+                        <h3>Сложность:</h3>
+                        <div class="difficulty-buttons">
+                            <button class="difficulty-btn active" data-difficulty="easy">
+                                <span>Легкая</span>
+                            </button>
+                            <button class="difficulty-btn" data-difficulty="medium">
+                                <span>Средняя</span>
+                            </button>
+                            <button class="difficulty-btn" data-difficulty="hard">
+                                <span>Сложная</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="modal-btn btn-primary btn-start-game" id="start-game-btn">
+                        Начать игру
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notifications-container" id="notifications-container"></div>
+    </div>
+
     <script src="script.js"></script>
 </body>
+
 </html>

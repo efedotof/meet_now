@@ -2,712 +2,179 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Космический Защитник</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            position: relative;
-        }
-
-        #game-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            max-width: 800px;
-            max-height: 600px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            background: #000;
-        }
-
-        #stars-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-        }
-
-        .earth {
-            position: absolute;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle at 30% 30%, #1a5fb4, #0a3069);
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(26, 95, 180, 0.8);
-            z-index: 2;
-        }
-
-        #player {
-            position: absolute;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 80px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,0 100,70 60,70 60,100 40,100 40,70 0,70" fill="%23e74c3c"/></svg>') center/contain no-repeat;
-            z-index: 5;
-            transition: transform 0.1s;
-        }
-
-        .projectile {
-            position: absolute;
-            width: 8px;
-            height: 20px;
-            background: linear-gradient(to bottom, #3498db, #2980b9);
-            border-radius: 50% 50% 0 0;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
-            z-index: 4;
-        }
-
-        .asteroid {
-            position: absolute;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%237f8c8d"/></svg>') center/contain no-repeat;
-            z-index: 3;
-        }
-
-        .explosion {
-            position: absolute;
-            background: radial-gradient(circle, #f1c40f, #e67e22, transparent);
-            border-radius: 50%;
-            z-index: 10;
-            animation: explode 0.5s forwards;
-        }
-
-        @keyframes explode {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-
-        .ui-panel {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            font-size: 1.2rem;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-            z-index: 10;
-            padding: 10px;
-        }
-
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            z-index: 10;
-            padding: 10px;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            font-size: 1rem;
-            background: linear-gradient(to bottom, #3498db, #2980b9);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        #game-over {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            display: none;
-        }
-
-        #game-over h2 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: #ffcc00;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
-        }
-
-        #game-over p {
-            font-size: 2rem;
-            margin-bottom: 30px;
-        }
-
-        .touch-controls {
-            position: absolute;
-            bottom: 120px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding: 0 30px;
-            z-index: 6;
-        }
-
-        .touch-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            user-select: none;
-        }
-
-        /* Адаптивные стили */
-        @media (max-width: 768px) {
-            .ui-panel {
-                font-size: 1rem;
-                top: 10px;
-            }
-            
-            #player {
-                width: 50px;
-                height: 65px;
-                bottom: 150px;
-            }
-            
-            .earth {
-                width: 250px;
-                height: 250px;
-                bottom: -80px;
-            }
-            
-            .btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            #game-over h2 {
-                font-size: 2.5rem;
-            }
-            
-            #game-over p {
-                font-size: 1.8rem;
-            }
-            
-            .touch-controls {
-                display: flex;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .ui-panel {
-                font-size: 0.9rem;
-            }
-            
-            #player {
-                width: 40px;
-                height: 50px;
-                bottom: 180px;
-            }
-            
-            .earth {
-                width: 200px;
-                height: 200px;
-                bottom: -60px;
-            }
-            
-            .btn {
-                padding: 8px 16px;
-                font-size: 0.8rem;
-            }
-            
-            #game-over h2 {
-                font-size: 2rem;
-            }
-            
-            #game-over p {
-                font-size: 1.5rem;
-            }
-            
-            .touch-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="stars-bg"></div>
-        <div class="earth"></div>
-        
-        <div id="player"></div>
-        
-        <div class="ui-panel">
-            <div class="score">Счет: <span id="score">0</span></div>
-            <div class="lives">Жизни: <span id="lives">3</span></div>
-            <div class="level">Уровень: <span id="level">1</span></div>
-        </div>
-        
-        <div class="controls">
-            <button id="start-btn" class="btn">Старт</button>
-            <button id="pause-btn" class="btn">Пауза</button>
-            <button id="reset-btn" class="btn">Сброс</button>
-        </div>
-        
-        <div class="touch-controls">
-            <div class="touch-btn" id="left-btn">←</div>
-            <div class="touch-btn" id="fire-btn">⚡</div>
-            <div class="touch-btn" id="right-btn">→</div>
-        </div>
-        
-        <div id="game-over">
-            <h2>Земля уничтожена!</h2>
-            <p>Ваш счет: <span id="final-score">0</span></p>
-            <button id="restart-btn" class="btn">Спасти Землю снова</button>
+    <div class="token-status-container">
+        <div id="token-status" class="token-status">
+            <i class="fas fa-circle-notch fa-spin"></i> Проверка токена...
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Элементы игры
-            const gameContainer = document.getElementById('game-container');
-            const player = document.getElementById('player');
-            const scoreElement = document.getElementById('score');
-            const livesElement = document.getElementById('lives');
-            const levelElement = document.getElementById('level');
-            const startBtn = document.getElementById('start-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const gameOverScreen = document.getElementById('game-over');
-            const finalScoreElement = document.getElementById('final-score');
-            const restartBtn = document.getElementById('restart-btn');
-            const starsBg = document.getElementById('stars-bg');
-            const leftBtn = document.getElementById('left-btn');
-            const rightBtn = document.getElementById('right-btn');
-            const fireBtn = document.getElementById('fire-btn');
-            
-            // Переменные игры
-            let gameActive = false;
-            let gamePaused = false;
-            let score = 0;
-            let lives = 3;
-            let level = 1;
-            let playerPosition = 50; // в процентах от ширины экрана
-            let gameLoop;
-            let asteroidInterval;
-            let stars = [];
-            let asteroids = [];
-            let projectiles = [];
-            let explosions = [];
-            
-            // Создание фона звезд
-            function createStars() {
-                const starCount = 100;
-                const containerWidth = gameContainer.clientWidth;
-                const containerHeight = gameContainer.clientHeight;
-                
-                for (let i = 0; i < starCount; i++) {
-                    const star = document.createElement('div');
-                    star.classList.add('star');
-                    
-                    const size = Math.random() * 3;
-                    const posX = Math.random() * containerWidth;
-                    const posY = Math.random() * containerHeight;
-                    const opacity = Math.random() * 0.8 + 0.2;
-                    
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    star.style.left = `${posX}px`;
-                    star.style.top = `${posY}px`;
-                    star.style.opacity = opacity;
-                    
-                    starsBg.appendChild(star);
-                    stars.push({
-                        element: star,
-                        speed: Math.random() * 0.5 + 0.1
-                    });
-                }
-            }
-            
-            // Инициализация игры
-            function initGame() {
-                // Очистка предыдущих элементов
-                asteroids.forEach(asteroid => asteroid.remove());
-                projectiles.forEach(projectile => projectile.remove());
-                explosions.forEach(explosion => explosion.remove());
-                asteroids = [];
-                projectiles = [];
-                explosions = [];
-                
-                // Сброс значений
-                score = 0;
-                lives = 3;
-                level = 1;
-                playerPosition = 50;
-                
-                // Обновление UI
-                scoreElement.textContent = score;
-                livesElement.textContent = lives;
-                levelElement.textContent = level;
-                
-                // Позиция игрока
-                updatePlayerPosition();
-                
-                gameOverScreen.style.display = 'none';
-                gameActive = true;
-                gamePaused = false;
-                
-                // Запуск игрового цикла
-                if (gameLoop) clearInterval(gameLoop);
-                gameLoop = setInterval(updateGame, 16); // ~60 FPS
-                
-                // Создание астероидов
-                if (asteroidInterval) clearInterval(asteroidInterval);
-                asteroidInterval = setInterval(createAsteroid, 1000);
-                
-                // Анимация звезд
-                animateStars();
-            }
-            
-            // Анимация звезд
-            function animateStars() {
-                if (!gameActive || gamePaused) return;
-                
-                const containerHeight = gameContainer.clientHeight;
-                
-                stars.forEach(star => {
-                    const top = parseFloat(star.element.style.top);
-                    const newTop = top + star.speed;
-                    
-                    if (newTop > containerHeight) {
-                        star.element.style.top = '-10px';
-                        star.element.style.left = `${Math.random() * gameContainer.clientWidth}px`;
-                    } else {
-                        star.element.style.top = `${newTop}px`;
-                    }
-                });
-                
-                requestAnimationFrame(animateStars);
-            }
-            
-            // Создание нового астероида
-            function createAsteroid() {
-                if (!gameActive || gamePaused) return;
-                
-                const asteroid = document.createElement('div');
-                asteroid.classList.add('asteroid');
-                
-                // Размер астероида
-                const size = Math.random() * 50 + 30;
-                asteroid.style.width = `${size}px`;
-                asteroid.style.height = `${size}px`;
-                
-                // Позиция вверху экрана
-                const left = Math.random() * 80 + 10;
-                asteroid.style.left = `${left}%`;
-                asteroid.style.top = '-100px';
-                
-                // Скорость и вращение
-                asteroid.dataset.speed = Math.random() * 2 + 1 + level * 0.2;
-                asteroid.dataset.rotation = Math.random() * 4 - 2;
-                asteroid.dataset.rotationValue = 0;
-                
-                gameContainer.appendChild(asteroid);
-                asteroids.push(asteroid);
-            }
-            
-            // Создание снаряда
-            function createProjectile() {
-                if (!gameActive || gamePaused) return;
-                
-                const projectile = document.createElement('div');
-                projectile.classList.add('projectile');
-                
-                // Позиция снаряда - над игроком
-                const playerRect = player.getBoundingClientRect();
-                const containerRect = gameContainer.getBoundingClientRect();
-                
-                projectile.style.left = `${playerPosition}%`;
-                projectile.style.bottom = `${(playerRect.bottom - containerRect.top) + 30}px`;
-                
-                gameContainer.appendChild(projectile);
-                projectiles.push(projectile);
-            }
-            
-            // Обновление игрового состояния
-            function updateGame() {
-                if (!gameActive || gamePaused) return;
-                
-                // Перемещение астероидов
-                for (let i = asteroids.length - 1; i >= 0; i--) {
-                    const asteroid = asteroids[i];
-                    const top = parseFloat(asteroid.style.top) + parseFloat(asteroid.dataset.speed);
-                    asteroid.style.top = `${top}px`;
-                    
-                    // Вращение астероида
-                    const rotation = parseFloat(asteroid.dataset.rotationValue) + parseFloat(asteroid.dataset.rotation);
-                    asteroid.dataset.rotationValue = rotation;
-                    asteroid.style.transform = `rotate(${rotation}deg)`;
-                    
-                    // Проверка столкновения с игроком
-                    const playerRect = player.getBoundingClientRect();
-                    const asteroidRect = asteroid.getBoundingClientRect();
-                    
-                    if (
-                        asteroidRect.left < playerRect.right &&
-                        asteroidRect.right > playerRect.left &&
-                        asteroidRect.top < playerRect.bottom &&
-                        asteroidRect.bottom > playerRect.top
-                    ) {
-                        // Столкновение с игроком
-                        asteroid.remove();
-                        asteroids.splice(i, 1);
-                        lives--;
-                        livesElement.textContent = lives;
-                        createExplosion(asteroidRect.left + asteroidRect.width/2, asteroidRect.top + asteroidRect.height/2);
-                        
-                        if (lives <= 0) {
-                            endGame();
-                        }
-                        continue;
-                    }
-                    
-                    // Проверка ухода за пределы экрана
-                    if (top > gameContainer.clientHeight + 100) {
-                        asteroid.remove();
-                        asteroids.splice(i, 1);
-                    }
-                }
-                
-                // Перемещение снарядов
-                for (let i = projectiles.length - 1; i >= 0; i--) {
-                    const projectile = projectiles[i];
-                    const bottom = parseFloat(projectile.style.bottom) + 8;
-                    projectile.style.bottom = `${bottom}px`;
-                    
-                    // Проверка столкновения снаряда с астероидом
-                    const projectileRect = projectile.getBoundingClientRect();
-                    
-                    for (let j = asteroids.length - 1; j >= 0; j--) {
-                        const asteroid = asteroids[j];
-                        const asteroidRect = asteroid.getBoundingClientRect();
-                        
-                        if (
-                            projectileRect.left < asteroidRect.right &&
-                            projectileRect.right > asteroidRect.left &&
-                            projectileRect.top < asteroidRect.bottom &&
-                            projectileRect.bottom > asteroidRect.top
-                        ) {
-                            // Столкновение снаряда с астероидом
-                            projectile.remove();
-                            projectiles.splice(i, 1);
-                            asteroid.remove();
-                            asteroids.splice(j, 1);
-                            
-                            createExplosion(asteroidRect.left + asteroidRect.width/2, asteroidRect.top + asteroidRect.height/2);
-                            
-                            score += 10;
-                            scoreElement.textContent = score;
-                            
-                            // Увеличение уровня каждые 100 очков
-                            if (score % 100 === 0) {
-                                level++;
-                                levelElement.textContent = level;
-                            }
-                            
-                            break;
-                        }
-                    }
-                    
-                    // Удаление снаряда, если он вышел за пределы экрана
-                    if (bottom > gameContainer.clientHeight + 50) {
-                        projectile.remove();
-                        projectiles.splice(i, 1);
-                    }
-                }
-                
-                // Обновление взрывов
-                for (let i = explosions.length - 1; i >= 0; i--) {
-                    const explosion = explosions[i];
-                    if (!explosion.parentNode) {
-                        explosions.splice(i, 1);
-                    }
-                }
-            }
-            
-            // Создание взрыва
-            function createExplosion(x, y) {
-                const explosion = document.createElement('div');
-                explosion.classList.add('explosion');
-                explosion.style.left = `${x}px`;
-                explosion.style.top = `${y}px`;
-                explosion.style.width = '30px';
-                explosion.style.height = '30px';
-                
-                gameContainer.appendChild(explosion);
-                explosions.push(explosion);
-                
-                // Удаление взрыва после анимации
-                setTimeout(() => {
-                    if (explosion.parentNode) {
-                        explosion.remove();
-                    }
-                }, 500);
-            }
-            
-            // Обновление позиции игрока
-            function updatePlayerPosition() {
-                player.style.left = `${playerPosition}%`;
-            }
-            
-            // Обработка движения мыши
-            gameContainer.addEventListener('mousemove', (e) => {
-                if (!gameActive || gamePaused) return;
-                
-                const rect = gameContainer.getBoundingClientRect();
-                const relativeX = e.clientX - rect.left;
-                playerPosition = (relativeX / rect.width) * 100;
-                
-                // Ограничение позиции игрока в пределах экрана
-                if (playerPosition < 5) playerPosition = 5;
-                if (playerPosition > 95) playerPosition = 95;
-                
-                updatePlayerPosition();
-            });
-            
-            // Обработка касаний для мобильных устройств
-            gameContainer.addEventListener('touchmove', (e) => {
-                if (!gameActive || gamePaused) return;
-                
-                e.preventDefault();
-                const touch = e.touches[0];
-                const rect = gameContainer.getBoundingClientRect();
-                const relativeX = touch.clientX - rect.left;
-                playerPosition = (relativeX / rect.width) * 100;
-                
-                // Ограничение позиции игрока в пределах экрана
-                if (playerPosition < 5) playerPosition = 5;
-                if (playerPosition > 95) playerPosition = 95;
-                
-                updatePlayerPosition();
-            });
-            
-            // Обработка кликов/касаний для стрельбы
-            gameContainer.addEventListener('click', () => {
-                if (gameActive && !gamePaused) createProjectile();
-            });
-            
-            gameContainer.addEventListener('touchend', (e) => {
-                if (gameActive && !gamePaused) {
-                    e.preventDefault();
-                    createProjectile();
-                }
-            });
-            
-            // Управление с кнопок
-            leftBtn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                movePlayer(-10);
-            });
-            
-            rightBtn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                movePlayer(10);
-            });
-            
-            fireBtn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                createProjectile();
-            });
-            
-            function movePlayer(amount) {
-                if (!gameActive || gamePaused) return;
-                
-                playerPosition += amount;
-                if (playerPosition < 5) playerPosition = 5;
-                if (playerPosition > 95) playerPosition = 95;
-                updatePlayerPosition();
-            }
-            
-            // Завершение игры
-            function endGame() {
-                gameActive = false;
-                clearInterval(gameLoop);
-                clearInterval(asteroidInterval);
-                
-                finalScoreElement.textContent = score;
-                gameOverScreen.style.display = 'flex';
-            }
-            
-            // Обработчики кнопок
-            startBtn.addEventListener('click', () => {
-                if (!gameActive) {
-                    initGame();
-                }
-                gamePaused = false;
-                pauseBtn.textContent = 'Пауза';
-            });
-            
-            pauseBtn.addEventListener('click', () => {
-                if (gameActive) {
-                    gamePaused = !gamePaused;
-                    pauseBtn.textContent = gamePaused ? 'Продолжить' : 'Пауза';
-                }
-            });
-            
-            resetBtn.addEventListener('click', () => {
-                initGame();
-            });
-            
-            restartBtn.addEventListener('click', () => {
-                initGame();
-            });
-            
-            createStars();
-            initGame();
-        });
-    </script>
+    <div id="game-container" class="game-container">
+        <div id="stars-bg" class="stars-bg"></div>
+        <div class="earth"></div>
+        
+        <div id="player" class="player"></div>
+        
+        <div class="ui-panel">
+            <div class="ui-card">
+                <i class="fas fa-trophy"></i>
+                <span>Счет: <span id="score">0</span></span>
+            </div>
+            <div class="ui-card">
+                <i class="fas fa-heart"></i>
+                <span>Жизни: <span id="lives">3</span></span>
+            </div>
+            <div class="ui-card">
+                <i class="fas fa-chart-line"></i>
+                <span>Уровень: <span id="level">1</span></span>
+            </div>
+            <div class="ui-card">
+                <i class="fas fa-clock"></i>
+                <span id="play-time">00:00</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="start-btn" class="btn btn-primary">
+                <i class="fas fa-play"></i> Старт
+            </button>
+            <button id="pause-btn" class="btn btn-secondary">
+                <i class="fas fa-pause"></i> Пауза
+            </button>
+            <button id="reset-btn" class="btn btn-danger">
+                <i class="fas fa-redo"></i> Сброс
+            </button>
+        </div>
+        
+        <div class="touch-controls">
+            <div class="touch-btn left-btn" id="left-btn">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="touch-btn fire-btn" id="fire-btn">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="touch-btn right-btn" id="right-btn">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        
+        <div id="game-over" class="game-over-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-skull-crossbones"></i> Земля уничтожена!</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="final-score">
+                        <i class="fas fa-star"></i>
+                        <span>Ваш счет: <span id="final-score">0</span></span>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Время игры: <span id="final-time">00:00</span></span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Уровень: <span id="final-level">1</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="restart-btn" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Спасти Землю снова
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="completion-modal" class="completion-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-crown"></i> Новый рекорд!</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Ваш счет успешно сохранен</p>
+                    <div class="score-display">
+                        <span id="saved-score">0</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="continue-btn" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Продолжить
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="burger-menu-btn" class="burger-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <div id="burger-menu" class="burger-menu">
+            <div class="burger-menu-content">
+                <div class="burger-header">
+                    <h3><i class="fas fa-gamepad"></i> Космический Защитник</h3>
+                    <button id="burger-menu-close" class="burger-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="burger-body">
+                    <div class="burger-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-trophy"></i>
+                            <div class="stat-info">
+                                <span class="stat-label">Рекорд</span>
+                                <span id="burger-high-score" class="stat-value">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-info">
+                                <span class="stat-label">Время игры</span>
+                                <span id="burger-play-time" class="stat-value">00:00</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-bolt"></i>
+                            <div class="stat-info">
+                                <span class="stat-label">Скорострельность</span>
+                                <span id="burger-shots-per-second" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <h4><i class="fas fa-chart-bar"></i> Прогресс уровня</h4>
+                        <div class="progress-bar">
+                            <div id="burger-progress-bar" class="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="burger-progress-text">0%</span>
+                        </div>
+                    </div>
+                    <div class="instructions">
+                        <h4><i class="fas fa-info-circle"></i> Управление</h4>
+                        <ul>
+                            <li><i class="fas fa-mouse-pointer"></i> Мышь/Тач - движение</li>
+                            <li><i class="fas fa-click"></i> Клик/Тап - стрельба</li>
+                            <li><i class="fas fa-mobile-alt"></i> Кнопки - для мобильных</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="burger-footer">
+                    <div class="token-info">
+                        <i class="fas fa-key"></i>
+                        <span id="burger-token-status">Токен: Не проверен</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
