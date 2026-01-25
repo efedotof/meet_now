@@ -45,11 +45,11 @@ class AccountSettingsSection extends StatelessWidget {
               onTap: () => context.pushRoute(const MyReportRoute()),
             ),
 
-            SettingsItem(
-              icon: Icons.qr_code,
-              title: S.of(context).qrScanner,
-              onTap: () => context.pushRoute(const QrCodeRoute()),
-            ),
+            // SettingsItem(
+            //   icon: Icons.qr_code,
+            //   title: S.of(context).qrScanner,
+            //   onTap: () => context.pushRoute(const QrCodeRoute()),
+            // ),
           ],
         ),
       ],

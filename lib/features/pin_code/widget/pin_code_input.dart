@@ -44,7 +44,7 @@ class PinCodeInput extends StatelessWidget {
           enablePinAutofill: false,
           errorAnimationController: state.maybeWhen(
             failure:
-                (error) =>
+                () =>
                     StreamController<ErrorAnimationType>()
                       ..add(ErrorAnimationType.shake),
             orElse: () => null,

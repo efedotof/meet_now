@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
-import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
@@ -83,22 +82,22 @@ class ProfileCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.people,
-                            size: 16,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            S
-                                .of(context)
-                                .friendsCount(user.friends?.length ?? 0),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Icon(
+                      //       Icons.people,
+                      //       size: 16,
+                      //       color: Theme.of(context).iconTheme.color,
+                      //     ),
+                      //     // const SizedBox(width: 4),
+                      //     // Text(
+                      //     //   S
+                      //     //       .of(context)
+                      //     //       .friendsCount(user.friends?.length ?? 0),
+                      //     //   style: Theme.of(context).textTheme.bodySmall,
+                      //     // ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),

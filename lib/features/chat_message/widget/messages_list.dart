@@ -182,9 +182,6 @@ class _MessagesListState extends State<MessagesList> {
                     final message = messages[index];
                     final isMe = message.senderId == widget.currentUserId;
                     final showTime = _shouldShowTime(index, messages);
-                    if (message.isGift) {
-                      debugPrint("Получен подарок: $message");
-                    }
                     return Column(
                       key:
                           message.id != null ? _messageKeys[message.id!] : null,

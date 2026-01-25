@@ -40,7 +40,6 @@ class SignInCubit extends Cubit<SignInState> {
     final pass = password.text.trim();
 
     if (un.isEmpty || pass.isEmpty) {
-      debugPrint("nullldata");
       emit(
         SignInState.error(
           error: S.of(context).enter_your_username_and_password,
@@ -69,7 +68,7 @@ class SignInCubit extends Cubit<SignInState> {
     if (user.avatar == null || user.avatar == "") {
       context.replaceRoute(UploadsAvatarsRoute());
     } else if (user.isBlocked != null && user.isBlocked == true) {
-      context.replaceRoute(LockedRoute());
+      context.replaceRoute(LockedRoute(blockReason: user.blockReason!));
     } else {
       context.router.replaceAll([MainHomeRoute()]);
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/about_app/widget/widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 
 @RoutePage()
 class AboutAppScreen extends StatelessWidget {
@@ -31,7 +32,7 @@ class AboutAppScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'MeetNow',
+                          'MNA',
                           style: Theme.of(
                             context,
                           ).textTheme.headlineMedium?.copyWith(
@@ -41,12 +42,12 @@ class AboutAppScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Твой мир знакомств и общения',
+                          S.of(context).appTagline,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Познакомься с личностью — прежде чем увидеть лицо.',
+                          S.of(context).appDescription,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
@@ -55,19 +56,16 @@ class AboutAppScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    '📃 Описание приложения',
+                    S.of(context).appDescriptionTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'MeetNow — уникальное приложение для знакомств, где первое впечатление строится не на внешности, а на общении. '
-                    'Забудь о бесконечных свайпах! Просто нажми "Поиск", пообщайся в анонимном чате, и если вы оба захотите — откройте анкеты и продолжите знакомство.',
-                  ),
+                  Text(S.of(context).appDescriptionText),
                   const SizedBox(height: 24),
                   Text(
-                    '🔧 Основной функционал MeetNow',
+                    S.of(context).mainFeaturesTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -75,31 +73,27 @@ class AboutAppScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   FeatureItem(
                     icon: '💬',
-                    title: 'Анонимный старт (Blind Chat)',
-                    description:
-                        'Временный чат со скрытой информацией. Время общения ограничено 5-10 минутами.',
+                    title: S.of(context).featureBlindChatTitle,
+                    description: S.of(context).featureBlindChatDescription,
                   ),
                   FeatureItem(
                     icon: '🔓',
-                    title: 'Взаимное раскрытие анкет',
-                    description:
-                        'Анкеты открываются только при взаимном согласии обоих пользователей.',
+                    title: S.of(context).featureRevealProfilesTitle,
+                    description: S.of(context).featureRevealProfilesDescription,
                   ),
                   FeatureItem(
                     icon: '👥',
-                    title: 'Добавление в друзья',
-                    description:
-                        'Возможность продолжить общение и добавить в друзья после раскрытия анкет.',
+                    title: S.of(context).featureAddFriendsTitle,
+                    description: S.of(context).featureAddFriendsDescription,
                   ),
                   FeatureItem(
                     icon: '📚',
-                    title: 'Анкета пользователя',
-                    description:
-                        'Подробная информация о пользователе, включая интересы и биографию.',
+                    title: S.of(context).featureUserProfileTitle,
+                    description: S.of(context).featureUserProfileDescription,
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    '🌟 Дополнительные функции',
+                    S.of(context).additionalFeaturesTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -109,39 +103,35 @@ class AboutAppScreen extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      MyChip(label: '💡 Темы для общения'),
-                      MyChip(label: '🎭 Аватары вместо фото'),
-                      MyChip(label: '🎲 Вопрос дня'),
-                      MyChip(label: '🧩 Совпадение по интересам'),
-                      MyChip(label: '🔔 Второй шанс'),
-                      MyChip(label: '🕹 Мини-игры в чате'),
+                      MyChip(label: S.of(context).chipTopics),
+                      MyChip(label: S.of(context).chipAvatars),
+                      MyChip(label: S.of(context).chipQuestionOfTheDay),
+                      MyChip(label: S.of(context).chipInterestMatching),
+                      MyChip(label: S.of(context).chipSecondChance),
+                      MyChip(label: S.of(context).chipMiniGames),
                     ],
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    '🔐 Безопасность и приватность',
+                    S.of(context).securityTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    '• Все чаты шифруются\n• Жалобы/блокировка в 1 клик\n• Функция "Скрыть себя от поиска"',
-                  ),
+                  Text(S.of(context).securityText),
                   const SizedBox(height: 24),
                   Text(
-                    '📲 Технологии',
+                    S.of(context).technologiesTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    '• Flutter (кросс-платформенность)\n• PostgreSQL\n• Java + SpringBoot',
-                  ),
+                  Text(S.of(context).technologiesText),
                   const SizedBox(height: 24),
                   Text(
-                    '📞 Обратная связь',
+                    S.of(context).feedbackTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -149,15 +139,20 @@ class AboutAppScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ListTile(
                     leading: const Icon(Icons.email),
-                    title: const Text('Email поддержки'),
-                    subtitle: const Text('mna_dev@mnapp.ru'),
-                    onTap: () => _launchUrl('mailto:mna_dev@mnapp.ru'),
+                    title: Text(S.of(context).supportEmailTitle),
+                    subtitle: Text(S.of(context).supportEmail),
+                    onTap:
+                        () =>
+                            _launchUrl('mailto:${S.of(context).supportEmail}'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.travel_explore),
-                    title: const Text('Telegram канал'),
-                    subtitle: const Text('@meetnadev'),
-                    onTap: () => _launchUrl('https://t.me/meetnadev'),
+                    title: Text(S.of(context).supportTelegramTitle),
+                    subtitle: Text(S.of(context).supportTelegram),
+                    onTap:
+                        () => _launchUrl(
+                          'https://t.me/${S.of(context).supportTelegram.replaceAll('@', '')}',
+                        ),
                   ),
                 ],
               ),

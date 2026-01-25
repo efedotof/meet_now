@@ -63,21 +63,21 @@ class InputBottomBar extends StatelessWidget {
               ),
             ),
 
-          if (!isTemporary && onAddAttach != null)
-            Container(
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black87 : Colors.white70,
-                shape: BoxShape.circle,
-              ),
-              padding: EdgeInsets.all(6),
-              child: GestureDetector(
-                onTap: onAddAttach,
-                child: Icon(
-                  Icons.add_circle_outline,
-                  color: isDark ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
+          // if (!isTemporary && onAddAttach != null)
+          //   Container(
+          //     decoration: BoxDecoration(
+          //       color: isDark ? Colors.black87 : Colors.white70,
+          //       shape: BoxShape.circle,
+          //     ),
+          //     padding: EdgeInsets.all(6),
+          //     child: GestureDetector(
+          //       onTap: onAddAttach,
+          //       child: Icon(
+          //         Icons.add_circle_outline,
+          //         color: isDark ? Colors.white : Colors.black,
+          //       ),
+          //     ),
+          //   ),
           const SizedBox(width: 8),
           MessageTextField(
             controller: controller,

@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/repository/support/support_interface.dart';
 import 'package:meet_now_app_server/model/supports/create_question_request/create_question_request.dart';
@@ -20,7 +19,7 @@ class SupportCubit extends Cubit<SupportState> {
     try {
       emit(SupportState.loading());
       final questions = await _supportInterface.getMyQuestions();
-      debugPrint("Question: ${questions.toString()}");
+
       emit(SupportState.myQuestionsLoaded(questions));
     } catch (e) {
       emit(SupportState.error(e.toString()));
@@ -31,7 +30,7 @@ class SupportCubit extends Cubit<SupportState> {
     try {
       emit(SupportState.loading());
       final question = await _supportInterface.getQuestion(questionId);
-      debugPrint("Question: ${question.toString()}");
+
       emit(SupportState.questionDetail(question));
     } catch (e) {
       emit(SupportState.error(e.toString()));
@@ -42,7 +41,7 @@ class SupportCubit extends Cubit<SupportState> {
     try {
       emit(SupportState.loading());
       final question = await _supportInterface.createQuestion(request);
-      debugPrint("Question: ${question.toString()}");
+
       emit(SupportState.questionCreated(question));
     } catch (e) {
       emit(SupportState.error(e.toString()));
@@ -59,7 +58,7 @@ class SupportCubit extends Cubit<SupportState> {
         questionId,
         status,
       );
-      debugPrint("Question: ${question.toString()}");
+
       emit(SupportState.statusUpdated(question));
     } catch (e) {
       emit(SupportState.error(e.toString()));

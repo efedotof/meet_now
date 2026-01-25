@@ -58,7 +58,6 @@ class _AvatarPageState extends State<AvatarPage> {
         });
       }
     } catch (e) {
-      debugPrint("Ошибка получения presigned URL: $e");
       if (mounted) {
         setState(() => _isLoading = false);
       }

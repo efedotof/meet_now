@@ -55,15 +55,17 @@ extension PinCodeStatePatterns on PinCodeState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Entering value)?  entering,TResult Function( _Success value)?  success,TResult Function( _Failure value)?  failure,TResult Function( _Reset value)?  reset,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Entering value)?  entering,TResult Function( _Processing value)?  processing,TResult Function( _Failure value)?  failure,TResult Function( _AuthRequired value)?  authRequired,TResult Function( _MainHomeRequired value)?  mainHomeRequired,TResult Function( _Locked value)?  locked,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Entering() when entering != null:
-return entering(_that);case _Success() when success != null:
-return success(_that);case _Failure() when failure != null:
-return failure(_that);case _Reset() when reset != null:
-return reset(_that);case _:
+return entering(_that);case _Processing() when processing != null:
+return processing(_that);case _Failure() when failure != null:
+return failure(_that);case _AuthRequired() when authRequired != null:
+return authRequired(_that);case _MainHomeRequired() when mainHomeRequired != null:
+return mainHomeRequired(_that);case _Locked() when locked != null:
+return locked(_that);case _:
   return orElse();
 
 }
@@ -81,15 +83,17 @@ return reset(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Entering value)  entering,required TResult Function( _Success value)  success,required TResult Function( _Failure value)  failure,required TResult Function( _Reset value)  reset,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Entering value)  entering,required TResult Function( _Processing value)  processing,required TResult Function( _Failure value)  failure,required TResult Function( _AuthRequired value)  authRequired,required TResult Function( _MainHomeRequired value)  mainHomeRequired,required TResult Function( _Locked value)  locked,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Entering():
-return entering(_that);case _Success():
-return success(_that);case _Failure():
-return failure(_that);case _Reset():
-return reset(_that);case _:
+return entering(_that);case _Processing():
+return processing(_that);case _Failure():
+return failure(_that);case _AuthRequired():
+return authRequired(_that);case _MainHomeRequired():
+return mainHomeRequired(_that);case _Locked():
+return locked(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -106,15 +110,17 @@ return reset(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Entering value)?  entering,TResult? Function( _Success value)?  success,TResult? Function( _Failure value)?  failure,TResult? Function( _Reset value)?  reset,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Entering value)?  entering,TResult? Function( _Processing value)?  processing,TResult? Function( _Failure value)?  failure,TResult? Function( _AuthRequired value)?  authRequired,TResult? Function( _MainHomeRequired value)?  mainHomeRequired,TResult? Function( _Locked value)?  locked,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Entering() when entering != null:
-return entering(_that);case _Success() when success != null:
-return success(_that);case _Failure() when failure != null:
-return failure(_that);case _Reset() when reset != null:
-return reset(_that);case _:
+return entering(_that);case _Processing() when processing != null:
+return processing(_that);case _Failure() when failure != null:
+return failure(_that);case _AuthRequired() when authRequired != null:
+return authRequired(_that);case _MainHomeRequired() when mainHomeRequired != null:
+return mainHomeRequired(_that);case _Locked() when locked != null:
+return locked(_that);case _:
   return null;
 
 }
@@ -131,14 +137,16 @@ return reset(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String currentPin)?  entering,TResult Function()?  success,TResult Function( String error)?  failure,TResult Function()?  reset,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String currentPin)?  entering,TResult Function()?  processing,TResult Function()?  failure,TResult Function()?  authRequired,TResult Function()?  mainHomeRequired,TResult Function( String blockReason)?  locked,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Entering() when entering != null:
-return entering(_that.currentPin);case _Success() when success != null:
-return success();case _Failure() when failure != null:
-return failure(_that.error);case _Reset() when reset != null:
-return reset();case _:
+return entering(_that.currentPin);case _Processing() when processing != null:
+return processing();case _Failure() when failure != null:
+return failure();case _AuthRequired() when authRequired != null:
+return authRequired();case _MainHomeRequired() when mainHomeRequired != null:
+return mainHomeRequired();case _Locked() when locked != null:
+return locked(_that.blockReason);case _:
   return orElse();
 
 }
@@ -156,14 +164,16 @@ return reset();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String currentPin)  entering,required TResult Function()  success,required TResult Function( String error)  failure,required TResult Function()  reset,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String currentPin)  entering,required TResult Function()  processing,required TResult Function()  failure,required TResult Function()  authRequired,required TResult Function()  mainHomeRequired,required TResult Function( String blockReason)  locked,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Entering():
-return entering(_that.currentPin);case _Success():
-return success();case _Failure():
-return failure(_that.error);case _Reset():
-return reset();case _:
+return entering(_that.currentPin);case _Processing():
+return processing();case _Failure():
+return failure();case _AuthRequired():
+return authRequired();case _MainHomeRequired():
+return mainHomeRequired();case _Locked():
+return locked(_that.blockReason);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +190,16 @@ return reset();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String currentPin)?  entering,TResult? Function()?  success,TResult? Function( String error)?  failure,TResult? Function()?  reset,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String currentPin)?  entering,TResult? Function()?  processing,TResult? Function()?  failure,TResult? Function()?  authRequired,TResult? Function()?  mainHomeRequired,TResult? Function( String blockReason)?  locked,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Entering() when entering != null:
-return entering(_that.currentPin);case _Success() when success != null:
-return success();case _Failure() when failure != null:
-return failure(_that.error);case _Reset() when reset != null:
-return reset();case _:
+return entering(_that.currentPin);case _Processing() when processing != null:
+return processing();case _Failure() when failure != null:
+return failure();case _AuthRequired() when authRequired != null:
+return authRequired();case _MainHomeRequired() when mainHomeRequired != null:
+return mainHomeRequired();case _Locked() when locked != null:
+return locked(_that.blockReason);case _:
   return null;
 
 }
@@ -296,8 +308,8 @@ as String,
 /// @nodoc
 
 
-class _Success implements PinCodeState {
-  const _Success();
+class _Processing implements PinCodeState {
+  const _Processing();
   
 
 
@@ -307,7 +319,7 @@ class _Success implements PinCodeState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Success);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Processing);
 }
 
 
@@ -316,7 +328,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinCodeState.success()';
+  return 'PinCodeState.processing()';
 }
 
 
@@ -329,73 +341,7 @@ String toString() {
 
 
 class _Failure implements PinCodeState {
-  const _Failure(this.error);
-  
-
- final  String error;
-
-/// Create a copy of PinCodeState
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$FailureCopyWith<_Failure> get copyWith => __$FailureCopyWithImpl<_Failure>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Failure&&(identical(other.error, error) || other.error == error));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,error);
-
-@override
-String toString() {
-  return 'PinCodeState.failure(error: $error)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$FailureCopyWith<$Res> implements $PinCodeStateCopyWith<$Res> {
-  factory _$FailureCopyWith(_Failure value, $Res Function(_Failure) _then) = __$FailureCopyWithImpl;
-@useResult
-$Res call({
- String error
-});
-
-
-
-
-}
-/// @nodoc
-class __$FailureCopyWithImpl<$Res>
-    implements _$FailureCopyWith<$Res> {
-  __$FailureCopyWithImpl(this._self, this._then);
-
-  final _Failure _self;
-  final $Res Function(_Failure) _then;
-
-/// Create a copy of PinCodeState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
-  return _then(_Failure(
-null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class _Reset implements PinCodeState {
-  const _Reset();
+  const _Failure();
   
 
 
@@ -405,7 +351,7 @@ class _Reset implements PinCodeState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Reset);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Failure);
 }
 
 
@@ -414,7 +360,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'PinCodeState.reset()';
+  return 'PinCodeState.failure()';
 }
 
 
@@ -422,5 +368,135 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _AuthRequired implements PinCodeState {
+  const _AuthRequired();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthRequired);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PinCodeState.authRequired()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _MainHomeRequired implements PinCodeState {
+  const _MainHomeRequired();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MainHomeRequired);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PinCodeState.mainHomeRequired()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _Locked implements PinCodeState {
+  const _Locked(this.blockReason);
+  
+
+ final  String blockReason;
+
+/// Create a copy of PinCodeState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LockedCopyWith<_Locked> get copyWith => __$LockedCopyWithImpl<_Locked>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Locked&&(identical(other.blockReason, blockReason) || other.blockReason == blockReason));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,blockReason);
+
+@override
+String toString() {
+  return 'PinCodeState.locked(blockReason: $blockReason)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LockedCopyWith<$Res> implements $PinCodeStateCopyWith<$Res> {
+  factory _$LockedCopyWith(_Locked value, $Res Function(_Locked) _then) = __$LockedCopyWithImpl;
+@useResult
+$Res call({
+ String blockReason
+});
+
+
+
+
+}
+/// @nodoc
+class __$LockedCopyWithImpl<$Res>
+    implements _$LockedCopyWith<$Res> {
+  __$LockedCopyWithImpl(this._self, this._then);
+
+  final _Locked _self;
+  final $Res Function(_Locked) _then;
+
+/// Create a copy of PinCodeState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? blockReason = null,}) {
+  return _then(_Locked(
+null == blockReason ? _self.blockReason : blockReason // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on

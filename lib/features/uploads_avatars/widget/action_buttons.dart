@@ -26,7 +26,10 @@ class ActionButtons extends StatelessWidget {
           (uri, bytes) => Column(
             children: [
               ElevatedButton(
-                onPressed: () => cubit.confirmAndUploadAvatar(),
+                onPressed:
+                    () =>
+                        cubit
+                            .uploadAvatar(), // ИЗМЕНЕНО: используем uploadAvatar вместо confirmAndUploadAvatar
                 child: Text(S.of(context).confirm_and_upload_your_avatar),
               ),
               const SizedBox(height: 10),

@@ -6,12 +6,14 @@ class AboutPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final SignUpFormData formData;
   final double buttonWidth;
+  final AutovalidateMode autovalidateMode;
 
   const AboutPage({
     super.key,
     required this.formKey,
     required this.formData,
     required this.buttonWidth,
+    this.autovalidateMode = AutovalidateMode.disabled,
   });
 
   @override
@@ -25,55 +27,59 @@ class _AboutPageState extends State<AboutPage> {
     return Center(
       child: Form(
         key: widget.formKey,
+        autovalidateMode: widget.autovalidateMode,
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: widget.buttonWidth),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   S.of(context).tellAboutYourself,
                   style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-
                 Text(
                   S.of(context).gender,
                   style: Theme.of(context).textTheme.titleMedium,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    ChoiceChip(
-                      label: Text(S.of(context).male),
-                      selected: widget.formData.gender == 'м',
-                      checkmarkColor: isDark ? Colors.black : Colors.white,
-                      iconTheme: IconThemeData(
-                        color: isDark ? Colors.black : Colors.white,
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ChoiceChip(
+                        label: Text(S.of(context).male),
+                        selected: widget.formData.gender == 'м',
+                        checkmarkColor: isDark ? Colors.black : Colors.white,
+                        iconTheme: IconThemeData(
+                          color: isDark ? Colors.black : Colors.white,
+                        ),
+                        onSelected: (selected) {
+                          setState(() {
+                            widget.formData.gender = selected ? 'м' : '';
+                          });
+                        },
                       ),
-                      onSelected: (selected) {
-                        setState(() {
-                          widget.formData.gender = selected ? 'м' : '';
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 12),
-                    ChoiceChip(
-                      label: Text(S.of(context).female),
-                      selected: widget.formData.gender == 'ж',
-                      checkmarkColor: isDark ? Colors.black : Colors.white,
-                      onSelected: (selected) {
-                        setState(() {
-                          widget.formData.gender = selected ? 'ж' : '';
-                        });
-                      },
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      ChoiceChip(
+                        label: Text(S.of(context).female),
+                        selected: widget.formData.gender == 'ж',
+                        checkmarkColor: isDark ? Colors.black : Colors.white,
+                        onSelected: (selected) {
+                          setState(() {
+                            widget.formData.gender = selected ? 'ж' : '';
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-
                 const SizedBox(height: 24),
-
                 TextFormField(
                   initialValue: widget.formData.description,
                   maxLines: 3,

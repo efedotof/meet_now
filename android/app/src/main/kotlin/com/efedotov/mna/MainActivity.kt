@@ -1,4 +1,4 @@
-package com.example.meet_now_app
+package com.efedotov.mna
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -62,7 +62,6 @@ class _GiftMessageState extends State<GiftMessage> {
   @override
   Widget build(BuildContext context) {
     final gift = widget.message.gift;
-    debugPrint("gift gift: $gift");
     final scheme = widget.theme.colorScheme;
     final rarityColor =
         gift != null ? _getRarityColor(gift.rarity) : scheme.primary;

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/social/commands/commands_chat.dart';
 
@@ -83,12 +82,10 @@ class CommandSuggestionsCubit extends Cubit<CommandSuggestionsState> {
     final command = CommandsChat.fromString(parts[0]);
     final argument = parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
-    debugPrint("command: $command argument: $argument");
-
     if (command == null) return "Неизвестная команда: ${parts[0]}";
 
     final result = await commandExecutorService.execute(command, argument);
-    debugPrint("result: $result");
+
     if (command == CommandsChat.icebSearch && result.searchResults != null) {
       emit(
         CommandSuggestionsState.searchResults(results: result.searchResults!),

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,70 +30,117 @@ class ChatMessageScreen extends StatefulWidget {
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  late StreamSubscription<ChatMessageState> _subscription;
-  late StreamSubscription<SyncTimerState> _timerSubscription;
-  late String _chatId;
-
+  StreamSubscription<ChatMessageState>? _subscription;
+  StreamSubscription<SyncTimerState>? _timerSubscription;
+  SyncTimerCubit? _timerCubit;
+  MediaSelectionCubit? _mediaSelectionCubit;
+  String? _chatId;
   bool isTemporary = false;
   String senderID = '';
   String recipientId = '';
-  late SyncTimerCubit _timerCubit;
-  late MediaSelectionCubit _mediaSelectionCubit;
   bool _isDialogShowing = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeChat();
-  }
-
-  void _initializeChat() {
-    final cubit = context.read<ChatMessageCubit>();
-    final currentUser = context.read<UserModelAppInterface>().user;
-
-    if (currentUser == null) throw Exception('Current user not available');
-
-    senderID = currentUser.id;
-    isTemporary = widget.chatModel == null;
-    _chatId =
-        isTemporary
-            ? widget.temporaryChatModel!.tempChatId
-            : widget.chatModel!.chatId;
-
-    recipientId =
-        isTemporary
-            ? _getTemporaryChatRecipient(currentUserId: currentUser.id)
-            : _getChatRecipient(currentUserId: currentUser.id);
-
-    context.read<UserActivityCubit>().subscribeAction(chatId: _chatId);
-    cubit.initialize(
-      context: context,
-      isTemporary: isTemporary,
-      chatId: _chatId,
-      senderId: senderID,
-      recipientId: recipientId,
-    );
 
     _mediaSelectionCubit = MediaSelectionCubit();
 
-    _subscription = cubit.stream.listen(_handleChatMessageState);
+    if (widget.chatModel != null) {
+      _chatId = widget.chatModel!.chatId;
+      isTemporary = false;
+    } else if (widget.temporaryChatModel != null) {
+      _chatId = widget.temporaryChatModel!.tempChatId;
+      isTemporary = true;
+    }
 
-    if (isTemporary) {
-      final totalTime = widget.temporaryChatModel!.durationMinutes * 60;
-      _timerCubit = SyncTimerCubit(
-        timerRepository: TimerRepository(
-          socketService: context.read<SocketServiceInterface>(),
-        ),
-        tempChatId: _chatId,
-        userId: senderID,
-        totalTime: totalTime,
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeChat();
+    });
+  }
+
+  void _initializeChat() {
+    if (!mounted) return;
+
+    try {
+      final currentUser = context.read<UserModelAppInterface>().user;
+      if (currentUser == null) {
+        debugPrint('Current user not available');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).userNotAvailable),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
+      if (_chatId == null) {
+        debugPrint('Chat ID is null');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(S.of(context).chat_id_not_available),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
+      final cubit = context.read<ChatMessageCubit>();
+      senderID = currentUser.id;
+
+      recipientId =
+          isTemporary
+              ? _getTemporaryChatRecipient(currentUserId: currentUser.id)
+              : _getChatRecipient(currentUserId: currentUser.id);
+
+      context.read<UserActivityCubit>().subscribeAction(chatId: _chatId!);
+
+      cubit.initialize(
+        context: context,
+        isTemporary: isTemporary,
+        chatId: _chatId!,
+        senderId: senderID,
+        recipientId: recipientId,
       );
 
-      _timerSubscription = _timerCubit.stream.listen(_handleSyncTimerState);
+      _subscription = cubit.stream.listen(_handleChatMessageState);
+
+      if (isTemporary) {
+        final totalTime = widget.temporaryChatModel!.durationMinutes * 60;
+        _timerCubit = SyncTimerCubit(
+          timerRepository: TimerRepository(
+            socketService: context.read<SocketServiceInterface>(),
+          ),
+          tempChatId: _chatId!,
+          userId: senderID,
+          totalTime: totalTime,
+        );
+
+        _timerSubscription = _timerCubit?.stream.listen(_handleSyncTimerState);
+      }
+
+      if (mounted) setState(() {});
+    } catch (e, stackTrace) {
+      debugPrint('Error initializing chat: $e\n$stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${S.of(context).error_initializing_chat}: $e'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
   void _handleChatMessageState(ChatMessageState state) {
+    if (!mounted) return;
+
     state.maybeMap(
       loaded: (state) {
         _scrollToBottom();
@@ -105,7 +151,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _handleSyncTimerState(SyncTimerState state) {
-    if (_isDialogShowing) return;
+    if (!mounted || _isDialogShowing) return;
 
     state.whenOrNull(
       addTimeProposed: (
@@ -132,6 +178,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _checkForContinueRequest(BuildContext context, ChatMessageState state) {
+    if (!mounted) return;
+
     state.maybeMap(
       loaded: (state) {
         if (state.showContinueRequest && !state.isWaitingForResponse) {
@@ -151,7 +199,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     Widget Function(BuildContext) builder, {
     bool barrierDismissible = true,
   }) async {
-    if (_isDialogShowing) return;
+    if (_isDialogShowing || !mounted) return;
 
     _isDialogShowing = true;
     await showDialog(
@@ -293,6 +341,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _showAddTimeBottomSheet() {
+    if (!mounted || _timerCubit == null) return;
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -339,7 +389,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        _timerCubit.proposeAddTime(1);
+                        _timerCubit?.proposeAddTime(1);
                         Navigator.of(context).pop();
                       },
                       child: Container(
@@ -397,7 +447,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _timerCubit.proposeAddTime(3);
+                        _timerCubit?.proposeAddTime(3);
                         Navigator.of(context).pop();
                       },
                       child: Container(
@@ -455,7 +505,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _timerCubit.proposeAddTime(5);
+                        _timerCubit?.proposeAddTime(5);
                         Navigator.of(context).pop();
                       },
                       child: Container(
@@ -560,14 +610,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              _timerCubit.respondToProposal(false, additionalMinutes);
+              _timerCubit?.respondToProposal(false, additionalMinutes);
               Navigator.of(context).pop();
             },
             child: Text(S.of(context).reject),
           ),
           ElevatedButton(
             onPressed: () {
-              _timerCubit.respondToProposal(true, additionalMinutes);
+              _timerCubit?.respondToProposal(true, additionalMinutes);
               Navigator.of(context).pop();
             },
             child: Text(S.of(context).to_accept),
@@ -578,6 +628,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _showTimeAddedSnackBar(int additionalMinutes) {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -589,10 +641,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _showTimeRejectedSnackBar() {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(S.of(context).the_suggestion_of_adding_time_is_rejected),
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -632,19 +686,19 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!mounted || !_scrollController.hasClients) return;
+
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
   void _sendMessage() {
     final text = _messageController.text.trim();
-    final hasSelectedMedia = _mediaSelectionCubit.hasSelectedMedia;
+    final hasSelectedMedia = _mediaSelectionCubit?.hasSelectedMedia ?? false;
 
     if (text.isEmpty && !hasSelectedMedia) return;
 
@@ -652,20 +706,25 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       context.read<ChatMessageCubit>().sendTextMessage(text);
     }
     if (hasSelectedMedia) {
-      final selectedMedia = _mediaSelectionCubit.state.selectedMedia;
-      debugPrint('Sending ${selectedMedia.length} media files');
+      final selectedMedia = _mediaSelectionCubit?.state.selectedMedia ?? [];
+      context.read<ChatMessageCubit>().sendMediaMessage(selectedMedia);
     }
 
     context.read<StickerCubit>().hideStickers();
     _messageController.clear();
-    _mediaSelectionCubit.clearMedia();
+    _mediaSelectionCubit?.clearMedia();
   }
 
   void _onBackPressed() {
+    if (_chatId == null) {
+      context.router.pop();
+      return;
+    }
+
     if (isTemporary) {
       _showExitConfirmationDialog();
     } else {
-      context.read<ChatCubit>().closeChat(chatId: _chatId);
+      context.read<ChatCubit>().closeChat(chatId: _chatId!);
       context.router.pop();
     }
   }
@@ -681,8 +740,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               context.read<ChatMessageCubit>().finishTempChat(
                 temporaryModel: widget.temporaryChatModel!,
               );
-              context.read<ChatCubit>().closeTempChat(tempChatId: _chatId);
-              context.read<ChatCubit>().deleteTemporaryChat(_chatId, true);
+              context.read<ChatCubit>().closeTempChat(tempChatId: _chatId!);
+              context.read<ChatCubit>().deleteTemporaryChat(_chatId!, true);
               Navigator.of(context).pop();
               context.router.pop();
             },
@@ -690,7 +749,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           ),
           TextButton(
             onPressed: () {
-              context.read<ChatCubit>().closeTempChat(tempChatId: _chatId);
+              context.read<ChatCubit>().closeTempChat(tempChatId: _chatId!);
               Navigator.of(context).pop();
               context.router.pop();
             },
@@ -706,7 +765,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   void _showMediaPickerBottomSheet() {
-    _mediaSelectionCubit.setPickerOpen(true);
+    if (!mounted || _mediaSelectionCubit == null) return;
+
+    _mediaSelectionCubit!.setPickerOpen(true);
 
     showModalBottomSheet(
       context: context,
@@ -714,7 +775,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       backgroundColor: Colors.transparent,
       builder:
           (context) => MediaPickerBottomSheet(
-            initialSelection: _mediaSelectionCubit.state.selectedMedia,
+            initialSelection: _mediaSelectionCubit!.state.selectedMedia,
             maxSelection: 10,
             allowMultiple: true,
             showVideos: true,
@@ -723,133 +784,185 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             showSelectionIndicators: true,
             maxChildSize: 0.9,
             onSelectionChanged: (selectedItems) {
-              _mediaSelectionCubit.clearMedia();
-              _mediaSelectionCubit.addMedia(selectedItems);
+              _mediaSelectionCubit?.clearMedia();
+              _mediaSelectionCubit?.addMedia(selectedItems);
             },
-            onConfirmed: (selectedItems) {
-              _mediaSelectionCubit.clearMedia();
-              _mediaSelectionCubit.addMedia(selectedItems);
-              _mediaSelectionCubit.setPickerOpen(false);
-              debugPrint(
-                'Bottom sheet selection: ${selectedItems.length} items',
-              );
+            onConfirmed: (selectedItemsWithBytes) {
+              _mediaSelectionCubit?.clearMedia();
+              final mediaItems =
+                  selectedItemsWithBytes.map((entry) {
+                    final isVideo =
+                        entry.key.toLowerCase().endsWith('.mp4') ||
+                        entry.key.toLowerCase().endsWith('.mov') ||
+                        entry.key.toLowerCase().endsWith('.avi');
+
+                    return MediaItem(
+                      id: entry.key,
+                      name: entry.key.split('/').last,
+                      uri: entry.key,
+                      dateAdded: DateTime.now().millisecondsSinceEpoch,
+                      size: entry.value.length,
+                      width: 0,
+                      height: 0,
+                      albumId: '',
+                      albumName: '',
+                      type: isVideo ? 'video' : 'image',
+                      duration: isVideo ? 0 : null,
+                      thumbnail: entry.value,
+                    );
+                  }).toList();
+
+              _mediaSelectionCubit?.addMedia(mediaItems);
+              _mediaSelectionCubit?.setPickerOpen(false);
             },
           ),
     ).whenComplete(() {
-      _mediaSelectionCubit.setPickerOpen(false);
+      _mediaSelectionCubit?.setPickerOpen(false);
     });
   }
 
-  void _showReportUserDialog() {
-    final commentController = TextEditingController();
-    final theme = Theme.of(context);
+  // void _showReportUserDialog() {
+  //   if (!mounted) return;
 
-    showDialog(
-      context: context,
-      builder:
-          (_) => StatefulBuilder(
-            builder:
-                (context, setState) => AlertDialog(
-                  title: Text(S.of(context).reportuser),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(S.of(context).reportuserdescription),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.of(context).selectreason,
-                          style: theme.textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        ..._getReportReasons().map(
-                          (reason) => RadioListTile<String>(
-                            title: Text(reason),
-                            value: reason,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: commentController,
-                          decoration: InputDecoration(
-                            labelText: S.of(context).additionalcomments,
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(S.of(context).cancel),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error,
-                        foregroundColor: theme.colorScheme.onError,
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              S
-                                  .of(context)
-                                  .please_select_the_reason_for_the_complaint,
-                            ),
-                            backgroundColor: theme.colorScheme.error,
-                          ),
-                        );
-                        return;
-                      },
-                      child: Text(S.of(context).submitreport),
-                    ),
-                  ],
-                ),
-          ),
-    );
-  }
+  //   final commentController = TextEditingController();
+  //   final theme = Theme.of(context);
+  //   String? selectedReason;
 
-  List<String> _getReportReasons() {
-    return [
-      S.of(context).spam,
-      S.of(context).harassment,
-      S.of(context).inappropriatecontent,
-      S.of(context).fakeprofile,
-      S.of(context).other,
-    ];
-  }
+  //   showDialog(
+  //     context: context,
+  //     builder:
+  //         (_) => StatefulBuilder(
+  //           builder:
+  //               (context, setState) => AlertDialog(
+  //                 title: Text(S.of(context).reportuser),
+  //                 content: SingleChildScrollView(
+  //                   child: Column(
+  //                     mainAxisSize: MainAxisSize.min,
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     children: [
+  //                       Text(S.of(context).reportuserdescription),
+  //                       const SizedBox(height: 16),
+  //                       Text(
+  //                         S.of(context).selectreason,
+  //                         style: theme.textTheme.titleSmall,
+  //                       ),
+  //                       const SizedBox(height: 8),
+  //                       ..._getReportReasons().map(
+  //                         (reason) => RadioListTile<String>(
+  //                           title: Text(reason),
+  //                           value: reason,
+  //                           groupValue: selectedReason,
+  //                           onChanged: (value) {
+  //                             setState(() {
+  //                               selectedReason = value;
+  //                             });
+  //                           },
+  //                         ),
+  //                       ),
+  //                       const SizedBox(height: 8),
+  //                       TextField(
+  //                         controller: commentController,
+  //                         decoration: InputDecoration(
+  //                           labelText: S.of(context).additionalcomments,
+  //                           border: const OutlineInputBorder(),
+  //                         ),
+  //                         maxLines: 3,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 actions: [
+  //                   TextButton(
+  //                     onPressed: () => Navigator.pop(context),
+  //                     child: Text(S.of(context).cancel),
+  //                   ),
+  //                   ElevatedButton(
+  //                     style: ElevatedButton.styleFrom(
+  //                       backgroundColor: theme.colorScheme.error,
+  //                       foregroundColor: theme.colorScheme.onError,
+  //                     ),
+  //                     onPressed: () {
+  //                       if (selectedReason == null) {
+  //                         ScaffoldMessenger.of(context).showSnackBar(
+  //                           SnackBar(
+  //                             content: Text(
+  //                               S
+  //                                   .of(context)
+  //                                   .please_select_the_reason_for_the_complaint,
+  //                             ),
+  //                             backgroundColor: theme.colorScheme.error,
+  //                           ),
+  //                         );
+  //                         return;
+  //                       }
+  //                       Navigator.pop(context);
+  //                     },
+  //                     child: Text(S.of(context).submitreport),
+  //                   ),
+  //                 ],
+  //               ),
+  //         ),
+  //   );
+  // }
+
+  // List<String> _getReportReasons() {
+  //   return [
+  //     S.of(context).spam,
+  //     S.of(context).harassment,
+  //     S.of(context).inappropriatecontent,
+  //     S.of(context).fakeprofile,
+  //     S.of(context).other,
+  //   ];
+  // }
 
   @override
   void dispose() {
-    _subscription.cancel();
-    if (isTemporary) {
-      _timerSubscription.cancel();
-      _timerCubit.close();
-    }
+    _subscription?.cancel();
+    _timerSubscription?.cancel();
+    _timerCubit?.close();
     _messageController.dispose();
     _scrollController.dispose();
-    _mediaSelectionCubit.close();
+    _mediaSelectionCubit?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = context.read<UserModelAppInterface>().user!.id;
+    if (_mediaSelectionCubit == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_chatId == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (senderID.isEmpty || recipientId.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (isTemporary && _timerCubit == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final currentUser = context.read<UserModelAppInterface>().user;
+    if (currentUser == null) {
+      return Scaffold(
+        body: Center(child: Text(S.of(context).userNotAvailable)),
+      );
+    }
+
     return Scaffold(
       body: BlocProvider.value(
-        value: _mediaSelectionCubit,
+        value: _mediaSelectionCubit!,
         child:
             isTemporary
                 ? BlocProvider.value(
-                  value: _timerCubit,
+                  value: _timerCubit!,
                   child: BuildScaffold(
-                    currentUserId: currentUserId,
+                    currentUserId: currentUser.id,
                     onBackPressed: _onBackPressed,
                     isTemporary: isTemporary,
-                    chatId: _chatId,
+                    chatId: _chatId!,
                     senderID: senderID,
                     recipientId: recipientId,
                     messageController: _messageController,
@@ -859,14 +972,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     onAddAttach: _showMediaPickerBottomSheet,
                     onContinueChat: _showContinueChatProposalDialog,
                     onAddTimeChat: _showAddTimeBottomSheet,
-                    onReportUser: _showReportUserDialog,
                   ),
                 )
                 : BuildScaffold(
-                  currentUserId: currentUserId,
+                  currentUserId: currentUser.id,
                   onBackPressed: _onBackPressed,
                   isTemporary: isTemporary,
-                  chatId: _chatId,
+                  chatId: _chatId!,
                   senderID: senderID,
                   recipientId: recipientId,
                   messageController: _messageController,
@@ -875,7 +987,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   chatModel: widget.chatModel,
                   onAddAttach: _showMediaPickerBottomSheet,
                   onContinueChat: _showContinueChatProposalDialog,
-                  onReportUser: _showReportUserDialog,
                   onRequestFriend: () {
                     context.read<ChatMessageCubit>().friendRequest(
                       context: context,

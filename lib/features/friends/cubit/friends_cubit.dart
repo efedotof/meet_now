@@ -25,7 +25,7 @@ class FriendsCubit extends Cubit<FriendsState> {
         emit(FriendsState.friendsList(friends: []));
       }
     } catch (e) {
-      debugPrint("getFriendsList error: $e");
+      //
     }
   }
 
@@ -38,7 +38,7 @@ class FriendsCubit extends Cubit<FriendsState> {
         emit(FriendsState.friendsList(friends: []));
       }
     } catch (e) {
-      debugPrint("getFriendsList error: $e");
+      //
     }
   }
 }

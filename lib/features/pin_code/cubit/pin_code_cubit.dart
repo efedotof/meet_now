@@ -1,12 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app_server/storage/pincode/pincode_storage_interface.dart';
-
 
 part 'pin_code_state.dart';
 part 'pin_code_cubit.freezed.dart';
@@ -18,13 +13,11 @@ class PinCodeCubit extends Cubit<PinCodeState> {
   }) : _authInterface = authInterface,
        _pincodeStorageInterface = pincodeStorageInterface,
        super(PinCodeState.initial());
+
   final PincodeStorageInterface _pincodeStorageInterface;
   final AuthInterface _authInterface;
-  void addDigit({
-    required BuildContext context,
-    required String digit,
-    required String currentPin,
-  }) async {
+
+  void addDigit({required String digit, required String currentPin}) async {
     String correctPin = _pincodeStorageInterface.getPinCode();
     final newPin = currentPin + digit;
 
@@ -32,34 +25,28 @@ class PinCodeCubit extends Cubit<PinCodeState> {
       emit(PinCodeState.entering(newPin));
     } else {
       if (newPin == correctPin) {
+        emit(PinCodeState.processing());
         try {
           final user = await _authInterface.autoLogin();
 
           if (user == null) {
-            if (context.mounted) {
-              context.replaceRoute(const AuthRoute());
-            }
+            emit(const PinCodeState.authRequired());
           } else {
-            if (context.mounted) {
-              context.replaceRoute(const MainHomeRoute());
+            if (user.isBlocked == true) {
+              emit(PinCodeState.locked(user.blockReason ?? ''));
+            } else {
+              emit(const PinCodeState.mainHomeRequired());
             }
           }
         } catch (e) {
-          debugPrint('Ошибка авто-входа: $e');
-
           if (e.toString().contains("Пароль не установлен")) {
-            if (context.mounted) {
-              context.replaceRoute(const AuthRoute());
-            }
+            emit(const PinCodeState.authRequired());
           } else {
-            if (context.mounted) {
-              context.replaceRoute(const AuthRoute());
-            }
+            emit(const PinCodeState.authRequired());
           }
         }
-        emit(PinCodeState.success());
       } else {
-        emit(PinCodeState.failure(S.of(context).incorrectPinCode));
+        emit(const PinCodeState.failure());
         Future.delayed(const Duration(seconds: 1), reset);
       }
     }
@@ -74,7 +61,6 @@ class PinCodeCubit extends Cubit<PinCodeState> {
   }
 
   void reset() {
-    emit(const PinCodeState.reset());
     emit(const PinCodeState.initial());
   }
 }

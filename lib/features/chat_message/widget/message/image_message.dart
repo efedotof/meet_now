@@ -64,7 +64,6 @@ class _ImageMessageState extends State<ImageMessage> {
 
       return presignedUrl;
     } catch (e) {
-      debugPrint('Error getting presigned URL: $e');
       return null;
     }
   }

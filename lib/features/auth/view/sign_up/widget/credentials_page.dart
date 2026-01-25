@@ -6,12 +6,14 @@ class CredentialsPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final SignUpFormData formData;
   final double buttonWidth;
+  final AutovalidateMode autovalidateMode;
 
   const CredentialsPage({
     super.key,
     required this.formKey,
     required this.formData,
     required this.buttonWidth,
+    this.autovalidateMode = AutovalidateMode.disabled,
   });
 
   @override
@@ -29,85 +31,93 @@ class _CredentialsPageState extends State<CredentialsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: widget.formKey,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                S.of(context).credentials,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                initialValue: widget.formData.username,
-                decoration: InputDecoration(
-                  labelText: S.of(context).username,
-                  prefixIcon: Icon(Icons.person),
+    return Center(
+      child: Form(
+        key: widget.formKey,
+        autovalidateMode: widget.autovalidateMode,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: widget.buttonWidth),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  S.of(context).credentials,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
                 ),
-                validator:
-                    (value) =>
-                        value!.isEmpty ? S.of(context).enterUsername : null,
-                onChanged: (value) => widget.formData.username = value,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                initialValue: widget.formData.email,
-                decoration: InputDecoration(
-                  labelText: S.of(context).email,
-                  prefixIcon: Icon(Icons.email_outlined),
+                const SizedBox(height: 24),
+                TextFormField(
+                  initialValue: widget.formData.username,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).username,
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? S.of(context).enterUsername : null,
+                  onChanged: (value) => widget.formData.username = value,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return S.of(context).enterEmail;
-                  }
-                  if (!value.contains('@')) return S.of(context).invalidEmail;
-                  return null;
-                },
-                onChanged: (value) => widget.formData.email = value,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  labelText: S.of(context).password,
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.grey,
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: widget.formData.email,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).email,
+                    prefixIcon: const Icon(Icons.email_outlined),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return S.of(context).enterEmail;
+                    }
+                    if (!value.contains('@')) return S.of(context).invalidEmail;
+                    return null;
+                  },
+                  onChanged: (value) => widget.formData.email = value,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    labelText: S.of(context).password,
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: _togglePasswordVisibility,
                     ),
-                    onPressed: _togglePasswordVisibility,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return S.of(context).enterPassword;
+                    }
+                    if (value.length < 6) return S.of(context).minPassword;
+                    return null;
+                  },
+                  onChanged: (value) => widget.formData.password = value,
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Checkbox(
+                        value: widget.formData.isSearchable,
+                        onChanged: (val) {
+                          setState(() {
+                            widget.formData.isSearchable = val!;
+                          });
+                        },
+                      ),
+                      Text(S.of(context).allowProfileSearch),
+                    ],
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return S.of(context).enterPassword;
-                  }
-                  if (value.length < 6) return S.of(context).minPassword;
-                  return null;
-                },
-                onChanged: (value) => widget.formData.password = value,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Checkbox(
-                    value: widget.formData.isSearchable,
-                    onChanged: (val) {
-                      setState(() {
-                        widget.formData.isSearchable = val!;
-                      });
-                    },
-                  ),
-                  Text(S.of(context).allowProfileSearch),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

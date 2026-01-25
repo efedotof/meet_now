@@ -47,10 +47,18 @@ class GameChatCubit extends Cubit<GameChatState> {
       if (token == "") return null;
 
       final uri = Uri.parse(baseUrl);
-      final newUri = uri.replace(
-        queryParameters: {'token': token, 'chatId': chatId},
-      );
+      final queryParameters = <String, String>{'token': token};
 
+      if (chatId != null && chatId.isNotEmpty) {
+        queryParameters['chatId'] = chatId;
+      }
+
+      final existingParams = uri.queryParameters;
+      if (existingParams.isNotEmpty) {
+        queryParameters.addAll(existingParams);
+      }
+
+      final newUri = uri.replace(queryParameters: queryParameters);
       return newUri.toString();
     } catch (e) {
       rethrow;

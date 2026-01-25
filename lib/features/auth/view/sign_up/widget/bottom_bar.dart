@@ -28,20 +28,22 @@ class BottomBar extends StatelessWidget {
           builder: (context, state) {
             return state.maybeWhen(
               loading: () => const Center(child: CircularProgressIndicator()),
-              orElse: () => ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: buttonWidth),
-                child: ElevatedButton(
-                  onPressed: currentPage == totalPages - 1 ? onRegister : onNext,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
+              orElse:
+                  () => ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: buttonWidth),
+                    child: ElevatedButton(
+                      onPressed:
+                          currentPage == totalPages - 1 ? onRegister : onNext,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: Text(
+                        currentPage == totalPages - 1
+                            ? S.of(context).register
+                            : S.of(context).next,
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    currentPage == totalPages - 1
-                        ? S.of(context).register
-                        : S.of(context).next,
-                  ),
-                ),
-              ),
             );
           },
         ),

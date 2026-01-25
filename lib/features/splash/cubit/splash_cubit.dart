@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app_server/repository/purp_and_int/purp_and_interes_interface.dart';
@@ -34,7 +33,6 @@ class SplashCubit extends Cubit<SplashState> {
         await _handleRegularLaunch();
       }
     } catch (e) {
-      debugPrint('Ошибка в checkAutoLogin: $e');
       emit(const SplashState.navigateToAuth());
     }
   }
@@ -47,7 +45,6 @@ class SplashCubit extends Cubit<SplashState> {
 
       await _handleRegularLaunch();
     } catch (e) {
-      debugPrint('Ошибка при первом запуске: $e');
       emit(const SplashState.navigateToAuth());
     }
   }
@@ -57,20 +54,22 @@ class SplashCubit extends Cubit<SplashState> {
       final user = await _authInterface.autoLogin();
 
       if (user == null) {
-        debugPrint('Автологин не удался: пользователь null');
         emit(const SplashState.navigateToAuth());
         return;
       }
 
       if (user.isBlocked == true) {
-        debugPrint('Пользователь заблокирован');
-        emit(const SplashState.navigateToLocked());
+        if (user.blockReason != null && user.blockReason != "") {
+          emit(SplashState.navigateToLocked(blockReason: user.blockReason!));
+        } else {
+          emit(SplashState.navigateToLocked(blockReason: ""));
+        }
+
         return;
       }
 
       final hasAvatar = user.avatar != null && user.avatar!.isNotEmpty;
       if (!hasAvatar) {
-        debugPrint('Аватар отсутствует, переходим на экран загрузки аватара');
         emit(const SplashState.navigateToUploadAvatar());
         return;
       }
@@ -79,7 +78,6 @@ class SplashCubit extends Cubit<SplashState> {
       try {
         pinCode = _pincodeStorageInterface.getPinCode();
       } catch (e) {
-        debugPrint('Пинкод не установлен, переходим на главный экран');
         emit(const SplashState.navigateToMainHome());
         return;
       }
@@ -87,14 +85,11 @@ class SplashCubit extends Cubit<SplashState> {
       final hasPinCode = pinCode.isNotEmpty;
 
       if (hasPinCode) {
-        debugPrint('Пинкод установлен, переходим на экран пинкода');
         emit(const SplashState.navigateToPinCode());
       } else {
-        debugPrint('Пинкод не установлен, переходим на главный экран');
         emit(const SplashState.navigateToMainHome());
       }
     } catch (e) {
-      debugPrint('Ошибка при обычном запуске: $e');
       emit(const SplashState.navigateToAuth());
     }
   }

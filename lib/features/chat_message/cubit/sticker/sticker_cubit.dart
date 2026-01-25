@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
 import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
@@ -71,17 +70,8 @@ class StickerCubit extends Cubit<StickerState> {
 
   Future<List<UserInventory>> getUserGifts() async {
     try {
-      debugPrint('🔄 StickerCubit: Загрузка подарков пользователя');
-      final inventory = await _giftInterface.getInventory();
-      debugPrint('✅ StickerCubit: Загружено ${inventory.length} подарков');
-      for (var item in inventory) {
-        debugPrint(
-          '   - ${item.id}: gift=${item.gift.id}, quantity=${item.quantity}',
-        );
-      }
-      return inventory;
+      return await _giftInterface.getInventory();
     } catch (e) {
-      debugPrint('❌ StickerCubit: Ошибка загрузки подарков: $e');
       throw Exception('Failed to load user gifts: $e');
     }
   }

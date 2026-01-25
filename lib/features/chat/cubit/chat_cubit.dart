@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
@@ -151,7 +150,6 @@ class ChatCubit extends Cubit<ChatState> {
         return null;
       }
     } catch (e) {
-      debugPrint("Произошла ошибка создания чата: $e");
       return null;
     }
   }

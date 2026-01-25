@@ -80,7 +80,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           .listen(
             _handlePaginatedMessages,
             onError: (e) {
-              debugPrint('Paginated messages stream error: $e');
               if (!isClosed) {
                 emit(ChatMessageState.error('Failed to load messages: $e'));
               }
@@ -91,7 +90,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
         _handleSingleMessage,
         onError: (e) {
-          debugPrint('Single message stream error: $e');
           _reconnectMessageSubscriptions();
         },
         cancelOnError: false,
@@ -169,10 +167,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   void _handleSingleMessage(Message newMessage) {
-    debugPrint(
-      '🆕 ChatMessageCubit: Получено новое сообщение: ${newMessage.id} от ${newMessage.senderId}',
-    );
-
     if (newMessage.chatId != _currentChatId &&
         newMessage.tempChatId != _currentChatId) {
       return;
@@ -238,9 +232,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       _unreadMessagesIds.clear();
 
       _messageInterface.markMessagesAsRead(idsToMark);
-      debugPrint(
-        '📨 Отправлена отметка о прочтении для ${idsToMark.length} сообщений',
-      );
     }
   }
 
@@ -310,8 +301,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
 
     final nextPage = _currentPage + 1;
-    debugPrint('📤 Загрузка следующих сообщений, страница $nextPage');
-
     _messageInterface.requestPaginatedMessages(
       _currentChatId!,
       nextPage,
@@ -350,9 +339,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _handleChatAgreeNotification(AgreeChatResponse response) {
     if (response.tempChatId == _currentChatId) {
-      debugPrint(
-        '🔄 ChatMessageCubit: Получено уведомление о запросе продолжения чата от пользователя ${response.userId}',
-      );
       state.maybeMap(
         loaded: (state) {
           emit(
@@ -369,10 +355,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _handleChatAgreeResponse(AgreeChatResponse response) {
     if (response.tempChatId == _currentChatId) {
-      debugPrint(
-        '🔄 ChatMessageCubit: Получен ответ на запрос продолжения чата: bothAgreed=${response.bothAgreed}, success=${response.success}',
-      );
-
       if (response.bothAgreed == true &&
           response.permanentChatCreated == true) {
         _handleSuccessfulAgreement(response);
@@ -385,9 +367,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void _handleChatPermanentCreated(AgreeChatResponse response) {
     if (response.tempChatId == _currentChatId &&
         response.permanentChatCreated == true) {
-      debugPrint(
-        '🔄 ChatMessageCubit: Постоянный чат создан: ${response.permanentChat?.chatId}',
-      );
       _handleSuccessfulAgreement(response);
     }
   }
@@ -427,8 +406,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void sendContinueRequest() {
     if (_currentChatId == null || _isTemporary == false) return;
-
-    debugPrint('🔄 ChatMessageCubit: Отправка запроса на продолжение чата');
     _socketInterface.agreeToContinue(_currentChatId!);
 
     state.maybeMap(
@@ -447,7 +424,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void respondToContinueRequest(bool agree) {
     if (_currentChatId == null) return;
 
-    debugPrint('🔄 ChatMessageCubit: Ответ на запрос продолжения: $agree');
     if (agree) {
       _socketInterface.agreeToContinue(_currentChatId!);
     }
@@ -481,7 +457,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void sendStickerMessage(Sticker sticker) {
     if (_senderId == null || _recipientId == null || _isTemporary == null) {
-      debugPrint('ChatMessageCubit not initialized');
       return;
     }
 
@@ -519,7 +494,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void sendTextMessage(String text) {
     if (text.isEmpty) return;
     if (_senderId == null || _recipientId == null || _isTemporary == null) {
-      debugPrint('ChatMessageCubit not initialized');
       return;
     }
 
@@ -548,13 +522,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void sendMediaMessage(List<MediaItem> mediaItems, {String text = ''}) {
     if (mediaItems.isEmpty) return;
     if (_senderId == null || _recipientId == null || _isTemporary == null) {
-      debugPrint('ChatMessageCubit not initialized');
       return;
     }
-
-    debugPrint(
-      '🔄 ChatMessageCubit: Начало отправки медиа-сообщения с ${mediaItems.length} файлами',
-    );
 
     final tempMessage = Message(
       id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
@@ -583,14 +552,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               .toList(),
     );
 
-    debugPrint(
-      '📝 ChatMessageCubit: Создано временное сообщение: ${tempMessage.id}',
-    );
-
     state.maybeMap(
       loaded: (state) {
         emit(state.copyWith(messages: [...state.messages, tempMessage]));
-        debugPrint('📱 ChatMessageCubit: Временное сообщение добавлено в UI');
       },
       orElse: () {
         emit(
@@ -598,9 +562,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
             messages: [tempMessage],
             isTemporary: _isTemporary!,
           ),
-        );
-        debugPrint(
-          '📱 ChatMessageCubit: Временное сообщение установлено как начальное состояние',
         );
       },
     );
@@ -614,16 +575,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     String text,
   ) async {
     if (_senderId == null || _recipientId == null || _isTemporary == null) {
-      debugPrint('ChatMessageCubit not initialized during media upload');
       return;
     }
 
     try {
-      debugPrint('🔄 ChatMessageCubit: Начало загрузки медиафайлов');
-
       final uploadedMedia = await _uploadMediaFiles(mediaItems);
-
-      debugPrint('✅ ChatMessageCubit: Загрузка медиафайлов завершена');
 
       final failedUploads =
           uploadedMedia.where((media) => media.mediaUrl == null).toList();
@@ -661,7 +617,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         }
       }
     } catch (e) {
-      debugPrint('❌ ChatMessageCubit: Ошибка при загрузке медиа: $e');
       if (!isClosed) {
         _updateTempMessageWithError(tempMessage.id!, e.toString());
       }
@@ -676,15 +631,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     try {
       final uris = mediaItems.map((item) => item.uri).toList();
 
-      debugPrint(
-        '📤 ChatMessageCubit: Загрузка ${uris.length} медиафайлов через uploadMultipleMedia',
-      );
-
       final fileUrls = await _uploadImageInterface.uploadMultipleMedia(uris);
-
-      debugPrint(
-        '✅ ChatMessageCubit: Получено ${fileUrls.length} URL от uploadMultipleMedia',
-      );
 
       for (int i = 0; i < mediaItems.length; i++) {
         final mediaItem = mediaItems[i];
@@ -706,14 +653,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               sortOrder: i,
             ),
           );
-
-          debugPrint(
-            '✅ ChatMessageCubit: Медиа успешно загружено: ${mediaItem.name} -> $mediaUrl',
-          );
         } else {
-          debugPrint(
-            '❌ ChatMessageCubit: Не удалось загрузить медиа: ${mediaItem.name}',
-          );
           uploadedMedia.add(
             MessageMedia(
               contentType: _mapMediaTypeToContentType(mediaItem.type),
@@ -726,7 +666,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         }
       }
     } catch (e) {
-      debugPrint('❌ ChatMessageCubit: Ошибка в _uploadMediaFiles: $e');
       for (int i = 0; i < mediaItems.length; i++) {
         final mediaItem = mediaItems[i];
         uploadedMedia.add(
@@ -741,9 +680,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       }
     }
 
-    debugPrint(
-      '📊 ChatMessageCubit: _uploadMediaFiles завершен. Успешно загружено: ${uploadedMedia.where((m) => m.mediaUrl != null).length}/${mediaItems.length}',
-    );
     return uploadedMedia;
   }
 
@@ -753,9 +689,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         final updatedMessages =
             state.messages.map((message) {
               if (message.id == tempMessageId) {
-                debugPrint(
-                  '🔄 ChatMessageCubit: Заменяем временное сообщение $tempMessageId на финальное',
-                );
                 return finalMessage;
               }
               return message;
@@ -764,9 +697,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         emit(state.copyWith(messages: updatedMessages));
       },
       orElse: () {
-        debugPrint(
-          '🔄 ChatMessageCubit: Устанавливаем финальное сообщение как начальное состояние',
-        );
         emit(
           ChatMessageState.loaded(
             messages: [finalMessage],
@@ -783,9 +713,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         final updatedMessages =
             state.messages.map((message) {
               if (message.id == tempMessageId) {
-                debugPrint(
-                  '❌ ChatMessageCubit: Обновляем временное сообщение $tempMessageId с ошибкой: $error',
-                );
                 return message.copyWith(text: 'Ошибка загрузки: $error');
               }
               return message;
@@ -821,7 +748,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         _chatInterface.finistTemporaryChat(tempChat: temporaryModel);
       }
     } catch (e) {
-      debugPrint("Ошибка завершения чата: $e");
+      //
     }
   }
 
@@ -859,7 +786,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         .listen(
           _handlePaginatedMessages,
           onError: (e) {
-            debugPrint('Paginated messages stream error: $e');
             Future.delayed(const Duration(seconds: 3), () {
               if (!isClosed) _reconnectMessageSubscriptions();
             });
@@ -870,7 +796,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
       _handleSingleMessage,
       onError: (e) {
-        debugPrint('Single message stream error: $e');
         Future.delayed(const Duration(seconds: 3), () {
           if (!isClosed) _reconnectMessageSubscriptions();
         });
@@ -884,19 +809,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   void sendGiftMessage(Gift gift) {
-    debugPrint(
-      '🎁 ChatMessageCubit.sendGiftMessage: Начало отправки подарка ${gift.id}',
-    );
-
     if (_senderId == null || _recipientId == null || _isTemporary == null) {
-      debugPrint('❌ ChatMessageCubit not initialized');
       return;
     }
-
-    debugPrint(
-      '✅ Параметры: senderId=$_senderId, recipientId=$_recipientId, '
-      'chatId=$_currentChatId, isTemporary=$_isTemporary',
-    );
 
     final message = Message(
       senderId: _senderId!,
@@ -911,20 +826,15 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       gift: gift,
     );
 
-    debugPrint(
-      '📝 Создано сообщение с подарком: ${message.id}',
-    );
-
     state.maybeMap(
       loaded: (state) {
         final optimisticMessage = message.copyWith(createdAt: DateTime.now());
-        debugPrint('➕ Добавляем оптимистичное сообщение в UI');
+
         emit(state.copyWith(messages: [...state.messages, optimisticMessage]));
-        debugPrint('📤 Отправляем сообщение через MessageInterface');
+
         _messageInterface.sendMessage(message);
       },
       orElse: () {
-        debugPrint('📤 Отправляем сообщение без оптимистичного обновления');
         _messageInterface.sendMessage(message);
       },
     );
@@ -969,12 +879,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     if (toUserId.isEmpty) return;
 
     try {
-      final result = await _friendInterface.sendFriendRequest(
-        toUserId: toUserId,
-      );
-      debugPrint("запрос выполнен, данные получены: $result");
+      await _friendInterface.sendFriendRequest(toUserId: toUserId);
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      //
     }
   }
 }

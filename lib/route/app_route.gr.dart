@@ -235,18 +235,49 @@ class LanguageRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [LockedScreen]
-class LockedRoute extends PageRouteInfo<void> {
-  const LockedRoute({List<PageRouteInfo>? children})
-    : super(LockedRoute.name, initialChildren: children);
+class LockedRoute extends PageRouteInfo<LockedRouteArgs> {
+  LockedRoute({
+    Key? key,
+    required String blockReason,
+    List<PageRouteInfo>? children,
+  }) : super(
+         LockedRoute.name,
+         args: LockedRouteArgs(key: key, blockReason: blockReason),
+         initialChildren: children,
+       );
 
   static const String name = 'LockedRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const LockedScreen();
+      final args = data.argsAs<LockedRouteArgs>();
+      return LockedScreen(key: args.key, blockReason: args.blockReason);
     },
   );
+}
+
+class LockedRouteArgs {
+  const LockedRouteArgs({this.key, required this.blockReason});
+
+  final Key? key;
+
+  final String blockReason;
+
+  @override
+  String toString() {
+    return 'LockedRouteArgs{key: $key, blockReason: $blockReason}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! LockedRouteArgs) return false;
+    return key == other.key && blockReason == other.blockReason;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ blockReason.hashCode;
 }
 
 /// generated route for

@@ -1,14 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-
-import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 
 @RoutePage()
 class LockedScreen extends StatelessWidget {
-  const LockedScreen({super.key});
-
+  const LockedScreen({super.key, required this.blockReason});
+  final String blockReason;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +24,22 @@ class LockedScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               Text(
-                "Вы были заблокированы",
+                S.of(context).youHaveBeenBlocked,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 3),
+              Text(
+                S.of(context).forAReason,
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                blockReason,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -35,15 +50,14 @@ class LockedScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               Text(
-                "Ваш аккаунт будет удален в течение 30 дней.",
+                S.of(context).yourAccountWillBeDeletedWithin30Days,
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
 
               Text(
-                "Для разблокировки или чтобы узнать причину блокировки, "
-                "напишите в поддержку.",
+                "${S.of(context).toUnlockOrFindOutTheReasonForTheLock} , ${S.of(context).writeToSupport}",
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -58,8 +72,8 @@ class LockedScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: Colors.blue,
                   ),
-                  child: const Text(
-                    "Обратиться в поддержку",
+                  child: Text(
+                    S.of(context).contactSupport,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -70,18 +84,15 @@ class LockedScreen extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
-                    if (Platform.isAndroid || Platform.isIOS) {
-                      SystemNavigator.pop();
-                    } else {
-                      Navigator.of(context).pop();
-                    }
+                    context.read<SettingsCubit>().exit(context: context);
+                    context.replaceRoute(AuthRoute());
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     side: BorderSide(),
                   ),
-                  child: const Text(
-                    "Выйти",
+                  child: Text(
+                    S.of(context).exit,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
