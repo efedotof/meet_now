@@ -1,12 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/social/interes/interest.dart';
-import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
-import 'package:meet_now_app_server/storage/hive/repository/storage_hive_repository.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class InterestPage extends StatefulWidget {
   final SignUpFormData formData;
@@ -34,29 +31,49 @@ class _InterestPageState extends State<InterestPage> {
   List<Interest> _allInterests = [];
   List<Interest> _visibleInterests = [];
 
-  late Future<ValueListenable<Box<Interest>>> _interestsFuture;
+  late Future<List<Interest>> _interestsFuture;
 
   @override
   void initState() {
     super.initState();
-    _interestsFuture = _getListenableInterestBox();
+    _interestsFuture = _loadInterests();
     _scrollController.addListener(_onScroll);
   }
 
-  Future<ValueListenable<Box<Interest>>> _getListenableInterestBox() async {
-    final storage = context.read<StorageHiveInterface>();
-
+  Future<List<Interest>> _loadInterests() async {
     try {
-      if (storage is StorageHiveRepository) {
-        return await storage.getListenableInterestBox();
+      if (kIsWeb) {
+        final repo = context.read<PurpAndInteresInterface>();
+        return await repo.getAllInterest();
+      } else {
+        final storage = context.read<StorageHiveInterface>();
+        List<Interest> interests = [];
+
+        if (storage is StorageHiveRepository) {
+          try {
+            final box = await storage.getListenableInterestBox();
+            final boxData = box.value;
+            for (var i = 0; i < boxData.length; i++) {
+              final key = boxData.keyAt(i);
+              final value = boxData.get(key);
+              if (value is Interest) {
+                interests.add(value);
+              }
+            }
+
+            return interests;
+          } catch (e) {
+            final repo = context.read<PurpAndInteresInterface>();
+            return await repo.getAllInterest();
+          }
+        }
+
+        final repo = context.read<PurpAndInteresInterface>();
+        return await repo.getAllInterest();
       }
-      return storage.listenableInterestBox;
-    } catch (_) {
-      if (storage is StorageHiveRepository) {
-        await storage.reopenInterestBox();
-        return await storage.getListenableInterestBox();
-      }
-      rethrow;
+    } catch (e) {
+      final repo = context.read<PurpAndInteresInterface>();
+      return await repo.getAllInterest();
     }
   }
 
@@ -114,7 +131,7 @@ class _InterestPageState extends State<InterestPage> {
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-        child: FutureBuilder<ValueListenable<Box<Interest>>>(
+        child: FutureBuilder<List<Interest>>(
           future: _interestsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -126,7 +143,7 @@ class _InterestPageState extends State<InterestPage> {
                 onRetry: () {
                   setState(() {
                     _isLoadingInitial = true;
-                    _interestsFuture = _getListenableInterestBox();
+                    _interestsFuture = _loadInterests();
                     _loadedItemsCount = 0;
                     _allInterests = [];
                     _visibleInterests = [];
@@ -136,83 +153,79 @@ class _InterestPageState extends State<InterestPage> {
               );
             }
 
-            return ValueListenableBuilder<Box<Interest>>(
-              valueListenable: snapshot.data!,
-              builder: (context, box, _) {
-                if (_isLoadingInitial) {
-                  _initData(box.values.cast<Interest>().toList());
-                }
+            if (_isLoadingInitial && snapshot.hasData) {
+              _initData(snapshot.data!);
+            }
 
-                return Column(
-                  children: [
-                    Text(
-                      S.of(context).specify_your_interests,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  _visibleInterests
-                                      .map(
-                                        (interest) => InterestChip(
-                                          interest: interest,
-                                          isDark: isDark,
-                                          selected: widget.formData.interests
-                                              .contains(interest.title),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              if (value) {
-                                                widget.formData.interests.add(
-                                                  interest.title!,
-                                                );
-                                              } else {
-                                                widget.formData.interests
-                                                    .remove(interest.title);
-                                              }
-                                            });
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                            ),
-                            const SizedBox(height: 16),
-                            if (_hasMore || _isLoadingMore)
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child:
-                                    _isLoadingMore
-                                        ? const CircularProgressIndicator()
-                                        : Text(
-                                          S.of(context).loading,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
-                                        ),
-                              ),
-                            if (!_hasMore && _visibleInterests.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Text(
-                                  S.of(context).all_interests_loaded,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                          ],
+            return Column(
+              children: [
+                Text(
+                  S.of(context).specify_your_interests,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children:
+                              _visibleInterests
+                                  .map(
+                                    (interest) => InterestChip(
+                                      interest: interest,
+                                      isDark: isDark,
+                                      selected: widget.formData.interests
+                                          .contains(interest.title),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value) {
+                                            widget.formData.interests.add(
+                                              interest.title!,
+                                            );
+                                          } else {
+                                            widget.formData.interests.remove(
+                                              interest.title,
+                                            );
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        if (_hasMore || _isLoadingMore)
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child:
+                                _isLoadingMore
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                      S.of(context).loading,
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                    ),
+                          ),
+                        if (!_hasMore && _visibleInterests.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              S.of(context).all_interests_loaded,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                      ],
                     ),
-                  ],
-                );
-              },
+                  ),
+                ),
+              ],
             );
           },
         ),

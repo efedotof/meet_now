@@ -120,7 +120,6 @@ class SearchCubit extends Cubit<SearchState> {
           break;
         }
       } catch (e) {
-        debugPrint("Search Error: $e");
         if (context.mounted && !_shouldStopSearch) {
           await _userInterface.stopSearch();
         }
@@ -144,7 +143,6 @@ class SearchCubit extends Cubit<SearchState> {
         final cities = await _cityInterface.searchCities(query);
         emit(state.copyWith(cities: cities));
       } catch (e) {
-        debugPrint("Ошибка поиска городов: $e");
         emit(state.copyWith(cities: []));
       }
     });

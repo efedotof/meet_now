@@ -1249,250 +1249,275 @@ class S {
     );
   }
 
-  /// `DeleteChat`
+  /// `Delete Chat`
   String get deletechat {
-    return Intl.message('DeleteChat', name: 'deletechat', desc: '', args: []);
+    return Intl.message('Delete Chat', name: 'deletechat', desc: '', args: []);
   }
 
-  /// `BlockUser`
+  /// `Block User`
   String get blockuser {
-    return Intl.message('BlockUser', name: 'blockuser', desc: '', args: []);
+    return Intl.message('Block User', name: 'blockuser', desc: '', args: []);
   }
 
-  /// `ReportUser`
+  /// `Report User`
   String get reportuser {
-    return Intl.message('ReportUser', name: 'reportuser', desc: '', args: []);
+    return Intl.message('Report User', name: 'reportuser', desc: '', args: []);
   }
 
-  /// `clearHistoryConfirmation`
+  /// `Are you sure you want to clear the history?`
   String get clearhistoryconfirmation {
     return Intl.message(
-      'clearHistoryConfirmation',
+      'Are you sure you want to clear the history?',
       name: 'clearhistoryconfirmation',
       desc: '',
       args: [],
     );
   }
 
-  /// `historyCleared`
+  /// `History cleared`
   String get historycleared {
     return Intl.message(
-      'historyCleared',
+      'History cleared',
       name: 'historycleared',
       desc: '',
       args: [],
     );
   }
 
-  /// `clear`
+  /// `Clear`
   String get clear {
-    return Intl.message('clear', name: 'clear', desc: '', args: []);
+    return Intl.message('Clear', name: 'clear', desc: '', args: []);
   }
 
-  /// `deleteChatConfirmation`
+  /// `Are you sure you want to delete the chat?`
   String get deletechatconfirmation {
     return Intl.message(
-      'deleteChatConfirmation',
+      'Are you sure you want to delete the chat?',
       name: 'deletechatconfirmation',
       desc: '',
       args: [],
     );
   }
 
-  /// `chatDeleted`
+  /// `Chat deleted`
   String get chatdeleted {
-    return Intl.message('chatDeleted', name: 'chatdeleted', desc: '', args: []);
+    return Intl.message(
+      'Chat deleted',
+      name: 'chatdeleted',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `delete`
+  /// `Delete`
   String get delete {
-    return Intl.message('delete', name: 'delete', desc: '', args: []);
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
-  /// `blockUserConfirmation`
+  /// `Are you sure you want to block this user?`
   String get blockuserconfirmation {
     return Intl.message(
-      'blockUserConfirmation',
+      'Are you sure you want to block this user?',
       name: 'blockuserconfirmation',
       desc: '',
       args: [],
     );
   }
 
-  /// `userBlocked`
+  /// `User blocked`
   String get userblocked {
-    return Intl.message('userBlocked', name: 'userblocked', desc: '', args: []);
+    return Intl.message(
+      'User blocked',
+      name: 'userblocked',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `block`
+  /// `Block`
   String get block {
-    return Intl.message('block', name: 'block', desc: '', args: []);
+    return Intl.message('Block', name: 'block', desc: '', args: []);
   }
 
-  /// `reportUserDescription`
+  /// `Please select the reason for reporting this user:`
   String get reportuserdescription {
     return Intl.message(
-      'reportUserDescription',
+      'Please select the reason for reporting this user:',
       name: 'reportuserdescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `selectReason`
+  /// `Select reason`
   String get selectreason {
     return Intl.message(
-      'selectReason',
+      'Select reason',
       name: 'selectreason',
       desc: '',
       args: [],
     );
   }
 
-  /// `additionalComments`
+  /// `Additional comments`
   String get additionalcomments {
     return Intl.message(
-      'additionalComments',
+      'Additional comments',
       name: 'additionalcomments',
       desc: '',
       args: [],
     );
   }
 
-  /// `reportSubmitted`
+  /// `Report submitted`
   String get reportsubmitted {
     return Intl.message(
-      'reportSubmitted',
+      'Report submitted',
       name: 'reportsubmitted',
       desc: '',
       args: [],
     );
   }
 
-  /// `submitReport`
+  /// `Submit report`
   String get submitreport {
     return Intl.message(
-      'submitReport',
+      'Submit report',
       name: 'submitreport',
       desc: '',
       args: [],
     );
   }
 
-  /// `spam`
+  /// `Spam`
   String get spam {
-    return Intl.message('spam', name: 'spam', desc: '', args: []);
+    return Intl.message('Spam', name: 'spam', desc: '', args: []);
   }
 
-  /// `harassment`
+  /// `Harassment`
   String get harassment {
-    return Intl.message('harassment', name: 'harassment', desc: '', args: []);
+    return Intl.message('Harassment', name: 'harassment', desc: '', args: []);
   }
 
-  /// `inappropriateContent`
+  /// `Inappropriate content`
   String get inappropriatecontent {
     return Intl.message(
-      'inappropriateContent',
+      'Inappropriate content',
       name: 'inappropriatecontent',
       desc: '',
       args: [],
     );
   }
 
-  /// `fakeProfile`
+  /// `Fake profile`
   String get fakeprofile {
-    return Intl.message('fakeProfile', name: 'fakeprofile', desc: '', args: []);
+    return Intl.message(
+      'Fake profile',
+      name: 'fakeprofile',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `other`
+  /// `Other`
   String get other {
-    return Intl.message('other', name: 'other', desc: '', args: []);
+    return Intl.message('Other', name: 'other', desc: '', args: []);
   }
 
-  /// `changePassword`
+  /// `Change password`
   String get changepassword {
     return Intl.message(
-      'changePassword',
+      'Change password',
       name: 'changepassword',
       desc: '',
       args: [],
     );
   }
 
-  /// `newPassword`
+  /// `New password`
   String get newpassword {
-    return Intl.message('newPassword', name: 'newpassword', desc: '', args: []);
+    return Intl.message(
+      'New password',
+      name: 'newpassword',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `oldPassword`
+  /// `Old password`
   String get oldpassword {
-    return Intl.message('oldPassword', name: 'oldpassword', desc: '', args: []);
+    return Intl.message(
+      'Old password',
+      name: 'oldpassword',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `noPurposesAdded`
+  /// `No purposes added yet`
   String get nopurposesadded {
     return Intl.message(
-      'noPurposesAdded',
+      'No purposes added yet',
       name: 'nopurposesadded',
       desc: '',
       args: [],
     );
   }
 
-  /// `noInterestsAdded`
+  /// `No interests added yet`
   String get nointerestsadded {
     return Intl.message(
-      'noInterestsAdded',
+      'No interests added yet',
       name: 'nointerestsadded',
       desc: '',
       args: [],
     );
   }
 
-  /// `passwordChangedSuccessfully`
+  /// `Password changed successfully`
   String get passwordchangedsuccessfully {
     return Intl.message(
-      'passwordChangedSuccessfully',
+      'Password changed successfully',
       name: 'passwordchangedsuccessfully',
       desc: '',
       args: [],
     );
   }
 
-  /// `profileUpdatedSuccessfully`
+  /// `Profile updated successfully`
   String get profileupdatedsuccessfully {
     return Intl.message(
-      'profileUpdatedSuccessfully',
+      'Profile updated successfully',
       name: 'profileupdatedsuccessfully',
       desc: '',
       args: [],
     );
   }
 
-  /// `avatarUploadFailed`
+  /// `Avatar upload failed`
   String get avataruploadfailed {
     return Intl.message(
-      'avatarUploadFailed',
+      'Avatar upload failed',
       name: 'avataruploadfailed',
       desc: '',
       args: [],
     );
   }
 
-  /// `avatarUpdatedSuccessfully`
+  /// `Avatar updated successfully`
   String get avatarupdatedsuccessfully {
     return Intl.message(
-      'avatarUpdatedSuccessfully',
+      'Avatar updated successfully',
       name: 'avatarupdatedsuccessfully',
       desc: '',
       args: [],
     );
   }
 
-  /// `uploadingAvatar`
+  /// `Uploading avatar...`
   String get uploadingavatar {
     return Intl.message(
-      'uploadingAvatar',
+      'Uploading avatar...',
       name: 'uploadingavatar',
       desc: '',
       args: [],
@@ -1504,171 +1529,171 @@ class S {
     return Intl.message('Searching', name: 'searching', desc: '', args: []);
   }
 
-  /// `Обновление...`
+  /// `Updating...`
   String get updating {
-    return Intl.message('Обновление...', name: 'updating', desc: '', args: []);
+    return Intl.message('Updating...', name: 'updating', desc: '', args: []);
   }
 
-  /// `Мои жалобы`
+  /// `My Reports`
   String get my_report {
-    return Intl.message('Мои жалобы', name: 'my_report', desc: '', args: []);
+    return Intl.message('My Reports', name: 'my_report', desc: '', args: []);
   }
 
-  /// `Настройки уведомлений`
+  /// `Notification Settings`
   String get notification_settings {
     return Intl.message(
-      'Настройки уведомлений',
+      'Notification Settings',
       name: 'notification_settings',
       desc: '',
       args: [],
     );
   }
 
-  /// `Мои вопросы в поддержку`
+  /// `My Support Questions`
   String get my_question_support {
     return Intl.message(
-      'Мои вопросы в поддержку',
+      'My Support Questions',
       name: 'my_question_support',
       desc: '',
       args: [],
     );
   }
 
-  /// `Стикеры не найдены`
+  /// `Stickers not found`
   String get stickers_not_found {
     return Intl.message(
-      'Стикеры не найдены',
+      'Stickers not found',
       name: 'stickers_not_found',
       desc: '',
       args: [],
     );
   }
 
-  /// `Повторить`
+  /// `Retry`
   String get repeat {
-    return Intl.message('Повторить', name: 'repeat', desc: '', args: []);
+    return Intl.message('Retry', name: 'repeat', desc: '', args: []);
   }
 
-  /// `Ошибка загрузки стикеров:`
+  /// `Sticker loading error:`
   String get sticker_loading_error {
     return Intl.message(
-      'Ошибка загрузки стикеров:',
+      'Sticker loading error:',
       name: 'sticker_loading_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `Стикеры`
+  /// `Stickers`
   String get stickers {
-    return Intl.message('Стикеры', name: 'stickers', desc: '', args: []);
+    return Intl.message('Stickers', name: 'stickers', desc: '', args: []);
   }
 
-  /// `Пожалуйста, выберите причину жалобы`
+  /// `Please select the reason for the complaint`
   String get please_select_the_reason_for_the_complaint {
     return Intl.message(
-      'Пожалуйста, выберите причину жалобы',
+      'Please select the reason for the complaint',
       name: 'please_select_the_reason_for_the_complaint',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавить время`
+  /// `Add time`
   String get add_time {
-    return Intl.message('Добавить время', name: 'add_time', desc: '', args: []);
+    return Intl.message('Add time', name: 'add_time', desc: '', args: []);
   }
 
-  /// `Продолжить чат`
+  /// `Continue the chat`
   String get continue_the_chat {
     return Intl.message(
-      'Продолжить чат',
+      'Continue the chat',
       name: 'continue_the_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавить в друзья?`
+  /// `Add to friends?`
   String get add_to_friends {
     return Intl.message(
-      'Добавить в друзья?',
+      'Add to friends?',
       name: 'add_to_friends',
       desc: '',
       args: [],
     );
   }
 
-  /// `Хотите отправить заявку в друзья пользователю`
+  /// `Would you like to send a friend request to this user?`
   String get would_you_like_to_send_a_friend_request_to_a_user {
     return Intl.message(
-      'Хотите отправить заявку в друзья пользователю',
+      'Would you like to send a friend request to this user?',
       name: 'would_you_like_to_send_a_friend_request_to_a_user',
       desc: '',
       args: [],
     );
   }
 
-  /// `Заявка в друзья отправлена`
+  /// `Friend request has been sent`
   String get the_friend_request_has_been_sent {
     return Intl.message(
-      'Заявка в друзья отправлена',
+      'Friend request has been sent',
       name: 'the_friend_request_has_been_sent',
       desc: '',
       args: [],
     );
   }
 
-  /// `Отправить`
+  /// `Send`
   String get send {
-    return Intl.message('Отправить', name: 'send', desc: '', args: []);
+    return Intl.message('Send', name: 'send', desc: '', args: []);
   }
 
-  /// `Загрузка...`
+  /// `Loading...`
   String get loading {
-    return Intl.message('Загрузка...', name: 'loading', desc: '', args: []);
+    return Intl.message('Loading...', name: 'loading', desc: '', args: []);
   }
 
-  /// `Ошибка загрузки`
+  /// `Download error`
   String get download_error {
     return Intl.message(
-      'Ошибка загрузки',
+      'Download error',
       name: 'download_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `Изображение недоступно`
+  /// `The image is unavailable`
   String get the_image_is_unavailable {
     return Intl.message(
-      'Изображение недоступно',
+      'The image is unavailable',
       name: 'the_image_is_unavailable',
       desc: '',
       args: [],
     );
   }
 
-  /// `Стикер`
+  /// `Sticker`
   String get sticker {
-    return Intl.message('Стикер', name: 'sticker', desc: '', args: []);
+    return Intl.message('Sticker', name: 'sticker', desc: '', args: []);
   }
 
-  /// `Продолжить общение`
+  /// `Continue communication`
   String get continue_communication {
     return Intl.message(
-      'Продолжить общение',
+      'Continue communication',
       name: 'continue_communication',
       desc: '',
       args: [],
     );
   }
 
-  /// `Собеседник предлагает продолжить общение в постоянном чате. `
+  /// `Your interlocutor suggests continuing the conversation in a permanent chat.`
   String
   get the_interlocutor_suggests_continuing_the_conversation_in_a_permanent_chat {
     return Intl.message(
-      'Собеседник предлагает продолжить общение в постоянном чате. ',
+      'Your interlocutor suggests continuing the conversation in a permanent chat.',
       name:
           'the_interlocutor_suggests_continuing_the_conversation_in_a_permanent_chat',
       desc: '',
@@ -1676,91 +1701,91 @@ class S {
     );
   }
 
-  /// `Вы согласны`
+  /// `Do you agree?`
   String get do_you_agree {
     return Intl.message(
-      'Вы согласны',
+      'Do you agree?',
       name: 'do_you_agree',
       desc: '',
       args: [],
     );
   }
 
-  /// `Отклонить`
+  /// `Reject`
   String get reject {
-    return Intl.message('Отклонить', name: 'reject', desc: '', args: []);
+    return Intl.message('Reject', name: 'reject', desc: '', args: []);
   }
 
-  /// `Принять`
+  /// `Accept`
   String get accept {
-    return Intl.message('Принять', name: 'accept', desc: '', args: []);
+    return Intl.message('Accept', name: 'accept', desc: '', args: []);
   }
 
-  /// `Постоянный чат создан`
+  /// `Permanent chat has been created`
   String get permanent_chat_has_been_created {
     return Intl.message(
-      'Постоянный чат создан',
+      'Permanent chat has been created',
       name: 'permanent_chat_has_been_created',
       desc: '',
       args: [],
     );
   }
 
-  /// `Теперь вы можете продолжить общение в постоянном чате. `
+  /// `Now you can continue chatting in a permanent chat room.`
   String get now_you_can_continue_chatting_in_a_permanent_chat_room {
     return Intl.message(
-      'Теперь вы можете продолжить общение в постоянном чате. ',
+      'Now you can continue chatting in a permanent chat room.',
       name: 'now_you_can_continue_chatting_in_a_permanent_chat_room',
       desc: '',
       args: [],
     );
   }
 
-  /// `Все сообщения сохранены.`
+  /// `All messages are saved.`
   String get all_messages_are_saved {
     return Intl.message(
-      'Все сообщения сохранены.',
+      'All messages are saved.',
       name: 'all_messages_are_saved',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ожидание ответа`
+  /// `Waiting for a response`
   String get waiting_for_a_response {
     return Intl.message(
-      'Ожидание ответа',
+      'Waiting for a response',
       name: 'waiting_for_a_response',
       desc: '',
       args: [],
     );
   }
 
-  /// `Запрос на продолжение чата отправлен. `
+  /// `The request to continue the chat has been sent.`
   String get the_request_to_continue_the_chat_has_been_sent {
     return Intl.message(
-      'Запрос на продолжение чата отправлен. ',
+      'The request to continue the chat has been sent.',
       name: 'the_request_to_continue_the_chat_has_been_sent',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ожидаем ответа от собеседника...`
+  /// `We are waiting for a response from the interlocutor...`
   String get we_are_waiting_for_a_response_from_the_interlocutor {
     return Intl.message(
-      'Ожидаем ответа от собеседника...',
+      'We are waiting for a response from the interlocutor...',
       name: 'we_are_waiting_for_a_response_from_the_interlocutor',
       desc: '',
       args: [],
     );
   }
 
-  /// `Хотите предложить собеседнику продолжить общение в постоянном чате?`
+  /// `Do you want to invite your conversation partner to continue chatting in a permanent chat room?`
   String
   get do_you_want_to_invite_your_conversation_partner_to_continue_chatting_in_a_permanent_chat_room {
     return Intl.message(
-      'Хотите предложить собеседнику продолжить общение в постоянном чате?',
+      'Do you want to invite your conversation partner to continue chatting in a permanent chat room?',
       name:
           'do_you_want_to_invite_your_conversation_partner_to_continue_chatting_in_a_permanent_chat_room',
       desc: '',
@@ -1768,125 +1793,125 @@ class S {
     );
   }
 
-  /// `Предложить`
+  /// `Offer`
   String get offer {
-    return Intl.message('Предложить', name: 'offer', desc: '', args: []);
+    return Intl.message('Offer', name: 'offer', desc: '', args: []);
   }
 
-  /// `Время чата подходит к концу`
+  /// `The chat time is coming to an end`
   String get the_chat_time_is_coming_to_an_end {
     return Intl.message(
-      'Время чата подходит к концу',
+      'The chat time is coming to an end',
       name: 'the_chat_time_is_coming_to_an_end',
       desc: '',
       args: [],
     );
   }
 
-  /// `Выберите действие:`
+  /// `Select an action:`
   String get select_an_action {
     return Intl.message(
-      'Выберите действие:',
+      'Select an action:',
       name: 'select_an_action',
       desc: '',
       args: [],
     );
   }
 
-  /// `Продолжить в постоянном чате`
+  /// `Continue in permanent chat`
   String get continue_in_constant_chat {
     return Intl.message(
-      'Продолжить в постоянном чате',
+      'Continue in permanent chat',
       name: 'continue_in_constant_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Завершить чат`
+  /// `End the chat`
   String get end_the_chat {
     return Intl.message(
-      'Завершить чат',
+      'End the chat',
       name: 'end_the_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавить время к чату`
+  /// `Add time to the chat`
   String get add_time_to_the_chat {
     return Intl.message(
-      'Добавить время к чату',
+      'Add time to the chat',
       name: 'add_time_to_the_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `мин`
+  /// `min`
   String get mines {
-    return Intl.message('мин', name: 'mines', desc: '', args: []);
+    return Intl.message('min', name: 'mines', desc: '', args: []);
   }
 
-  /// `Предложение добавить время`
+  /// `Suggestion to add time`
   String get suggestion_to_add_time {
     return Intl.message(
-      'Предложение добавить время',
+      'Suggestion to add time',
       name: 'suggestion_to_add_time',
       desc: '',
       args: [],
     );
   }
 
-  /// `Собеседник предлагает добавить `
+  /// `Your interlocutor suggests adding `
   String get the_interlocutor_suggests_adding {
     return Intl.message(
-      'Собеседник предлагает добавить ',
+      'Your interlocutor suggests adding ',
       name: 'the_interlocutor_suggests_adding',
       desc: '',
       args: [],
     );
   }
 
-  /// `минут к чату.`
+  /// ` minutes to the chat.`
   String get minutes_to_chat {
     return Intl.message(
-      'минут к чату.',
+      ' minutes to the chat.',
       name: 'minutes_to_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Принять`
+  /// `To accept`
   String get to_accept {
-    return Intl.message('Принять', name: 'to_accept', desc: '', args: []);
+    return Intl.message('To accept', name: 'to_accept', desc: '', args: []);
   }
 
-  /// `Добавлено`
+  /// `Added`
   String get added {
-    return Intl.message('Добавлено', name: 'added', desc: '', args: []);
+    return Intl.message('Added', name: 'added', desc: '', args: []);
   }
 
-  /// `Предложение добавления времени отклонено`
+  /// `The suggestion to add time has been rejected`
   String get the_suggestion_of_adding_time_is_rejected {
     return Intl.message(
-      'Предложение добавления времени отклонено',
+      'The suggestion to add time has been rejected',
       name: 'the_suggestion_of_adding_time_is_rejected',
       desc: '',
       args: [],
     );
   }
 
-  /// `Время вышло`
+  /// `Time's up`
   String get times_up {
-    return Intl.message('Время вышло', name: 'times_up', desc: '', args: []);
+    return Intl.message('Time\'s up', name: 'times_up', desc: '', args: []);
   }
 
-  /// `Время чата истекло. Чат будет завершен.`
+  /// `Chat time has expired. The chat will be terminated.`
   String get chat_time_has_expired_the_chat_will_be_terminated {
     return Intl.message(
-      'Время чата истекло. Чат будет завершен.',
+      'Chat time has expired. The chat will be terminated.',
       name: 'chat_time_has_expired_the_chat_will_be_terminated',
       desc: '',
       args: [],
@@ -1898,56 +1923,51 @@ class S {
     return Intl.message('OK', name: 'ok', desc: '', args: []);
   }
 
-  /// `Удалить чат`
+  /// `Delete a chat`
   String get delete_a_chat {
     return Intl.message(
-      'Удалить чат',
+      'Delete a chat',
       name: 'delete_a_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Выберите вариант удаления:`
+  /// `Select the deletion option:`
   String get select_the_deletion_option {
     return Intl.message(
-      'Выберите вариант удаления:',
+      'Select the deletion option:',
       name: 'select_the_deletion_option',
       desc: '',
       args: [],
     );
   }
 
-  /// `Только для меня`
+  /// `Just for me`
   String get just_for_me {
-    return Intl.message(
-      'Только для меня',
-      name: 'just_for_me',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Just for me', name: 'just_for_me', desc: '', args: []);
   }
 
-  /// `Для обоих`
+  /// `For both`
   String get for_both {
-    return Intl.message('Для обоих', name: 'for_both', desc: '', args: []);
+    return Intl.message('For both', name: 'for_both', desc: '', args: []);
   }
 
-  /// `Удалить для обоих`
+  /// `Delete for both`
   String get delete_for_both {
     return Intl.message(
-      'Удалить для обоих',
+      'Delete for both',
       name: 'delete_for_both',
       desc: '',
       args: [],
     );
   }
 
-  /// `Это действие нельзя отменить. Чат будет удален для всех участников.`
+  /// `This action cannot be undone. The chat will be deleted for all participants.`
   String
   get this_action_cannot_be_undone_the_chat_will_be_deleted_for_all_participants {
     return Intl.message(
-      'Это действие нельзя отменить. Чат будет удален для всех участников.',
+      'This action cannot be undone. The chat will be deleted for all participants.',
       name:
           'this_action_cannot_be_undone_the_chat_will_be_deleted_for_all_participants',
       desc: '',
@@ -1955,185 +1975,185 @@ class S {
     );
   }
 
-  /// `Вчера`
+  /// `Yesterday`
   String get yesterday {
-    return Intl.message('Вчера', name: 'yesterday', desc: '', args: []);
+    return Intl.message('Yesterday', name: 'yesterday', desc: '', args: []);
   }
 
-  /// `Нет чатов`
+  /// `No chats`
   String get there_are_no_chats {
     return Intl.message(
-      'Нет чатов',
+      'No chats',
       name: 'there_are_no_chats',
       desc: '',
       args: [],
     );
   }
 
-  /// `Нет постоянных чатов`
+  /// `No permanent chats`
   String get there_are_no_permanent_chats {
     return Intl.message(
-      'Нет постоянных чатов',
+      'No permanent chats',
       name: 'there_are_no_permanent_chats',
       desc: '',
       args: [],
     );
   }
 
-  /// `Нет временных чатов`
+  /// `No temporary chats`
   String get there_are_no_temporary_chats {
     return Intl.message(
-      'Нет временных чатов',
+      'No temporary chats',
       name: 'there_are_no_temporary_chats',
       desc: '',
       args: [],
     );
   }
 
-  /// `Постоянные чаты`
+  /// `Permanent chats`
   String get constant_chats {
     return Intl.message(
-      'Постоянные чаты',
+      'Permanent chats',
       name: 'constant_chats',
       desc: '',
       args: [],
     );
   }
 
-  /// `Начните общение`
+  /// `Start chatting`
   String get start_chatting {
     return Intl.message(
-      'Начните общение',
+      'Start chatting',
       name: 'start_chatting',
       desc: '',
       args: [],
     );
   }
 
-  /// `Временные чаты`
+  /// `Temporary chats`
   String get temporary_chats {
     return Intl.message(
-      'Временные чаты',
+      'Temporary chats',
       name: 'temporary_chats',
       desc: '',
       args: [],
     );
   }
 
-  /// `Анонимный чат`
+  /// `Anonymous chat`
   String get anonymous_chat {
     return Intl.message(
-      'Анонимный чат',
+      'Anonymous chat',
       name: 'anonymous_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Это анонимный чат`
+  /// `This is an anonymous chat`
   String get this_is_an_anonymous_chat {
     return Intl.message(
-      'Это анонимный чат',
+      'This is an anonymous chat',
       name: 'this_is_an_anonymous_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вы уверены, что хотите удалить этот временный чат?`
+  /// `Are you sure you want to delete this temporary chat?`
   String get are_you_sure_you_want_to_delete_this_temporary_chat {
     return Intl.message(
-      'Вы уверены, что хотите удалить этот временный чат?',
+      'Are you sure you want to delete this temporary chat?',
       name: 'are_you_sure_you_want_to_delete_this_temporary_chat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Временный чат удален`
+  /// `Temporary chat deleted`
   String get temporary_chat_deleted {
     return Intl.message(
-      'Временный чат удален',
+      'Temporary chat deleted',
       name: 'temporary_chat_deleted',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вход успешный`
+  /// `Login successful`
   String get login_is_successful {
     return Intl.message(
-      'Вход успешный',
+      'Login successful',
       name: 'login_is_successful',
       desc: '',
       args: [],
     );
   }
 
-  /// `Введите логин и пароль`
+  /// `Enter your username and password`
   String get enter_your_username_and_password {
     return Intl.message(
-      'Введите логин и пароль',
+      'Enter your username and password',
       name: 'enter_your_username_and_password',
       desc: '',
       args: [],
     );
   }
 
-  /// `Укажите свои Интересы:`
+  /// `Specify your interests:`
   String get specify_your_interests {
     return Intl.message(
-      'Укажите свои Интересы:',
+      'Specify your interests:',
       name: 'specify_your_interests',
       desc: '',
       args: [],
     );
   }
 
-  /// `Начните вводить название города`
+  /// `Start entering the city name`
   String get start_entering_the_name_of_the_city {
     return Intl.message(
-      'Начните вводить название города',
+      'Start entering the city name',
       name: 'start_entering_the_name_of_the_city',
       desc: '',
       args: [],
     );
   }
 
-  /// `Введите город`
+  /// `Enter the city`
   String get enter_the_city {
     return Intl.message(
-      'Введите город',
+      'Enter the city',
       name: 'enter_the_city',
       desc: '',
       args: [],
     );
   }
 
-  /// `Города не найдены`
+  /// `Cities not found`
   String get cities_not_found {
     return Intl.message(
-      'Города не найдены',
+      'Cities not found',
       name: 'cities_not_found',
       desc: '',
       args: [],
     );
   }
 
-  /// `Укажите свои Цели:`
+  /// `Specify your goals:`
   String get specify_your_goals {
     return Intl.message(
-      'Укажите свои Цели:',
+      'Specify your goals:',
       name: 'specify_your_goals',
       desc: '',
       args: [],
     );
   }
 
-  /// `Нет запросов в друзья`
+  /// `No friend requests`
   String get no_friend_requests {
     return Intl.message(
-      'Нет запросов в друзья',
+      'No friend requests',
       name: 'no_friend_requests',
       desc: '',
       args: [],
@@ -2145,314 +2165,314 @@ class S {
     return Intl.message('points', name: 'points', desc: '', args: []);
   }
 
-  /// `Пока нет доступных игр`
+  /// `There are no games available yet`
   String get there_are_no_games_available_yet {
     return Intl.message(
-      'Пока нет доступных игр',
+      'There are no games available yet',
       name: 'there_are_no_games_available_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Не удалось загрузить игры`
+  /// `Could not load games`
   String get couldnt_load_games {
     return Intl.message(
-      'Не удалось загрузить игры',
+      'Could not load games',
       name: 'couldnt_load_games',
       desc: '',
       args: [],
     );
   }
 
-  /// `Попробовать снова`
+  /// `Try again`
   String get try_again {
-    return Intl.message(
-      'Попробовать снова',
-      name: 'try_again',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Try again', name: 'try_again', desc: '', args: []);
   }
 
-  /// `Подготовка игры...`
+  /// `Game preparation...`
   String get game_preparation {
     return Intl.message(
-      'Подготовка игры...',
+      'Game preparation...',
       name: 'game_preparation',
       desc: '',
       args: [],
     );
   }
 
-  /// `Не удалось получить ссылку на игру`
+  /// `Could not get the link to the game`
   String get couldnt_get_the_link_to_the_game {
     return Intl.message(
-      'Не удалось получить ссылку на игру',
+      'Could not get the link to the game',
       name: 'couldnt_get_the_link_to_the_game',
       desc: '',
       args: [],
     );
   }
 
-  /// `Покупка успешна!`
+  /// `Purchase successful!`
   String get the_purchase_was_successful {
     return Intl.message(
-      'Покупка успешна!',
+      'Purchase successful!',
       name: 'the_purchase_was_successful',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вы приобрели подарок:`
+  /// `You have purchased a gift:`
   String get you_have_purchased_a_gift {
     return Intl.message(
-      'Вы приобрели подарок:',
+      'You have purchased a gift:',
       name: 'you_have_purchased_a_gift',
       desc: '',
       args: [],
     );
   }
 
-  /// `Потрачено поинтов:`
+  /// `Points spent:`
   String get points_spent {
     return Intl.message(
-      'Потрачено поинтов:',
+      'Points spent:',
       name: 'points_spent',
       desc: '',
       args: [],
     );
   }
 
-  /// `Новый баланс:`
+  /// `New balance:`
   String get new_balance_sheet {
     return Intl.message(
-      'Новый баланс:',
+      'New balance:',
       name: 'new_balance_sheet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Недостаточно очков для покупки. Нужно:`
+  /// `Not enough points to purchase. You need:`
   String get not_enough_points_to_purchase_you_need {
     return Intl.message(
-      'Недостаточно очков для покупки. Нужно:',
+      'Not enough points to purchase. You need:',
       name: 'not_enough_points_to_purchase_you_need',
       desc: '',
       args: [],
     );
   }
 
-  /// `Подтверждение покупки`
+  /// `Purchase confirmation`
   String get purchase_confirmation {
     return Intl.message(
-      'Подтверждение покупки',
+      'Purchase confirmation',
       name: 'purchase_confirmation',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вы хотите купить `
+  /// `Do you want to buy `
   String get do_you_want_to_buy {
     return Intl.message(
-      'Вы хотите купить ',
+      'Do you want to buy ',
       name: 'do_you_want_to_buy',
       desc: '',
       args: [],
     );
   }
 
-  /// `Стоимость:`
+  /// `Cost:`
   String get cost {
-    return Intl.message('Стоимость:', name: 'cost', desc: '', args: []);
+    return Intl.message('Cost:', name: 'cost', desc: '', args: []);
   }
 
-  /// `Купить`
+  /// `Buy`
   String get buy {
-    return Intl.message('Купить', name: 'buy', desc: '', args: []);
+    return Intl.message('Buy', name: 'buy', desc: '', args: []);
   }
 
-  /// `Ошибка при покупке:`
+  /// `Purchase error:`
   String get purchase_error {
     return Intl.message(
-      'Ошибка при покупке:',
+      'Purchase error:',
       name: 'purchase_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `Магазин`
+  /// `Shop`
   String get shop {
-    return Intl.message('Магазин', name: 'shop', desc: '', args: []);
+    return Intl.message('Shop', name: 'shop', desc: '', args: []);
   }
 
-  /// `Выберите раздел`
+  /// `Select a section`
   String get select_a_section {
     return Intl.message(
-      'Выберите раздел',
+      'Select a section',
       name: 'select_a_section',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ежедневный подарок`
+  /// `A daily gift`
   String get a_daily_gift {
     return Intl.message(
-      'Ежедневный подарок',
+      'A daily gift',
       name: 'a_daily_gift',
       desc: '',
       args: [],
     );
   }
 
-  /// `Серия:`
+  /// `Series:`
   String get series {
-    return Intl.message('Серия:', name: 'series', desc: '', args: []);
+    return Intl.message('Series:', name: 'series', desc: '', args: []);
   }
 
-  /// `дней`
+  /// `days`
   String get days {
-    return Intl.message('дней', name: 'days', desc: '', args: []);
+    return Intl.message('days', name: 'days', desc: '', args: []);
   }
 
-  /// `Вы уже получили подарок сегодня`
+  /// `Have you already received a gift today?`
   String get have_you_already_received_a_gift_today {
     return Intl.message(
-      'Вы уже получили подарок сегодня',
+      'Have you already received a gift today?',
       name: 'have_you_already_received_a_gift_today',
       desc: '',
       args: [],
     );
   }
 
-  /// `Получить`
+  /// `Receive`
   String get receive {
-    return Intl.message('Получить', name: 'receive', desc: '', args: []);
+    return Intl.message('Receive', name: 'receive', desc: '', args: []);
   }
 
-  /// `Последний подарок:`
+  /// `The last gift:`
   String get the_last_gift {
     return Intl.message(
-      'Последний подарок:',
+      'The last gift:',
       name: 'the_last_gift',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ваш баланс:`
+  /// `Your balance:`
   String get your_balance {
     return Intl.message(
-      'Ваш баланс:',
+      'Your balance:',
       name: 'your_balance',
       desc: '',
       args: [],
     );
   }
 
-  /// `Не удалось загрузить`
+  /// `Failed to upload`
   String get failed_to_upload {
     return Intl.message(
-      'Не удалось загрузить',
+      'Failed to upload',
       name: 'failed_to_upload',
       desc: '',
       args: [],
     );
   }
 
-  /// `Доступно:`
+  /// `Available:`
   String get available {
-    return Intl.message('Доступно:', name: 'available', desc: '', args: []);
+    return Intl.message('Available:', name: 'available', desc: '', args: []);
   }
 
-  /// `шт.`
+  /// `pcs.`
   String get pc {
-    return Intl.message('шт.', name: 'pc', desc: '', args: []);
+    return Intl.message('pcs.', name: 'pc', desc: '', args: []);
   }
 
-  /// `Ограниченный тираж`
+  /// `Limited edition`
   String get limited_edition {
     return Intl.message(
-      'Ограниченный тираж',
+      'Limited edition',
       name: 'limited_edition',
       desc: '',
       args: [],
     );
   }
 
-  /// `Недостаточно очков`
+  /// `Not enough points`
   String get not_enough_points {
     return Intl.message(
-      'Недостаточно очков',
+      'Not enough points',
       name: 'not_enough_points',
       desc: '',
       args: [],
     );
   }
 
-  /// `РАСПРОДАНО`
+  /// `SOLD OUT`
   String get sold_out {
-    return Intl.message('РАСПРОДАНО', name: 'sold_out', desc: '', args: []);
+    return Intl.message('SOLD OUT', name: 'sold_out', desc: '', args: []);
   }
 
-  /// `Ограниченный`
+  /// `Limited`
   String get limited {
-    return Intl.message('Ограниченный', name: 'limited', desc: '', args: []);
+    return Intl.message('Limited', name: 'limited', desc: '', args: []);
   }
 
-  /// `У вас еще нет купленных подарков`
+  /// `You haven't bought any gifts yet`
   String get you_havent_bought_any_gifts_yet {
     return Intl.message(
-      'У вас еще нет купленных подарков',
+      'You haven\'t bought any gifts yet',
       name: 'you_havent_bought_any_gifts_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `От друга`
+  /// `From a friend`
   String get from_a_friend {
-    return Intl.message('От друга', name: 'from_a_friend', desc: '', args: []);
+    return Intl.message(
+      'From a friend',
+      name: 'from_a_friend',
+      desc: '',
+      args: [],
+    );
   }
 
-  /// `Количество:`
+  /// `Quantity:`
   String get quantity {
-    return Intl.message('Количество:', name: 'quantity', desc: '', args: []);
+    return Intl.message('Quantity:', name: 'quantity', desc: '', args: []);
   }
 
-  /// `Получено:`
+  /// `Received:`
   String get received {
-    return Intl.message('Получено:', name: 'received', desc: '', args: []);
+    return Intl.message('Received:', name: 'received', desc: '', args: []);
   }
 
-  /// `г.`
+  /// `y.`
   String get year {
-    return Intl.message('г.', name: 'year', desc: '', args: []);
+    return Intl.message('y.', name: 'year', desc: '', args: []);
   }
 
-  /// `мес.`
+  /// `mo.`
   String get month {
-    return Intl.message('мес.', name: 'month', desc: '', args: []);
+    return Intl.message('mo.', name: 'month', desc: '', args: []);
   }
 
-  /// `д.`
+  /// `d.`
   String get day {
-    return Intl.message('д.', name: 'day', desc: '', args: []);
+    return Intl.message('d.', name: 'day', desc: '', args: []);
   }
 
-  /// `ч.`
+  /// `h.`
   String get hour {
-    return Intl.message('ч.', name: 'hour', desc: '', args: []);
+    return Intl.message('h.', name: 'hour', desc: '', args: []);
   }
 
-  /// `только что`
+  /// `just now`
   String get just_now {
-    return Intl.message('только что', name: 'just_now', desc: '', args: []);
+    return Intl.message('just now', name: 'just_now', desc: '', args: []);
   }
 
   /// `Game`
@@ -2460,775 +2480,765 @@ class S {
     return Intl.message('Game', name: 'game', desc: '', args: []);
   }
 
-  /// `Жалоб пока нет`
+  /// `There are no complaints yet`
   String get there_are_no_complaints_yet {
     return Intl.message(
-      'Жалоб пока нет',
+      'There are no complaints yet',
       name: 'there_are_no_complaints_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Отправлено`
+  /// `Shipped`
   String get shipped {
-    return Intl.message('Отправлено', name: 'shipped', desc: '', args: []);
+    return Intl.message('Shipped', name: 'shipped', desc: '', args: []);
   }
 
-  /// `В обработке`
+  /// `In processing`
   String get in_processing {
     return Intl.message(
-      'В обработке',
+      'In processing',
       name: 'in_processing',
       desc: '',
       args: [],
     );
   }
 
-  /// `Завершено`
+  /// `Completed`
   String get completed {
-    return Intl.message('Завершено', name: 'completed', desc: '', args: []);
+    return Intl.message('Completed', name: 'completed', desc: '', args: []);
   }
 
-  /// `Причина:`
+  /// `Reason:`
   String get reason {
-    return Intl.message('Причина:', name: 'reason', desc: '', args: []);
+    return Intl.message('Reason:', name: 'reason', desc: '', args: []);
   }
 
-  /// `Дата:`
+  /// `Date:`
   String get date {
-    return Intl.message('Дата:', name: 'date', desc: '', args: []);
+    return Intl.message('Date:', name: 'date', desc: '', args: []);
   }
 
-  /// `Отозвать`
+  /// `Revoke`
   String get revoke {
-    return Intl.message('Отозвать', name: 'revoke', desc: '', args: []);
+    return Intl.message('Revoke', name: 'revoke', desc: '', args: []);
   }
 
-  /// `Сбросить настройки?`
+  /// `Reset the settings?`
   String get reset_the_settings {
     return Intl.message(
-      'Сбросить настройки?',
+      'Reset the settings?',
       name: 'reset_the_settings',
       desc: '',
       args: [],
     );
   }
 
-  /// `Все настройки уведомлений будут сброшены к значениям по умолчанию.`
+  /// `All notification settings will be reset to their default values.`
   String get all_notification_settings_will_be_reset_to_their_default_values {
     return Intl.message(
-      'Все настройки уведомлений будут сброшены к значениям по умолчанию.',
+      'All notification settings will be reset to their default values.',
       name: 'all_notification_settings_will_be_reset_to_their_default_values',
       desc: '',
       args: [],
     );
   }
 
-  /// `Настройки сброшены`
+  /// `Settings have been reset`
   String get settings_have_been_reset {
     return Intl.message(
-      'Настройки сброшены',
+      'Settings have been reset',
       name: 'settings_have_been_reset',
       desc: '',
       args: [],
     );
   }
 
-  /// `Сбросить`
+  /// `Reset`
   String get throw_off {
-    return Intl.message('Сбросить', name: 'throw_off', desc: '', args: []);
+    return Intl.message('Reset', name: 'throw_off', desc: '', args: []);
   }
 
-  /// `Настройки сохраняются автоматически и применяются к новым уведомлениям.`
+  /// `Settings are saved automatically and applied to new notifications.`
   String get settings_are_saved_automatically_and_applied_to_new_notifications {
     return Intl.message(
-      'Настройки сохраняются автоматически и применяются к новым уведомлениям.',
+      'Settings are saved automatically and applied to new notifications.',
       name: 'settings_are_saved_automatically_and_applied_to_new_notifications',
       desc: '',
       args: [],
     );
   }
 
-  /// `Настройка тихих часов`
+  /// `Setting up quiet hours`
   String get setting_up_a_quiet_clock {
     return Intl.message(
-      'Настройка тихих часов',
+      'Setting up quiet hours',
       name: 'setting_up_a_quiet_clock',
       desc: '',
       args: [],
     );
   }
 
-  /// `Настройка тихих часов будет добавлена в следующем обновлении.`
+  /// `The quiet hours setting will be added in the next update.`
   String get the_quiet_clock_setting_will_be_added_in_the_next_update {
     return Intl.message(
-      'Настройка тихих часов будет добавлена в следующем обновлении.',
+      'The quiet hours setting will be added in the next update.',
       name: 'the_quiet_clock_setting_will_be_added_in_the_next_update',
       desc: '',
       args: [],
     );
   }
 
-  /// `Основные настройки`
+  /// `Basic settings`
   String get basic_settings {
     return Intl.message(
-      'Основные настройки',
+      'Basic settings',
       name: 'basic_settings',
       desc: '',
       args: [],
     );
   }
 
-  /// `Включить уведомления`
+  /// `Enable notifications`
   String get enable_notifications {
     return Intl.message(
-      'Включить уведомления',
+      'Enable notifications',
       name: 'enable_notifications',
       desc: '',
       args: [],
     );
   }
 
-  /// `Звук`
+  /// `Sound`
   String get sound {
-    return Intl.message('Звук', name: 'sound', desc: '', args: []);
+    return Intl.message('Sound', name: 'sound', desc: '', args: []);
   }
 
-  /// `Вибрация`
+  /// `Vibration`
   String get vibration {
-    return Intl.message('Вибрация', name: 'vibration', desc: '', args: []);
+    return Intl.message('Vibration', name: 'vibration', desc: '', args: []);
   }
 
-  /// `Значок счётчика`
+  /// `Counter icon`
   String get the_counter_icon {
     return Intl.message(
-      'Значок счётчика',
+      'Counter icon',
       name: 'the_counter_icon',
       desc: '',
       args: [],
     );
   }
 
-  /// `Показывать содержимое`
+  /// `Show content`
   String get show_content {
     return Intl.message(
-      'Показывать содержимое',
+      'Show content',
       name: 'show_content',
       desc: '',
       args: [],
     );
   }
 
-  /// `Тихий режим`
+  /// `Quiet mode`
   String get quiet_mode {
-    return Intl.message('Тихий режим', name: 'quiet_mode', desc: '', args: []);
+    return Intl.message('Quiet mode', name: 'quiet_mode', desc: '', args: []);
   }
 
-  /// `Тихие часы`
+  /// `Quiet hours`
   String get quiet_hours {
-    return Intl.message('Тихие часы', name: 'quiet_hours', desc: '', args: []);
+    return Intl.message('Quiet hours', name: 'quiet_hours', desc: '', args: []);
   }
 
-  /// `Настроить`
+  /// `Configure`
   String get to_configure {
-    return Intl.message('Настроить', name: 'to_configure', desc: '', args: []);
+    return Intl.message('Configure', name: 'to_configure', desc: '', args: []);
   }
 
-  /// `Типы уведомлений`
+  /// `Types of notifications`
   String get types_of_notifications {
     return Intl.message(
-      'Типы уведомлений',
+      'Types of notifications',
       name: 'types_of_notifications',
       desc: '',
       args: [],
     );
   }
 
-  /// `Сообщения`
+  /// `Messages`
   String get messages {
-    return Intl.message('Сообщения', name: 'messages', desc: '', args: []);
+    return Intl.message('Messages', name: 'messages', desc: '', args: []);
   }
 
-  /// `Новые сообщения в чатах`
+  /// `New chat messages`
   String get new_chat_messages {
     return Intl.message(
-      'Новые сообщения в чатах',
+      'New chat messages',
       name: 'new_chat_messages',
       desc: '',
       args: [],
     );
   }
 
-  /// `Запросы в друзья`
+  /// `Friend requests`
   String get friend_requests {
     return Intl.message(
-      'Запросы в друзья',
+      'Friend requests',
       name: 'friend_requests',
       desc: '',
       args: [],
     );
   }
 
-  /// `Новые запросы на добавление в друзья`
+  /// `New friend requests`
   String get new_friend_requests {
     return Intl.message(
-      'Новые запросы на добавление в друзья',
+      'New friend requests',
       name: 'new_friend_requests',
       desc: '',
       args: [],
     );
   }
 
-  /// `Системные уведомления`
+  /// `System notifications`
   String get system_notifications {
     return Intl.message(
-      'Системные уведомления',
+      'System notifications',
       name: 'system_notifications',
       desc: '',
       args: [],
     );
   }
 
-  /// `Обновления и системные сообщения`
+  /// `Updates and system messages`
   String get updates_and_system_messages {
     return Intl.message(
-      'Обновления и системные сообщения',
+      'Updates and system messages',
       name: 'updates_and_system_messages',
       desc: '',
       args: [],
     );
   }
 
-  /// `Аккаунт`
+  /// `Account`
   String get account {
-    return Intl.message('Аккаунт', name: 'account', desc: '', args: []);
+    return Intl.message('Account', name: 'account', desc: '', args: []);
   }
 
-  /// `Дата регистрации:`
+  /// `Registration date:`
   String get registration_date {
     return Intl.message(
-      'Дата регистрации:',
+      'Registration date:',
       name: 'registration_date',
       desc: '',
       args: [],
     );
   }
 
-  /// `Роли:`
+  /// `Roles:`
   String get roles {
-    return Intl.message('Роли:', name: 'roles', desc: '', args: []);
+    return Intl.message('Roles:', name: 'roles', desc: '', args: []);
   }
 
-  /// `О себе`
+  /// `About me`
   String get about_me {
-    return Intl.message('О себе', name: 'about_me', desc: '', args: []);
+    return Intl.message('About me', name: 'about_me', desc: '', args: []);
   }
 
-  /// `Подтвержден`
+  /// `Confirmed`
   String get confirmed {
-    return Intl.message('Подтвержден', name: 'confirmed', desc: '', args: []);
+    return Intl.message('Confirmed', name: 'confirmed', desc: '', args: []);
   }
 
-  /// `Администратор`
+  /// `Administrator`
   String get administrator {
     return Intl.message(
-      'Администратор',
+      'Administrator',
       name: 'administrator',
       desc: '',
       args: [],
     );
   }
 
-  /// `Модератор`
+  /// `Moderator`
   String get moderator {
-    return Intl.message('Модератор', name: 'moderator', desc: '', args: []);
+    return Intl.message('Moderator', name: 'moderator', desc: '', args: []);
   }
 
-  /// `Цели`
+  /// `Goals`
   String get goals {
-    return Intl.message('Цели', name: 'goals', desc: '', args: []);
+    return Intl.message('Goals', name: 'goals', desc: '', args: []);
   }
 
-  /// `Фото`
+  /// `Photo`
   String get photo {
-    return Intl.message('Фото', name: 'photo', desc: '', args: []);
+    return Intl.message('Photo', name: 'photo', desc: '', args: []);
   }
 
-  /// `Ошибка загрузки. Нажмите для повтора`
+  /// `Download error. Click to retry`
   String get download_error_click_to_repeat {
     return Intl.message(
-      'Ошибка загрузки. Нажмите для повтора',
+      'Download error. Click to retry',
       name: 'download_error_click_to_repeat',
       desc: '',
       args: [],
     );
   }
 
-  /// `Не удалось загрузить изображение. Нажмите для повтора`
+  /// `Failed to load image. Click to retry`
   String get failed_to_load_image_click_to_retry {
     return Intl.message(
-      'Не удалось загрузить изображение. Нажмите для повтора',
+      'Failed to load image. Click to retry',
       name: 'failed_to_load_image_click_to_retry',
       desc: '',
       args: [],
     );
   }
 
-  /// `Пока нет фотографий`
+  /// `There are no photos yet`
   String get there_are_no_photos_yet {
     return Intl.message(
-      'Пока нет фотографий',
+      'There are no photos yet',
       name: 'there_are_no_photos_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавьте фото, чтобы другие пользователи могли вас узнать`
+  /// `Add a photo so other users can recognize you`
   String get add_a_photo_so_that_other_users_can_recognize_you {
     return Intl.message(
-      'Добавьте фото, чтобы другие пользователи могли вас узнать',
+      'Add a photo so other users can recognize you',
       name: 'add_a_photo_so_that_other_users_can_recognize_you',
       desc: '',
       args: [],
     );
   }
 
-  /// `Выберите интересы`
+  /// `Choose your interests`
   String get choose_your_interests {
     return Intl.message(
-      'Выберите интересы',
+      'Choose your interests',
       name: 'choose_your_interests',
       desc: '',
       args: [],
     );
   }
 
-  /// `Поиск интересов...`
+  /// `Search interests...`
   String get search_for_interests {
     return Intl.message(
-      'Поиск интересов...',
+      'Search interests...',
       name: 'search_for_interests',
       desc: '',
       args: [],
     );
   }
 
-  /// `Применить`
+  /// `Apply`
   String get apply {
-    return Intl.message('Применить', name: 'apply', desc: '', args: []);
+    return Intl.message('Apply', name: 'apply', desc: '', args: []);
   }
 
-  /// `Выберите цели`
+  /// `Select goals`
   String get select_goals {
     return Intl.message(
-      'Выберите цели',
+      'Select goals',
       name: 'select_goals',
       desc: '',
       args: [],
     );
   }
 
-  /// `Поиск целей...`
+  /// `Goal search...`
   String get goal_search {
     return Intl.message(
-      'Поиск целей...',
+      'Goal search...',
       name: 'goal_search',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ошибка загрузки профиля`
+  /// `Profile upload error`
   String get profile_upload_error {
     return Intl.message(
-      'Ошибка загрузки профиля',
+      'Profile upload error',
       name: 'profile_upload_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `Мои жалобы`
+  /// `My complaints`
   String get my_complaints {
     return Intl.message(
-      'Мои жалобы',
+      'My complaints',
       name: 'my_complaints',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вопрос успешно создан`
+  /// `The question was created successfully`
   String get the_question_was_created_successfully {
     return Intl.message(
-      'Вопрос успешно создан',
+      'The question was created successfully',
       name: 'the_question_was_created_successfully',
       desc: '',
       args: [],
     );
   }
 
-  /// `Статус обновлен`
+  /// `Status updated`
   String get status_updated {
     return Intl.message(
-      'Статус обновлен',
+      'Status updated',
       name: 'status_updated',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вопросов пока нет`
+  /// `No questions yet`
   String get no_questions_yet {
     return Intl.message(
-      'Вопросов пока нет',
+      'No questions yet',
       name: 'no_questions_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Нажмите "+" чтобы создать вопрос`
+  /// `Click "+" to create a question`
   String get click_plus_to_create_a_question {
     return Intl.message(
-      'Нажмите "+" чтобы создать вопрос',
+      'Click "+" to create a question',
       name: 'click_plus_to_create_a_question',
       desc: '',
       args: [],
     );
   }
 
-  /// `Произошла ошибка`
+  /// `An error has occurred`
   String get an_error_has_occurred {
     return Intl.message(
-      'Произошла ошибка',
+      'An error has occurred',
       name: 'an_error_has_occurred',
       desc: '',
       args: [],
     );
   }
 
-  /// `Автор:`
+  /// `Author:`
   String get author {
-    return Intl.message('Автор:', name: 'author', desc: '', args: []);
+    return Intl.message('Author:', name: 'author', desc: '', args: []);
   }
 
-  /// `Создать вопрос`
+  /// `Create a question`
   String get create_a_question {
     return Intl.message(
-      'Создать вопрос',
+      'Create a question',
       name: 'create_a_question',
       desc: '',
       args: [],
     );
   }
 
-  /// `Заголовок`
+  /// `Heading`
   String get heading {
-    return Intl.message('Заголовок', name: 'heading', desc: '', args: []);
+    return Intl.message('Heading', name: 'heading', desc: '', args: []);
   }
 
-  /// `Введите заголовок`
+  /// `Enter the title`
   String get enter_the_title {
     return Intl.message(
-      'Введите заголовок',
+      'Enter the title',
       name: 'enter_the_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Введите описание`
+  /// `Enter a description`
   String get enter_a_description {
     return Intl.message(
-      'Введите описание',
+      'Enter a description',
       name: 'enter_a_description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Создать`
+  /// `Create`
   String get to_create {
-    return Intl.message('Создать', name: 'to_create', desc: '', args: []);
+    return Intl.message('Create', name: 'to_create', desc: '', args: []);
   }
 
-  /// `Информация`
+  /// `Information`
   String get information {
-    return Intl.message('Информация', name: 'information', desc: '', args: []);
+    return Intl.message('Information', name: 'information', desc: '', args: []);
   }
 
-  /// `Создан`
+  /// `Generated`
   String get generated {
-    return Intl.message('Создан', name: 'generated', desc: '', args: []);
+    return Intl.message('Generated', name: 'generated', desc: '', args: []);
   }
 
-  /// `Обновлен`
+  /// `Updated`
   String get updated {
-    return Intl.message('Обновлен', name: 'updated', desc: '', args: []);
+    return Intl.message('Updated', name: 'updated', desc: '', args: []);
   }
 
-  /// `ID вопроса`
+  /// `Question ID`
   String get question_id {
-    return Intl.message('ID вопроса', name: 'question_id', desc: '', args: []);
+    return Intl.message('Question ID', name: 'question_id', desc: '', args: []);
   }
 
-  /// `Ответы`
+  /// `Answers`
   String get answers {
-    return Intl.message('Ответы', name: 'answers', desc: '', args: []);
+    return Intl.message('Answers', name: 'answers', desc: '', args: []);
   }
 
-  /// `Добавить ответ`
+  /// `Add a response`
   String get add_a_response {
     return Intl.message(
-      'Добавить ответ',
+      'Add a response',
       name: 'add_a_response',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ответов пока нет`
+  /// `No answers yet`
   String get there_are_no_answers_yet {
     return Intl.message(
-      'Ответов пока нет',
+      'No answers yet',
       name: 'there_are_no_answers_yet',
       desc: '',
       args: [],
     );
   }
 
-  /// `Введите ваш ответ...`
+  /// `Enter your answer...`
   String get enter_your_answer {
     return Intl.message(
-      'Введите ваш ответ...',
+      'Enter your answer...',
       name: 'enter_your_answer',
       desc: '',
       args: [],
     );
   }
 
-  /// `ОЖИДАЕТ`
+  /// `AWAITING`
   String get AWAITING {
-    return Intl.message('ОЖИДАЕТ', name: 'AWAITING', desc: '', args: []);
+    return Intl.message('AWAITING', name: 'AWAITING', desc: '', args: []);
   }
 
-  /// `ПОЛУЧЕНО`
+  /// `RECEIVED`
   String get RECEIVED {
-    return Intl.message('ПОЛУЧЕНО', name: 'RECEIVED', desc: '', args: []);
+    return Intl.message('RECEIVED', name: 'RECEIVED', desc: '', args: []);
   }
 
-  /// `РЕШЕНО`
+  /// `RESOLVED`
   String get ITSDECIDED {
-    return Intl.message('РЕШЕНО', name: 'ITSDECIDED', desc: '', args: []);
+    return Intl.message('RESOLVED', name: 'ITSDECIDED', desc: '', args: []);
   }
 
-  /// `Вопросы не найдены`
+  /// `No questions found`
   String get no_questions_found {
     return Intl.message(
-      'Вопросы не найдены',
+      'No questions found',
       name: 'no_questions_found',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ответов:`
+  /// `Responses:`
   String get responses {
-    return Intl.message('Ответов:', name: 'responses', desc: '', args: []);
+    return Intl.message('Responses:', name: 'responses', desc: '', args: []);
   }
 
-  /// `Добавьте аватар профиля`
+  /// `Add a profile avatar`
   String get add_a_profile_avatar {
     return Intl.message(
-      'Добавьте аватар профиля',
+      'Add a profile avatar',
       name: 'add_a_profile_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `Аватар выбран. Подтвердите загрузку.`
+  /// `Avatar selected. Confirm upload.`
   String get the_avatar_is_selected_confirm_the_upload {
     return Intl.message(
-      'Аватар выбран. Подтвердите загрузку.',
+      'Avatar selected. Confirm upload.',
       name: 'the_avatar_is_selected_confirm_the_upload',
       desc: '',
       args: [],
     );
   }
 
-  /// `Загрузка аватара...`
+  /// `Uploading an avatar...`
   String get uploading_an_avatar {
     return Intl.message(
-      'Загрузка аватара...',
+      'Uploading an avatar...',
       name: 'uploading_an_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `Аватар успешно загружен!`
+  /// `The avatar has been uploaded successfully!`
   String get the_avatar_has_been_uploaded_successfully {
     return Intl.message(
-      'Аватар успешно загружен!',
+      'The avatar has been uploaded successfully!',
       name: 'the_avatar_has_been_uploaded_successfully',
       desc: '',
       args: [],
     );
   }
 
-  /// `Выбрать аватар`
+  /// `Choose an avatar`
   String get choose_an_avatar {
     return Intl.message(
-      'Выбрать аватар',
+      'Choose an avatar',
       name: 'choose_an_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `Подтвердить и загрузить аватар`
+  /// `Confirm and upload your avatar`
   String get confirm_and_upload_your_avatar {
     return Intl.message(
-      'Подтвердить и загрузить аватар',
+      'Confirm and upload your avatar',
       name: 'confirm_and_upload_your_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `Удалить аватар`
+  /// `Delete an avatar`
   String get delete_an_avatar {
     return Intl.message(
-      'Удалить аватар',
+      'Delete an avatar',
       name: 'delete_an_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `Изменить аватар`
+  /// `Change your avatar`
   String get change_your_avatar {
     return Intl.message(
-      'Изменить аватар',
+      'Change your avatar',
       name: 'change_your_avatar',
       desc: '',
       args: [],
     );
   }
 
-  /// `10 изображений`
+  /// `10 images`
   String get ten_images {
-    return Intl.message(
-      '10 изображений',
-      name: 'ten_images',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('10 images', name: 'ten_images', desc: '', args: []);
   }
 
-  /// `Добавьте изображения в галерею`
+  /// `Add images to the gallery`
   String get add_images_to_the_gallery {
     return Intl.message(
-      'Добавьте изображения в галерею',
+      'Add images to the gallery',
       name: 'add_images_to_the_gallery',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавить еще изображения`
+  /// `Add more images`
   String get add_more_images {
     return Intl.message(
-      'Добавить еще изображения',
+      'Add more images',
       name: 'add_more_images',
       desc: '',
       args: [],
     );
   }
 
-  /// `Добавить изображения`
+  /// `Add images`
   String get add_Images {
-    return Intl.message(
-      'Добавить изображения',
-      name: 'add_Images',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Add images', name: 'add_Images', desc: '', args: []);
   }
 
-  /// `Достигнут лимит в 10 изображений`
+  /// `The limit of 10 images has been reached`
   String get the_limit_of_ten_images_has_been_reached {
     return Intl.message(
-      'Достигнут лимит в 10 изображений',
+      'The limit of 10 images has been reached',
       name: 'the_limit_of_ten_images_has_been_reached',
       desc: '',
       args: [],
     );
   }
 
-  /// `Перейти на главный экран`
+  /// `Go to the main screen`
   String get go_to_the_main_screen {
     return Intl.message(
-      'Перейти на главный экран',
+      'Go to the main screen',
       name: 'go_to_the_main_screen',
       desc: '',
       args: [],
     );
   }
 
-  /// `Загрузка изображений`
+  /// `Uploading images`
   String get uploading_images {
     return Intl.message(
-      'Загрузка изображений',
+      'Uploading images',
       name: 'uploading_images',
       desc: '',
       args: [],
     );
   }
 
-  /// `Постоянные`
+  /// `Permanent`
   String get permanent {
-    return Intl.message('Постоянные', name: 'permanent', desc: '', args: []);
+    return Intl.message('Permanent', name: 'permanent', desc: '', args: []);
   }
 
-  /// `Временные`
+  /// `Temporary`
   String get temporary {
-    return Intl.message('Временные', name: 'temporary', desc: '', args: []);
+    return Intl.message('Temporary', name: 'temporary', desc: '', args: []);
   }
 
-  /// `Все`
+  /// `All`
   String get all {
-    return Intl.message('Все', name: 'all', desc: '', args: []);
+    return Intl.message('All', name: 'all', desc: '', args: []);
   }
 
-  /// `Удалить фото`
+  /// `Delete photo`
   String get delete_photo {
     return Intl.message(
-      'Удалить фото',
+      'Delete photo',
       name: 'delete_photo',
       desc: '',
       args: [],
     );
   }
 
-  /// `Вы уверены, что хотите удалить это фото?`
+  /// `Are you sure you want to delete this photo?`
   String get are_you_sure_you_want_to_delete_this_photo {
     return Intl.message(
-      'Вы уверены, что хотите удалить это фото?',
+      'Are you sure you want to delete this photo?',
       name: 'are_you_sure_you_want_to_delete_this_photo',
       desc: '',
       args: [],
     );
   }
 
-  /// `Подтвердите удаление`
+  /// `Confirm delete`
   String get confirm_delete {
     return Intl.message(
-      'Подтвердите удаление',
+      'Confirm delete',
       name: 'confirm_delete',
       desc: '',
       args: [],
@@ -3275,64 +3285,64 @@ class S {
     );
   }
 
-  /// `all_interests_loaded`
+  /// `All interests loaded`
   String get all_interests_loaded {
     return Intl.message(
-      'all_interests_loaded',
+      'All interests loaded',
       name: 'all_interests_loaded',
       desc: '',
       args: [],
     );
   }
 
-  /// `interest_load_error`
+  /// `Interest load error`
   String get interest_load_error {
     return Intl.message(
-      'interest_load_error',
+      'Interest load error',
       name: 'interest_load_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `purpose_load_error`
+  /// `Purpose load error`
   String get purpose_load_error {
     return Intl.message(
-      'purpose_load_error',
+      'Purpose load error',
       name: 'purpose_load_error',
       desc: '',
       args: [],
     );
   }
 
-  /// `Попробуйте другой поисковый запрос`
+  /// `Try a different search query`
   String get tryDifferentSearch {
     return Intl.message(
-      'Попробуйте другой поисковый запрос',
+      'Try a different search query',
       name: 'tryDifferentSearch',
       desc: '',
       args: [],
     );
   }
 
-  /// `Ничего не найдено`
+  /// `Nothing found`
   String get nothingFound {
     return Intl.message(
-      'Ничего не найдено',
+      'Nothing found',
       name: 'nothingFound',
       desc: '',
       args: [],
     );
   }
 
-  /// `скоро`
+  /// `soon`
   String get soon {
-    return Intl.message('скоро', name: 'soon', desc: '', args: []);
+    return Intl.message('soon', name: 'soon', desc: '', args: []);
   }
 
-  /// `м`
+  /// `m`
   String get Minuttt {
-    return Intl.message('м', name: 'Minuttt', desc: '', args: []);
+    return Intl.message('m', name: 'Minuttt', desc: '', args: []);
   }
 
   /// `Status:`
@@ -3355,6 +3365,411 @@ class S {
     return Intl.message(
       'In processing',
       name: 'inProcessing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have been blocked`
+  String get youHaveBeenBlocked {
+    return Intl.message(
+      'You have been blocked',
+      name: 'youHaveBeenBlocked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your account will be deleted within 30 days`
+  String get yourAccountWillBeDeletedWithin30Days {
+    return Intl.message(
+      'Your account will be deleted within 30 days',
+      name: 'yourAccountWillBeDeletedWithin30Days',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To unlock or find out the reason for the lock`
+  String get toUnlockOrFindOutTheReasonForTheLock {
+    return Intl.message(
+      'To unlock or find out the reason for the lock',
+      name: 'toUnlockOrFindOutTheReasonForTheLock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `write to support`
+  String get writeToSupport {
+    return Intl.message(
+      'write to support',
+      name: 'writeToSupport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `contact support`
+  String get contactSupport {
+    return Intl.message(
+      'contact support',
+      name: 'contactSupport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For a reason:`
+  String get forAReason {
+    return Intl.message(
+      'For a reason:',
+      name: 'forAReason',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Click to change the subject`
+  String get clickToChangeTheSubject {
+    return Intl.message(
+      'Click to change the subject',
+      name: 'clickToChangeTheSubject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect and communicate easily`
+  String get connectAndCommunicateEasily {
+    return Intl.message(
+      'Connect and communicate easily',
+      name: 'connectAndCommunicateEasily',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login`
+  String get login {
+    return Intl.message('Login', name: 'login', desc: '', args: []);
+  }
+
+  /// `Your world of dating and communication`
+  String get appTagline {
+    return Intl.message(
+      'Your world of dating and communication',
+      name: 'appTagline',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get to know the personality — before you see the face.`
+  String get appDescription {
+    return Intl.message(
+      'Get to know the personality — before you see the face.',
+      name: 'appDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `📃 App Description`
+  String get appDescriptionTitle {
+    return Intl.message(
+      '📃 App Description',
+      name: 'appDescriptionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `MNA is a unique dating app where first impressions are based on communication, not appearance. Forget endless swiping! Just press 'Search', chat anonymously, and if you both want to — open profiles and continue getting to know each other.`
+  String get appDescriptionText {
+    return Intl.message(
+      'MNA is a unique dating app where first impressions are based on communication, not appearance. Forget endless swiping! Just press \'Search\', chat anonymously, and if you both want to — open profiles and continue getting to know each other.',
+      name: 'appDescriptionText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🔧 Main Features of MNA`
+  String get mainFeaturesTitle {
+    return Intl.message(
+      '🔧 Main Features of MNA',
+      name: 'mainFeaturesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Anonymous Start (Blind Chat)`
+  String get featureBlindChatTitle {
+    return Intl.message(
+      'Anonymous Start (Blind Chat)',
+      name: 'featureBlindChatTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Temporary chat with hidden information. Chat time is limited to 5-10 minutes.`
+  String get featureBlindChatDescription {
+    return Intl.message(
+      'Temporary chat with hidden information. Chat time is limited to 5-10 minutes.',
+      name: 'featureBlindChatDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mutual Profile Reveal`
+  String get featureRevealProfilesTitle {
+    return Intl.message(
+      'Mutual Profile Reveal',
+      name: 'featureRevealProfilesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profiles open only with mutual consent of both users.`
+  String get featureRevealProfilesDescription {
+    return Intl.message(
+      'Profiles open only with mutual consent of both users.',
+      name: 'featureRevealProfilesDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Adding Friends`
+  String get featureAddFriendsTitle {
+    return Intl.message(
+      'Adding Friends',
+      name: 'featureAddFriendsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ability to continue communication and add to friends after profile reveal.`
+  String get featureAddFriendsDescription {
+    return Intl.message(
+      'Ability to continue communication and add to friends after profile reveal.',
+      name: 'featureAddFriendsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User Profile`
+  String get featureUserProfileTitle {
+    return Intl.message(
+      'User Profile',
+      name: 'featureUserProfileTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detailed user information including interests and biography.`
+  String get featureUserProfileDescription {
+    return Intl.message(
+      'Detailed user information including interests and biography.',
+      name: 'featureUserProfileDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🌟 Additional Features`
+  String get additionalFeaturesTitle {
+    return Intl.message(
+      '🌟 Additional Features',
+      name: 'additionalFeaturesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `💡 Conversation Topics`
+  String get chipTopics {
+    return Intl.message(
+      '💡 Conversation Topics',
+      name: 'chipTopics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎭 Avatars instead of photos`
+  String get chipAvatars {
+    return Intl.message(
+      '🎭 Avatars instead of photos',
+      name: 'chipAvatars',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎲 Question of the Day`
+  String get chipQuestionOfTheDay {
+    return Intl.message(
+      '🎲 Question of the Day',
+      name: 'chipQuestionOfTheDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🧩 Interest Matching`
+  String get chipInterestMatching {
+    return Intl.message(
+      '🧩 Interest Matching',
+      name: 'chipInterestMatching',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🔔 Second Chance`
+  String get chipSecondChance {
+    return Intl.message(
+      '🔔 Second Chance',
+      name: 'chipSecondChance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🕹 Mini-games in chat`
+  String get chipMiniGames {
+    return Intl.message(
+      '🕹 Mini-games in chat',
+      name: 'chipMiniGames',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🔐 Security and Privacy`
+  String get securityTitle {
+    return Intl.message(
+      '🔐 Security and Privacy',
+      name: 'securityTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• All chats are encrypted\n• Complaints/blocking in 1 click\n• 'Hide me from search' feature`
+  String get securityText {
+    return Intl.message(
+      '• All chats are encrypted\n• Complaints/blocking in 1 click\n• \'Hide me from search\' feature',
+      name: 'securityText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `📲 Technologies`
+  String get technologiesTitle {
+    return Intl.message(
+      '📲 Technologies',
+      name: 'technologiesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `• Flutter (cross-platform)\n• PostgreSQL\n• Java + SpringBoot`
+  String get technologiesText {
+    return Intl.message(
+      '• Flutter (cross-platform)\n• PostgreSQL\n• Java + SpringBoot',
+      name: 'technologiesText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `📞 Feedback`
+  String get feedbackTitle {
+    return Intl.message(
+      '📞 Feedback',
+      name: 'feedbackTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Support Email`
+  String get supportEmailTitle {
+    return Intl.message(
+      'Support Email',
+      name: 'supportEmailTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mna_dev@mnapp.ru`
+  String get supportEmail {
+    return Intl.message(
+      'mna_dev@mnapp.ru',
+      name: 'supportEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Telegram Channel`
+  String get supportTelegramTitle {
+    return Intl.message(
+      'Telegram Channel',
+      name: 'supportTelegramTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `@meetnadev`
+  String get supportTelegram {
+    return Intl.message(
+      '@meetnadev',
+      name: 'supportTelegram',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User Not Available`
+  String get userNotAvailable {
+    return Intl.message(
+      'User Not Available',
+      name: 'userNotAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error initializing chat`
+  String get error_initializing_chat {
+    return Intl.message(
+      'Error initializing chat',
+      name: 'error_initializing_chat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `СhatId not available`
+  String get chat_id_not_available {
+    return Intl.message(
+      'СhatId not available',
+      name: 'chat_id_not_available',
       desc: '',
       args: [],
     );

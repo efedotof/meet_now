@@ -48,7 +48,6 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
         animationUrl: animationPresignedUrl,
       );
     } catch (e) {
-      debugPrint('Ошибка при обработке URL для подарка ${gift.id}: $e');
       return gift;
     }
   }
@@ -222,9 +221,6 @@ class _GiftDetailsSheetState extends State<GiftDetailsSheet> {
                                 ),
                               ),
                           errorWidget: (context, url, error) {
-                            debugPrint(
-                              'Ошибка загрузки изображения подарка: $url, $error',
-                            );
                             return Container(
                               height: 150,
                               width: 150,

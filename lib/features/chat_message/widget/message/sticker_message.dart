@@ -52,7 +52,6 @@ class _StickerMessageState extends State<StickerMessage> {
 
       return presignedUrl;
     } catch (e) {
-      debugPrint('Error getting sticker URL: $e');
       throw Exception('Failed to load sticker: $e');
     }
   }

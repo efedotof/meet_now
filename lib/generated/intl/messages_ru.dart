@@ -65,14 +65,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Добавить в друзья?",
     ),
     "added": MessageLookupByLibrary.simpleMessage("Добавлено"),
+    "additionalFeaturesTitle": MessageLookupByLibrary.simpleMessage(
+      "🌟 Дополнительные функции",
+    ),
     "additionalcomments": MessageLookupByLibrary.simpleMessage(
-      "additionalComments",
+      "Дополнительные комментарии",
     ),
     "administrator": MessageLookupByLibrary.simpleMessage("Администратор"),
     "age": MessageLookupByLibrary.simpleMessage("Возраст"),
     "all": MessageLookupByLibrary.simpleMessage("Все"),
     "all_interests_loaded": MessageLookupByLibrary.simpleMessage(
-      "all_interests_loaded",
+      "Все интересы загружены",
     ),
     "all_messages_are_saved": MessageLookupByLibrary.simpleMessage(
       "Все сообщения сохранены.",
@@ -94,7 +97,19 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "anonymous_chat": MessageLookupByLibrary.simpleMessage("Анонимный чат"),
     "answers": MessageLookupByLibrary.simpleMessage("Ответы"),
+    "appDescription": MessageLookupByLibrary.simpleMessage(
+      "Познакомься с личностью — прежде чем увидеть лицо.",
+    ),
+    "appDescriptionText": MessageLookupByLibrary.simpleMessage(
+      "MNA — уникальное приложение для знакомств, где первое впечатление строится не на внешности, а на общении. Забудь о бесконечных свайпах! Просто нажми \'Поиск\', пообщайся в анонимном чате, и если вы оба захотите — откройте анкеты и продолжите знакомство.",
+    ),
+    "appDescriptionTitle": MessageLookupByLibrary.simpleMessage(
+      "📃 Описание приложения",
+    ),
     "appSettings": MessageLookupByLibrary.simpleMessage("Настройки приложения"),
+    "appTagline": MessageLookupByLibrary.simpleMessage(
+      "Твой мир знакомств и общения",
+    ),
     "apply": MessageLookupByLibrary.simpleMessage("Применить"),
     "are_you_sure_you_want_to_delete_this_photo":
         MessageLookupByLibrary.simpleMessage(
@@ -114,19 +129,21 @@ class MessageLookup extends MessageLookupByLibrary {
       "Доступные команды",
     ),
     "avatarupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
-      "avatarUpdatedSuccessfully",
+      "Аватар успешно обновлен",
     ),
     "avataruploadfailed": MessageLookupByLibrary.simpleMessage(
-      "avatarUploadFailed",
+      "Ошибка загрузки аватара",
     ),
     "background": MessageLookupByLibrary.simpleMessage("Фон"),
     "basic_settings": MessageLookupByLibrary.simpleMessage(
       "Основные настройки",
     ),
-    "block": MessageLookupByLibrary.simpleMessage("block"),
-    "blockuser": MessageLookupByLibrary.simpleMessage("BlockUser"),
+    "block": MessageLookupByLibrary.simpleMessage("Заблокировать"),
+    "blockuser": MessageLookupByLibrary.simpleMessage(
+      "Заблокировать пользователя",
+    ),
     "blockuserconfirmation": MessageLookupByLibrary.simpleMessage(
-      "blockUserConfirmation",
+      "Подтверждение блокировки пользователя",
     ),
     "books": MessageLookupByLibrary.simpleMessage("Книги"),
     "buy": MessageLookupByLibrary.simpleMessage("Купить"),
@@ -138,17 +155,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "change_your_avatar": MessageLookupByLibrary.simpleMessage(
       "Изменить аватар",
     ),
-    "changepassword": MessageLookupByLibrary.simpleMessage("changePassword"),
+    "changepassword": MessageLookupByLibrary.simpleMessage("Изменить пароль"),
     "chat": MessageLookupByLibrary.simpleMessage("Чат"),
     "chatTimeEnding": MessageLookupByLibrary.simpleMessage(
       "Время чата подходит к концу",
+    ),
+    "chat_id_not_available": MessageLookupByLibrary.simpleMessage(
+      "Идентификатор чата недоступен",
     ),
     "chat_time_has_expired_the_chat_will_be_terminated":
         MessageLookupByLibrary.simpleMessage(
           "Время чата истекло. Чат будет завершен.",
         ),
-    "chatdeleted": MessageLookupByLibrary.simpleMessage("chatDeleted"),
+    "chatdeleted": MessageLookupByLibrary.simpleMessage("Чат удален"),
     "chats": MessageLookupByLibrary.simpleMessage("Чаты"),
+    "chipAvatars": MessageLookupByLibrary.simpleMessage(
+      "🎭 Аватары вместо фото",
+    ),
+    "chipInterestMatching": MessageLookupByLibrary.simpleMessage(
+      "🧩 Совпадение по интересам",
+    ),
+    "chipMiniGames": MessageLookupByLibrary.simpleMessage(
+      "🕹 Мини-игры в чате",
+    ),
+    "chipQuestionOfTheDay": MessageLookupByLibrary.simpleMessage(
+      "🎲 Вопрос дня",
+    ),
+    "chipSecondChance": MessageLookupByLibrary.simpleMessage("🔔 Второй шанс"),
+    "chipTopics": MessageLookupByLibrary.simpleMessage("💡 Темы для общения"),
     "chooseTheme": MessageLookupByLibrary.simpleMessage(
       "Выберите тему оформления",
     ),
@@ -163,10 +197,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "cityOptional": MessageLookupByLibrary.simpleMessage(
       "Город (необязательно)",
     ),
-    "clear": MessageLookupByLibrary.simpleMessage("clear"),
-    "clearHistory": MessageLookupByLibrary.simpleMessage("Clear History"),
+    "clear": MessageLookupByLibrary.simpleMessage("Очистить"),
+    "clearHistory": MessageLookupByLibrary.simpleMessage("Очистить историю"),
     "clearhistoryconfirmation": MessageLookupByLibrary.simpleMessage(
-      "clearHistoryConfirmation",
+      "Подтверждение очистки истории",
+    ),
+    "clickToChangeTheSubject": MessageLookupByLibrary.simpleMessage(
+      "Нажмите чтобы сменить тему",
     ),
     "click_plus_to_create_a_question": MessageLookupByLibrary.simpleMessage(
       "Нажмите \"+\" чтобы создать вопрос",
@@ -183,8 +220,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Подтвердите удаление",
     ),
     "confirmed": MessageLookupByLibrary.simpleMessage("Подтвержден"),
+    "connectAndCommunicateEasily": MessageLookupByLibrary.simpleMessage(
+      "Легко подключайтесь и общайтесь",
+    ),
     "connecting": MessageLookupByLibrary.simpleMessage("подключается..."),
     "constant_chats": MessageLookupByLibrary.simpleMessage("Постоянные чаты"),
+    "contactSupport": MessageLookupByLibrary.simpleMessage(
+      "обратиться в поддержку",
+    ),
     "continue_communication": MessageLookupByLibrary.simpleMessage(
       "Продолжить общение",
     ),
@@ -211,16 +254,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "datingGoals": MessageLookupByLibrary.simpleMessage("Цели знакомств"),
     "day": MessageLookupByLibrary.simpleMessage("д."),
     "days": MessageLookupByLibrary.simpleMessage("дней"),
-    "delete": MessageLookupByLibrary.simpleMessage("delete"),
+    "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
     "delete_a_chat": MessageLookupByLibrary.simpleMessage("Удалить чат"),
     "delete_an_avatar": MessageLookupByLibrary.simpleMessage("Удалить аватар"),
     "delete_for_both": MessageLookupByLibrary.simpleMessage(
       "Удалить для обоих",
     ),
     "delete_photo": MessageLookupByLibrary.simpleMessage("Удалить фото"),
-    "deletechat": MessageLookupByLibrary.simpleMessage("DeleteChat"),
+    "deletechat": MessageLookupByLibrary.simpleMessage("Удалить чат"),
     "deletechatconfirmation": MessageLookupByLibrary.simpleMessage(
-      "deleteChatConfirmation",
+      "Подтверждение удаления чата",
     ),
     "description": MessageLookupByLibrary.simpleMessage("Описание"),
     "do_you_agree": MessageLookupByLibrary.simpleMessage("Вы согласны"),
@@ -274,6 +317,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "error": MessageLookupByLibrary.simpleMessage("Ошибка"),
     "errorPrefix": MessageLookupByLibrary.simpleMessage("Ошибка"),
+    "error_initializing_chat": MessageLookupByLibrary.simpleMessage(
+      "Ошибка при инициализации чата",
+    ),
     "exit": MessageLookupByLibrary.simpleMessage("Выйти"),
     "extendOrQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Хотите продлить время чата или перейти к анкете?",
@@ -284,7 +330,32 @@ class MessageLookup extends MessageLookupByLibrary {
     "failed_to_upload": MessageLookupByLibrary.simpleMessage(
       "Не удалось загрузить",
     ),
-    "fakeprofile": MessageLookupByLibrary.simpleMessage("fakeProfile"),
+    "fakeprofile": MessageLookupByLibrary.simpleMessage("Фальшивый профиль"),
+    "featureAddFriendsDescription": MessageLookupByLibrary.simpleMessage(
+      "Возможность продолжить общение и добавить в друзья после раскрытия анкет.",
+    ),
+    "featureAddFriendsTitle": MessageLookupByLibrary.simpleMessage(
+      "Добавление в друзья",
+    ),
+    "featureBlindChatDescription": MessageLookupByLibrary.simpleMessage(
+      "Временный чат со скрытой информацией. Время общения ограничено 5-10 минутами.",
+    ),
+    "featureBlindChatTitle": MessageLookupByLibrary.simpleMessage(
+      "Анонимный старт (Blind Chat)",
+    ),
+    "featureRevealProfilesDescription": MessageLookupByLibrary.simpleMessage(
+      "Анкеты открываются только при взаимном согласии обоих пользователей.",
+    ),
+    "featureRevealProfilesTitle": MessageLookupByLibrary.simpleMessage(
+      "Взаимное раскрытие анкет",
+    ),
+    "featureUserProfileDescription": MessageLookupByLibrary.simpleMessage(
+      "Подробная информация о пользователе, включая интересы и биографию.",
+    ),
+    "featureUserProfileTitle": MessageLookupByLibrary.simpleMessage(
+      "Анкета пользователя",
+    ),
+    "feedbackTitle": MessageLookupByLibrary.simpleMessage("📞 Обратная связь"),
     "female": MessageLookupByLibrary.simpleMessage("Женский"),
     "finish": MessageLookupByLibrary.simpleMessage("Завершить"),
     "finishOrClose": MessageLookupByLibrary.simpleMessage(
@@ -294,6 +365,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Завершить временный чат?",
     ),
     "firstName": MessageLookupByLibrary.simpleMessage("Имя"),
+    "forAReason": MessageLookupByLibrary.simpleMessage("По причине:"),
     "for_both": MessageLookupByLibrary.simpleMessage("Для обоих"),
     "found": MessageLookupByLibrary.simpleMessage("Найдено"),
     "friend": MessageLookupByLibrary.simpleMessage("Друг"),
@@ -305,7 +377,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "friendsCount": m0,
     "friendship": MessageLookupByLibrary.simpleMessage("Дружба"),
     "from_a_friend": MessageLookupByLibrary.simpleMessage("От друга"),
-    "game": MessageLookupByLibrary.simpleMessage("Game"),
+    "game": MessageLookupByLibrary.simpleMessage("Игра"),
     "game_preparation": MessageLookupByLibrary.simpleMessage(
       "Подготовка игры...",
     ),
@@ -317,16 +389,16 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "goal_search": MessageLookupByLibrary.simpleMessage("Поиск целей..."),
     "goals": MessageLookupByLibrary.simpleMessage("Цели"),
-    "harassment": MessageLookupByLibrary.simpleMessage("harassment"),
+    "harassment": MessageLookupByLibrary.simpleMessage("Домогательство"),
     "have_you_already_received_a_gift_today":
         MessageLookupByLibrary.simpleMessage("Вы уже получили подарок сегодня"),
     "heading": MessageLookupByLibrary.simpleMessage("Заголовок"),
-    "historycleared": MessageLookupByLibrary.simpleMessage("historyCleared"),
+    "historycleared": MessageLookupByLibrary.simpleMessage("История очищена"),
     "hour": MessageLookupByLibrary.simpleMessage("ч."),
-    "inProcessing": MessageLookupByLibrary.simpleMessage("In processing"),
+    "inProcessing": MessageLookupByLibrary.simpleMessage("В обработке"),
     "in_processing": MessageLookupByLibrary.simpleMessage("В обработке"),
     "inappropriatecontent": MessageLookupByLibrary.simpleMessage(
-      "inappropriateContent",
+      "Неподобающий контент",
     ),
     "incorrectPin": MessageLookupByLibrary.simpleMessage("Неверный PIN"),
     "incorrectPinCode": MessageLookupByLibrary.simpleMessage(
@@ -334,7 +406,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "information": MessageLookupByLibrary.simpleMessage("Информация"),
     "interest_load_error": MessageLookupByLibrary.simpleMessage(
-      "interest_load_error",
+      "Ошибка загрузки интересов",
     ),
     "interests": MessageLookupByLibrary.simpleMessage("Интересы"),
     "invalidEmail": MessageLookupByLibrary.simpleMessage("Некорректный email"),
@@ -354,11 +426,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "loadingMessages": MessageLookupByLibrary.simpleMessage(
       "Загрузка сообщений...",
     ),
+    "login": MessageLookupByLibrary.simpleMessage("Войти"),
     "loginButton": MessageLookupByLibrary.simpleMessage("Войти"),
     "login_is_successful": MessageLookupByLibrary.simpleMessage(
       "Вход успешный",
     ),
     "love": MessageLookupByLibrary.simpleMessage("Любовь"),
+    "mainFeaturesTitle": MessageLookupByLibrary.simpleMessage(
+      "🔧 Основной функционал MNA",
+    ),
     "male": MessageLookupByLibrary.simpleMessage("Мужской"),
     "max_age_65": MessageLookupByLibrary.simpleMessage(
       "Максимальный возраст - 65 лет",
@@ -391,7 +467,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "new_friend_requests": MessageLookupByLibrary.simpleMessage(
       "Новые запросы на добавление в друзья",
     ),
-    "newpassword": MessageLookupByLibrary.simpleMessage("newPassword"),
+    "newpassword": MessageLookupByLibrary.simpleMessage("Новый пароль"),
     "next": MessageLookupByLibrary.simpleMessage("Далее"),
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
       "У вас пока нет друзей",
@@ -412,9 +488,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Вопросов пока нет",
     ),
     "nointerestsadded": MessageLookupByLibrary.simpleMessage(
-      "noInterestsAdded",
+      "Интересы не добавлены",
     ),
-    "nopurposesadded": MessageLookupByLibrary.simpleMessage("noPurposesAdded"),
+    "nopurposesadded": MessageLookupByLibrary.simpleMessage(
+      "Цели не добавлены",
+    ),
     "not_enough_points": MessageLookupByLibrary.simpleMessage(
       "Недостаточно очков",
     ),
@@ -434,17 +512,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "offer": MessageLookupByLibrary.simpleMessage("Предложить"),
     "offline": MessageLookupByLibrary.simpleMessage("не в сети"),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
-    "oldpassword": MessageLookupByLibrary.simpleMessage("oldPassword"),
+    "oldpassword": MessageLookupByLibrary.simpleMessage("Старый пароль"),
     "online": MessageLookupByLibrary.simpleMessage("в сети"),
     "onlyVerified": MessageLookupByLibrary.simpleMessage(
       "Только проверенные пользователи",
     ),
     "openQuestionnaire": MessageLookupByLibrary.simpleMessage("Открыть анкету"),
-    "other": MessageLookupByLibrary.simpleMessage("other"),
+    "other": MessageLookupByLibrary.simpleMessage("Другое"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordHint": MessageLookupByLibrary.simpleMessage("Пароль"),
     "passwordchangedsuccessfully": MessageLookupByLibrary.simpleMessage(
-      "passwordChangedSuccessfully",
+      "Пароль успешно изменен",
     ),
     "pc": MessageLookupByLibrary.simpleMessage("шт."),
     "permanent": MessageLookupByLibrary.simpleMessage("Постоянные"),
@@ -471,7 +549,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Пожалуйста, выберите причину жалобы",
         ),
-    "points": MessageLookupByLibrary.simpleMessage("points"),
+    "points": MessageLookupByLibrary.simpleMessage("очки"),
     "points_spent": MessageLookupByLibrary.simpleMessage("Потрачено поинтов:"),
     "primary": MessageLookupByLibrary.simpleMessage("Основной"),
     "privacyMode": MessageLookupByLibrary.simpleMessage("Приватный режим"),
@@ -483,7 +561,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ошибка загрузки профиля",
     ),
     "profileupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
-      "profileUpdatedSuccessfully",
+      "Профиль успешно обновлен",
     ),
     "purchase_confirmation": MessageLookupByLibrary.simpleMessage(
       "Подтверждение покупки",
@@ -492,7 +570,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ошибка при покупке:",
     ),
     "purpose_load_error": MessageLookupByLibrary.simpleMessage(
-      "purpose_load_error",
+      "Ошибка загрузки целей",
     ),
     "purposes": MessageLookupByLibrary.simpleMessage("Цели"),
     "qrNoValue": MessageLookupByLibrary.simpleMessage(
@@ -521,11 +599,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "reject": MessageLookupByLibrary.simpleMessage("Отклонить"),
     "removeFriend": MessageLookupByLibrary.simpleMessage("Удалить из друзей"),
     "repeat": MessageLookupByLibrary.simpleMessage("Повторить"),
-    "reportDetails": MessageLookupByLibrary.simpleMessage("Report Details"),
-    "reportsubmitted": MessageLookupByLibrary.simpleMessage("reportSubmitted"),
-    "reportuser": MessageLookupByLibrary.simpleMessage("ReportUser"),
+    "reportDetails": MessageLookupByLibrary.simpleMessage("Детали жалобы"),
+    "reportsubmitted": MessageLookupByLibrary.simpleMessage(
+      "Жалоба отправлена",
+    ),
+    "reportuser": MessageLookupByLibrary.simpleMessage(
+      "Пожаловаться на пользователя",
+    ),
     "reportuserdescription": MessageLookupByLibrary.simpleMessage(
-      "reportUserDescription",
+      "Описание жалобы на пользователя",
     ),
     "reset_the_settings": MessageLookupByLibrary.simpleMessage(
       "Сбросить настройки?",
@@ -544,9 +626,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "search_for_interests": MessageLookupByLibrary.simpleMessage(
       "Поиск интересов...",
     ),
-    "searching": MessageLookupByLibrary.simpleMessage("Searching"),
+    "searching": MessageLookupByLibrary.simpleMessage("Поиск"),
     "seconds": MessageLookupByLibrary.simpleMessage("секунд"),
     "security": MessageLookupByLibrary.simpleMessage("Безопасность"),
+    "securityText": MessageLookupByLibrary.simpleMessage(
+      "• Все чаты шифруются\n• Жалобы/блокировка в 1 клик\n• Функция \'Скрыть себя от поиска\'",
+    ),
+    "securityTitle": MessageLookupByLibrary.simpleMessage(
+      "🔐 Безопасность и приватность",
+    ),
     "selectAge": MessageLookupByLibrary.simpleMessage("Выберите возраст"),
     "selectGender": MessageLookupByLibrary.simpleMessage("Выберите пол"),
     "select_a_section": MessageLookupByLibrary.simpleMessage("Выберите раздел"),
@@ -557,7 +645,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "select_the_deletion_option": MessageLookupByLibrary.simpleMessage(
       "Выберите вариант удаления:",
     ),
-    "selectreason": MessageLookupByLibrary.simpleMessage("selectReason"),
+    "selectreason": MessageLookupByLibrary.simpleMessage("Выберите причину"),
     "send": MessageLookupByLibrary.simpleMessage("Отправить"),
     "sendMessage": MessageLookupByLibrary.simpleMessage("Написать сообщение"),
     "sendingFile": MessageLookupByLibrary.simpleMessage("отправляет файл"),
@@ -587,7 +675,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sold_out": MessageLookupByLibrary.simpleMessage("РАСПРОДАНО"),
     "soon": MessageLookupByLibrary.simpleMessage("скоро"),
     "sound": MessageLookupByLibrary.simpleMessage("Звук"),
-    "spam": MessageLookupByLibrary.simpleMessage("spam"),
+    "spam": MessageLookupByLibrary.simpleMessage("Спам"),
     "specify_your_goals": MessageLookupByLibrary.simpleMessage(
       "Укажите свои Цели:",
     ),
@@ -606,7 +694,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "start_entering_the_name_of_the_city": MessageLookupByLibrary.simpleMessage(
       "Начните вводить название города",
     ),
-    "status": MessageLookupByLibrary.simpleMessage("Status:"),
+    "status": MessageLookupByLibrary.simpleMessage("Статус:"),
     "status_updated": MessageLookupByLibrary.simpleMessage("Статус обновлен"),
     "sticker": MessageLookupByLibrary.simpleMessage("Стикер"),
     "sticker_loading_error": MessageLookupByLibrary.simpleMessage(
@@ -619,17 +707,29 @@ class MessageLookup extends MessageLookupByLibrary {
     "stopThink": MessageLookupByLibrary.simpleMessage(
       "Стоп-стоп, подумайте с чего вы хотите начать...",
     ),
-    "submitreport": MessageLookupByLibrary.simpleMessage("submitReport"),
+    "submitreport": MessageLookupByLibrary.simpleMessage("Отправить жалобу"),
     "suggestion_to_add_time": MessageLookupByLibrary.simpleMessage(
       "Предложение добавить время",
     ),
     "support": MessageLookupByLibrary.simpleMessage("Поддержка"),
+    "supportEmail": MessageLookupByLibrary.simpleMessage("mna_dev@mnapp.ru"),
+    "supportEmailTitle": MessageLookupByLibrary.simpleMessage(
+      "Email поддержки",
+    ),
+    "supportTelegram": MessageLookupByLibrary.simpleMessage("@meetnadev"),
+    "supportTelegramTitle": MessageLookupByLibrary.simpleMessage(
+      "Telegram канал",
+    ),
     "system_notifications": MessageLookupByLibrary.simpleMessage(
       "Системные уведомления",
     ),
     "tapToView": MessageLookupByLibrary.simpleMessage(
       "Нажмите, чтобы посмотреть",
     ),
+    "technologiesText": MessageLookupByLibrary.simpleMessage(
+      "• Flutter (кросс-платформенность)\n• PostgreSQL\n• Java + SpringBoot",
+    ),
+    "technologiesTitle": MessageLookupByLibrary.simpleMessage("📲 Технологии"),
     "tellAboutYourself": MessageLookupByLibrary.simpleMessage(
       "Расскажите о себе",
     ),
@@ -723,6 +823,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "throw_off": MessageLookupByLibrary.simpleMessage("Сбросить"),
     "timerSeconds": MessageLookupByLibrary.simpleMessage("Таймер:"),
     "times_up": MessageLookupByLibrary.simpleMessage("Время вышло"),
+    "toUnlockOrFindOutTheReasonForTheLock":
+        MessageLookupByLibrary.simpleMessage(
+          "Чтобы разблокировать или узнать причину блокировки",
+        ),
     "to_accept": MessageLookupByLibrary.simpleMessage("Принять"),
     "to_configure": MessageLookupByLibrary.simpleMessage("Настроить"),
     "to_create": MessageLookupByLibrary.simpleMessage("Создать"),
@@ -745,8 +849,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploading_images": MessageLookupByLibrary.simpleMessage(
       "Загрузка изображений",
     ),
-    "uploadingavatar": MessageLookupByLibrary.simpleMessage("uploadingAvatar"),
-    "userblocked": MessageLookupByLibrary.simpleMessage("userBlocked"),
+    "uploadingavatar": MessageLookupByLibrary.simpleMessage("Загрузка аватара"),
+    "userNotAvailable": MessageLookupByLibrary.simpleMessage(
+      "User Not Available",
+    ),
+    "userblocked": MessageLookupByLibrary.simpleMessage(
+      "Пользователь заблокирован",
+    ),
     "username": MessageLookupByLibrary.simpleMessage("Имя пользователя"),
     "usernameHint": MessageLookupByLibrary.simpleMessage("Пользователь"),
     "version": m1,
@@ -768,15 +877,25 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Хотите отправить заявку в друзья пользователю",
         ),
+    "writeToSupport": MessageLookupByLibrary.simpleMessage(
+      "напишите в поддержку",
+    ),
     "year": MessageLookupByLibrary.simpleMessage("г."),
     "years": MessageLookupByLibrary.simpleMessage("лет"),
     "yesterday": MessageLookupByLibrary.simpleMessage("Вчера"),
+    "youHaveBeenBlocked": MessageLookupByLibrary.simpleMessage(
+      "Вы были заблокированы",
+    ),
     "you_have_purchased_a_gift": MessageLookupByLibrary.simpleMessage(
       "Вы приобрели подарок:",
     ),
     "you_havent_bought_any_gifts_yet": MessageLookupByLibrary.simpleMessage(
       "У вас еще нет купленных подарков",
     ),
+    "yourAccountWillBeDeletedWithin30Days":
+        MessageLookupByLibrary.simpleMessage(
+          "Ваш аккаунт будет удален в течение 30 дней",
+        ),
     "yourPhoto": MessageLookupByLibrary.simpleMessage("Ваше фото"),
     "your_balance": MessageLookupByLibrary.simpleMessage("Ваш баланс:"),
   };

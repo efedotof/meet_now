@@ -57,10 +57,6 @@ class _GiftItemState extends State<GiftItem> {
                       ),
                     ),
                 errorWidget: (context, url, error) {
-                  debugPrint(
-                    'Ошибка загрузки изображения подарка: $url, $error',
-                  );
-
                   return Container(
                     color: isDark ? Colors.white24 : Colors.black26,
                     child: Column(

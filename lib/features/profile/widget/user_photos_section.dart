@@ -1,17 +1,73 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/uploads_avatars.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'empty_state.dart';
 import 'user_network_image.dart';
 
-class UserPhotosSection extends StatelessWidget {
+class UserPhotosSection extends StatefulWidget {
   const UserPhotosSection({super.key, required this.images});
   final List<String> images;
 
   @override
+  State<UserPhotosSection> createState() => _UserPhotosSectionState();
+}
+
+class _UserPhotosSectionState extends State<UserPhotosSection> {
+  final Set<String> _cachedImages = {};
+  final _defaultCacheManager = DefaultCacheManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _precacheImages();
+  }
+
+  @override
+  void didUpdateWidget(UserPhotosSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.images != oldWidget.images) {
+      _precacheImages();
+    }
+  }
+
+  Future<void> _precacheImages() async {
+    if (widget.images.isEmpty) return;
+
+    final cubit = context.read<UploadsAvatarsCubit>();
+    final List<Future<void>> futures = [];
+
+    for (final imageKey in widget.images) {
+      if (_cachedImages.contains(imageKey)) continue;
+
+      futures.add(() async {
+        try {
+          final presignedUrl = await cubit.getPresignedUrl(imageKey);
+          if (presignedUrl.isNotEmpty) {
+            await _defaultCacheManager.downloadFile(
+              presignedUrl,
+              key: imageKey,
+              authHeaders: {},
+            );
+            _cachedImages.add(imageKey);
+          }
+        } catch (e) {
+          //
+        }
+      }());
+    }
+
+    unawaited(Future.wait(futures));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasImages = images.isNotEmpty;
+    final hasImages = widget.images.isNotEmpty;
     final isDark = Theme.brightnessOf(context) == Brightness.dark;
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       child: Card(
@@ -44,13 +100,12 @@ class UserPhotosSection extends StatelessWidget {
                           labelPadding: const EdgeInsets.symmetric(
                             horizontal: 8,
                           ),
-                          label: Text('${images.length}'),
+                          label: Text('${widget.images.length}'),
                           visualDensity: VisualDensity.compact,
                         ),
                       ],
                     ],
                   ),
-
                   RawMaterialButton(
                     fillColor: isDark ? Colors.white : Colors.black,
                     onPressed: () {
@@ -71,7 +126,7 @@ class UserPhotosSection extends StatelessWidget {
                                     Theme.of(context).scaffoldBackgroundColor,
                                 child: UploadsAvatarsScreen(
                                   isSkip: true,
-                                  currentPhotosCount: images.length,
+                                  currentPhotosCount: widget.images.length,
                                 ),
                               ),
                             ),
@@ -89,9 +144,7 @@ class UserPhotosSection extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
-
               if (!hasImages)
                 const EmptyState()
               else
@@ -106,13 +159,17 @@ class UserPhotosSection extends StatelessWidget {
                       spacing: space,
                       runSpacing: space,
                       children: List.generate(
-                        images.length,
+                        widget.images.length,
                         (index) => SizedBox(
                           width: itemWidth,
                           height: itemWidth * 1.05,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: UserNetworkImage(imageKey: images[index]),
+                            child: UserNetworkImage(
+                              imageKey: widget.images[index],
+                              allImageKeys: widget.images,
+                              index: index,
+                            ),
                           ),
                         ),
                       ),

@@ -61,10 +61,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _nextPage() {
+    _disableAutoValidation();
+
     final formKeyIndex = _formKeyIndex;
     if (formKeyIndex >= 0) {
-      if (!_formKeys[formKeyIndex].currentState!.validate()) {
-        return;
+      final formState = _formKeys[formKeyIndex].currentState;
+      if (formState != null) {
+        bool isValid = formState.validate();
+        if (formKeyIndex == 0) {
+          if (!_validatePersonalInfo()) {
+            isValid = false;
+          }
+        }
+
+        if (!isValid) {
+          return;
+        }
       }
     }
 
@@ -75,6 +87,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  bool _validatePersonalInfo() {
+    if (formData.city.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context).please_select_city_from_list),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    if (formData.firstname.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context).enterFirstName),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    if (formData.subname.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context).enterLastName),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    if (formData.age <= 0 || formData.age < 18 || formData.age > 65) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context).enter_valid_age),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    return true;
   }
 
   void _previousPage() {
@@ -88,9 +144,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _onRegisterPressed() {
-    if (_formKeys[2].currentState!.validate()) {
+    _disableAutoValidation();
+
+    bool allFormsValid = true;
+
+    if (_formKeys[0].currentState != null) {
+      if (!_formKeys[0].currentState!.validate() || !_validatePersonalInfo()) {
+        allFormsValid = false;
+      }
+    }
+
+    if (_formKeys[1].currentState != null) {
+      if (!_formKeys[1].currentState!.validate()) {
+        allFormsValid = false;
+      }
+    }
+
+    if (_formKeys[2].currentState != null) {
+      if (!_formKeys[2].currentState!.validate()) {
+        allFormsValid = false;
+      }
+    }
+
+    if (allFormsValid) {
       context.read<SignUpCubit>().registration(formData.toRegistration());
     }
+  }
+
+  void _disableAutoValidation() {
+    setState(() {});
   }
 
   @override
@@ -136,22 +218,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  PersonalInfoPage(
-                    formKey: _formKeys[0],
-                    formData: formData,
-                    buttonWidth: buttonWidth,
+                  Center(
+                    child: PersonalInfoPage(
+                      formKey: _formKeys[0],
+                      formData: formData,
+                      buttonWidth: buttonWidth,
+                      autovalidateMode: AutovalidateMode.disabled,
+                    ),
                   ),
-                  AboutPage(
-                    formKey: _formKeys[1],
-                    formData: formData,
-                    buttonWidth: buttonWidth,
+                  Center(
+                    child: AboutPage(
+                      formKey: _formKeys[1],
+                      formData: formData,
+                      buttonWidth: buttonWidth,
+                      autovalidateMode: AutovalidateMode.disabled,
+                    ),
                   ),
-                  PurposePage(formData: formData, buttonWidth: buttonWidth),
-                  InterestPage(formData: formData, buttonWidth: buttonWidth),
-                  CredentialsPage(
-                    formKey: _formKeys[2],
-                    formData: formData,
-                    buttonWidth: buttonWidth,
+                  Center(
+                    child: PurposePage(
+                      formData: formData,
+                      buttonWidth: buttonWidth,
+                    ),
+                  ),
+                  Center(
+                    child: InterestPage(
+                      formData: formData,
+                      buttonWidth: buttonWidth,
+                    ),
+                  ),
+                  Center(
+                    child: CredentialsPage(
+                      formKey: _formKeys[2],
+                      formData: formData,
+                      buttonWidth: buttonWidth,
+                      autovalidateMode: AutovalidateMode.disabled,
+                    ),
                   ),
                 ],
               ),

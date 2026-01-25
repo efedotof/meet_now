@@ -1,11 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app_server/model/auth/registration/registration.dart';
 import 'package:meet_now_app_server/model/social/city/city.dart';
-
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app_server/repository/city/city_interface.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
@@ -77,7 +75,6 @@ class SignUpCubit extends Cubit<SignUpState> {
         );
       }
     } catch (e) {
-      debugPrint("Registration error: $e");
       emit(SignUpState.error(error: _getUserFriendlyError(e)));
     }
   }
@@ -90,7 +87,6 @@ class SignUpCubit extends Cubit<SignUpState> {
     try {
       return await _cityInterface.searchCities(query);
     } catch (e) {
-      debugPrint("City search error: $e");
       return [];
     }
   }

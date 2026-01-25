@@ -5,6 +5,7 @@ import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/features/security/widget/pin_display.dart';
 import 'package:meet_now_app/features/security/widget/num_pad.dart';
+import 'package:meet_now_app/route/app_route.dart';
 
 @RoutePage()
 class PinCodeScreen extends StatelessWidget {
@@ -18,7 +19,15 @@ class PinCodeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: BlocConsumer<PinCodeCubit, PinCodeState>(
             listener: (context, state) {
-              state.maybeWhen(failure: (error) {}, orElse: () {});
+              state.whenOrNull(
+                authRequired: () => context.replaceRoute(const AuthRoute()),
+                mainHomeRequired:
+                    () => context.replaceRoute(const MainHomeRoute()),
+                locked:
+                    (blockReason) => context.replaceRoute(
+                      LockedRoute(blockReason: blockReason),
+                    ),
+              );
             },
             builder: (context, state) {
               final currentPin = state.maybeWhen(
@@ -27,14 +36,14 @@ class PinCodeScreen extends StatelessWidget {
               );
 
               final isProcessing = state.maybeWhen(
-                failure: (_) => true,
-                success: () => true,
+                processing: () => true,
+                failure: () => true,
                 orElse: () => false,
               );
 
-              final errorText = state.maybeWhen(
-                failure: (error) => error,
-                orElse: () => '',
+              final hasError = state.maybeWhen(
+                failure: () => true,
+                orElse: () => false,
               );
 
               return Column(
@@ -49,11 +58,11 @@ class PinCodeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
                   PinDisplay(pin: currentPin, length: 4),
-                  if (errorText.isNotEmpty)
+                  if (hasError)
                     Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: Text(
-                        errorText,
+                        S.of(context).incorrectPinCode,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.error,
                         ),
@@ -65,7 +74,6 @@ class PinCodeScreen extends StatelessWidget {
                     child: NumPad(
                       onKeyPressed: (digit) {
                         context.read<PinCodeCubit>().addDigit(
-                          context: context,
                           digit: digit,
                           currentPin: currentPin,
                         );
@@ -75,6 +83,11 @@ class PinCodeScreen extends StatelessWidget {
                       },
                     ),
                   ),
+                  if (isProcessing)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: CircularProgressIndicator(),
+                    ),
                 ],
               );
             },

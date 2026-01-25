@@ -47,7 +47,6 @@ class _InventoryItemDetailsSheetState extends State<InventoryItemDetailsSheet> {
 
       return widget.inventoryItem.copyWith(gift: processedGift);
     } catch (e) {
-      debugPrint('Ошибка при обработке URL для подарка ${gift.id}: $e');
       return widget.inventoryItem;
     }
   }
@@ -99,9 +98,6 @@ class _InventoryItemDetailsSheetState extends State<InventoryItemDetailsSheet> {
                                 ),
                               ),
                           errorWidget: (context, url, error) {
-                            debugPrint(
-                              'Ошибка загрузки изображения инвентаря: $url, $error',
-                            );
                             return Container(
                               height: 150,
                               width: 150,

@@ -185,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  change_package_name:
+    dependency: "direct main"
+    description:
+      name: change_package_name
+      sha256: "30fa35c0bd404c684c47c51f23392cb804cf0d3b2e38ff9c20dc881d55c6a1cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   characters:
     dependency: transitive
     description:
@@ -281,13 +289,21 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.11"
+  desktop_drop:
+    dependency: transitive
+    description:
+      name: desktop_drop
+      sha256: e70b46b2d61f1af7a81a40d1f79b43c28a879e30a4ef31e87e9c27bea4d784e8
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   device_media_library:
     dependency: transitive
     description:
       path: "."
-      ref: eb9186488b3867f6eab53555badd456d18c4260c
-      resolved-ref: eb9186488b3867f6eab53555badd456d18c4260c
-      url: "https://github.com/efedotof/attach_file_photo_plugin.git"
+      ref: "5b1f9afd860c5964544ab44b53d300f3ce84e908"
+      resolved-ref: "5b1f9afd860c5964544ab44b53d300f3ce84e908"
+      url: "https://github.com/efedotof/attach_file_photo_plugin"
     source: git
     version: "0.0.1"
   dio:
@@ -416,7 +432,7 @@ packages:
     source: hosted
     version: "9.1.1"
   flutter_cache_manager:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_cache_manager
       sha256: "400b6592f16a4409a7f2bb929a9a7e38c72cceb8ffb99ee57bbf2cb2cecf8386"
@@ -578,10 +594,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: bb2ce4590bc2667c96f318d68cac1b5a7987ec819351d32b1c987239a815e007
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.0"
+    version: "1.6.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -702,6 +718,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      sha256: a7967e31b703831a893bbc3c3dd11db08126fe5f369b5c648a36f821979f5be3
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.2"
   logging:
     dependency: transitive
     description:
@@ -730,8 +754,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: e9ee19f794477dca27793c16247adedd26b50498
-      resolved-ref: e9ee19f794477dca27793c16247adedd26b50498
+      ref: "12dbc30064268dbd589d43ce0fb8cafc0c362e90"
+      resolved-ref: "12dbc30064268dbd589d43ce0fb8cafc0c362e90"
       url: "https://github.com/efedotof/media_ui_package.git"
     source: git
     version: "0.0.4"
@@ -739,8 +763,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ee114dccff9410280ae6e58d623f5d93d593e1e6
-      resolved-ref: ee114dccff9410280ae6e58d623f5d93d593e1e6
+      ref: de40649674adc46dfb09f7b71bf85484a8acb2d2
+      resolved-ref: de40649674adc46dfb09f7b71bf85484a8acb2d2
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"
@@ -1433,10 +1457,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: c3e4fe614b1c814950ad07186007eff2f2e5dd2935eba7b9a9a1af8e5885f1ba
+      sha256: a3da219916aba44947d3a5478b1927876a09781174b5a2b67fa5be0555154bf9
       url: "https://pub.dev"
     source: hosted
-    version: "4.13.0"
+    version: "4.13.1"
   webview_flutter_android:
     dependency: "direct main"
     description:

@@ -22,7 +22,7 @@ class FriendCubit extends Cubit<FriendState> {
         emit(FriendState.myFriendRequest(friendRequest: friendRequest));
       }
     } catch (e) {
-      debugPrint("Произошла ошибка получения списка друзей: $e");
+      //
     }
   }
 
@@ -31,7 +31,7 @@ class FriendCubit extends Cubit<FriendState> {
       await _friendInterface.requestAccept(requesterId: requesterId);
       await getIncomeFriend();
     } catch (e) {
-      debugPrint("Ошибка при принятии запроса: $e");
+      //
     }
   }
 
@@ -40,7 +40,7 @@ class FriendCubit extends Cubit<FriendState> {
       await _friendInterface.requestReject(requesterId: requesterId);
       await getIncomeFriend();
     } catch (e) {
-      debugPrint("Ошибка при отклонении запроса: $e");
+      //
     }
   }
 }

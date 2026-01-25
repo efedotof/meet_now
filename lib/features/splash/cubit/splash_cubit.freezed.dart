@@ -134,12 +134,12 @@ return navigateToMainHome(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  navigateToAuth,TResult Function()?  navigateToLocked,TResult Function()?  navigateToUploadAvatar,TResult Function()?  navigateToPinCode,TResult Function()?  navigateToMainHome,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  navigateToAuth,TResult Function( String blockReason)?  navigateToLocked,TResult Function()?  navigateToUploadAvatar,TResult Function()?  navigateToPinCode,TResult Function()?  navigateToMainHome,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _NavigateToAuth() when navigateToAuth != null:
 return navigateToAuth();case _NavigateToLocked() when navigateToLocked != null:
-return navigateToLocked();case _NavigateToUploadAvatar() when navigateToUploadAvatar != null:
+return navigateToLocked(_that.blockReason);case _NavigateToUploadAvatar() when navigateToUploadAvatar != null:
 return navigateToUploadAvatar();case _NavigateToPinCode() when navigateToPinCode != null:
 return navigateToPinCode();case _NavigateToMainHome() when navigateToMainHome != null:
 return navigateToMainHome();case _:
@@ -160,12 +160,12 @@ return navigateToMainHome();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  navigateToAuth,required TResult Function()  navigateToLocked,required TResult Function()  navigateToUploadAvatar,required TResult Function()  navigateToPinCode,required TResult Function()  navigateToMainHome,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  navigateToAuth,required TResult Function( String blockReason)  navigateToLocked,required TResult Function()  navigateToUploadAvatar,required TResult Function()  navigateToPinCode,required TResult Function()  navigateToMainHome,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _NavigateToAuth():
 return navigateToAuth();case _NavigateToLocked():
-return navigateToLocked();case _NavigateToUploadAvatar():
+return navigateToLocked(_that.blockReason);case _NavigateToUploadAvatar():
 return navigateToUploadAvatar();case _NavigateToPinCode():
 return navigateToPinCode();case _NavigateToMainHome():
 return navigateToMainHome();case _:
@@ -185,12 +185,12 @@ return navigateToMainHome();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  navigateToAuth,TResult? Function()?  navigateToLocked,TResult? Function()?  navigateToUploadAvatar,TResult? Function()?  navigateToPinCode,TResult? Function()?  navigateToMainHome,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  navigateToAuth,TResult? Function( String blockReason)?  navigateToLocked,TResult? Function()?  navigateToUploadAvatar,TResult? Function()?  navigateToPinCode,TResult? Function()?  navigateToMainHome,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _NavigateToAuth() when navigateToAuth != null:
 return navigateToAuth();case _NavigateToLocked() when navigateToLocked != null:
-return navigateToLocked();case _NavigateToUploadAvatar() when navigateToUploadAvatar != null:
+return navigateToLocked(_that.blockReason);case _NavigateToUploadAvatar() when navigateToUploadAvatar != null:
 return navigateToUploadAvatar();case _NavigateToPinCode() when navigateToPinCode != null:
 return navigateToPinCode();case _NavigateToMainHome() when navigateToMainHome != null:
 return navigateToMainHome();case _:
@@ -269,33 +269,67 @@ String toString() {
 
 
 class _NavigateToLocked implements SplashState {
-  const _NavigateToLocked();
+  const _NavigateToLocked({required this.blockReason});
   
 
+ final  String blockReason;
 
-
+/// Create a copy of SplashState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$NavigateToLockedCopyWith<_NavigateToLocked> get copyWith => __$NavigateToLockedCopyWithImpl<_NavigateToLocked>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NavigateToLocked);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NavigateToLocked&&(identical(other.blockReason, blockReason) || other.blockReason == blockReason));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,blockReason);
 
 @override
 String toString() {
-  return 'SplashState.navigateToLocked()';
+  return 'SplashState.navigateToLocked(blockReason: $blockReason)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$NavigateToLockedCopyWith<$Res> implements $SplashStateCopyWith<$Res> {
+  factory _$NavigateToLockedCopyWith(_NavigateToLocked value, $Res Function(_NavigateToLocked) _then) = __$NavigateToLockedCopyWithImpl;
+@useResult
+$Res call({
+ String blockReason
+});
 
 
+
+
+}
+/// @nodoc
+class __$NavigateToLockedCopyWithImpl<$Res>
+    implements _$NavigateToLockedCopyWith<$Res> {
+  __$NavigateToLockedCopyWithImpl(this._self, this._then);
+
+  final _NavigateToLocked _self;
+  final $Res Function(_NavigateToLocked) _then;
+
+/// Create a copy of SplashState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? blockReason = null,}) {
+  return _then(_NavigateToLocked(
+blockReason: null == blockReason ? _self.blockReason : blockReason // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

@@ -45,7 +45,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       final user = await _userInterface.getUser();
       _userModelAppInterface.user = user;
     } catch (e) {
-      debugPrint("[Settings Cubit] error: $e ");
+      //
     }
   }
 }

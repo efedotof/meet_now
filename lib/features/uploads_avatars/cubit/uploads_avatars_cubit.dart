@@ -1,9 +1,7 @@
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -40,7 +38,22 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     emit(UploadsAvatarsState.avatarSelected(uri, bytes));
   }
 
-  Future<void> confirmAndUploadAvatar() async {
+  // Добавляем метод для подтверждения аватара (без загрузки)
+  void confirmAvatar() {
+    if (_selectedAvatarUri == null || _selectedAvatarBytes == null) {
+      emit(const UploadsAvatarsState.error('Аватар не выбран'));
+      return;
+    }
+    // Просто подтверждаем выбор, но не загружаем
+    emit(
+      UploadsAvatarsState.avatarSelected(
+        _selectedAvatarUri!,
+        _selectedAvatarBytes!,
+      ),
+    );
+  }
+
+  Future<void> uploadAvatar() async {
     if (_selectedAvatarUri == null || _selectedAvatarBytes == null) {
       emit(const UploadsAvatarsState.error('Аватар не выбран'));
       return;
@@ -49,9 +62,7 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     emit(const UploadsAvatarsState.avatarLoading());
     try {
       final tempFile = await _createTempFileFromBytes(_selectedAvatarBytes!);
-
       final url = await _uploadImageInterface.uploadAvatar(tempFile.path);
-
       await tempFile.delete();
 
       _avatarUrl = url;
@@ -67,24 +78,23 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     final tempDir = await getTemporaryDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final tempFile = File('${tempDir.path}/avatar_$timestamp.jpg');
-
     await tempFile.writeAsBytes(bytes);
     return tempFile;
   }
 
-  Future<void> deleatUserImage({required String imageUrl}) async {
+  Future<void> deleteUserImage({required String imageUrl}) async {
     try {
       await _uploadImageInterface.deleatImage(imageUrl: imageUrl);
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      //
     }
   }
 
-  Future<void> deleatAlluserImage() async {
+  Future<void> deleteAllUserImage() async {
     try {
       await _uploadImageInterface.deleatAllImage();
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      //
     }
   }
 
@@ -106,7 +116,6 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     }
 
     final itemsToAdd = mediaList.take(availableSlots).toList();
-
     for (final item in itemsToAdd) {
       _selectedGalleryUris.add(item.key);
       _selectedGalleryBytes[item.key] = item.value;
@@ -139,7 +148,18 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     }
   }
 
-  Future<void> confirmAndUploadGallery() async {
+  // Изменяем метод подтверждения галереи - только подтверждение, без загрузки
+  void confirmGallerySelection() {
+    if (_selectedGalleryUris.isEmpty) {
+      emit(const UploadsAvatarsState.error('Нет изображений для загрузки'));
+      return;
+    }
+    // Просто подтверждаем выбор
+    emit(UploadsAvatarsState.gallerySelected([..._selectedGalleryUris]));
+  }
+
+  // Отдельный метод для загрузки уже подтвержденной галереи
+  Future<void> uploadGallery() async {
     if (_selectedGalleryUris.isEmpty) {
       emit(const UploadsAvatarsState.error('Нет изображений для загрузки'));
       return;
@@ -185,14 +205,17 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
     }
   }
 
+  // Комбинированный метод для обратной совместимости
+  Future<void> confirmAndUploadGallery() async {
+    await uploadGallery();
+  }
+
   Future<File> _createTempFileForGallery(String uri, Uint8List bytes) async {
     final tempDir = await getTemporaryDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final randomId = DateTime.now().microsecondsSinceEpoch;
     final tempFile = File('${tempDir.path}/gallery_${timestamp}_$randomId.jpg');
-
     _tempFilePaths[uri] = tempFile.path;
-
     await tempFile.writeAsBytes(bytes);
     return tempFile;
   }
@@ -217,6 +240,9 @@ class UploadsAvatarsCubit extends Cubit<UploadsAvatarsState> {
   bool get areImagesUploaded => _galleryImages.isNotEmpty;
   bool get isAvatarSelected => _selectedAvatarUri != null;
   bool get areGalleryImagesSelected => _selectedGalleryUris.isNotEmpty;
+  bool get isAvatarConfirmed =>
+      _avatarUrl != null ||
+      (state is _AvatarSelected && _selectedAvatarUri != null);
 
   @override
   Future<void> close() {

@@ -8,8 +8,6 @@ class GalleryPage extends StatefulWidget {
   final UploadsAvatarsCubit cubit;
   final VoidCallback onPickImages;
   final VoidCallback onNavigateToMainHome;
-
-  /// Сколько можно загрузить (из расчета оставшегося)
   final int maxSelectable;
 
   const GalleryPage({

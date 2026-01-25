@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_drop
+  device_media_library
   firebase_core
   url_launcher_windows
 )

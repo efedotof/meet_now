@@ -47,7 +47,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.center,
               child: Text(
-                S.of(context).my_report,
+                S.of(context).my_complaints,
                 style: TextStyle(color: isDark ? Colors.black : Colors.white),
               ),
             ),

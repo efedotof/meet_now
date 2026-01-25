@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,8 +24,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
   final TextEditingController _purposeController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-
-  // Добавляем контроллеры для всех полей
   late TextEditingController _usernameController;
   late TextEditingController _firstnameController;
   late TextEditingController _subnameController;
@@ -35,7 +34,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
   late final MediaSelectionCubit _mediaSelectionCubit;
   final DeviceMediaLibrary mediaLibrary = DeviceMediaLibrary();
 
-  // Флаг для инициализации контроллеров
   bool _controllersInitialized = false;
 
   @override
@@ -43,7 +41,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
     super.initState();
     _mediaSelectionCubit = MediaSelectionCubit();
 
-    // Инициализируем контроллеры с пустыми значениями
     _usernameController = TextEditingController();
     _firstnameController = TextEditingController();
     _subnameController = TextEditingController();
@@ -133,17 +130,34 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
               _mediaSelectionCubit.clearMedia();
               _mediaSelectionCubit.addMedia(selectedItems);
             },
-            onConfirmed: (selectedItems) {
+            onConfirmed: (selectedItemsWithBytes) {
               _mediaSelectionCubit.clearMedia();
-              _mediaSelectionCubit.addMedia(selectedItems);
+
+              final mediaItems =
+                  selectedItemsWithBytes.map((entry) {
+                    return MediaItem(
+                      id: entry.key,
+                      name: entry.key.split('/').last,
+                      uri: entry.key,
+                      dateAdded: DateTime.now().millisecondsSinceEpoch,
+                      size: entry.value.length,
+                      width: 0,
+                      height: 0,
+                      albumId: '',
+                      albumName: '',
+                      type: 'image',
+                      duration: 0,
+                      thumbnail: entry.value,
+                    );
+                  }).toList();
+
+              _mediaSelectionCubit.addMedia(mediaItems);
               _mediaSelectionCubit.setPickerOpen(false);
 
-              if (selectedItems.isNotEmpty) {
-                final selectedMedia = selectedItems.first;
-                _handleAvatarSelection(selectedMedia);
+              if (selectedItemsWithBytes.isNotEmpty) {
+                final firstEntry = selectedItemsWithBytes.first;
+                _handleAvatarSelection(firstEntry.key, firstEntry.value);
               }
-
-              debugPrint('Avatar selection: ${selectedItems.length} items');
             },
           ),
     ).whenComplete(() {
@@ -151,7 +165,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
     });
   }
 
-  void _handleAvatarSelection(MediaItem selectedMedia) async {
+  void _handleAvatarSelection(String uri, Uint8List bytes) async {
     final cubit = context.read<SettingProfileCubit>();
     final currentContext = context;
 
@@ -171,13 +185,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
     }
 
     try {
-      final bytes = await mediaLibrary.getFileBytes(selectedMedia.uri);
-
       if (!currentContext.mounted) return;
-
-      if (bytes == null) {
-        throw Exception('Failed to load image bytes');
-      }
 
       await cubit.uploadAvatar(bytes);
 
@@ -234,7 +242,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
       value: _mediaSelectionCubit,
       child: BlocListener<SettingProfileCubit, SettingProfileState>(
         listener: (context, state) {
-          // Инициализируем контроллеры при первом получении данных
           if (!_controllersInitialized && state.user != null) {
             _usernameController.text = state.username;
             _firstnameController.text = state.firstname;
@@ -245,7 +252,6 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
             _controllersInitialized = true;
           }
 
-          // Обновляем контроллеры только если значения изменились и это не текущее редактирование
           if (_controllersInitialized) {
             if (_usernameController.text != state.username &&
                 !_usernameController.selection.isValid) {

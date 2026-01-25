@@ -11,7 +11,7 @@ import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_s
 import '../suggestions/command_suggestions_widget.dart';
 import 'sticker_picker_widget.dart';
 import 'input_bottom_bar.dart';
-import 'media_preview_section.dart';
+// import 'media_preview_section.dart';
 
 class InputArea extends StatefulWidget {
   const InputArea({
@@ -53,7 +53,7 @@ class _InputAreaState extends State<InputArea> {
   late final CommandSuggestionsCubit _suggestionsCubit;
   late final StickerCubit _stickerCubit;
   final FocusNode _textFieldFocusNode = FocusNode();
-  final DeviceMediaLibrary _mediaLibrary = DeviceMediaLibrary();
+  // final DeviceMediaLibrary _mediaLibrary = DeviceMediaLibrary();
   final Map<String, Uint8List?> _thumbnailCache = {};
   final GlobalKey _menuKey = GlobalKey();
 
@@ -312,7 +312,6 @@ class _InputAreaState extends State<InputArea> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return BlocProvider.value(
       value: _suggestionsCubit,
       child: AnimatedSize(
@@ -323,25 +322,21 @@ class _InputAreaState extends State<InputArea> {
             CommandSuggestionsWidget(controller: widget.controller),
             StickerPickerWidget(
               onStickerSelected: (sticker) {
-                debugPrint('🎨 Выбран стикер: ${sticker.id}');
                 context.read<ChatMessageCubit>().sendStickerMessage(sticker);
               },
               onGiftSelected: (inventory) {
-                debugPrint(
-                  '🎁 Выбран подарок из инвентаря: ${inventory.id}, gift: ${inventory.gift.id}',
-                );
                 context.read<ChatMessageCubit>().sendGiftMessage(
                   inventory.gift,
                 );
               },
             ),
-            if (!widget.isTemporary)
-              MediaPreviewSection(
-                theme: theme,
-                thumbnailCache: _thumbnailCache,
-                mediaLibrary: _mediaLibrary,
-              ),
 
+            // if (!widget.isTemporary)
+            //   MediaPreviewSection(
+            //     theme: theme,
+            //     thumbnailCache: _thumbnailCache,
+            //     mediaLibrary: _mediaLibrary,
+            //   ),
             InputBottomBar(
               controller: widget.controller,
               chatId: widget.chatId,

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,16 +6,14 @@ import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubi
 import 'package:meet_now_app/features/uploads_avatars/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart'
+    show MediaPickerBottomSheet, MediaPickerConfig, DeviceMediaLibrary;
 
 @RoutePage()
 class UploadsAvatarsScreen extends StatefulWidget {
   const UploadsAvatarsScreen({super.key, this.isSkip, this.currentPhotosCount});
 
-  /// Если true - сразу перейти к галерее
   final bool? isSkip;
-
-  /// Сколько фото уже загружено пользователем (может быть null)
   final int? currentPhotosCount;
 
   @override
@@ -27,7 +24,10 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
   final PageController _pageController = PageController();
   bool _avatarConfirmed = false;
   int _currentPage = 0;
-  final DeviceMediaLibrary mediaLibrary = DeviceMediaLibrary();
+  bool _isNavigating = false;
+
+  final DeviceMediaLibrary _mediaLibrary = DeviceMediaLibrary();
+
   UploadsAvatarsCubit get _cubit => context.read<UploadsAvatarsCubit>();
 
   int get maxGallerySelectable {
@@ -37,64 +37,122 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
     return remaining > 0 ? remaining : 0;
   }
 
-  void _showMediaPickerBottomSheet({bool isAvatar = false}) async {
-    final selectedItems = await showModalBottomSheet<List<MediaItem>>(
+  Future<void> _showMediaPickerBottomSheet({bool isAvatar = false}) async {
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => MediaPickerBottomSheet(
-            initialSelection: const [],
-            maxSelection: isAvatar ? 1 : maxGallerySelectable,
-            allowMultiple: !isAvatar,
-            showVideos: false,
-            initialChildSize: 0.7,
-            minChildSize: 0.4,
-            showSelectionIndicators: true,
-            maxChildSize: 0.9,
-          ),
+      builder: (sheetContext) {
+        return MediaPickerBottomSheet(
+          initialSelection: const [],
+          maxSelection: isAvatar ? 1 : maxGallerySelectable,
+          allowMultiple: !isAvatar,
+          showVideos: false,
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          showSelectionIndicators: true,
+          config: const MediaPickerConfig(),
+          mediaLibrary: _mediaLibrary,
+
+          onConfirmed: (filesWithBytes) {
+            if (filesWithBytes.isEmpty) return;
+
+            if (isAvatar) {
+              final first = filesWithBytes.first;
+              _cubit.selectAvatar(first.key, first.value);
+            } else {
+              _cubit.selectGalleryImages(filesWithBytes);
+            }
+
+            // Navigator.of(sheetContext).pop();
+          },
+        );
+      },
     );
-
-    if (selectedItems != null && selectedItems.isNotEmpty) {
-      final mediaList = <MapEntry<String, Uint8List>>[];
-      for (final item in selectedItems) {
-        try {
-          final bytes = await mediaLibrary.getFileBytes(item.uri);
-          if (bytes != null) {
-            mediaList.add(MapEntry(item.uri, bytes));
-          }
-        } catch (e) {
-          debugPrint('Ошибка загрузки изображения: $e');
-        }
-      }
-
-      if (mediaList.isNotEmpty) {
-        if (isAvatar) {
-          _cubit.selectAvatar(mediaList.first.key, mediaList.first.value);
-        } else {
-          _cubit.selectGalleryImages(mediaList);
-        }
-      }
-    }
   }
 
   void _navigateToMainHome() {
-    context.router.replaceAll([const MainHomeRoute()]);
+    if (_isNavigating) return;
+    _isNavigating = true;
+
+    // Используем небольшую задержку перед навигацией
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (!mounted) {
+        _isNavigating = false;
+        return;
+      }
+
+      try {
+        context.router.pushAndPopUntil(
+          const MainHomeRoute(),
+          predicate: (route) => false,
+        );
+      } catch (e) {
+        if (mounted) {
+          context.pushRoute(MainHomeRoute());
+          // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+          //   MaterialPageRoute(builder: (_) => const MainHomeRoute()),
+          //   (route) => false,
+          // );
+        }
+      } finally {
+        _isNavigating = false;
+      }
+    });
+  }
+
+  void _handleSkipModeNavigation() {
+    if (_isNavigating) return;
+    _isNavigating = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        _isNavigating = false;
+        return;
+      }
+
+      try {
+        context.read<SettingsCubit>().getCurrentUser();
+
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (!mounted) {
+            _isNavigating = false;
+            return;
+          }
+
+          try {
+            Navigator.of(context, rootNavigator: true).pop();
+          } catch (e) {
+            if (mounted) {
+              context.router.pop();
+            }
+          } finally {
+            _isNavigating = false;
+          }
+        });
+      } catch (e) {
+        _isNavigating = false;
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
+
     if (widget.isSkip == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _pageController.jumpToPage(1);
-        setState(() => _currentPage = 1);
+        if (mounted) {
+          _pageController.jumpToPage(1);
+          setState(() => _currentPage = 1);
+        }
       });
     }
 
     _pageController.addListener(() {
       final newPage = _pageController.page?.round() ?? 0;
-      if (newPage != _currentPage) {
+      if (newPage != _currentPage && mounted) {
         setState(() {
           _currentPage = newPage;
         });
@@ -112,20 +170,42 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
   Widget build(BuildContext context) {
     return BlocListener<UploadsAvatarsCubit, UploadsAvatarsState>(
       listener: (context, state) {
-        state.whenOrNull(
-          error: (message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message), backgroundColor: Colors.red),
-            );
+        state.when(
+          initial: () {},
+          avatarSelected: (uri, bytes) {},
+          avatarLoading: () {},
+          imagesLoading: () {},
+          avatarUploadSuccess: (url) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() => _avatarConfirmed = true);
+              }
+            });
           },
-          avatarUploadSuccess: (_) => setState(() => _avatarConfirmed = true),
-          imagesUploadSuccess: (_) {
-            if (widget.isSkip == true) {
-              context.read<SettingsCubit>().getCurrentUser();
-              context.maybePop();
-            } else if (_cubit.isAvatarUploaded) {
-              _navigateToMainHome();
-            }
+          gallerySelected: (paths) {},
+          imagesUploadSuccess: (urls) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+
+              if (widget.isSkip == true) {
+                _handleSkipModeNavigation();
+              } else if (_cubit.isAvatarUploaded) {
+                _navigateToMainHome();
+              }
+            });
+          },
+          error: (message) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                    backgroundColor: Colors.red,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+              }
+            });
           },
         );
       },
@@ -143,7 +223,9 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
-                          setState(() => _currentPage = 0);
+                          if (mounted) {
+                            setState(() => _currentPage = 0);
+                          }
                         },
                       )
                       : null,
@@ -158,8 +240,11 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                   onPickAvatar:
                       () => _showMediaPickerBottomSheet(isAvatar: true),
                   avatarConfirmed: _avatarConfirmed,
-                  onAvatarConfirmedChange:
-                      (value) => setState(() => _avatarConfirmed = value),
+                  onAvatarConfirmedChange: (value) {
+                    if (mounted) {
+                      setState(() => _avatarConfirmed = value);
+                    }
+                  },
                 ),
                 GalleryPage(
                   state: state,
@@ -184,7 +269,9 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                       );
-                      setState(() => _currentPage = 1);
+                      if (mounted) {
+                        setState(() => _currentPage = 1);
+                      }
                     },
                     child: const Icon(Icons.arrow_forward),
                   );
@@ -196,8 +283,6 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                 return FloatingActionButton(
                   onPressed: () {
                     _cubit.confirmAndUploadGallery();
-
-                    context.read<SettingsCubit>().getCurrentUser();
                   },
                   child: const Icon(Icons.cloud_upload),
                 );

@@ -1,12 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/social/purpose/purpose.dart';
-import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
-import 'package:meet_now_app_server/storage/hive/repository/storage_hive_repository.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class PurposePage extends StatefulWidget {
   final SignUpFormData formData;
@@ -34,23 +31,51 @@ class _PurposePageState extends State<PurposePage> {
   List<Purpose> _allPurposes = [];
   List<Purpose> _visiblePurposes = [];
 
-  late Future<ValueListenable<Box<Purpose>>> _future;
+  late Future<List<Purpose>> _purposesFuture;
 
   @override
   void initState() {
     super.initState();
-    _future = _getListenablePurposeBox();
+    _purposesFuture = _loadPurposes();
     _scrollController.addListener(_onScroll);
   }
 
-  Future<ValueListenable<Box<Purpose>>> _getListenablePurposeBox() async {
-    final storage = context.read<StorageHiveInterface>();
+  Future<List<Purpose>> _loadPurposes() async {
+    try {
+      if (kIsWeb) {
+        final repo = context.read<PurpAndInteresInterface>();
+        return await repo.getAllPurpose();
+      } else {
+        final storage = context.read<StorageHiveInterface>();
+        List<Purpose> purposes = [];
 
-    if (storage is StorageHiveRepository) {
-      return await storage.getListenablePurposeBox();
+        if (storage is StorageHiveRepository) {
+          try {
+            final box = await storage.getListenablePurposeBox();
+            final boxData = box.value;
+
+            for (var i = 0; i < boxData.length; i++) {
+              final key = boxData.keyAt(i);
+              final value = boxData.get(key);
+              if (value is Purpose) {
+                purposes.add(value);
+              }
+            }
+
+            return purposes;
+          } catch (e) {
+            final repo = context.read<PurpAndInteresInterface>();
+            return await repo.getAllPurpose();
+          }
+        }
+
+        final repo = context.read<PurpAndInteresInterface>();
+        return await repo.getAllPurpose();
+      }
+    } catch (e) {
+      final repo = context.read<PurpAndInteresInterface>();
+      return await repo.getAllPurpose();
     }
-
-    return storage.listenablePurposeBox;
   }
 
   void _onScroll() {
@@ -107,8 +132,8 @@ class _PurposePageState extends State<PurposePage> {
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: widget.buttonWidth),
-        child: FutureBuilder<ValueListenable<Box<Purpose>>>(
-          future: _future,
+        child: FutureBuilder<List<Purpose>>(
+          future: _purposesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -119,7 +144,7 @@ class _PurposePageState extends State<PurposePage> {
                 onRetry: () {
                   setState(() {
                     _isInitialLoading = true;
-                    _future = _getListenablePurposeBox();
+                    _purposesFuture = _loadPurposes();
                     _loadedItemsCount = 0;
                     _allPurposes = [];
                     _visiblePurposes = [];
@@ -129,76 +154,71 @@ class _PurposePageState extends State<PurposePage> {
               );
             }
 
-            return ValueListenableBuilder<Box<Purpose>>(
-              valueListenable: snapshot.data!,
-              builder: (context, box, _) {
-                if (_isInitialLoading) {
-                  _initData(box.values.cast<Purpose>().toList());
-                }
+            if (_isInitialLoading && snapshot.hasData) {
+              _initData(snapshot.data!);
+            }
 
-                return Column(
-                  children: [
-                    Text(
-                      S.of(context).specify_your_goals,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  _visiblePurposes
-                                      .map(
-                                        (purpose) => PurposeChip(
-                                          purpose: purpose,
-                                          isDark: isDark,
-                                          selected: widget.formData.purposes
-                                              .contains(purpose.title),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              if (value) {
-                                                widget.formData.purposes.add(
-                                                  purpose.title!,
-                                                );
-                                              } else {
-                                                widget.formData.purposes.remove(
-                                                  purpose.title,
-                                                );
-                                              }
-                                            });
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                            ),
-                            const SizedBox(height: 16),
-                            if (_hasMore || _isLoadingMore)
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child:
-                                    _isLoadingMore
-                                        ? const CircularProgressIndicator()
-                                        : Text(
-                                          S.of(context).loading,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
-                                        ),
-                              ),
-                          ],
+            return Column(
+              children: [
+                Text(
+                  S.of(context).specify_your_goals,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children:
+                              _visiblePurposes
+                                  .map(
+                                    (purpose) => PurposeChip(
+                                      purpose: purpose,
+                                      isDark: isDark,
+                                      selected: widget.formData.purposes
+                                          .contains(purpose.title),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value) {
+                                            widget.formData.purposes.add(
+                                              purpose.title!,
+                                            );
+                                          } else {
+                                            widget.formData.purposes.remove(
+                                              purpose.title,
+                                            );
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  )
+                                  .toList(),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        if (_hasMore || _isLoadingMore)
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child:
+                                _isLoadingMore
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                      S.of(context).loading,
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
+                                    ),
+                          ),
+                      ],
                     ),
-                  ],
-                );
-              },
+                  ),
+                ),
+              ],
             );
           },
         ),

@@ -6,9 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
-import 'package:meet_now_app_server/repository/user/user_interface.dart';
-import 'package:meet_now_app_server/storage/hive/repository/storage_hive_interface.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 part 'main_home_state.dart';
 part 'main_home_cubit.freezed.dart';
@@ -45,7 +43,7 @@ class MainHomeCubit extends Cubit<MainHomeState> {
 
       await _userInterface.getUser();
     } catch (e) {
-      debugPrint("error to connect: $e");
+      //
     }
   }
 
@@ -62,7 +60,7 @@ class MainHomeCubit extends Cubit<MainHomeState> {
             }
           });
     } catch (e) {
-      debugPrint("Произошла ошибка: $e");
+      //
     }
   }
 

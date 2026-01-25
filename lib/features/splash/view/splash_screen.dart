@@ -27,7 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
       listener: (context, state) {
         state.whenOrNull(
           navigateToAuth: () => context.replaceRoute(const AuthRoute()),
-          navigateToLocked: () => context.replaceRoute(const LockedRoute()),
+          navigateToLocked:
+              (String blockReason) =>
+                  context.replaceRoute(LockedRoute(blockReason: blockReason)),
           navigateToUploadAvatar:
               () => context.replaceRoute(UploadsAvatarsRoute()),
           navigateToPinCode: () => context.replaceRoute(const PinCodeRoute()),
@@ -35,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       },
       child: Scaffold(
-        body: Center(child: Text("MeetNow", style: TextStyle(fontSize: 20))),
+        body: Center(child: Text("MNA", style: TextStyle(fontSize: 20))),
       ),
     );
   }

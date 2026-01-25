@@ -77,7 +77,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
         _isLoadingGifts = false;
       });
     } catch (e) {
-      debugPrint('Error loading user gifts: $e');
       setState(() {
         _isLoadingGifts = false;
       });
@@ -92,33 +91,18 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
     });
 
     try {
-      debugPrint(
-        '🎁 Начинаем отправку подарка: inventory=${inventory.id}, gift=${inventory.gift.id}',
-      );
-
-      // Получаем ChatMessageCubit
-      final chatMessageCubit = context.read<ChatMessageCubit>();
-      debugPrint('✅ ChatMessageCubit найден: $chatMessageCubit');
-
-      // Сначала скрываем панель стикеров
+      context.read<ChatMessageCubit>();
       context.read<StickerCubit>().hideStickers();
 
-      // Вызываем колбэк
       widget.onGiftSelected?.call(inventory);
 
-      debugPrint('✅ Колбэк onGiftSelected вызван');
-
-      // Показываем уведомление об успешной отправке
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Подарок выбран! Отправка...'),
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e, stackTrace) {
-      debugPrint('❌ Ошибка при отправке подарка: $e');
-      debugPrint('Stack trace: $stackTrace');
-
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ошибка отправки подарка: $e'),
@@ -143,7 +127,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
         _stickersByPack[packId] = stickers;
       });
     } catch (e) {
-      debugPrint('Error loading stickers for pack $packId: $e');
+      //
     }
   }
 
@@ -160,7 +144,6 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
 
       return url;
     } catch (e) {
-      debugPrint('Error getting presigned URL: $e');
       throw Exception('Failed to get presigned URL: $e');
     }
   }

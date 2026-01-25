@@ -119,59 +119,60 @@ class _BuildScaffoldState extends State<BuildScaffold> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Image.asset("assets/chat_bg/fone2.png", fit: BoxFit.fill),
+        Positioned.fill(
+          child: Image.asset("assets/chat_bg/fone2.png", fit: BoxFit.cover),
         ),
 
-        Expanded(
-          child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
-            builder: (context, state) {
-              final cubit = context.read<ChatMessageCubit>();
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: state.when(
-                  initial: () => const ChatMessagesSkeleton(),
-                  loading: () => const ChatMessagesSkeleton(),
-                  error:
-                      (message) => ErrorMessage(
-                        message: message,
-                        onRetry:
-                            () => cubit.reconnect(
-                              context: context,
-                              isTemporary: widget.isTemporary,
-                              chatId: widget.chatId,
-                              senderId: widget.senderID,
-                              recipientId: widget.recipientId,
-                            ),
-                      ),
-                  loaded: (
-                    messages,
-                    isLoadingMore,
-                    hasMore,
-                    currentPage,
-                    isTemporary,
-                    showContinueRequest,
-                    isWaitingForResponse,
-                    agreeChatResponse,
-                  ) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (messages.isNotEmpty &&
-                          !isLoadingMore &&
-                          !_isUserScrolling) {
-                        _scrollToBottom();
-                      }
-                    });
+        Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 100, bottom: 70),
+            child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
+              builder: (context, state) {
+                final cubit = context.read<ChatMessageCubit>();
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: state.when(
+                    initial: () => const ChatMessagesSkeleton(),
+                    loading: () => const ChatMessagesSkeleton(),
+                    error:
+                        (message) => ErrorMessage(
+                          message: message,
+                          onRetry:
+                              () => cubit.reconnect(
+                                context: context,
+                                isTemporary: widget.isTemporary,
+                                chatId: widget.chatId,
+                                senderId: widget.senderID,
+                                recipientId: widget.recipientId,
+                              ),
+                        ),
+                    loaded: (
+                      messages,
+                      isLoadingMore,
+                      hasMore,
+                      currentPage,
+                      isTemporary,
+                      showContinueRequest,
+                      isWaitingForResponse,
+                      agreeChatResponse,
+                    ) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (messages.isNotEmpty &&
+                            !isLoadingMore &&
+                            !_isUserScrolling) {
+                          _scrollToBottom();
+                        }
+                      });
 
-                    return MessagesList(
-                      scrollController: _scrollController,
-                      currentUserId: widget.currentUserId,
-                    );
-                  },
-                ),
-              );
-            },
+                      return MessagesList(
+                        scrollController: _scrollController,
+                        currentUserId: widget.currentUserId,
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ),
 
@@ -185,9 +186,9 @@ class _BuildScaffoldState extends State<BuildScaffold> {
             onBackPressed: widget.onBackPressed,
             isTemporary: widget.isTemporary,
             onRequestFriend: widget.onRequestFriend,
-            onClearHistory: () {},
-            onDeleteChat: () {},
-            onBlockUser: () {},
+            // onClearHistory: () {},
+            // onDeleteChat: () {},
+            // onBlockUser: () {},
             timerText:
                 widget.isTemporary
                     ? context.select(
@@ -220,7 +221,6 @@ class _BuildScaffoldState extends State<BuildScaffold> {
             isTemporary: widget.isTemporary,
             onContinueChat: widget.onContinueChat,
             onAddTimeChat: widget.onAddTimeChat,
-            onReportUser: widget.onReportUser,
             recipientId: widget.recipientId,
             tempChatId: widget.chatId,
             senderId: widget.senderID,
