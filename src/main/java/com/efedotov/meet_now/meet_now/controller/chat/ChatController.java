@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.efedotov.meet_now.meet_now.dto.internal.UpdateConstraintRequest;
-import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreatePermanentChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.CreateTemporaryChatRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.DeleteChatRequest;
@@ -26,10 +25,10 @@ import com.efedotov.meet_now.meet_now.dto.response.chat.ChatStatisticsAdmin;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.TemporaryChatDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.UserChatsResponse;
+import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
-import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.service.chat.ChatService;
@@ -143,14 +142,15 @@ public class ChatController {
 
     @Operation(summary = "Создать временный чат")
     @PostMapping("/temporary")
-    public ResponseEntity<TemporaryChat> createTemporaryChat(CreateTemporaryChatRequest request) {
-        var sender = new User();
-        sender.setId(request.getSenderId());
-        var recipient = new User();
-        recipient.setId(request.getRecipientId());
+    public ResponseEntity<TemporaryChatDto> createTemporaryChat(@RequestBody CreateTemporaryChatRequest request) {
+        var senderDto = new UserDto();
+        senderDto.setId(request.getSenderId());
+        var recipientDto = new UserDto();
+        recipientDto.setId(request.getRecipientId());
 
-        TemporaryChat tempChat = chatService.createTemporaryChat(sender, recipient, request.getDurationMinutes());
-        return ResponseEntity.ok(tempChat);
+        TemporaryChat tempChat = chatService.createTemporaryChat(senderDto, recipientDto, request.getDurationMinutes());
+        TemporaryChatDto dto = mapToDto(tempChat);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Создать или получить постоянный чат")
@@ -194,14 +194,6 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Пользователь соглашается продолжить чат")
-    @PostMapping("/temporary/{tempChatId}/agree")
-    public ResponseEntity<Void> agreeToContinue(
-            AgreeChatRequest request) {
-        chatService.agreeToContinue(request.getTempChatId(), request.getUserId());
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(summary = "Получить активные временные чаты пользователя")
     @GetMapping("/temporary/active")
     public ResponseEntity<List<TemporaryChatDto>> getActiveTemporaryChats(@RequestParam UUID userId) {
@@ -232,7 +224,7 @@ public class ChatController {
     @Operation(summary = "Обновить ограничения временного чата")
     @PutMapping("/temporary/{tempChatId}/constraint")
     public ResponseEntity<Void> updateChatConstraint(
-            UpdateConstraintRequest request) {
+            @RequestBody UpdateConstraintRequest request) {
         chatService.updateChatConstraint(request.getTempChatId(), request.isCanStart(), request.getWaitSeconds());
         return ResponseEntity.ok().build();
     }

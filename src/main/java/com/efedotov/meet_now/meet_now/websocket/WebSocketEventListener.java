@@ -11,6 +11,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.chat.WebSocketSessionService;
+import com.efedotov.meet_now.meet_now.service.social.SearchQueueService;
 import com.efedotov.meet_now.meet_now.service.social.StatisticsService;
 import com.efedotov.meet_now.meet_now.service.social.UserService;
 
@@ -25,6 +26,7 @@ public class WebSocketEventListener {
     private final UserService userService;
     private final WebSocketSessionService sessionService;
     private final StatisticsService statisticsService;
+    private final SearchQueueService searchQueueService;
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
@@ -78,6 +80,7 @@ public class WebSocketEventListener {
 
             if (remainingSessions == 0) {
                 userService.setUserOnline(userId, false);
+                searchQueueService.removeFromSearch(userId);
                 log.info("УСТАНОВКА OFFLINE: Пользователь {} переведён в оффлайн", userId);
             } else {
                 log.debug("Пользователь {} остаётся онлайн (осталось сессий: {})", userId, remainingSessions);

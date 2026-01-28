@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.response.chat.ChatStatisticsAdmin;
 import com.efedotov.meet_now.meet_now.dto.response.chat.UserChatsResponse;
+import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.ChatConstraint;
 import com.efedotov.meet_now.meet_now.model.chat.ChatGame;
@@ -121,8 +122,13 @@ public class ChatService {
     }
 
     @Transactional
-    public TemporaryChat createTemporaryChat(User sender, User recipient, int durationMinutes) {
-        log.info("Создание временного чата между {} и {}", sender.getUsername(), recipient.getUsername());
+    public TemporaryChat createTemporaryChat(UserDto senderDto, UserDto recipientDto, int durationMinutes) {
+        log.info("Создание временного чата между {} и {}", senderDto.getId(), recipientDto.getId());
+
+        User sender = userRepository.findById(senderDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Отправитель не найден: " + senderDto.getId()));
+        User recipient = userRepository.findById(recipientDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Получатель не найден: " + recipientDto.getId()));
 
         if (!sender.getIsSearching() || !recipient.getIsSearching()) {
             log.error("Один из пользователей больше не в поиске: {}={}, {}={}",
@@ -431,5 +437,4 @@ public class ChatService {
     private boolean isUserParticipant(TemporaryChat tempChat, UUID userId) {
         return tempChat.getSender().getId().equals(userId) || tempChat.getRecipient().getId().equals(userId);
     }
-
 }

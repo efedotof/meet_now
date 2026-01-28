@@ -75,7 +75,11 @@ public class ChatQueryService {
         Optional<Chat> chat = chatRepository.findByUser1IdAndUser2Id(user1Id, user2Id)
                 .or(() -> chatRepository.findByUser1IdAndUser2Id(user2Id, user1Id));
 
-        return chat.map(c -> convertToPermanentChatDto(c, user1Id));
+        if (chat.isPresent()) {
+            return Optional.of(convertToPermanentChatDto(chat.get(), user1Id));
+        }
+
+        return Optional.empty();
     }
 
 }

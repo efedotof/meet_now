@@ -2,6 +2,7 @@ package com.efedotov.meet_now.meet_now.controller.chat;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,13 @@ import org.springframework.stereotype.Controller;
 
 import com.efedotov.meet_now.meet_now.dto.request.chat.AgreeChatWebSocketRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.ChatMessagesRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.ContinueChatProposalRequest;
+import com.efedotov.meet_now.meet_now.dto.request.chat.ContinueChatResponseRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.MarkMessagesReadRequest;
 import com.efedotov.meet_now.meet_now.dto.request.chat.PaginatedMessagesRequest;
 import com.efedotov.meet_now.meet_now.dto.response.chat.AgreeChatResponseDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.ContinueChatProposalResponseDto;
+import com.efedotov.meet_now.meet_now.dto.response.chat.ContinueChatResponseDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.MessageDto;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PaginatedMessagesResponse;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
@@ -59,7 +64,7 @@ public class ChatWebSocketController {
         messageProcessingService.processMessageDto(messageDto);
         log.info("Processed sendMessage for chatId={}", messageDto.getChatId());
     }
-    
+
     @MessageMapping("/chat.getMessages")
     public void getChatMessages(@Payload ChatMessagesRequest request, Principal principal) {
         CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
@@ -237,6 +242,190 @@ public class ChatWebSocketController {
         }
     }
 
+    @MessageMapping("/chat.proposeContinue")
+    public void proposeContinueChat(@Payload ContinueChatProposalRequest request, Principal principal) {
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID authenticatedUserId = userDetails.getUserId();
+
+        if (!authenticatedUserId.equals(request.getFromUserId())) {
+            log.warn("Пользователь {} пытается отправить предложение от имени {}",
+                    authenticatedUserId, request.getFromUserId());
+            return;
+        }
+
+        log.info("Получено предложение продолжить общение: tempChatId={}, fromUserId={}, message={}",
+                request.getTempChatId(), request.getFromUserId(), request.getMessage());
+
+        try {
+            TemporaryChat tempChat = chatService.getTemporaryChatById(request.getTempChatId())
+                    .orElseThrow(() -> new RuntimeException("Временный чат не найден"));
+
+            if (Boolean.TRUE.equals(tempChat.getIsFinished())) {
+                throw new RuntimeException("Чат уже завершен");
+            }
+
+            if (!tempChat.getSender().getId().equals(request.getFromUserId()) &&
+                    !tempChat.getRecipient().getId().equals(request.getFromUserId())) {
+                throw new RuntimeException("Пользователь не является участником чата");
+            }
+
+            UUID otherUserId = getOtherUserId(tempChat, request.getFromUserId());
+            String otherUserUsername = getUsernameById(otherUserId);
+
+            ContinueChatProposalResponseDto proposal = new ContinueChatProposalResponseDto();
+            proposal.setTempChatId(request.getTempChatId());
+            proposal.setFromUserId(request.getFromUserId());
+            proposal.setToUserId(otherUserId);
+            proposal.setMessage(request.getMessage());
+            proposal.setTimestamp(System.currentTimeMillis());
+
+            messagingTemplate.convertAndSendToUser(
+                    otherUserUsername,
+                    "/queue/chat.continue.proposal",
+                    proposal);
+
+            log.info("Предложение продолжить общение отправлено пользователю {} от пользователя {}",
+                    otherUserUsername, userDetails.getUsername());
+
+        } catch (RuntimeException e) {
+            log.error("Ошибка при отправке предложения продолжить общение: {}", e.getMessage());
+
+            ContinueChatProposalResponseDto errorResponse = new ContinueChatProposalResponseDto();
+            errorResponse.setTempChatId(request.getTempChatId());
+            errorResponse.setFromUserId(request.getFromUserId());
+            errorResponse.setMessage("Ошибка: " + e.getMessage());
+            errorResponse.setTimestamp(System.currentTimeMillis());
+
+            messagingTemplate.convertAndSendToUser(
+                    userDetails.getUsername(),
+                    "/queue/chat.continue.proposal.error",
+                    errorResponse);
+        }
+    }
+
+    @MessageMapping("/chat.respondContinue")
+    public void respondToContinueChat(@Payload ContinueChatResponseRequest request, Principal principal) {
+        CustomUserDetails userDetails = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        UUID authenticatedUserId = userDetails.getUserId();
+
+        if (!authenticatedUserId.equals(request.getUserId())) {
+            log.warn("Пользователь {} пытается ответить от имени {}", authenticatedUserId, request.getUserId());
+            return;
+        }
+
+        log.info("Получен ответ на предложение продолжить общение: tempChatId={}, userId={}, accepted={}",
+                request.getTempChatId(), request.getUserId(), request.isAccepted());
+
+        try {
+            TemporaryChat tempChat = chatService.getTemporaryChatById(request.getTempChatId())
+                    .orElseThrow(() -> new RuntimeException("Временный чат не найден"));
+
+            if (Boolean.TRUE.equals(tempChat.getIsFinished())) {
+                throw new RuntimeException("Чат уже завершен");
+            }
+
+            if (!tempChat.getSender().getId().equals(request.getUserId()) &&
+                    !tempChat.getRecipient().getId().equals(request.getUserId())) {
+                throw new RuntimeException("Пользователь не является участником чата");
+            }
+
+            ContinueChatResponseDto response = new ContinueChatResponseDto();
+            response.setTempChatId(request.getTempChatId());
+            response.setUserId(request.getUserId());
+            response.setAccepted(request.isAccepted());
+
+            if (request.isAccepted()) {
+                chatService.agreeToContinue(request.getTempChatId(), request.getUserId());
+
+                TemporaryChat updatedChat = chatService.getTemporaryChatById(request.getTempChatId())
+                        .orElseThrow(() -> new RuntimeException("Чат не найден"));
+
+                if (Boolean.TRUE.equals(updatedChat.getBothAgreed())) {
+                    PermanentChatResponseDto permanentChatDto = createPermanentChatFromTemporary(updatedChat);
+                    response.setPermanentChat(permanentChatDto);
+
+                    UUID otherUserId = getOtherUserId(updatedChat, request.getUserId());
+                    String otherUserUsername = getUsernameById(otherUserId);
+
+                    if (otherUserUsername != null) {
+                        messagingTemplate.convertAndSendToUser(
+                                otherUserUsername,
+                                "/queue/chat.continue.response",
+                                response);
+                    }
+                }
+            } else {
+                UUID otherUserId = getOtherUserId(tempChat, request.getUserId());
+                String otherUserUsername = getUsernameById(otherUserId);
+
+                if (otherUserUsername != null) {
+                    messagingTemplate.convertAndSendToUser(
+                            otherUserUsername,
+                            "/queue/chat.continue.response",
+                            response);
+                }
+            }
+
+            messagingTemplate.convertAndSendToUser(
+                    userDetails.getUsername(),
+                    "/queue/chat.continue.response.confirm",
+                    response);
+
+            log.info("Ответ на предложение продолжить общение обработан: tempChatId={}, accepted={}",
+                    request.getTempChatId(), request.isAccepted());
+
+        } catch (RuntimeException e) {
+            log.error("Ошибка при обработке ответа на предложение продолжить общение: {}", e.getMessage());
+
+            ContinueChatResponseDto errorResponse = new ContinueChatResponseDto();
+            errorResponse.setTempChatId(request.getTempChatId());
+            errorResponse.setUserId(request.getUserId());
+            errorResponse.setAccepted(false);
+
+            messagingTemplate.convertAndSendToUser(
+                    userDetails.getUsername(),
+                    "/queue/chat.continue.response.error",
+                    errorResponse);
+        }
+    }
+
+    private PermanentChatResponseDto createPermanentChatFromTemporary(TemporaryChat tempChat) {
+        try {
+            chatService.createPermanentChatFromTemporary(tempChat);
+
+            Optional<PermanentChatResponseDto> permanentChatOpt = chatQueryService.getPermanentChatByUsers(
+                    tempChat.getSender().getId(),
+                    tempChat.getRecipient().getId());
+
+            if (permanentChatOpt.isPresent()) {
+                PermanentChatResponseDto permanentChatDto = permanentChatOpt.get();
+
+                String user1Username = tempChat.getSender().getUsername();
+                String user2Username = tempChat.getRecipient().getUsername();
+
+                messagingTemplate.convertAndSendToUser(
+                        user1Username,
+                        "/queue/chat.permanent.created",
+                        permanentChatDto);
+
+                messagingTemplate.convertAndSendToUser(
+                        user2Username,
+                        "/queue/chat.permanent.created",
+                        permanentChatDto);
+
+                permanentChatUpdateService.sendUpdatedPermanentChats(tempChat.getSender().getId());
+                permanentChatUpdateService.sendUpdatedPermanentChats(tempChat.getRecipient().getId());
+
+                log.info("Постоянный чат создан и пользователи уведомлены: {}", tempChat.getTempChatId());
+
+                return permanentChatDto;
+            }
+        } catch (MessagingException e) {
+            log.error("Ошибка при создании постоянного чата из временного: {}", e.getMessage());
+        }
+        return null;
+    }
+
     private UUID getOtherUserId(TemporaryChat chat, UUID currentUserId) {
         if (chat.getSender().getId().equals(currentUserId)) {
             return chat.getRecipient().getId();
@@ -258,51 +447,6 @@ public class ChatWebSocketController {
 
     private void handleBothAgreed(TemporaryChat tempChat) {
         log.info("Оба пользователя согласились продолжить чат: {}", tempChat.getTempChatId());
-
-        chatService.createPermanentChatFromTemporary(tempChat);
-
-        UUID user1Id = tempChat.getSender().getId();
-        UUID user2Id = tempChat.getRecipient().getId();
-
-        List<PermanentChatResponseDto> user1Chats = chatQueryService.getPermanentChatsAsDto(user1Id);
-        List<PermanentChatResponseDto> user2Chats = chatQueryService.getPermanentChatsAsDto(user2Id);
-
-        PermanentChatResponseDto user1NewChat = findNewlyCreatedChat(user1Chats, user1Id, user2Id);
-        PermanentChatResponseDto user2NewChat = findNewlyCreatedChat(user2Chats, user1Id, user2Id);
-
-        String user1Username = tempChat.getSender().getUsername();
-        String user2Username = tempChat.getRecipient().getUsername();
-
-        if (user1NewChat != null) {
-            messagingTemplate.convertAndSendToUser(
-                    user1Username,
-                    "/queue/chat.permanent.created",
-                    user1NewChat);
-            log.info("Отправлен PermanentChatResponseDto пользователю {}: chatId={}",
-                    user1Username, user1NewChat.getChatId());
-        }
-
-        if (user2NewChat != null) {
-            messagingTemplate.convertAndSendToUser(
-                    user2Username,
-                    "/queue/chat.permanent.created",
-                    user2NewChat);
-            log.info("Отправлен PermanentChatResponseDto пользователю {}: chatId={}",
-                    user2Username, user2NewChat.getChatId());
-        }
-
-        permanentChatUpdateService.sendUpdatedPermanentChats(user1Id);
-        permanentChatUpdateService.sendUpdatedPermanentChats(user2Id);
-
-        log.info("Постоянный чат создан и пользователи уведомлены: {}", tempChat.getTempChatId());
-    }
-
-    private PermanentChatResponseDto findNewlyCreatedChat(List<PermanentChatResponseDto> chats,
-            UUID user1Id, UUID user2Id) {
-        return chats.stream()
-                .filter(chat -> (chat.getUser1Id().equals(user1Id) && chat.getUser2Id().equals(user2Id)) ||
-                        (chat.getUser1Id().equals(user2Id) && chat.getUser2Id().equals(user1Id)))
-                .findFirst()
-                .orElse(null);
+        createPermanentChatFromTemporary(tempChat);
     }
 }

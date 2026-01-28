@@ -141,4 +141,43 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
         @Query("SELECT COUNT(u) FROM User u WHERE u.encryptedPushToken IS NOT NULL")
         long countUsersWithPushTokens();
 
+        @Query(value = """
+                            SELECT u.*
+                            FROM users u
+                            WHERE u.id <> :currentUserId
+                              AND u.is_online = true
+                              AND u.is_searchable = true
+                              AND u.is_searching = true
+                              AND (:floor IS NULL OR u.floor = :floor)
+                              AND (:verified IS NULL OR u.verified = :verified)
+                              AND (:city IS NULL OR u.city = :city)
+                              AND (:ageStart IS NULL OR u.age >= :ageStart)
+                              AND (:ageStop IS NULL OR u.age <= :ageStop)
+                              AND (
+                                    :interestsEmpty = true OR EXISTS (
+                                        SELECT 1 FROM user_interests ui
+                                        WHERE ui.user_id = u.id AND ui.interest IN (:interests)
+                                    )
+                                  )
+                              AND (
+                                    :purposesEmpty = true OR EXISTS (
+                                        SELECT 1 FROM user_purposes up
+                                        WHERE up.user_id = u.id AND up.purpose IN (:purposes)
+                                    )
+                                  )
+                            ORDER BY RANDOM()
+                            LIMIT 1
+                        """, nativeQuery = true)
+        Optional<User> findRandomUserForSearch(
+                        @Param("currentUserId") UUID currentUserId,
+                        @Param("floor") String floor,
+                        @Param("verified") Boolean verified,
+                        @Param("city") String city,
+                        @Param("ageStart") Integer ageStart,
+                        @Param("ageStop") Integer ageStop,
+                        @Param("interests") List<String> interests,
+                        @Param("purposes") List<String> purposes,
+                        @Param("interestsEmpty") boolean interestsEmpty,
+                        @Param("purposesEmpty") boolean purposesEmpty);
+
 }

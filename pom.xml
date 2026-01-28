@@ -111,6 +111,11 @@
             <artifactId>firebase-admin</artifactId>
             <version>9.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.signal</groupId>
+            <artifactId>libsignal-client</artifactId>
+            <version>0.86.5</version>
+        </dependency>
     </dependencies>
 
     <build>
