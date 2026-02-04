@@ -1,9 +1,15 @@
 package com.efedotov.meet_now.meet_now.model.notification;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Data
 @Entity
@@ -24,7 +30,7 @@ public class NotificationHistory {
     private String message;
 
     @Column(name = "notification_type")
-    private String notificationType; // "token", "user", "multicast", "data"
+    private String notificationType;
 
     @Column(name = "sent_at")
     private LocalDateTime sentAt;

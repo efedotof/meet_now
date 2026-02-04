@@ -20,4 +20,6 @@ public class TemporaryChatDto {
     private Integer durationMinutes;
     private Boolean isFinished;
     private Boolean bothAgreed;
+    private Boolean senderAgreed;
+    private Boolean recipientAgreed;
 }

@@ -1,13 +1,16 @@
+-- Роли
 INSERT INTO roles (role_name) VALUES
 ('MODERATION'),
 ('ADMIN'),
 ('USER')
-ON CONFLICT (role_name) DO NOTHING; 
+ON CONFLICT (role_name) DO NOTHING;
 
+-- Типы контента сообщений
 INSERT INTO message_content_types (type_name) VALUES 
-('text'), ('image'), ('video'), ('sticker'), ('file')
+('text'), ('image'), ('video'), ('sticker'), ('file'), ('gift')
 ON CONFLICT (type_name) DO NOTHING;
 
+-- Города
 INSERT INTO citys (name_city) VALUES
 ('Абаза (Хакасия)'),
 ('Абакан'),
@@ -1136,6 +1139,7 @@ INSERT INTO citys (name_city) VALUES
 ('Яхрома')
 ON CONFLICT (name_city) DO NOTHING;
 
+-- Глобальные интересы
 INSERT INTO global_interests (title) VALUES
 ('Музыка'),
 ('Спорт'),
@@ -1331,7 +1335,6 @@ INSERT INTO global_interests (title) VALUES
 ('Каллиграфия'),
 ('Поэзия')
 ON CONFLICT (title) DO NOTHING;
-
 
 INSERT INTO global_purposes (title) VALUES
 ('Дружба'),

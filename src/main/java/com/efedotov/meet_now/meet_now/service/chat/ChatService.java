@@ -241,62 +241,80 @@ public class ChatService {
         return chatRepository.findById(chatId);
     }
 
-    @Transactional
-    public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
-        Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
-                tempChat.getSender().getId(), tempChat.getRecipient().getId());
+   @Transactional
+public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
+    if (!Boolean.TRUE.equals(tempChat.getSenderAgreed()) || 
+        !Boolean.TRUE.equals(tempChat.getRecipientAgreed())) {
+        log.warn("Попытка создать постоянный чат без согласия обоих пользователей: {}", 
+                 tempChat.getTempChatId());
+        throw new IllegalStateException("Нельзя создать постоянный чат без согласия обоих пользователей");
+    }
 
-        Chat chat;
-        if (existingChat.isEmpty()) {
-            chat = new Chat();
-            chat.setUser1(tempChat.getSender());
-            chat.setUser2(tempChat.getRecipient());
-            chat.setCreatedAt(LocalDateTime.now());
+    Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
+            tempChat.getSender().getId(), tempChat.getRecipient().getId());
+
+    Chat chat;
+    if (existingChat.isEmpty()) {
+        chat = new Chat();
+        chat.setUser1(tempChat.getSender());
+        chat.setUser2(tempChat.getRecipient());
+        chat.setCreatedAt(LocalDateTime.now());
+        chat.setIsOpened(true);
+        chatRepository.save(chat);
+
+        log.info("Создан постоянный чат между {} и {}",
+                tempChat.getSender().getId(), tempChat.getRecipient().getId());
+    } else {
+        chat = existingChat.get();
+        if (!Boolean.TRUE.equals(chat.getIsOpened())) {
             chat.setIsOpened(true);
             chatRepository.save(chat);
-
-            log.info("Создан постоянный чат между {} и {}",
-                    tempChat.getSender().getId(), tempChat.getRecipient().getId());
-        } else {
-            chat = existingChat.get();
-            if (!Boolean.TRUE.equals(chat.getIsOpened())) {
-                chat.setIsOpened(true);
-                chatRepository.save(chat);
-                log.info("Чат {} открыт (isOpened = true)", chat.getChatId());
-            }
+            log.info("Чат {} открыт (isOpened = true)", chat.getChatId());
         }
-
-        tempChat.setIsFinished(true);
-        temporaryChatRepository.save(tempChat);
-        chatTimerManagementService.stopTimer(tempChat.getTempChatId());
-
-        return chat;
     }
+
+    tempChat.setIsFinished(true);
+    temporaryChatRepository.save(tempChat);
+    chatTimerManagementService.stopTimer(tempChat.getTempChatId());
+
+    return chat;
+}
 
     @Transactional
     public void agreeToContinue(UUID tempChatId, UUID userId) {
-        temporaryChatRepository.findById(tempChatId).ifPresent(tempChat -> {
-            boolean changed = false;
+        TemporaryChat tempChat = temporaryChatRepository.findById(tempChatId)
+                .orElseThrow(() -> new IllegalStateException("Временный чат не найден"));
 
-            if (!tempChat.getSender().getId().equals(userId) &&
-                    !tempChat.getRecipient().getId().equals(userId)) {
-                throw new IllegalStateException("Пользователь не является участником чата");
-            }
+        if (!tempChat.getSender().getId().equals(userId) &&
+                !tempChat.getRecipient().getId().equals(userId)) {
+            throw new IllegalStateException("Пользователь не является участником чата");
+        }
 
-            if (Boolean.TRUE.equals(tempChat.getIsFinished())) {
-                throw new IllegalStateException("Чат уже завершен");
-            }
+        if (Boolean.TRUE.equals(tempChat.getIsFinished())) {
+            throw new IllegalStateException("Чат уже завершен");
+        }
 
-            if (tempChat.getBothAgreed() == null || !tempChat.getBothAgreed()) {
-                tempChat.setBothAgreed(true);
-                changed = true;
-                log.info("Пользователь {} согласился продолжить чат {}", userId, tempChatId);
-            }
+        boolean changed = false;
+        if (tempChat.getSender().getId().equals(userId) && !Boolean.TRUE.equals(tempChat.getSenderAgreed())) {
+            tempChat.setSenderAgreed(true);
+            changed = true;
+            log.info("Отправитель {} согласился продолжить чат {}", userId, tempChatId);
+        } else if (tempChat.getRecipient().getId().equals(userId)
+                && !Boolean.TRUE.equals(tempChat.getRecipientAgreed())) {
+            tempChat.setRecipientAgreed(true);
+            changed = true;
+            log.info("Получатель {} согласился продолжить чат {}", userId, tempChatId);
+        }
 
-            if (changed) {
-                temporaryChatRepository.save(tempChat);
-            }
-        });
+        if (Boolean.TRUE.equals(tempChat.getSenderAgreed()) &&
+                Boolean.TRUE.equals(tempChat.getRecipientAgreed())) {
+            tempChat.setBothAgreed(true);
+            log.info("Оба пользователя согласились на продолжение чата {}", tempChatId);
+        }
+
+        if (changed) {
+            temporaryChatRepository.save(tempChat);
+        }
     }
 
     @Transactional

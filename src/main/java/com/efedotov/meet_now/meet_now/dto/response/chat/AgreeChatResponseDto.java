@@ -7,8 +7,10 @@ import java.util.UUID;
 public class AgreeChatResponseDto {
     private UUID tempChatId;
     private UUID userId;
+    private Boolean senderAgreed;
+    private Boolean recipientAgreed;
     private Boolean bothAgreed;
-    private Boolean permanentChatCreated;
+    private Boolean permanentChatCreated = false;
     private Boolean success;
     private String errorMessage;
     private PermanentChatResponseDto permanentChat;

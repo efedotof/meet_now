@@ -1,0 +1,4 @@
+INSERT INTO game_configs (game_type, game_url, score_multiplier, game_name, game_description, thumbnail_url, is_active) VALUES
+('clicker', 'https://games.mnapp.ru/clicker/', 1.00, 'Clicker Game', 'Увлекательная кликер игра', 'https://s3.ru1.storage.beget.cloud/e65bd570b6c1-meetnow/image_game/clicker/clicker_logo.jpg', true),
+('space_defender', 'https://games.mnapp.ru/space_defender/', 1.50, 'Space Defender', 'Защищайте космос от врагов', 'https://s3.ru1.storage.beget.cloud/e65bd570b6c1-meetnow/image_game/space_defender/space_defender_logo.jpg', true),
+('star_catcher', 'https://games.mnapp.ru/star_catcher/', 0.80, 'Star Catcher', 'Ловите падающие звезды', 'https://s3.ru1.storage.beget.cloud/e65bd570b6c1-meetnow/image_game/star_catcher/star_catcher.jpg', true);

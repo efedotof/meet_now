@@ -14,4 +14,7 @@ public class SearchResponseDto {
     private String message;
     private TemporaryChatDto temporaryChat;
     private Boolean success;
+    private String status;
+    private Integer queuePosition;
+    private Integer totalInQueue;
 }

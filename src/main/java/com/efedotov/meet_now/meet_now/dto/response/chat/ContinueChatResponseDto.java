@@ -8,5 +8,7 @@ public class ContinueChatResponseDto {
     private UUID tempChatId;
     private UUID userId;
     private boolean accepted;
+    private Boolean permanentChatCreated;
     private PermanentChatResponseDto permanentChat;
+    private String errorMessage;
 }

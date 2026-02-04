@@ -310,7 +310,6 @@ public class GiftService {
         long totalDailyGifts = dailyGiftRepository.count();
         long totalInventoryItems = userInventoryRepository.count();
 
-        // Новая статистика по лимитированным подаркам
         long limitedGifts = giftRepository.findAll().stream()
                 .filter(Gift::getIsLimited)
                 .count();

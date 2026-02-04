@@ -40,6 +40,12 @@ public class TemporaryChat {
     @Column(name = "is_finished")
     private Boolean isFinished = false;
 
+    @Column(name = "sender_agreed")
+    private Boolean senderAgreed = false;
+
+    @Column(name = "recipient_agreed")
+    private Boolean recipientAgreed = false;
+
     @Column(name = "both_agreed")
     private Boolean bothAgreed = false;
 

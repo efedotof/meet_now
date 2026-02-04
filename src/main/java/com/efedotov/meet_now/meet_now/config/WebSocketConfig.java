@@ -32,8 +32,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns(
                         "https://mnapp.ru",
                         "https://www.mnapp.ru",
-                        "http://localhost:*"
-                        )
+                        "https://app.mnapp.ru",
+                        "https://games.mnapp.ru",
+                        "http://localhost:*")
                 .withSockJS();
     }
 
@@ -54,11 +55,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public void afterSendCompletion(
-                @NonNull Message<?> message, 
-                @NonNull MessageChannel channel, 
-                boolean sent, 
-                @Nullable Exception ex) {
-                
+                    @NonNull Message<?> message,
+                    @NonNull MessageChannel channel,
+                    boolean sent,
+                    @Nullable Exception ex) {
+
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 if (accessor.getMessageType() != null) {
                     log.info("Outgoing message");

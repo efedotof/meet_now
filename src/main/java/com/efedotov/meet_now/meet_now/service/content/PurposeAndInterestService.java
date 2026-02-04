@@ -187,13 +187,11 @@ public class PurposeAndInterestService {
         long totalInterests = interestRepository.count();
         long totalPurposes = purposeRepository.count();
 
-        // Получаем популярные интересы как Object[] и преобразуем в строки
         List<Object[]> popularInterestsRaw = userRepository.findMostPopularInterests();
         List<String> popularInterests = popularInterestsRaw.stream()
                 .map(obj -> (String) obj[0])
                 .collect(Collectors.toList());
 
-        // Получаем популярные цели как Object[] и преобразуем в строки
         List<Object[]> popularPurposesRaw = userRepository.findMostPopularPurposes();
         List<String> popularPurposes = popularPurposesRaw.stream()
                 .map(obj -> (String) obj[0])
@@ -265,7 +263,6 @@ public class PurposeAndInterestService {
         return purposeRepository.findAll();
     }
 
-    // Новые методы для поиска по тексту
     public List<String> searchInterestTitles(String query) {
         if (query == null || query.trim().isEmpty()) {
             return interestRepository.findAll().stream()
