@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class BackspaceButton extends StatelessWidget {
   const BackspaceButton({super.key, required this.onBackspacePressed});
   final VoidCallback onBackspacePressed;
+
   @override
   Widget build(BuildContext context) {
     return Material(

@@ -1,19 +1,20 @@
 import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/searchs/search/search_random_model.dart';
+import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/model/searchs/match_delivery_state/match_delivery_state.dart';
+import 'package:meet_now_app_server/model/searchs/search_filters/search_filters.dart';
+import 'package:meet_now_app_server/model/searchs/search_response_dto/search_response_dto.dart';
 import 'package:meet_now_app_server/model/social/city/city.dart';
-
 import 'package:meet_now_app_server/repository/city/city_interface.dart';
 import 'package:meet_now_app_server/repository/search/search_interface.dart';
 import 'package:meet_now_app_server/repository/user/user_interface.dart';
 
 part 'search_state.dart';
-
 part 'search_cubit.freezed.dart';
 
 class SearchCubit extends Cubit<SearchState> {
@@ -25,15 +26,28 @@ class SearchCubit extends Cubit<SearchState> {
        _userInterface = userInterface,
        _searchInterface = searchInterface,
        super(const SearchState());
-
   final SearchInterface _searchInterface;
   final UserInterface _userInterface;
   final CityInterface _cityInterface;
   Timer? _debounceTimer;
+  Timer? _pollingTimer;
+  Timer? _deliveryPollingTimer;
   bool _shouldStopSearch = false;
+  String? _currentUserId;
+  final Set<String> _acknowledgedChats = {};
+  final Set<String> _deliveryPollingChats = {};
 
   final List<String> genders = const ['М', 'Ж'];
   final List<int> ageFromList = [for (int i = 0; i < 15; i++) 18 + i * 3];
+
+  int getAgeEnd(int ageStart) {
+    return ageStart + 2;
+  }
+
+  String getAgeLabel(int ageStart) {
+    final ageEnd = getAgeEnd(ageStart);
+    return "$ageStart–$ageEnd";
+  }
 
   void selectGender(String gender) {
     emit(state.copyWith(gender: gender, ageFrom: null));
@@ -79,55 +93,310 @@ class SearchCubit extends Cubit<SearchState> {
     emit(state.copyWith(verified: !state.verified));
   }
 
+  Future<void> _initializeUserId() async {
+    if (_currentUserId == null) {
+      try {
+        final user = await _userInterface.getUser();
+        _currentUserId = user.id;
+      } catch (e) {
+        //
+      }
+    } else {
+      //
+    }
+  }
+
   Future<void> toggleSearch({required BuildContext context}) async {
     if (state.isSearching) {
-      _shouldStopSearch = true;
-      emit(state.copyWith(isSearching: false));
+      _stopSearch();
+      emit(
+        state.copyWith(
+          isSearching: false,
+          queuePosition: 0,
+          totalInQueue: 0,
+          matchedChat: null,
+          searchStatus: 'STOPPED',
+        ),
+      );
       return;
     }
 
-    if (state.gender.isEmpty || state.ageFrom == null) return;
+    await _initializeUserId();
+    final user = await _userInterface.getUser();
+
+    if (user.isSearchable == false) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(S.of(context).noOneCanSeeYouTurnOnSearchVisibility),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (state.gender.isEmpty || state.ageFrom == null) {
+      return;
+    }
 
     _shouldStopSearch = false;
-    emit(state.copyWith(isSearching: true));
-    await _userInterface.startSearch();
 
-    final gender = _convertGender(state.gender);
+    emit(
+      state.copyWith(
+        isSearching: true,
+        queuePosition: 0,
+        totalInQueue: 0,
+        matchedChat: null,
+        searchStatus: 'SEARCHING',
+      ),
+    );
 
-    while (!_shouldStopSearch && !isClosed) {
-      try {
-        final request = SearchRandomModel(
-          interests: state.interests,
-          purposes: state.purposes,
-          ageStart: state.ageFrom!,
-          ageStop: state.ageFrom! + 3,
-          floor: gender,
-          city: state.city,
-          verified: state.verified,
+    try {
+      final gender = _convertGender(state.gender);
+
+      final filters = SearchFilters(
+        interests: state.interests,
+        purposes: state.purposes,
+        verified: state.verified,
+        ageStart: state.ageFrom!,
+        ageStop: getAgeEnd(state.ageFrom!),
+        city: state.city.isEmpty ? null : state.city,
+        floor: gender,
+      );
+
+      final response = await _searchInterface.startSearch(filters: filters);
+
+      if (context.mounted) {
+        _handleSearchResponse(response, context);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(S.of(context).unknownError)));
+      }
+      emit(
+        state.copyWith(
+          isSearching: false,
+          queuePosition: 0,
+          totalInQueue: 0,
+          searchStatus: 'ERROR',
+        ),
+      );
+    }
+  }
+
+  void _handleSearchResponse(SearchResponseDto response, BuildContext context) {
+    if ((response.status == 'MATCHED' || response.status == 'MATCH_FOUND') &&
+        response.temporaryChat != null) {
+      if (context.mounted) {
+        _handleMatchedChat(response.temporaryChat!, context);
+      }
+    } else if (response.status == 'SEARCHING') {
+      emit(
+        state.copyWith(
+          queuePosition: response.queuePosition,
+          totalInQueue: response.totalInQueue,
+          searchStatus: 'SEARCHING',
+        ),
+      );
+
+      if (context.mounted) {
+        _startPolling(context);
+      }
+    } else if (response.status == 'STOPPED') {
+      emit(
+        state.copyWith(
+          isSearching: false,
+          queuePosition: 0,
+          totalInQueue: 0,
+          searchStatus: 'STOPPED',
+        ),
+      );
+    } else {
+      //
+    }
+  }
+
+  Future<void> _handleMatchedChat(
+    TemporaryChat temporaryChat,
+    BuildContext context,
+  ) async {
+    final chatId = temporaryChat.tempChatId;
+
+    emit(
+      state.copyWith(
+        isSearching: false,
+        matchedChat: temporaryChat,
+        searchStatus: 'MATCHED',
+      ),
+    );
+
+    await _acknowledgeChatDelivery(chatId);
+
+    _startDeliveryPolling(chatId);
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (context.mounted) {
+        context.pushRoute(
+          ChatMessageRoute(
+            temporaryChatModel: temporaryChat,
+            chatKey: temporaryChat.tempChatId,
+          ),
         );
+      } else {}
+    });
+  }
 
-        final chat = await _searchInterface.randomSearch(request: request);
-        if (chat.tempChatId.isNotEmpty &&
-            context.mounted &&
-            !_shouldStopSearch) {
-          await _userInterface.stopSearch();
-          emit(state.copyWith(isSearching: false));
-          if (context.mounted) {
-            context.router.push(
-              ChatMessageRoute(chatModel: null, temporaryChatModel: chat),
-            );
-          }
-          break;
+  Future<void> _acknowledgeChatDelivery(String chatId) async {
+    try {
+      if (_acknowledgedChats.contains(chatId)) {
+        return;
+      }
+
+      await _initializeUserId();
+      if (_currentUserId == null) {
+        return;
+      }
+
+      await _searchInterface.acknowledgeTemporaryChat(chatId, _currentUserId!);
+      _acknowledgedChats.add(chatId);
+
+      _checkDeliveryStatus(chatId);
+    } catch (e) {
+      //
+    }
+  }
+
+  Future<void> _checkDeliveryStatus(String chatId) async {
+    try {
+      final status = await _searchInterface.getMatchDeliveryStatus(chatId);
+
+      if (status.status == MatchDeliveryStatus.DELIVERED ||
+          status.status == MatchDeliveryStatus.EXPIRED ||
+          status.status == MatchDeliveryStatus.CANCELLED) {
+        _stopDeliveryPolling(chatId);
+      }
+    } catch (e) {
+      //
+    }
+  }
+
+  void _startDeliveryPolling(String chatId) {
+    if (_deliveryPollingChats.contains(chatId)) {
+      return;
+    }
+
+    _deliveryPollingChats.add(chatId);
+
+    _deliveryPollingTimer = Timer.periodic(const Duration(seconds: 5), (
+      timer,
+    ) async {
+      if (!_deliveryPollingChats.contains(chatId)) {
+        timer.cancel();
+        return;
+      }
+
+      try {
+        final status = await _searchInterface.getMatchDeliveryStatus(chatId);
+
+        if (status.status == MatchDeliveryStatus.DELIVERED ||
+            status.status == MatchDeliveryStatus.EXPIRED ||
+            status.status == MatchDeliveryStatus.CANCELLED) {
+          _stopDeliveryPolling(chatId);
+          timer.cancel();
         }
       } catch (e) {
-        if (context.mounted && !_shouldStopSearch) {
-          await _userInterface.stopSearch();
-        }
+        //
+      }
+    });
+  }
+
+  void _stopDeliveryPolling(String chatId) {
+    _deliveryPollingChats.remove(chatId);
+  }
+
+  void _startPolling(BuildContext context) {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      if (_shouldStopSearch || isClosed) {
+        timer.cancel();
+        return;
       }
 
-      if (!_shouldStopSearch) {
-        await Future.delayed(const Duration(seconds: 3));
+      try {
+        final response = await _searchInterface.getSearchStatus();
+
+        if ((response.status == 'MATCHED' ||
+                response.status == 'MATCH_FOUND') &&
+            response.temporaryChat != null) {
+          timer.cancel();
+          final localContext = context;
+          if (localContext.mounted) {
+            await _handleMatchedChat(response.temporaryChat!, localContext);
+          }
+        } else if (response.status == 'SEARCHING') {
+          emit(
+            state.copyWith(
+              queuePosition: response.queuePosition,
+              totalInQueue: response.totalInQueue,
+              searchStatus: 'SEARCHING',
+            ),
+          );
+        } else if (response.status == 'STOPPED' ||
+            response.status == 'NO_MATCH') {
+          timer.cancel();
+          emit(
+            state.copyWith(
+              isSearching: false,
+              queuePosition: 0,
+              totalInQueue: 0,
+              searchStatus: response.status,
+            ),
+          );
+        } else {}
+      } catch (e) {
+        //
       }
+    });
+  }
+
+  void _stopSearch() {
+    _shouldStopSearch = true;
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+    _deliveryPollingTimer?.cancel();
+    _deliveryPollingTimer = null;
+    _deliveryPollingChats.clear();
+
+    try {
+      _userInterface.stopSearch();
+      _searchInterface.stopSearch();
+    } catch (e) {
+      //
+    }
+  }
+
+  Future<void> checkStatus() async {
+    try {
+      final response = await _searchInterface.getSearchStatus();
+
+      if ((response.status == 'MATCHED' || response.status == 'MATCH_FOUND') &&
+          response.temporaryChat != null) {
+        final chatId = response.temporaryChat!.tempChatId;
+
+        await _acknowledgeChatDelivery(chatId);
+        emit(
+          state.copyWith(
+            matchedChat: response.temporaryChat,
+            searchStatus: 'MATCHED',
+          ),
+        );
+      }
+    } catch (e) {
+      //
     }
   }
 
@@ -141,6 +410,7 @@ class SearchCubit extends Cubit<SearchState> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       try {
         final cities = await _cityInterface.searchCities(query);
+
         emit(state.copyWith(cities: cities));
       } catch (e) {
         emit(state.copyWith(cities: []));
@@ -152,27 +422,29 @@ class SearchCubit extends Cubit<SearchState> {
     emit(state.copyWith(cities: []));
   }
 
+  void clearMatchedChat() {
+    emit(state.copyWith(matchedChat: null));
+  }
+
   String _convertGender(String gender) {
-    switch (gender.toLowerCase()) {
-      case 'м':
-      case 'М':
-      case 'муж':
-      case 'male':
-        return 'male';
-      case 'ж':
-      case "Ж":
-      case 'жен':
-      case 'female':
-        return 'female';
-      default:
-        return gender;
-    }
+    final result = switch (gender.toLowerCase()) {
+      'м' || 'М' || 'муж' || 'male' => 'male',
+      'ж' || "Ж" || 'жен' || 'female' => 'female',
+      _ => gender,
+    };
+
+    return result;
   }
 
   @override
   Future<void> close() {
     _debounceTimer?.cancel();
-    _shouldStopSearch = true;
+    _pollingTimer?.cancel();
+    _deliveryPollingTimer?.cancel();
+    _stopSearch();
+    _acknowledgedChats.clear();
+    _deliveryPollingChats.clear();
+
     return super.close();
   }
 }

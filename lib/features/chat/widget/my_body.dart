@@ -10,9 +10,24 @@ import 'chat_tile.dart';
 import 'temporary_chat_tile.dart';
 
 class MyBody extends StatelessWidget {
-  const MyBody({super.key, required this.state});
+  const MyBody({
+    super.key,
+    required this.state,
+    required this.onChatSelected,
+    this.selectedPermanentChat,
+    this.selectedTemporaryChat,
+    this.forceShowAll = false,
+  });
 
   final ChatState state;
+  final Function({
+    PermanentChatResponseDto? permanentChat,
+    TemporaryChat? temporaryChat,
+  })
+  onChatSelected;
+  final PermanentChatResponseDto? selectedPermanentChat;
+  final TemporaryChat? selectedTemporaryChat;
+  final bool forceShowAll;
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +55,10 @@ class MyBody extends StatelessWidget {
       state.temporaryChat,
     )..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    if (state.selectedChatType == ChatType.permanent) temporaryChats = [];
-    if (state.selectedChatType == ChatType.temporary) permanentChats = [];
+    if (!forceShowAll) {
+      if (state.selectedChatType == ChatType.permanent) temporaryChats = [];
+      if (state.selectedChatType == ChatType.temporary) permanentChats = [];
+    }
 
     if (searchQuery.isNotEmpty) {
       permanentChats =
@@ -57,7 +74,7 @@ class MyBody extends StatelessWidget {
             }
           }).toList();
 
-      if (state.selectedChatType != ChatType.permanent) {
+      if (forceShowAll || state.selectedChatType != ChatType.permanent) {
         temporaryChats =
             temporaryChats.where((chat) {
               final anonymousChatName =
@@ -77,11 +94,16 @@ class MyBody extends StatelessWidget {
       if (searchQuery.isNotEmpty) {
         message = S.of(context).nothingFound;
       } else {
-        message = switch (state.selectedChatType) {
-          ChatType.all => S.of(context).there_are_no_chats,
-          ChatType.permanent => S.of(context).there_are_no_permanent_chats,
-          ChatType.temporary => S.of(context).there_are_no_temporary_chats,
-        };
+        message =
+            forceShowAll
+                ? S.of(context).there_are_no_chats
+                : switch (state.selectedChatType) {
+                  ChatType.all => S.of(context).there_are_no_chats,
+                  ChatType.permanent =>
+                    S.of(context).there_are_no_permanent_chats,
+                  ChatType.temporary =>
+                    S.of(context).there_are_no_temporary_chats,
+                };
       }
 
       return SizedBox(
@@ -121,16 +143,21 @@ class MyBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (permanentChats.isNotEmpty) ...[
-          if (state.selectedChatType == ChatType.all)
+        if (!forceShowAll && state.selectedChatType == ChatType.all) ...[
+          if (permanentChats.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 S.of(context).constant_chats,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
+        ],
 
+        if (permanentChats.isNotEmpty)
           Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -158,22 +185,28 @@ class MyBody extends StatelessWidget {
                       avatar: avatar ?? '',
                       chat: chat,
                       sendLastMessageAt: chat.lastMessageAt,
+                      onTap: () => onChatSelected(permanentChat: chat),
+                      isSelected: selectedPermanentChat?.chatId == chat.chatId,
                     ),
                   );
                 }).toList(),
           ),
-        ],
 
-        if (temporaryChats.isNotEmpty) ...[
-          if (state.selectedChatType == ChatType.all)
+        if (!forceShowAll && state.selectedChatType == ChatType.all) ...[
+          if (temporaryChats.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 S.of(context).temporary_chats,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
+        ],
 
+        if (temporaryChats.isNotEmpty)
           Wrap(
             spacing: 12,
             runSpacing: 12,
@@ -204,6 +237,10 @@ class MyBody extends StatelessWidget {
                             avatar: null,
                             chat: chat,
                             remainingTime: timerState.remainingTime,
+                            onTap: () => onChatSelected(temporaryChat: chat),
+                            isSelected:
+                                selectedTemporaryChat?.tempChatId ==
+                                chat.tempChatId,
                           );
                         },
                       ),
@@ -211,7 +248,6 @@ class MyBody extends StatelessWidget {
                   );
                 }).toList(),
           ),
-        ],
       ],
     );
   }

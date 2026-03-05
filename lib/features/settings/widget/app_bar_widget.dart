@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
@@ -13,10 +16,63 @@ class AppBarWidget extends StatefulWidget {
   State<AppBarWidget> createState() => _AppBarWidgetState();
 }
 
-class _AppBarWidgetState extends State<AppBarWidget> {
+class _AppBarWidgetState extends State<AppBarWidget>
+    with WidgetsBindingObserver {
+  bool _isMobileLayout = false;
+  static const double mobileBreakpoint = 768;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (mounted) {
+      _checkLayout();
+    }
+  }
+
+  void _checkLayout() {
+    final double width = MediaQuery.of(context).size.width;
+    final bool newIsMobileLayout = width < mobileBreakpoint;
+
+    if (mounted && _isMobileLayout != newIsMobileLayout) {
+      setState(() {
+        _isMobileLayout = newIsMobileLayout;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
+    });
+
+    bool isDesktopPlatform = false;
+    if (!kIsWeb) {
+      isDesktopPlatform =
+          Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    }
+
+    final bool useDesktopAppBar =
+        (kIsWeb || isDesktopPlatform) && !_isMobileLayout;
+
+    final double containerWidthMultiplier = useDesktopAppBar ? 0.4 : 0.5;
 
     return Positioned(
       top: 20,
@@ -25,11 +81,15 @@ class _AppBarWidgetState extends State<AppBarWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment:
+              useDesktopAppBar
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceBetween,
           children: [
             Container(
               height: 45,
-              width: MediaQuery.of(context).size.width * 0.5,
+              width:
+                  MediaQuery.of(context).size.width * containerWidthMultiplier,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
                 color: isDark ? Colors.white70 : Colors.black87,
@@ -41,6 +101,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                 style: TextStyle(color: isDark ? Colors.black : Colors.white),
               ),
             ),
+
+            if (useDesktopAppBar) const SizedBox(width: 20),
 
             BlocBuilder<GamePointsCubit, GamePointsState>(
               builder: (context, state) {

@@ -13,6 +13,7 @@ bool FlutterWindow::OnCreate() {
   if (!Win32Window::OnCreate()) {
     return false;
   }
+  SetWindowText(GetHandle(), L"MNA");
 
   RECT frame = GetClientArea();
 

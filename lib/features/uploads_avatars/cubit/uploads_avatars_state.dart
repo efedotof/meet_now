@@ -1,7 +1,7 @@
 part of 'uploads_avatars_cubit.dart';
 
 @freezed
-class UploadsAvatarsState with _$UploadsAvatarsState {
+abstract class UploadsAvatarsState with _$UploadsAvatarsState {
   const factory UploadsAvatarsState.initial() = _Initial;
   const factory UploadsAvatarsState.avatarSelected(
     String uri,
@@ -15,5 +15,6 @@ class UploadsAvatarsState with _$UploadsAvatarsState {
       _GallerySelected;
   const factory UploadsAvatarsState.imagesUploadSuccess(List<String> urls) =
       _ImagesUploadSuccess;
-  const factory UploadsAvatarsState.error(String message) = _Error;
+  const factory UploadsAvatarsState.error(UploadAvatarsErrorKeys errorKey) =
+      _Error;
 }

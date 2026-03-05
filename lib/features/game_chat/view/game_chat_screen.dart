@@ -52,6 +52,7 @@ class _GameChatScreenState extends State<GameChatScreen> {
       ),
 
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         body: Stack(
           children: [
             SizedBox(

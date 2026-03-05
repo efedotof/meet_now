@@ -17,119 +17,158 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Stack(
-          children: [
-            UserAvatar(radius: 60, avatarKey: user.avatar),
-            if (user.isOnline)
-              Positioned(
-                right: 3,
-                bottom: 3,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Text(
-                    S.of(context).online,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              UserAvatar(radius: 60, avatarKey: user.avatar),
+              if (user.isOnline)
+                Positioned(
+                  right: 3,
+                  bottom: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Text(
+                      S.of(context).online,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+            ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                if (user.firstname != null || user.subname != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      '${user.firstname ?? ''} ${user.subname ?? ''}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-
-                if (user.verified)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Tooltip(
-                      message: S.of(context).confirmed,
-                      child: Image.asset(
-                        'assets/verify.png',
-                        width: 20,
-                        height: 20,
-                        filterQuality: FilterQuality.none,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: [
+                          if (user.firstname != null || user.subname != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                '${user.firstname ?? ''} ${user.subname ?? ''}'
+                                    .trim(),
+                                style: Theme.of(context).textTheme.titleMedium,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+                          if (user.verified)
+                            Tooltip(
+                              message: S.of(context).confirmed,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Image.asset(
+                                  'assets/verify.png',
+                                  width: 20,
+                                  height: 20,
+                                  filterQuality: FilterQuality.none,
+                                ),
+                              ),
+                            ),
+                          if (user.roles.contains("ADMIN"))
+                            Tooltip(
+                              message: S.of(context).administrator,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Image.asset(
+                                  'assets/administration.png',
+                                  width: 20,
+                                  height: 20,
+                                  filterQuality: FilterQuality.none,
+                                ),
+                              ),
+                            ),
+                          if (user.roles.contains("MODERATION"))
+                            Tooltip(
+                              message: S.of(context).moderator,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Image.asset(
+                                  'assets/moderator.png',
+                                  width: 20,
+                                  height: 20,
+                                  filterQuality: FilterQuality.none,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-                if (user.roles.contains("ADMIN"))
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Tooltip(
-                      message: S.of(context).administrator,
-                      child: Image.asset(
-                        'assets/administration.png',
-                        width: 20,
-                        height: 20,
-                        filterQuality: FilterQuality.none,
-                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                if (user.age != null || user.city != null)
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: double.infinity,
+                    ),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        if (user.age != null)
+                          Text(
+                            '${user.age} ${S.of(context).years}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        if (user.age != null && user.city != null)
+                          const Text(
+                            '•',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        if (user.city != null)
+                          Text(
+                            user.city!,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                      ],
                     ),
                   ),
-                if (user.roles.contains("MODERATION"))
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Tooltip(
-                      message: S.of(context).moderator,
-                      child: Image.asset(
-                        'assets/moderator.png',
-                        width: 20,
-                        height: 20,
-                        filterQuality: FilterQuality.none,
-                      ),
-                    ),
+                const SizedBox(height: 4),
+                if (user.floor != '')
+                  Text(
+                    '${S.of(context).gender}: ${getGender(context, user.floor)}',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
                   ),
               ],
             ),
-            if (user.age != null || user.city != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (user.age != null)
-                      Text(
-                        '${user.age} ${S.of(context).years}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    if (user.age != null && user.city != null)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: Text('•'),
-                      ),
-                    if (user.city != null)
-                      Text(
-                        user.city!,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                  ],
-                ),
-              ),
-            if (user.floor != '')
-              Text('Пол: ${getGender(context, user.floor)}'),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

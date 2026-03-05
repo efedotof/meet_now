@@ -25,57 +25,94 @@ class _MyReportScreenState extends State<MyReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Scaffold(
       body: Stack(
         children: [
           SizedBox(
-            width: MediaQuery.of(context).size.width,
+            width: screenWidth,
             height: MediaQuery.of(context).size.height,
-            child: SkeletonTheme(
-              shimmerGradient: const LinearGradient(
-                colors: [
-                  Color(0xFFD8E3E7),
-                  Color(0xFFC8D5DA),
-                  Color(0xFFD8E3E7),
-                ],
-                stops: [0.1, 0.5, 0.9],
-              ),
-              darkShimmerGradient: const LinearGradient(
-                colors: [
-                  Color(0xFF222222),
-                  Color(0xFF242424),
-                  Color(0xFF2B2B2B),
-                  Color(0xFF242424),
-                  Color(0xFF222222),
-                ],
-                stops: [0.0, 0.2, 0.5, 0.8, 1],
-                begin: Alignment(-2.4, -0.2),
-                end: Alignment(2.4, 0.2),
-                tileMode: TileMode.clamp,
-              ),
-              child: RefreshIndicator(
-                onRefresh: () => context.read<ReportCubit>().loadReports(),
-                child: BlocBuilder<ReportCubit, ReportState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const ReportsSkeleton(),
-                      loading: () => const ReportsSkeleton(),
-                      error:
-                          (msg) => Center(
-                            child: Text("${S.of(context).error} $msg"),
-                          ),
-                      loaded: (reports) {
-                        if (reports.isEmpty) {
-                          return Center(
-                            child: Text(
-                              S.of(context).there_are_no_complaints_yet,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isMobile ? double.infinity : 600,
+                ),
+                child: SkeletonTheme(
+                  shimmerGradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFD8E3E7),
+                      Color(0xFFC8D5DA),
+                      Color(0xFFD8E3E7),
+                    ],
+                    stops: [0.1, 0.5, 0.9],
+                  ),
+                  darkShimmerGradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF222222),
+                      Color(0xFF242424),
+                      Color(0xFF2B2B2B),
+                      Color(0xFF242424),
+                      Color(0xFF222222),
+                    ],
+                    stops: [0.0, 0.2, 0.5, 0.8, 1],
+                    begin: Alignment(-2.4, -0.2),
+                    end: Alignment(2.4, 0.2),
+                    tileMode: TileMode.clamp,
+                  ),
+                  child: Container(
+                    margin: EdgeInsets.all(isMobile ? 0 : 16),
+                    decoration:
+                        isMobile
+                            ? null
+                            : BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
                             ),
+                    child: RefreshIndicator(
+                      onRefresh:
+                          () => context.read<ReportCubit>().loadReports(),
+                      child: BlocBuilder<ReportCubit, ReportState>(
+                        builder: (context, state) {
+                          return state.when(
+                            initial: () => ReportsSkeleton(isMobile: isMobile),
+                            loading: () => ReportsSkeleton(isMobile: isMobile),
+                            error:
+                                (msg) => Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(isMobile ? 16 : 24),
+                                    child: Text("${S.of(context).error} $msg"),
+                                  ),
+                                ),
+                            loaded: (reports) {
+                              if (reports.isEmpty) {
+                                return Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(isMobile ? 16 : 24),
+                                    child: Text(
+                                      S.of(context).there_are_no_complaints_yet,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return ReportWrap(
+                                reports: reports,
+                                isMobile: isMobile,
+                              );
+                            },
                           );
-                        }
-                        return ReportWrap(reports: reports);
-                      },
-                    );
-                  },
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

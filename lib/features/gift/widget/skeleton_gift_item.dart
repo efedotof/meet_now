@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 class SkeletonGiftItem extends StatelessWidget {
-  const SkeletonGiftItem({super.key});
+  final bool isMobile;
+
+  const SkeletonGiftItem({super.key, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(13),
+        borderRadius: BorderRadius.circular(isMobile ? 13 : 16),
         color: Colors.grey.shade300,
       ),
       child: SkeletonTheme(
@@ -29,7 +31,7 @@ class SkeletonGiftItem extends StatelessWidget {
                 style: SkeletonAvatarStyle(
                   width: double.infinity,
                   height: double.infinity,
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(isMobile ? 13 : 16),
                 ),
               ),
             ),
@@ -39,14 +41,14 @@ class SkeletonGiftItem extends StatelessWidget {
               top: 3,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(isMobile ? 13 : 16),
                   color: Colors.grey.shade300,
                 ),
                 padding: const EdgeInsets.all(3),
                 child: SkeletonLine(
                   style: SkeletonLineStyle(
-                    height: 15,
-                    width: 80,
+                    height: isMobile ? 15 : 18,
+                    width: isMobile ? 80 : 100,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -58,15 +60,15 @@ class SkeletonGiftItem extends StatelessWidget {
               top: 3,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(isMobile ? 13 : 16),
                   color: Colors.grey.shade300,
                 ),
                 padding: const EdgeInsets.all(3),
                 child: SkeletonAvatar(
                   style: SkeletonAvatarStyle(
                     shape: BoxShape.circle,
-                    width: 24,
-                    height: 24,
+                    width: isMobile ? 24 : 28,
+                    height: isMobile ? 24 : 28,
                   ),
                 ),
               ),

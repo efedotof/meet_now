@@ -12,7 +12,7 @@ part of 'setting_profile_cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$SettingProfileState {
+mixin _$SettingProfileState implements DiagnosticableTreeMixin {
 
  User? get user; String get username; String get firstname; String get subname; String get description; String get city; String get age; List<String> get interests; List<String> get purposes; bool get isSearchable; String? get oldPassword; String? get newPassword; bool get isLoading; String? get errorMessage; bool get isSuccess; bool get isPasswordChanged; Uint8List? get tempAvatarData;
 /// Create a copy of SettingProfileState
@@ -22,6 +22,12 @@ mixin _$SettingProfileState {
 $SettingProfileStateCopyWith<SettingProfileState> get copyWith => _$SettingProfileStateCopyWithImpl<SettingProfileState>(this as SettingProfileState, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SettingProfileState'))
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('firstname', firstname))..add(DiagnosticsProperty('subname', subname))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('city', city))..add(DiagnosticsProperty('age', age))..add(DiagnosticsProperty('interests', interests))..add(DiagnosticsProperty('purposes', purposes))..add(DiagnosticsProperty('isSearchable', isSearchable))..add(DiagnosticsProperty('oldPassword', oldPassword))..add(DiagnosticsProperty('newPassword', newPassword))..add(DiagnosticsProperty('isLoading', isLoading))..add(DiagnosticsProperty('errorMessage', errorMessage))..add(DiagnosticsProperty('isSuccess', isSuccess))..add(DiagnosticsProperty('isPasswordChanged', isPasswordChanged))..add(DiagnosticsProperty('tempAvatarData', tempAvatarData));
+}
 
 @override
 bool operator ==(Object other) {
@@ -33,7 +39,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged,const DeepCollectionEquality().hash(tempAvatarData));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged, tempAvatarData: $tempAvatarData)';
 }
 
@@ -233,7 +239,7 @@ return $default(_that.user,_that.username,_that.firstname,_that.subname,_that.de
 /// @nodoc
 
 
-class _SettingProfileState implements SettingProfileState {
+class _SettingProfileState with DiagnosticableTreeMixin implements SettingProfileState {
   const _SettingProfileState({this.user, required this.username, required this.firstname, required this.subname, required this.description, required this.city, required this.age, required final  List<String> interests, required final  List<String> purposes, required this.isSearchable, this.oldPassword, this.newPassword, required this.isLoading, this.errorMessage, required this.isSuccess, required this.isPasswordChanged, this.tempAvatarData}): _interests = interests,_purposes = purposes;
   
 
@@ -274,6 +280,12 @@ class _SettingProfileState implements SettingProfileState {
 _$SettingProfileStateCopyWith<_SettingProfileState> get copyWith => __$SettingProfileStateCopyWithImpl<_SettingProfileState>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SettingProfileState'))
+    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('username', username))..add(DiagnosticsProperty('firstname', firstname))..add(DiagnosticsProperty('subname', subname))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('city', city))..add(DiagnosticsProperty('age', age))..add(DiagnosticsProperty('interests', interests))..add(DiagnosticsProperty('purposes', purposes))..add(DiagnosticsProperty('isSearchable', isSearchable))..add(DiagnosticsProperty('oldPassword', oldPassword))..add(DiagnosticsProperty('newPassword', newPassword))..add(DiagnosticsProperty('isLoading', isLoading))..add(DiagnosticsProperty('errorMessage', errorMessage))..add(DiagnosticsProperty('isSuccess', isSuccess))..add(DiagnosticsProperty('isPasswordChanged', isPasswordChanged))..add(DiagnosticsProperty('tempAvatarData', tempAvatarData));
+}
 
 @override
 bool operator ==(Object other) {
@@ -285,7 +297,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,user,username,firstname,subname,description,city,age,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),isSearchable,oldPassword,newPassword,isLoading,errorMessage,isSuccess,isPasswordChanged,const DeepCollectionEquality().hash(tempAvatarData));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'SettingProfileState(user: $user, username: $username, firstname: $firstname, subname: $subname, description: $description, city: $city, age: $age, interests: $interests, purposes: $purposes, isSearchable: $isSearchable, oldPassword: $oldPassword, newPassword: $newPassword, isLoading: $isLoading, errorMessage: $errorMessage, isSuccess: $isSuccess, isPasswordChanged: $isPasswordChanged, tempAvatarData: $tempAvatarData)';
 }
 

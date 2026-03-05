@@ -1,10 +1,8 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:random_avatar/random_avatar.dart';
 
 class TemporaryChatTile extends StatelessWidget {
@@ -16,6 +14,8 @@ class TemporaryChatTile extends StatelessWidget {
     required this.avatar,
     required this.chat,
     this.remainingTime,
+    this.onTap,
+    this.isSelected = false,
   });
 
   final String name;
@@ -24,6 +24,8 @@ class TemporaryChatTile extends StatelessWidget {
   final String? avatar;
   final TemporaryChat chat;
   final int? remainingTime;
+  final VoidCallback? onTap;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +64,18 @@ class TemporaryChatTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border:
+            isSelected
+                ? Border(
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 4,
+                  ),
+                )
+                : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(12),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -92,7 +103,7 @@ class TemporaryChatTile extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.orange.withAlpha(50),
+                      color: Colors.orange.withValues(alpha: 0.2),
                       blurRadius: 3,
                       spreadRadius: 1,
                     ),
@@ -146,7 +157,9 @@ class TemporaryChatTile extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(178),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -161,10 +174,10 @@ class TemporaryChatTile extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withAlpha(30),
+                    color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Colors.orange.withAlpha(100),
+                      color: Colors.orange.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -179,10 +192,7 @@ class TemporaryChatTile extends StatelessWidget {
                   ),
                 ),
 
-        onTap: () {
-          context.read<ChatCubit>().openTempChat(tempChatId: chat.tempChatId);
-          context.pushRoute(ChatMessageRoute(temporaryChatModel: chat));
-        },
+        onTap: onTap,
 
         onLongPress: () {
           showDialog(
@@ -211,13 +221,13 @@ class TemporaryChatTile extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(S.of(context).temporary_chat_deleted),
-                            duration: Duration(seconds: 2),
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       },
                       child: Text(
                         S.of(context).delete,
-                        style: TextStyle(color: Colors.red),
+                        style: const TextStyle(color: Colors.red),
                       ),
                     ),
                   ],

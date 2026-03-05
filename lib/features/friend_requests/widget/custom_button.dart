@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onTap;
   final Color color;
   final IconData icon;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

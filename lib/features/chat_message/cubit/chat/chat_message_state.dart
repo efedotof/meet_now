@@ -10,9 +10,10 @@ abstract class ChatMessageState with _$ChatMessageState {
     @Default(true) bool hasMore,
     @Default(0) int currentPage,
     required bool isTemporary,
-    @Default(false) bool showContinueRequest,
+    @Default(false) bool showContinueProposal,
     @Default(false) bool isWaitingForResponse,
     AgreeChatResponse? agreeChatResponse,
+    ContinueChatProposalResponseDto? continueChatProposal,
   }) = _Loaded;
   const factory ChatMessageState.error(String message) = _Error;
 }

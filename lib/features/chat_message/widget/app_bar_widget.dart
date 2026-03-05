@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
@@ -43,8 +46,45 @@ class AppBarWidget extends StatefulWidget {
   State<AppBarWidget> createState() => _AppBarWidgetState();
 }
 
-class _AppBarWidgetState extends State<AppBarWidget> {
+class _AppBarWidgetState extends State<AppBarWidget>
+    with WidgetsBindingObserver {
   final GlobalKey _menuKey = GlobalKey();
+  bool _isMobileLayout = false;
+  static const double mobileBreakpoint = 768;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (mounted) {
+      _checkLayout();
+    }
+  }
+
+  void _checkLayout() {
+    final double width = MediaQuery.of(context).size.width;
+    final bool newIsMobileLayout = width < mobileBreakpoint;
+
+    if (mounted && _isMobileLayout != newIsMobileLayout) {
+      setState(() {
+        _isMobileLayout = newIsMobileLayout;
+      });
+    }
+  }
 
   String _getOtherUserName() {
     if (widget.chatModel == null) return S.of(context).anonymousUser;
@@ -364,6 +404,19 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
+    });
+
+    bool isDesktopPlatform = false;
+    if (!kIsWeb) {
+      isDesktopPlatform =
+          Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    }
+
+    final bool useDesktopAppBar =
+        (kIsWeb || isDesktopPlatform) && !_isMobileLayout;
+
     return BlocBuilder<UserActivityCubit, UserActivityState>(
       builder: (context, state) {
         final isOnline = state.maybeWhen(
@@ -371,35 +424,40 @@ class _AppBarWidgetState extends State<AppBarWidget> {
           orElse: () => false,
         );
 
+        final double containerWidthMultiplier = useDesktopAppBar ? 0.4 : 0.6;
+
         return Container(
           width: double.infinity,
-          height: 100,
+          height: 60,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark ? Colors.black87 : Colors.white70,
-                ),
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: widget.onBackPressed,
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: isDark ? Colors.white : Colors.black,
+              if (!useDesktopAppBar)
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark ? Colors.black87 : Colors.white70,
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: widget.onBackPressed,
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
-              ),
 
               const SizedBox(width: 6),
 
               widget.isTemporary
                   ? Container(
                     height: 45,
-                    width: MediaQuery.of(context).size.width * 0.6,
+                    width:
+                        MediaQuery.of(context).size.width *
+                        containerWidthMultiplier,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
                       color: isDark ? Colors.black87 : Colors.white70,
@@ -491,7 +549,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                     },
                     child: Container(
                       height: 45,
-                      width: MediaQuery.of(context).size.width * 0.6,
+                      width:
+                          MediaQuery.of(context).size.width *
+                          containerWidthMultiplier,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
                         color: isDark ? Colors.black87 : Colors.white70,

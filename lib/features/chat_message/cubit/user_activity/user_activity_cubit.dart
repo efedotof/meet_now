@@ -30,6 +30,10 @@ class UserActivityCubit extends Cubit<UserActivityState> {
     _socketService.actionSub(chatId: chatId);
   }
 
+  void unsubscribeAction({required String chatId}) {
+    _socketService.unsubscribeAction(chatId);
+  }
+
   void _handleActivity(UserActivity activity) {
     emit(UserActivityState.activity(activity: activity));
 

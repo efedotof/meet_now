@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
@@ -14,19 +16,64 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with WidgetsBindingObserver {
+  bool _isMobileLayout = false;
+  static const double mobileBreakpoint = 600;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
       context.read<UserDateCubit>().loadUser();
       context.read<GamePointsCubit>().loadPoints();
     });
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (mounted) {
+      _checkLayout();
+    }
+  }
+
+  void _checkLayout() {
+    final double width = MediaQuery.of(context).size.width;
+    final bool newIsMobileLayout = width < mobileBreakpoint;
+
+    if (mounted && _isMobileLayout != newIsMobileLayout) {
+      setState(() {
+        _isMobileLayout = newIsMobileLayout;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLayout();
+    });
+
+    bool isDesktopPlatform = false;
+    if (!kIsWeb) {
+      isDesktopPlatform =
+          Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    }
+
+    final bool useDesktopLayout =
+        (kIsWeb || isDesktopPlatform) && !_isMobileLayout;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           BlocConsumer<UserDateCubit, UserDateState>(
@@ -56,49 +103,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           context.read<GamePointsCubit>().refreshPoints();
                         },
                         child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.1,
-                              ),
-                              ProfileCard(user: user),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AccountSettingsSection(),
-                                    const SizedBox(height: 24),
-
-                                    AppSettingsSection(),
-                                    const SizedBox(height: 24),
-
-                                    AboutAppSection(),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Center(
-                                  child: Text(
-                                    S.of(context).version('1.0.0'),
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall?.copyWith(
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.secondary,
+                          child:
+                              useDesktopLayout
+                                  ? Center(
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: 500,
+                                      ),
+                                      child: _buildContent(context, user),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                                  )
+                                  : _buildContent(context, user),
                         ),
                       ),
                     ),
@@ -216,10 +231,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-
           const AppBarWidget(),
         ],
       ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+        ProfileCard(user: user),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AccountSettingsSection(),
+              const SizedBox(height: 24),
+
+              AppSettingsSection(),
+              const SizedBox(height: 24),
+
+              AboutAppSection(),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: Text(
+              S.of(context).version('1.0.0'),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -12,11 +12,17 @@ part of 'uploads_avatars_cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$UploadsAvatarsState {
+mixin _$UploadsAvatarsState implements DiagnosticableTreeMixin {
 
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -28,7 +34,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState()';
 }
 
@@ -140,7 +146,7 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String uri,  Uint8List bytes)?  avatarSelected,TResult Function()?  avatarLoading,TResult Function()?  imagesLoading,TResult Function( String url)?  avatarUploadSuccess,TResult Function( List<String> paths)?  gallerySelected,TResult Function( List<String> urls)?  imagesUploadSuccess,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String uri,  Uint8List bytes)?  avatarSelected,TResult Function()?  avatarLoading,TResult Function()?  imagesLoading,TResult Function( String url)?  avatarUploadSuccess,TResult Function( List<String> paths)?  gallerySelected,TResult Function( List<String> urls)?  imagesUploadSuccess,TResult Function( UploadAvatarsErrorKeys errorKey)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _AvatarSelected() when avatarSelected != null:
@@ -150,7 +156,7 @@ return imagesLoading();case _AvatarUploadSuccess() when avatarUploadSuccess != n
 return avatarUploadSuccess(_that.url);case _GallerySelected() when gallerySelected != null:
 return gallerySelected(_that.paths);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that.urls);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.errorKey);case _:
   return orElse();
 
 }
@@ -168,7 +174,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String uri,  Uint8List bytes)  avatarSelected,required TResult Function()  avatarLoading,required TResult Function()  imagesLoading,required TResult Function( String url)  avatarUploadSuccess,required TResult Function( List<String> paths)  gallerySelected,required TResult Function( List<String> urls)  imagesUploadSuccess,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String uri,  Uint8List bytes)  avatarSelected,required TResult Function()  avatarLoading,required TResult Function()  imagesLoading,required TResult Function( String url)  avatarUploadSuccess,required TResult Function( List<String> paths)  gallerySelected,required TResult Function( List<String> urls)  imagesUploadSuccess,required TResult Function( UploadAvatarsErrorKeys errorKey)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _AvatarSelected():
@@ -178,7 +184,7 @@ return imagesLoading();case _AvatarUploadSuccess():
 return avatarUploadSuccess(_that.url);case _GallerySelected():
 return gallerySelected(_that.paths);case _ImagesUploadSuccess():
 return imagesUploadSuccess(_that.urls);case _Error():
-return error(_that.message);case _:
+return error(_that.errorKey);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,7 +201,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String uri,  Uint8List bytes)?  avatarSelected,TResult? Function()?  avatarLoading,TResult? Function()?  imagesLoading,TResult? Function( String url)?  avatarUploadSuccess,TResult? Function( List<String> paths)?  gallerySelected,TResult? Function( List<String> urls)?  imagesUploadSuccess,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String uri,  Uint8List bytes)?  avatarSelected,TResult? Function()?  avatarLoading,TResult? Function()?  imagesLoading,TResult? Function( String url)?  avatarUploadSuccess,TResult? Function( List<String> paths)?  gallerySelected,TResult? Function( List<String> urls)?  imagesUploadSuccess,TResult? Function( UploadAvatarsErrorKeys errorKey)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _AvatarSelected() when avatarSelected != null:
@@ -205,7 +211,7 @@ return imagesLoading();case _AvatarUploadSuccess() when avatarUploadSuccess != n
 return avatarUploadSuccess(_that.url);case _GallerySelected() when gallerySelected != null:
 return gallerySelected(_that.paths);case _ImagesUploadSuccess() when imagesUploadSuccess != null:
 return imagesUploadSuccess(_that.urls);case _Error() when error != null:
-return error(_that.message);case _:
+return error(_that.errorKey);case _:
   return null;
 
 }
@@ -216,7 +222,7 @@ return error(_that.message);case _:
 /// @nodoc
 
 
-class _Initial implements UploadsAvatarsState {
+class _Initial with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _Initial();
   
 
@@ -224,6 +230,12 @@ class _Initial implements UploadsAvatarsState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.initial'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -235,7 +247,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.initial()';
 }
 
@@ -248,7 +260,7 @@ String toString() {
 /// @nodoc
 
 
-class _AvatarSelected implements UploadsAvatarsState {
+class _AvatarSelected with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _AvatarSelected(this.uri, this.bytes);
   
 
@@ -262,6 +274,12 @@ class _AvatarSelected implements UploadsAvatarsState {
 _$AvatarSelectedCopyWith<_AvatarSelected> get copyWith => __$AvatarSelectedCopyWithImpl<_AvatarSelected>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.avatarSelected'))
+    ..add(DiagnosticsProperty('uri', uri))..add(DiagnosticsProperty('bytes', bytes));
+}
 
 @override
 bool operator ==(Object other) {
@@ -273,7 +291,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,uri,const DeepCollectionEquality().hash(bytes));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.avatarSelected(uri: $uri, bytes: $bytes)';
 }
 
@@ -316,7 +334,7 @@ as Uint8List,
 /// @nodoc
 
 
-class _AvatarLoading implements UploadsAvatarsState {
+class _AvatarLoading with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _AvatarLoading();
   
 
@@ -324,6 +342,12 @@ class _AvatarLoading implements UploadsAvatarsState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.avatarLoading'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -335,7 +359,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.avatarLoading()';
 }
 
@@ -348,7 +372,7 @@ String toString() {
 /// @nodoc
 
 
-class _ImagesLoading implements UploadsAvatarsState {
+class _ImagesLoading with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _ImagesLoading();
   
 
@@ -356,6 +380,12 @@ class _ImagesLoading implements UploadsAvatarsState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.imagesLoading'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -367,7 +397,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.imagesLoading()';
 }
 
@@ -380,7 +410,7 @@ String toString() {
 /// @nodoc
 
 
-class _AvatarUploadSuccess implements UploadsAvatarsState {
+class _AvatarUploadSuccess with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _AvatarUploadSuccess(this.url);
   
 
@@ -393,6 +423,12 @@ class _AvatarUploadSuccess implements UploadsAvatarsState {
 _$AvatarUploadSuccessCopyWith<_AvatarUploadSuccess> get copyWith => __$AvatarUploadSuccessCopyWithImpl<_AvatarUploadSuccess>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.avatarUploadSuccess'))
+    ..add(DiagnosticsProperty('url', url));
+}
 
 @override
 bool operator ==(Object other) {
@@ -404,7 +440,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,url);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.avatarUploadSuccess(url: $url)';
 }
 
@@ -446,7 +482,7 @@ as String,
 /// @nodoc
 
 
-class _GallerySelected implements UploadsAvatarsState {
+class _GallerySelected with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _GallerySelected(final  List<String> paths): _paths = paths;
   
 
@@ -465,6 +501,12 @@ class _GallerySelected implements UploadsAvatarsState {
 _$GallerySelectedCopyWith<_GallerySelected> get copyWith => __$GallerySelectedCopyWithImpl<_GallerySelected>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.gallerySelected'))
+    ..add(DiagnosticsProperty('paths', paths));
+}
 
 @override
 bool operator ==(Object other) {
@@ -476,7 +518,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_paths));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.gallerySelected(paths: $paths)';
 }
 
@@ -518,7 +560,7 @@ as List<String>,
 /// @nodoc
 
 
-class _ImagesUploadSuccess implements UploadsAvatarsState {
+class _ImagesUploadSuccess with DiagnosticableTreeMixin implements UploadsAvatarsState {
   const _ImagesUploadSuccess(final  List<String> urls): _urls = urls;
   
 
@@ -537,6 +579,12 @@ class _ImagesUploadSuccess implements UploadsAvatarsState {
 _$ImagesUploadSuccessCopyWith<_ImagesUploadSuccess> get copyWith => __$ImagesUploadSuccessCopyWithImpl<_ImagesUploadSuccess>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.imagesUploadSuccess'))
+    ..add(DiagnosticsProperty('urls', urls));
+}
 
 @override
 bool operator ==(Object other) {
@@ -548,7 +596,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_urls));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'UploadsAvatarsState.imagesUploadSuccess(urls: $urls)';
 }
 
@@ -590,11 +638,11 @@ as List<String>,
 /// @nodoc
 
 
-class _Error implements UploadsAvatarsState {
-  const _Error(this.message);
+class _Error with DiagnosticableTreeMixin implements UploadsAvatarsState {
+  const _Error(this.errorKey);
   
 
- final  String message;
+ final  UploadAvatarsErrorKeys errorKey;
 
 /// Create a copy of UploadsAvatarsState
 /// with the given fields replaced by the non-null parameter values.
@@ -603,19 +651,25 @@ class _Error implements UploadsAvatarsState {
 _$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'UploadsAvatarsState.error'))
+    ..add(DiagnosticsProperty('errorKey', errorKey));
+}
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&const DeepCollectionEquality().equals(other.errorKey, errorKey));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,message);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(errorKey));
 
 @override
-String toString() {
-  return 'UploadsAvatarsState.error(message: $message)';
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'UploadsAvatarsState.error(errorKey: $errorKey)';
 }
 
 
@@ -626,7 +680,7 @@ abstract mixin class _$ErrorCopyWith<$Res> implements $UploadsAvatarsStateCopyWi
   factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
 @useResult
 $Res call({
- String message
+ UploadAvatarsErrorKeys errorKey
 });
 
 
@@ -643,10 +697,10 @@ class __$ErrorCopyWithImpl<$Res>
 
 /// Create a copy of UploadsAvatarsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? errorKey = freezed,}) {
   return _then(_Error(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+freezed == errorKey ? _self.errorKey : errorKey // ignore: cast_nullable_to_non_nullable
+as UploadAvatarsErrorKeys,
   ));
 }
 

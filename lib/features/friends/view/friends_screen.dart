@@ -25,60 +25,143 @@ class _FriendsScreenState extends State<FriendsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () => context.read<FriendsCubit>().getFriendsList(),
-        child: Stack(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SkeletonTheme(
-                shimmerGradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.surface.withAlpha(90),
-                    Theme.of(context).colorScheme.surface.withAlpha(50),
-                    Theme.of(context).colorScheme.surface.withAlpha(90),
-                  ],
-                  stops: const [0.1, 0.5, 0.9],
-                ),
-                darkShimmerGradient: LinearGradient(
-                  colors: [
-                    Colors.grey.shade800,
-                    Colors.grey.shade700,
-                    Colors.grey.shade800,
-                  ],
-                  stops: const [0.1, 0.5, 0.9],
-                ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth > 600;
+
+          return Stack(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
                 child: RefreshIndicator(
-                  onRefresh: () => context.read<FriendsCubit>().refreshFriend(),
-                  child: BlocBuilder<FriendsCubit, FriendsState>(
-                    builder: (context, state) {
-                      return state.when(
-                        initial: () => const FriendsSkeleton(),
-                        friendsList: (friends) {
-                          if (friends.isEmpty) {
-                            return EmptyState();
-                          }
-                          return Column(
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.1,
+                  onRefresh:
+                      () => context.read<FriendsCubit>().getFriendsList(),
+                  child:
+                      isDesktop
+                          ? Center(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 600),
+                              child: SkeletonTheme(
+                                shimmerGradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surface.withAlpha(90),
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surface.withAlpha(50),
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surface.withAlpha(90),
+                                  ],
+                                  stops: const [0.1, 0.5, 0.9],
+                                ),
+                                darkShimmerGradient: LinearGradient(
+                                  colors: [
+                                    Colors.grey.shade800,
+                                    Colors.grey.shade700,
+                                    Colors.grey.shade800,
+                                  ],
+                                  stops: const [0.1, 0.5, 0.9],
+                                ),
+                                child: RefreshIndicator(
+                                  onRefresh:
+                                      () =>
+                                          context
+                                              .read<FriendsCubit>()
+                                              .refreshFriend(),
+                                  child:
+                                      BlocBuilder<FriendsCubit, FriendsState>(
+                                        builder: (context, state) {
+                                          return state.when(
+                                            initial:
+                                                () => const FriendsSkeleton(),
+                                            friendsList: (friends) {
+                                              if (friends.isEmpty) {
+                                                return const EmptyState();
+                                              }
+                                              return Column(
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                        MediaQuery.of(
+                                                          context,
+                                                        ).size.height *
+                                                        0.1,
+                                                  ),
+                                                  FriendsList(friends: friends),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                ),
                               ),
-                              FriendsList(friends: friends),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
+                            ),
+                          )
+                          : SkeletonTheme(
+                            shimmerGradient: LinearGradient(
+                              colors: [
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surface.withAlpha(90),
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surface.withAlpha(50),
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surface.withAlpha(90),
+                              ],
+                              stops: const [0.1, 0.5, 0.9],
+                            ),
+                            darkShimmerGradient: LinearGradient(
+                              colors: [
+                                Colors.grey.shade800,
+                                Colors.grey.shade700,
+                                Colors.grey.shade800,
+                              ],
+                              stops: const [0.1, 0.5, 0.9],
+                            ),
+                            child: RefreshIndicator(
+                              onRefresh:
+                                  () =>
+                                      context
+                                          .read<FriendsCubit>()
+                                          .refreshFriend(),
+                              child: BlocBuilder<FriendsCubit, FriendsState>(
+                                builder: (context, state) {
+                                  return state.when(
+                                    initial: () => const FriendsSkeleton(),
+                                    friendsList: (friends) {
+                                      if (friends.isEmpty) {
+                                        return const EmptyState();
+                                      }
+                                      return Column(
+                                        children: [
+                                          SizedBox(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.1,
+                                          ),
+                                          FriendsList(friends: friends),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                 ),
               ),
-            ),
-
-            const AppBarWidget(),
-          ],
-        ),
+              const AppBarWidget(),
+            ],
+          );
+        },
       ),
     );
   }

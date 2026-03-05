@@ -84,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "an_error_has_occurred": MessageLookupByLibrary.simpleMessage(
       "An error has occurred",
     ),
+    "and": MessageLookupByLibrary.simpleMessage(" and "),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonymous"),
     "anonymousChat": MessageLookupByLibrary.simpleMessage("Anonymous chat"),
     "anonymousUser": MessageLookupByLibrary.simpleMessage("Anonymous user"),
@@ -120,6 +121,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "availableCommands": MessageLookupByLibrary.simpleMessage(
       "Available commands",
     ),
+    "avatarUploadError": MessageLookupByLibrary.simpleMessage(
+      "Avatar upload error",
+    ),
     "avatarupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
       "Avatar updated successfully",
     ),
@@ -135,6 +139,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "books": MessageLookupByLibrary.simpleMessage("Books"),
     "buy": MessageLookupByLibrary.simpleMessage("Buy"),
+    "byLoggingInYouAgreeToOur": MessageLookupByLibrary.simpleMessage(
+      "By logging in, you agree to our ",
+    ),
+    "byUsingThisAppYouAgreeToOur": MessageLookupByLibrary.simpleMessage(
+      "By using this app You agree to our",
+    ),
     "cameraStartError": MessageLookupByLibrary.simpleMessage(
       "Camera start error",
     ),
@@ -157,6 +167,9 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "chatdeleted": MessageLookupByLibrary.simpleMessage("Chat deleted"),
     "chats": MessageLookupByLibrary.simpleMessage("Chats"),
+    "checkYourInternetConnection": MessageLookupByLibrary.simpleMessage(
+      "Check your internet connection",
+    ),
     "chipAvatars": MessageLookupByLibrary.simpleMessage(
       "🎭 Avatars instead of photos",
     ),
@@ -175,6 +188,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "chipTopics": MessageLookupByLibrary.simpleMessage(
       "💡 Conversation Topics",
     ),
+    "chooseFiles": MessageLookupByLibrary.simpleMessage("Choose files"),
     "chooseTheme": MessageLookupByLibrary.simpleMessage("Choose a theme"),
     "choose_an_avatar": MessageLookupByLibrary.simpleMessage(
       "Choose an avatar",
@@ -188,6 +202,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "city": MessageLookupByLibrary.simpleMessage("City"),
     "cityOptional": MessageLookupByLibrary.simpleMessage("City (optional)"),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
+    "clearAll": MessageLookupByLibrary.simpleMessage("Clear All"),
     "clearHistory": MessageLookupByLibrary.simpleMessage("Clear History"),
     "clearhistoryconfirmation": MessageLookupByLibrary.simpleMessage(
       "Are you sure you want to clear the history?",
@@ -199,7 +214,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Click \"+\" to create a question",
     ),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "closeTheChat": MessageLookupByLibrary.simpleMessage("Close the chat"),
     "communication": MessageLookupByLibrary.simpleMessage("Communication"),
+    "communityRules": MessageLookupByLibrary.simpleMessage("Community Rules"),
     "completed": MessageLookupByLibrary.simpleMessage("Completed"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmPin": MessageLookupByLibrary.simpleMessage("Confirm PIN"),
@@ -212,6 +229,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Connect and communicate easily",
     ),
     "connecting": MessageLookupByLibrary.simpleMessage("connecting..."),
+    "connectionErrorCheckYourInternetConnection":
+        MessageLookupByLibrary.simpleMessage(
+          "Connection error. Check your internet connection",
+        ),
     "constant_chats": MessageLookupByLibrary.simpleMessage("Permanent chats"),
     "contactSupport": MessageLookupByLibrary.simpleMessage("contact support"),
     "continue_communication": MessageLookupByLibrary.simpleMessage(
@@ -225,6 +246,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "continues": MessageLookupByLibrary.simpleMessage("Continue"),
     "cost": MessageLookupByLibrary.simpleMessage("Cost:"),
+    "couldntGetFileData": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t get file data",
+    ),
+    "couldntLoadTheRules": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t load the rules",
+    ),
     "couldnt_get_the_link_to_the_game": MessageLookupByLibrary.simpleMessage(
       "Could not get the link to the game",
     ),
@@ -264,15 +291,35 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Do you want to invite your conversation partner to continue chatting in a permanent chat room?",
         ),
+    "do_you_want_to_send_an_optional_message":
+        MessageLookupByLibrary.simpleMessage(
+          "Do you want to send an optional message?",
+        ),
     "download_error": MessageLookupByLibrary.simpleMessage("Download error"),
     "download_error_click_to_repeat": MessageLookupByLibrary.simpleMessage(
       "Download error. Click to retry",
     ),
+    "dragAndDropTheFilesHere": MessageLookupByLibrary.simpleMessage(
+      "Drag and drop the files here",
+    ),
+    "dropFilesOrUseButtonBelow": MessageLookupByLibrary.simpleMessage(
+      "Drop files or use button below",
+    ),
+    "dropFilesToAddMedia": MessageLookupByLibrary.simpleMessage(
+      "Drop files to add media",
+    ),
     "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
     "email": MessageLookupByLibrary.simpleMessage("Email"),
+    "emptyAvatarData": MessageLookupByLibrary.simpleMessage(
+      "Empty avatar data",
+    ),
+    "emptyFileData": MessageLookupByLibrary.simpleMessage("Empty file data"),
     "enablePin": MessageLookupByLibrary.simpleMessage("Enable PIN"),
     "enable_notifications": MessageLookupByLibrary.simpleMessage(
       "Enable notifications",
+    ),
+    "enabledisableParticleAnimation": MessageLookupByLibrary.simpleMessage(
+      "Enable/disable particle animation",
     ),
     "end_the_chat": MessageLookupByLibrary.simpleMessage("End the chat"),
     "enterAge": MessageLookupByLibrary.simpleMessage("Please enter age"),
@@ -312,7 +359,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter your username and password",
     ),
     "error": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorDeletingAllImages": MessageLookupByLibrary.simpleMessage(
+      "Error deleting all images",
+    ),
+    "errorLoadingRules": MessageLookupByLibrary.simpleMessage(
+      "Error loading rules",
+    ),
     "errorPrefix": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorWhenClearingATemporaryFile": MessageLookupByLibrary.simpleMessage(
+      "Error when clearing a temporary file",
+    ),
     "error_initializing_chat": MessageLookupByLibrary.simpleMessage(
       "Error initializing chat",
     ),
@@ -320,8 +376,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "extendOrQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Do you want to extend the chat time or go to the questionnaire?",
     ),
+    "failedToPickFilesE": MessageLookupByLibrary.simpleMessage(
+      "Failed to pick files: \$e",
+    ),
     "failed_to_load_image_click_to_retry": MessageLookupByLibrary.simpleMessage(
       "Failed to load image. Click to retry",
+    ),
+    "failed_to_load_photos": MessageLookupByLibrary.simpleMessage(
+      "Failed to load photos",
     ),
     "failed_to_upload": MessageLookupByLibrary.simpleMessage(
       "Failed to upload",
@@ -391,6 +453,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "heading": MessageLookupByLibrary.simpleMessage("Heading"),
     "historycleared": MessageLookupByLibrary.simpleMessage("History cleared"),
     "hour": MessageLookupByLibrary.simpleMessage("h."),
+    "iAgree": MessageLookupByLibrary.simpleMessage("I agree"),
+    "iDisagree": MessageLookupByLibrary.simpleMessage("I disagree"),
+    "imageDeletionError": MessageLookupByLibrary.simpleMessage(
+      "Image deletion error",
+    ),
+    "imageProcessingError": MessageLookupByLibrary.simpleMessage(
+      "Image processing error",
+    ),
+    "imageUploadError": MessageLookupByLibrary.simpleMessage(
+      "Image upload error",
+    ),
+    "imagesuploadedsuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Images uploaded successfully",
+    ),
     "inProcessing": MessageLookupByLibrary.simpleMessage("In processing"),
     "in_processing": MessageLookupByLibrary.simpleMessage("In processing"),
     "inappropriatecontent": MessageLookupByLibrary.simpleMessage(
@@ -417,8 +493,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "limited": MessageLookupByLibrary.simpleMessage("Limited"),
     "limited_edition": MessageLookupByLibrary.simpleMessage("Limited edition"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
+    "loadingError": MessageLookupByLibrary.simpleMessage("Loading error"),
     "loadingMessages": MessageLookupByLibrary.simpleMessage(
       "Loading messages...",
+    ),
+    "loadingTheRules": MessageLookupByLibrary.simpleMessage(
+      "Loading the rules...",
     ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
     "loginButton": MessageLookupByLibrary.simpleMessage("Sign in"),
@@ -433,6 +513,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "max_age_65": MessageLookupByLibrary.simpleMessage(
       "Maximum age is 65 years",
     ),
+    "maximumWidgetmaxselectionFilesAllowed":
+        MessageLookupByLibrary.simpleMessage(
+          "Maximum \${widget.maxSelection} files allowed",
+        ),
     "messageHint": MessageLookupByLibrary.simpleMessage("Message..."),
     "messages": MessageLookupByLibrary.simpleMessage("Messages"),
     "minAge": MessageLookupByLibrary.simpleMessage("Minimum age is 14"),
@@ -465,9 +549,21 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "newpassword": MessageLookupByLibrary.simpleMessage("New password"),
     "next": MessageLookupByLibrary.simpleMessage("Next"),
+    "noFilesSelected": MessageLookupByLibrary.simpleMessage(
+      "No files selected",
+    ),
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
       "You have no friends yet",
     ),
+    "noMedia": MessageLookupByLibrary.simpleMessage("No media"),
+    "noMediaAvailable": MessageLookupByLibrary.simpleMessage(
+      "No media available",
+    ),
+    "noMediaFiles": MessageLookupByLibrary.simpleMessage("No media files"),
+    "noOneCanSeeYouTurnOnSearchVisibility":
+        MessageLookupByLibrary.simpleMessage(
+          "No one can see you, turn on search visibility!",
+        ),
     "noPermanentChats": MessageLookupByLibrary.simpleMessage(
       "You have no permanent chats yet",
     ),
@@ -514,7 +610,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "openQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Open questionnaire",
     ),
+    "orClickTheButton": MessageLookupByLibrary.simpleMessage(
+      "or click the + button",
+    ),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
+    "particleSettingsLoadingErrorMessage": MessageLookupByLibrary.simpleMessage(
+      "Particle settings loading error: \$message",
+    ),
+    "particlesOnTheMainScreen": MessageLookupByLibrary.simpleMessage(
+      "Particles on the main screen",
+    ),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordHint": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordchangedsuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -525,6 +630,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "permanentChats": MessageLookupByLibrary.simpleMessage("Permanent Chats"),
     "permanent_chat_has_been_created": MessageLookupByLibrary.simpleMessage(
       "Permanent chat has been created",
+    ),
+    "permissionDenied": MessageLookupByLibrary.simpleMessage(
+      "Permission denied",
     ),
     "personalInfo": MessageLookupByLibrary.simpleMessage(
       "Personal information",
@@ -554,6 +662,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "privacyModeDescription": MessageLookupByLibrary.simpleMessage(
       "Hide sensitive information in background",
     ),
+    "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy Policy"),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
     "profile_upload_error": MessageLookupByLibrary.simpleMessage(
       "Profile upload error",
@@ -627,18 +736,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "securityTitle": MessageLookupByLibrary.simpleMessage(
       "🔐 Security and Privacy",
     ),
+    "selectAFile": MessageLookupByLibrary.simpleMessage("Select a file"),
     "selectAge": MessageLookupByLibrary.simpleMessage("Select age"),
+    "selectFiles": MessageLookupByLibrary.simpleMessage("Select Files"),
     "selectGender": MessageLookupByLibrary.simpleMessage("Select gender"),
+    "selectLanguage": MessageLookupByLibrary.simpleMessage("Select Language"),
+    "selectMedia": MessageLookupByLibrary.simpleMessage("Select Media"),
+    "selectPhotos": MessageLookupByLibrary.simpleMessage("Select photos"),
     "select_a_section": MessageLookupByLibrary.simpleMessage(
       "Select a section",
     ),
     "select_an_action": MessageLookupByLibrary.simpleMessage(
       "Select an action:",
     ),
+    "select_chat_hint": MessageLookupByLibrary.simpleMessage(
+      "Select chat hint",
+    ),
+    "select_chat_to_start": MessageLookupByLibrary.simpleMessage(
+      "Select chat to start",
+    ),
     "select_goals": MessageLookupByLibrary.simpleMessage("Select goals"),
     "select_the_deletion_option": MessageLookupByLibrary.simpleMessage(
       "Select the deletion option:",
     ),
+    "selected": MessageLookupByLibrary.simpleMessage("selected"),
+    "selectedFiles": MessageLookupByLibrary.simpleMessage("Selected Files"),
     "selectreason": MessageLookupByLibrary.simpleMessage("Select reason"),
     "send": MessageLookupByLibrary.simpleMessage("Send"),
     "sendMessage": MessageLookupByLibrary.simpleMessage("Send message"),
@@ -731,7 +853,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "temporary_chats": MessageLookupByLibrary.simpleMessage("Temporary chats"),
     "ten_images": MessageLookupByLibrary.simpleMessage("10 images"),
+    "termsOfUse": MessageLookupByLibrary.simpleMessage("Terms of Use"),
     "text": MessageLookupByLibrary.simpleMessage("Text"),
+    "theAvatarIsNotSelected": MessageLookupByLibrary.simpleMessage(
+      "The avatar is not selected",
+    ),
+    "theLimitOf10ImagesHasBeenReached": MessageLookupByLibrary.simpleMessage(
+      "The limit of 10 images has been reached",
+    ),
     "the_avatar_has_been_uploaded_successfully":
         MessageLookupByLibrary.simpleMessage(
           "The avatar has been uploaded successfully!",
@@ -786,6 +915,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Changes will affect the entire app interface",
     ),
     "themeSelection": MessageLookupByLibrary.simpleMessage("Theme Selection"),
+    "thereAreNoAvailableImages": MessageLookupByLibrary.simpleMessage(
+      "There are no available images",
+    ),
+    "thereAreNoImagesToDownload": MessageLookupByLibrary.simpleMessage(
+      "There are no images to download",
+    ),
     "there_are_no_answers_yet": MessageLookupByLibrary.simpleMessage(
       "No answers yet",
     ),
@@ -830,11 +965,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Types of notifications",
     ),
     "typing": MessageLookupByLibrary.simpleMessage("typing..."),
+    "unknownError": MessageLookupByLibrary.simpleMessage(
+      "An unknown error has occurred",
+    ),
     "updated": MessageLookupByLibrary.simpleMessage("Updated"),
     "updates_and_system_messages": MessageLookupByLibrary.simpleMessage(
       "Updates and system messages",
     ),
     "updating": MessageLookupByLibrary.simpleMessage("Updating..."),
+    "uploadingAvatar": MessageLookupByLibrary.simpleMessage("Uploading avatar"),
     "uploading_an_avatar": MessageLookupByLibrary.simpleMessage(
       "Uploading an avatar...",
     ),
@@ -843,6 +982,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "uploadingavatar": MessageLookupByLibrary.simpleMessage(
       "Uploading avatar...",
+    ),
+    "uploadingimages": MessageLookupByLibrary.simpleMessage("Uploading images"),
+    "userDataUpdateFailed": MessageLookupByLibrary.simpleMessage(
+      "UserData update failed",
     ),
     "userNotAvailable": MessageLookupByLibrary.simpleMessage(
       "User Not Available",

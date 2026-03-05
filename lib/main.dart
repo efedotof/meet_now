@@ -4,16 +4,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/app/app_config.dart';
 import 'package:meet_now_app/app/app_initializer.dart';
 import 'package:meet_now_app/features/language/cubit/language_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:media_ui_package/generated/l10n.dart' as media_package;
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:meet_now_app_server/repository/push_notification/fcm_service_impl.dart';
 import 'package:meet_now_app_server/service/logging/logger_service.dart';
-import 'package:meet_now_app_server/storage/first_open_app/repository/storage_hive_repository.dart';
+import 'package:meet_now_app_server/storage/storage_hive/storage_hive_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme/theme.dart';
 import "package:hive_ce/hive.dart";
@@ -21,6 +23,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:meet_now_app_server/hive_registrar.g.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:auto_route/auto_route.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -32,9 +35,20 @@ Future<void> main() async {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-
+      DeviceMediaLibrary.initialize();
       final LoggerService logger = LoggerService();
       await logger.init();
+
+      if (kIsWeb) {
+        try {
+          SystemNavigator.routeInformationUpdated(
+            uri: Uri.parse('/'),
+            replace: true,
+          );
+        } catch (e) {
+          logger.error("Route clearing error: $e");
+        }
+      }
 
       if (!kIsWeb) {
         try {
@@ -75,7 +89,9 @@ Future<void> main() async {
         }
       }
 
-      final appConfig = AppConfig(prefs: await SharedPreferences.getInstance());
+      final prefs = await SharedPreferences.getInstance();
+
+      final appConfig = AppConfig(prefs: prefs);
 
       runApp(
         AppInitializer(
@@ -99,7 +115,23 @@ class MeetNowApp extends StatefulWidget {
 }
 
 class _MeetNowAppState extends State<MeetNowApp> {
-  final _appRouter = AppRouter();
+  late final AppRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _appRouter = AppRouter();
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _appRouter.navigatePath(
+          '/',
+          onFailure: (failure) {
+            _appRouter.replaceAll([const SplashRoute()]);
+          },
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,11 +140,19 @@ class _MeetNowAppState extends State<MeetNowApp> {
         return MaterialApp.router(
           locale: Locale(context.watch<LanguageCubit>().checkLocale()),
           debugShowCheckedModeBanner: false,
-          routerConfig: _appRouter.config(),
+          routerConfig: _appRouter.config(
+            deepLinkBuilder:
+                kIsWeb
+                    ? (deepLink) {
+                      return const DeepLink.path('/');
+                    }
+                    : null,
+          ),
           supportedLocales: S.delegate.supportedLocales,
           theme: state.isDark ? dartTheme : lightTheme,
           localizationsDelegates: [
             S.delegate,
+            media_package.S.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,

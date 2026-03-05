@@ -8,12 +8,20 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 @RoutePage()
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
   static const double mobileButtonWidth = double.infinity;
   static const double desktopButtonWidth = 300.0;
+
+  void _launchUrl(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,54 +179,6 @@ class AuthScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 32),
-
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     SizedBox(
-                        //       width: MediaQuery.of(context).size.width * 0.2,
-                        //       child: Expanded(
-                        //         child: Divider(color: colors.secondary),
-                        //       ),
-                        //     ),
-                        //     Padding(
-                        //       padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //       child: Text(
-                        //         "or continue with", // "или продолжить с"
-                        //         style: TextStyle(color: colors.secondary),
-                        //       ),
-                        //     ),
-                        //     SizedBox(
-                        //       width: MediaQuery.of(context).size.width * 0.2,
-                        //       child: Expanded(
-                        //         child: Divider(color: colors.secondary),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-
-                        // const SizedBox(height: 24),
-                        // if (!isDesktop)
-                        //   Row(
-                        //     mainAxisAlignment: MainAxisAlignment.center,
-                        //     children: [
-                        //       IconButton(
-                        //         iconSize: 48,
-                        //         onPressed: () => context.pushRoute(QrCodeRoute()),
-                        //         icon: Container(
-                        //           padding: const EdgeInsets.all(12),
-                        //           decoration: BoxDecoration(
-                        //             shape: BoxShape.circle,
-                        //             color:
-                        //                 isDark
-                        //                     ? Colors.grey.shade900
-                        //                     : Colors.grey.shade200,
-                        //           ),
-                        //           child: const Icon(Icons.qr_code, size: 30),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
                           child: Row(
@@ -306,6 +266,51 @@ class AuthScreen extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 32.0),
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? Colors.white54 : Colors.black54,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: S.of(context).byLoggingInYouAgreeToOur,
+                                ),
+                                TextSpan(
+                                  text: S.of(context).termsOfUse,
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer:
+                                      TapGestureRecognizer()
+                                        ..onTap =
+                                            () => _launchUrl(
+                                              'https://mnapp.ru/docs/user_agreement.pdf',
+                                            ),
+                                ),
+                                TextSpan(text: S.of(context).and),
+                                TextSpan(
+                                  text: S.of(context).privacyPolicy,
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer:
+                                      TapGestureRecognizer()
+                                        ..onTap =
+                                            () => _launchUrl(
+                                              'https://mnapp.ru/docs/privacy_policy.pdf',
+                                            ),
+                                ),
+                                const TextSpan(text: '.'),
+                              ],
+                            ),
                           ),
                         ),
                       ],

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/features/chat_message/cubit/media_selection/media_selection_cubit.dart';
 
 import 'media_thumbnail.dart';

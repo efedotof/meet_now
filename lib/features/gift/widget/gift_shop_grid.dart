@@ -10,12 +10,14 @@ class GiftShopGrid extends StatefulWidget {
   final List<Gift> gifts;
   final Function(Gift) onGiftTap;
   final Function(Gift) onBuyGift;
+  final bool isMobile;
 
   const GiftShopGrid({
     super.key,
     required this.gifts,
     required this.onGiftTap,
     required this.onBuyGift,
+    required this.isMobile,
   });
 
   @override
@@ -111,7 +113,7 @@ class _GiftShopGridState extends State<GiftShopGrid>
     super.build(context);
 
     if (widget.gifts.isEmpty || _processedGiftsCache.isEmpty) {
-      return SkeletonGiftGrid();
+      return SkeletonGiftGrid(isMobile: widget.isMobile);
     }
 
     final giftsToDisplay =
@@ -120,12 +122,12 @@ class _GiftShopGridState extends State<GiftShopGrid>
         }).toList();
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
+      padding: EdgeInsets.all(widget.isMobile ? 16 : 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: widget.isMobile ? 2 : 3,
+        crossAxisSpacing: widget.isMobile ? 16 : 20,
+        mainAxisSpacing: widget.isMobile ? 16 : 20,
+        childAspectRatio: widget.isMobile ? 0.8 : 0.85,
       ),
       itemCount: widget.gifts.length,
       itemBuilder: (context, index) {

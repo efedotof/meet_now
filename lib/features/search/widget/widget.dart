@@ -8,3 +8,4 @@ export 'filter_card.dart';
 export 'gender_toggle.dart';
 export 'section_title.dart';
 export 'filter_button.dart';
+export 'adaptive_chat_dialog.dart';

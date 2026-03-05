@@ -13,6 +13,10 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<SupportCubit>().getMyQuestions();
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return SkeletonTheme(
       shimmerGradient: const LinearGradient(
         colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
@@ -35,132 +39,221 @@ class SupportScreen extends StatelessWidget {
         body: Stack(
           children: [
             Positioned.fill(
-              top: MediaQuery.of(context).padding.top + 80,
+              top: isMobile ? MediaQuery.of(context).padding.top + 80 : 80,
               bottom: 0,
-              child: BlocConsumer<SupportCubit, SupportState>(
-                listener: (context, state) {
-                  state.whenOrNull(
-                    questionCreated: (question) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            S.of(context).the_question_was_created_successfully,
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      context.read<SupportCubit>().getMyQuestions();
-                    },
-                    statusUpdated: (_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(S.of(context).status_updated),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    },
-                    error: (message) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Ошибка: $message'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    },
-                  );
-                },
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const QuestionsSkeleton(),
-                    loading: () => const QuestionsSkeleton(),
-                    myQuestionsLoaded: (questions) {
-                      if (questions.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.help_outline,
-                                size: 80,
-                                color: Colors.grey[400],
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: isMobile ? double.infinity : 600,
+                    maxHeight: isMobile ? double.infinity : 700,
+                  ),
+                  child: Container(
+                    margin: EdgeInsets.all(isMobile ? 0 : 16),
+                    decoration:
+                        isMobile
+                            ? null
+                            : BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                    child: BlocConsumer<SupportCubit, SupportState>(
+                      listener: (context, state) {
+                        state.whenOrNull(
+                          questionCreated: (question) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  S
+                                      .of(context)
+                                      .the_question_was_created_successfully,
+                                ),
+                                backgroundColor: Colors.green,
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                S.of(context).no_questions_yet,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(color: Colors.grey[600]),
+                            );
+                            context.read<SupportCubit>().getMyQuestions();
+                          },
+                          statusUpdated: (_) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(S.of(context).status_updated),
+                                backgroundColor: Colors.green,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                S.of(context).click_plus_to_create_a_question,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: Colors.grey[500]),
-                                textAlign: TextAlign.center,
+                            );
+                          },
+                          error: (message) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Ошибка: $message'),
+                                backgroundColor: Colors.red,
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         );
-                      }
-                      return ExpandedQuestionsList(questions);
-                    },
-                    questionDetail: (question) => QuestionsList([question]),
-                    questionCreated: (question) => QuestionsList([question]),
-                    statusUpdated: (question) => QuestionsList([question]),
-                    error:
-                        (message) => Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.error_outline,
-                                size: 64,
-                                color: Colors.red,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                S.of(context).an_error_has_occurred,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
+                      },
+                      builder: (context, state) {
+                        return state.when(
+                          initial: () => QuestionsSkeleton(isMobile: isMobile),
+                          loading: () => QuestionsSkeleton(isMobile: isMobile),
+                          myQuestionsLoaded: (questions) {
+                            if (questions.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.help_outline,
+                                      size: isMobile ? 80 : 100,
+                                      color: Colors.grey[400],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      S.of(context).no_questions_yet,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge?.copyWith(
+                                        color: Colors.grey[600],
+                                        fontSize: isMobile ? null : 20,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isMobile ? 32 : 48,
+                                      ),
+                                      child: Text(
+                                        S
+                                            .of(context)
+                                            .click_plus_to_create_a_question,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.copyWith(
+                                          color: Colors.grey[500],
+                                          fontSize: isMobile ? null : 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                child: Text(
-                                  message,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                              );
+                            }
+                            return ExpandedQuestionsList(
+                              questions,
+                              isMobile: isMobile,
+                            );
+                          },
+                          questionDetail:
+                              (question) =>
+                                  QuestionsList([question], isMobile: isMobile),
+                          questionCreated:
+                              (question) =>
+                                  QuestionsList([question], isMobile: isMobile),
+                          statusUpdated:
+                              (question) =>
+                                  QuestionsList([question], isMobile: isMobile),
+                          error:
+                              (message) => Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(isMobile ? 16 : 24),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: isMobile ? 64 : 80,
+                                        color: Colors.red,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        S.of(context).an_error_has_occurred,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium?.copyWith(
+                                          fontSize: isMobile ? null : 18,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isMobile ? 32 : 48,
+                                        ),
+                                        child: Text(
+                                          message,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium?.copyWith(
+                                            fontSize: isMobile ? null : 16,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () =>
+                                                context
+                                                    .read<SupportCubit>()
+                                                    .getMyQuestions(),
+                                        child: Text(
+                                          S.of(context).try_again,
+                                          style: TextStyle(
+                                            fontSize: isMobile ? null : 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed:
-                                    () =>
-                                        context
-                                            .read<SupportCubit>()
-                                            .getMyQuestions(),
-                                child: Text(S.of(context).try_again),
-                              ),
-                            ],
-                          ),
-                        ),
-                  );
-                },
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
             ),
             const AppBarWidget(),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed:
-              () => showDialog(
-                context: context,
-                builder: (context) => const CreateQuestionDialog(),
-              ),
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton:
+            isMobile
+                ? FloatingActionButton(
+                  onPressed:
+                      () => showDialog(
+                        context: context,
+                        builder:
+                            (context) =>
+                                CreateQuestionDialog(isMobile: isMobile),
+                      ),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  child: const Icon(Icons.add),
+                )
+                : Container(
+                  margin: const EdgeInsets.all(16),
+                  alignment: Alignment.bottomRight,
+                  child: FloatingActionButton.extended(
+                    onPressed:
+                        () => showDialog(
+                          context: context,
+                          builder:
+                              (context) =>
+                                  CreateQuestionDialog(isMobile: isMobile),
+                        ),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    icon: const Icon(Icons.add),
+                    label: Text(S.of(context).create_a_question),
+                  ),
+                ),
       ),
     );
   }

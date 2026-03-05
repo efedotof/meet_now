@@ -8,12 +8,15 @@ class SecuritySettingsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return BlocBuilder<SecurityCubit, SecurityState>(
       builder: (context, state) {
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isMobile ? 16 : 24),
           children: [
-            PinSection(state: state),
+            PinSection(state: state, isMobile: isMobile),
             const SizedBox(height: 16),
             // PrivacyModeSwitch(state: state),
             // const SizedBox(height: 16),

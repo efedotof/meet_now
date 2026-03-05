@@ -26,86 +26,93 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () => context.read<FriendCubit>().getIncomeFriend(),
-        child: Stack(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SkeletonTheme(
-                shimmerGradient: const LinearGradient(
-                  colors: [
-                    Color(0xFFD8E3E7),
-                    Color(0xFFC8D5DA),
-                    Color(0xFFD8E3E7),
-                  ],
-                  stops: [0.1, 0.5, 0.9],
-                ),
-                darkShimmerGradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF222222),
-                    Color(0xFF242424),
-                    Color(0xFF2B2B2B),
-                    Color(0xFF242424),
-                    Color(0xFF222222),
-                  ],
-                  stops: [0.0, 0.2, 0.5, 0.8, 1],
-                  begin: Alignment(-2.4, -0.2),
-                  end: Alignment(2.4, 0.2),
-                  tileMode: TileMode.clamp,
-                ),
-                child: BlocBuilder<FriendCubit, FriendState>(
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => const FriendRequestsSkeleton(),
-                      emptyFriendRequest:
-                          () => Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.people_outline,
-                                  size: 64,
-                                  color: Colors.grey[300],
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  S.of(context).no_friend_requests,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                              ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth > 600;
+
+          return Stack(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: RefreshIndicator(
+                  onRefresh:
+                      () => context.read<FriendCubit>().getIncomeFriend(),
+                  child:
+                      isDesktop
+                          ? Center(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 600),
+                              child: _buildContent(context),
                             ),
-                          ),
-                      myFriendRequest:
-                          (friendRequest) => Column(
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.1,
-                              ),
-                              Wrap(
-                                runSpacing: 16,
-                                children: List.generate(friendRequest.length, (
-                                  index,
-                                ) {
-                                  final request = friendRequest[index];
-                                  return FriendRequestCard(
-                                    friendRequest: request,
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
-                    );
-                  },
+                          )
+                          : _buildContent(context),
                 ),
               ),
-            ),
-            const AppBarWidget(),
-          ],
-        ),
+              const AppBarWidget(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return SkeletonTheme(
+      shimmerGradient: const LinearGradient(
+        colors: [Color(0xFFD8E3E7), Color(0xFFC8D5DA), Color(0xFFD8E3E7)],
+        stops: [0.1, 0.5, 0.9],
+      ),
+      darkShimmerGradient: const LinearGradient(
+        colors: [
+          Color(0xFF222222),
+          Color(0xFF242424),
+          Color(0xFF2B2B2B),
+          Color(0xFF242424),
+          Color(0xFF222222),
+        ],
+        stops: [0.0, 0.2, 0.5, 0.8, 1],
+        begin: Alignment(-2.4, -0.2),
+        end: Alignment(2.4, 0.2),
+        tileMode: TileMode.clamp,
+      ),
+      child: BlocBuilder<FriendCubit, FriendState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const FriendRequestsSkeleton(),
+            emptyFriendRequest:
+                () => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.people_outline,
+                        size: 64,
+                        color: Colors.grey[300],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        S.of(context).no_friend_requests,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+            myFriendRequest:
+                (friendRequest) => Column(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                    Wrap(
+                      runSpacing: 16,
+                      children: List.generate(friendRequest.length, (index) {
+                        final request = friendRequest[index];
+                        return FriendRequestCard(friendRequest: request);
+                      }),
+                    ),
+                  ],
+                ),
+          );
+        },
       ),
     );
   }

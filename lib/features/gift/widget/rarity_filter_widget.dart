@@ -8,7 +8,9 @@ import 'package:meet_now_app_server/model/gifts/gift_stats/gift_stats.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
 
 class RarityFilterWidget extends StatelessWidget {
-  const RarityFilterWidget({super.key});
+  final bool isMobile;
+
+  const RarityFilterWidget({super.key, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +33,10 @@ class RarityFilterWidget extends StatelessWidget {
             if (rarities.isEmpty) return const SizedBox();
 
             return SizedBox(
-              height: 50,
+              height: isMobile ? 50 : 60,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
                 itemCount: rarities.length,
                 itemBuilder: (context, index) {
                   final rarity = rarities[index];
@@ -42,7 +44,8 @@ class RarityFilterWidget extends StatelessWidget {
 
                   return Padding(
                     padding: EdgeInsets.only(
-                      right: index < rarities.length - 1 ? 8 : 0,
+                      right:
+                          index < rarities.length - 1 ? (isMobile ? 8 : 12) : 0,
                       left: index == 0 ? 0 : 0,
                     ),
                     child: ChoiceChip(
@@ -50,23 +53,25 @@ class RarityFilterWidget extends StatelessWidget {
                         color: isDark ? Colors.black : Colors.white,
                       ),
 
+                      disabledColor: isDark ? Colors.white : Colors.black,
                       label: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 12 : 16,
+                          vertical: isMobile ? 4 : 6,
                         ),
                         child: Text(
                           rarity.displayName,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: isMobile ? 14 : 16,
                             fontWeight: FontWeight.w500,
-                            color: isSelected ? Colors.white : null,
+                            color: isSelected ? Colors.white : Colors.white,
                           ),
                         ),
                       ),
                       backgroundColor: isDark ? Colors.white70 : Colors.black87,
                       selectedColor: _parseColor(rarity.color),
                       selected: isSelected,
+
                       onSelected: (selected) {
                         if (isSelected) {
                           context.read<GiftCubit>().selectRarity(null);
@@ -90,7 +95,11 @@ class RarityFilterWidget extends StatelessWidget {
                       visualDensity: VisualDensity.compact,
                       avatar:
                           isSelected
-                              ? Icon(Icons.check, size: 16, color: Colors.white)
+                              ? Icon(
+                                Icons.check,
+                                size: isMobile ? 16 : 18,
+                                color: Colors.white,
+                              )
                               : null,
                     ),
                   );

@@ -2,7 +2,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:meet_now_app_server/model/chats/continue_chat_proposal_response_dto/continue_chat_proposal_response_dto.dart';
+import 'package:meet_now_app_server/model/chats/continue_chat_response_dto/continue_chat_response_dto.dart';
 import 'package:meet_now_app_server/repository/message/paginated_messages_response.dart';
 
 part 'chat_message_state.dart';
@@ -15,6 +18,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   StreamSubscription<AgreeChatResponse>? _chatAgreeNotificationSubscription;
   StreamSubscription<AgreeChatResponse>? _chatAgreeResponseSubscription;
   StreamSubscription<AgreeChatResponse>? _chatPermanentCreatedSubscription;
+
+  StreamSubscription<ContinueChatProposalResponseDto>?
+  _continueChatProposalSubscription;
+  StreamSubscription<ContinueChatResponseDto>?
+  _continueChatResponseSubscription;
 
   final MessageInterface _messageInterface;
   final FriendInterface _friendInterface;
@@ -36,12 +44,15 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   final List<String> _unreadMessagesIds = [];
   Timer? _markAsReadTimer;
 
+  bool _friendRequestSent = false;
+
+  final Map<String, String> _tempIdToRealId = {};
+
   ChatMessageCubit({
     required UserInterface userInterface,
     required ChatInterface chatInterface,
     required UploadImageInterface uploadImageInterface,
     required SocketServiceInterface socketInterface,
-    required GamesInterface gamesInterface,
     required FriendInterface friendInterface,
     required MessageInterface messageInterface,
   }) : _userInterface = userInterface,
@@ -51,7 +62,76 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
        _friendInterface = friendInterface,
        _messageInterface = messageInterface,
        super(const ChatMessageState.initial()) {
-    _setupChatAgreeSubscriptions();
+    _setupChatSubscriptions();
+  }
+
+  void _setupChatSubscriptions() {
+    _chatAgreeNotificationSubscription = _socketInterface
+        .chatAgreeNotificationStream
+        .listen(_handleChatAgreeNotification);
+    _chatAgreeResponseSubscription = _socketInterface.chatAgreeResponseStream
+        .listen(_handleChatAgreeResponse);
+    _chatPermanentCreatedSubscription = _socketInterface
+        .chatPermanentCreatedStream
+        .listen(_handleChatPermanentCreated);
+    _continueChatProposalSubscription = _socketInterface
+        .continueChatProposalStream
+        .listen(_handleContinueChatProposal);
+    _continueChatResponseSubscription = _socketInterface
+        .continueChatResponseStream
+        .listen(_handleContinueChatResponse);
+  }
+
+  void _handleContinueChatProposal(ContinueChatProposalResponseDto proposal) {
+    if (proposal.tempChatId == _currentChatId) {
+      debugPrint('Получено предложение продолжить чат: ${proposal.message}');
+
+      state.maybeMap(
+        loaded: (state) {
+          emit(
+            state.copyWith(
+              showContinueProposal: true,
+              continueChatProposal: proposal,
+              isWaitingForResponse: false,
+            ),
+          );
+        },
+        orElse: () {
+          emit(
+            ChatMessageState.loaded(
+              messages: [],
+              isTemporary: _isTemporary!,
+              showContinueProposal: true,
+              continueChatProposal: proposal,
+              isWaitingForResponse: false,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _handleContinueChatResponse(ContinueChatResponseDto response) {
+    if (response.tempChatId == _currentChatId) {
+      debugPrint('Получен ответ на предложение: accepted=${response.accepted}');
+
+      if (response.accepted && response.permanentChatCreated == true) {
+        _handleSuccessfulAgreement(response);
+      } else {
+        state.maybeMap(
+          loaded: (state) {
+            emit(
+              state.copyWith(
+                showContinueProposal: false,
+                isWaitingForResponse: false,
+                continueChatProposal: null,
+              ),
+            );
+          },
+          orElse: () {},
+        );
+      }
+    }
   }
 
   void initialize({
@@ -61,14 +141,19 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     required String senderId,
     required String recipientId,
   }) {
-    if (_currentChatId == chatId) {
+    if (_currentChatId == chatId &&
+        _senderId == senderId &&
+        _recipientId == recipientId &&
+        _isTemporary == isTemporary) {
       return;
     }
 
+    _friendRequestSent = false;
     _isTemporary = isTemporary;
     _currentChatId = chatId;
     _senderId = senderId;
     _recipientId = recipientId;
+    _tempIdToRealId.clear();
 
     _resetPagination();
 
@@ -76,10 +161,24 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     emit(const ChatMessageState.loading());
 
     try {
+      _messagesSubscription = _messageInterface.messagesStream.listen(
+        (messages) {
+          _handleMessagesBatch(messages);
+        },
+        onError: (e) {
+          debugPrint('Messages stream error: $e');
+          if (!isClosed) {
+            emit(ChatMessageState.error('Failed to load messages: $e'));
+          }
+        },
+        cancelOnError: false,
+      );
+
       _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
           .listen(
             _handlePaginatedMessages,
             onError: (e) {
+              debugPrint('Paginated messages stream error: $e');
               if (!isClosed) {
                 emit(ChatMessageState.error('Failed to load messages: $e'));
               }
@@ -90,18 +189,70 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
         _handleSingleMessage,
         onError: (e) {
+          debugPrint('Single message stream error: $e');
           _reconnectMessageSubscriptions();
         },
         cancelOnError: false,
       );
 
+      _setupChatSubscriptions();
       _loadInitialMessages();
+
+      if (_currentChatId != null) {
+        _messageInterface.requestMessages(_currentChatId!);
+      }
 
       _startMarkAsReadTimer();
     } catch (e) {
       if (!isClosed) {
         emit(ChatMessageState.error('Failed to initialize: $e'));
       }
+    }
+  }
+
+  void _handleMessagesBatch(List<Message> messages) {
+    if (messages.isEmpty) return;
+
+    final firstMessage = messages.first;
+    if (firstMessage.chatId != _currentChatId &&
+        firstMessage.tempChatId != _currentChatId) {
+      return;
+    }
+
+    if (!isClosed) {
+      state.maybeMap(
+        loaded: (state) {
+          final existingIds =
+              state.messages.map((m) => m.id).where((id) => id != null).toSet();
+          final newMessages =
+              messages.where((m) => !existingIds.contains(m.id)).toList();
+
+          if (newMessages.isNotEmpty) {
+            final updatedMessages = [...state.messages, ...newMessages]..sort(
+              (a, b) => (b.createdAt ?? DateTime.now()).compareTo(
+                a.createdAt ?? DateTime.now(),
+              ),
+            );
+
+            _collectUnreadMessagesIds(newMessages);
+
+            emit(state.copyWith(messages: updatedMessages));
+          }
+        },
+        orElse: () {
+          _collectUnreadMessagesIds(messages);
+
+          emit(
+            ChatMessageState.loaded(
+              messages: messages,
+              isTemporary: _isTemporary!,
+              hasMore: false,
+              currentPage: 0,
+              isLoadingMore: false,
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -167,9 +318,17 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   void _handleSingleMessage(Message newMessage) {
+    debugPrint(
+      '🆕 ChatMessageCubit: Получено новое сообщение: ${newMessage.id} от ${newMessage.senderId}',
+    );
+
     if (newMessage.chatId != _currentChatId &&
         newMessage.tempChatId != _currentChatId) {
       return;
+    }
+
+    if (newMessage.id != null) {
+      _replaceTempMessageWithRealId(newMessage);
     }
 
     if (newMessage.senderId != _senderId && !newMessage.read) {
@@ -180,7 +339,10 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       state.maybeMap(
         loaded: (state) {
           final existingIndex = state.messages.indexWhere(
-            (msg) => msg.id == newMessage.id,
+            (msg) =>
+                msg.id == newMessage.id ||
+                (msg.tempId != null &&
+                    _tempIdToRealId[msg.tempId] == newMessage.id),
           );
 
           List<Message> updatedMessages;
@@ -192,7 +354,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           }
 
           if (newMessage.senderId != _senderId && !newMessage.read) {
-            _unreadMessagesIds.add(newMessage.id!);
+            if (newMessage.id != null) {
+              _unreadMessagesIds.add(newMessage.id!);
+            }
           }
 
           emit(state.copyWith(messages: updatedMessages));
@@ -212,9 +376,42 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
   }
 
+  void _replaceTempMessageWithRealId(Message realMessage) {
+    state.maybeMap(
+      loaded: (state) {
+        final tempIndex = state.messages.indexWhere(
+          (msg) =>
+              msg.tempId != null &&
+              msg.senderId == realMessage.senderId &&
+              msg.text == realMessage.text &&
+              msg.createdAt != null &&
+              realMessage.createdAt != null &&
+              (realMessage.createdAt!.difference(msg.createdAt!).inSeconds)
+                      .abs() <
+                  5,
+        );
+
+        if (tempIndex != -1) {
+          final tempMessage = state.messages[tempIndex];
+          if (tempMessage.tempId != null) {
+            _tempIdToRealId[tempMessage.tempId!] = realMessage.id!;
+          }
+
+          final updatedMessages = List<Message>.from(state.messages);
+          updatedMessages[tempIndex] = realMessage;
+
+          emit(state.copyWith(messages: updatedMessages));
+        }
+      },
+      orElse: () {},
+    );
+  }
+
   void _collectUnreadMessagesIds(List<Message> messages) {
     for (final message in messages) {
-      if (message.senderId != _senderId && !message.read) {
+      if (message.senderId != _senderId &&
+          !message.read &&
+          message.id != null) {
         _unreadMessagesIds.add(message.id!);
       }
     }
@@ -232,6 +429,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       _unreadMessagesIds.clear();
 
       _messageInterface.markMessagesAsRead(idsToMark);
+      debugPrint(
+        '📨 Отправлена отметка о прочтении для ${idsToMark.length} сообщений',
+      );
     }
   }
 
@@ -241,7 +441,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
             .where(
               (message) =>
                   (message.senderId != _senderId && !message.read) ||
-                  _unreadMessagesIds.contains(message.id),
+                  (message.id != null &&
+                      _unreadMessagesIds.contains(message.id)),
             )
             .map((message) => message.id)
             .where((id) => id != null)
@@ -301,6 +502,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
 
     final nextPage = _currentPage + 1;
+    debugPrint('📤 Загрузка следующих сообщений, страница $nextPage');
+
     _messageInterface.requestPaginatedMessages(
       _currentChatId!,
       nextPage,
@@ -323,18 +526,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _hasMoreMessages = true;
     _isLoadingMore = false;
     _unreadMessagesIds.clear();
+    _tempIdToRealId.clear();
     _markAsReadTimer?.cancel();
-  }
-
-  void _setupChatAgreeSubscriptions() {
-    _chatAgreeNotificationSubscription = _socketInterface
-        .chatAgreeNotificationStream
-        .listen(_handleChatAgreeNotification);
-    _chatAgreeResponseSubscription = _socketInterface.chatAgreeResponseStream
-        .listen(_handleChatAgreeResponse);
-    _chatPermanentCreatedSubscription = _socketInterface
-        .chatPermanentCreatedStream
-        .listen(_handleChatPermanentCreated);
   }
 
   void _handleChatAgreeNotification(AgreeChatResponse response) {
@@ -343,7 +536,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         loaded: (state) {
           emit(
             state.copyWith(
-              showContinueRequest: true,
+              showContinueProposal: true,
               agreeChatResponse: response,
             ),
           );
@@ -371,22 +564,45 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
   }
 
-  void _handleSuccessfulAgreement(AgreeChatResponse response) {
+  void _handleSuccessfulAgreement(dynamic response) {
     _isTemporary = false;
-    _currentChatId = response.permanentChat?.chatId;
+
+    if (response is ContinueChatResponseDto) {
+      _currentChatId = response.permanentChat.chatId;
+    } else if (response is AgreeChatResponse &&
+        response.permanentChat != null) {
+      _currentChatId = response.permanentChat!.chatId;
+    }
+
+    if (!_friendRequestSent && _recipientId != null) {
+      _sendFriendRequestSilently();
+      _friendRequestSent = true;
+    }
 
     state.maybeMap(
       loaded: (state) {
         emit(
           state.copyWith(
-            showContinueRequest: false,
+            showContinueProposal: false,
             isTemporary: false,
-            agreeChatResponse: response,
+            isWaitingForResponse: false,
+            continueChatProposal: null,
           ),
         );
       },
       orElse: () {},
     );
+  }
+
+  Future<void> _sendFriendRequestSilently() async {
+    if (_recipientId == null || _recipientId!.isEmpty) return;
+
+    try {
+      await _friendInterface.sendFriendRequest(toUserId: _recipientId!);
+      debugPrint('Friend request sent automatically to $_recipientId');
+    } catch (e) {
+      debugPrint('Error sending friend request: $e');
+    }
   }
 
   void _handleAgreementError(AgreeChatResponse response) {
@@ -394,7 +610,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       loaded: (state) {
         emit(
           state.copyWith(
-            showContinueRequest: false,
+            showContinueProposal: false,
             isWaitingForResponse: false,
             agreeChatResponse: response,
           ),
@@ -404,36 +620,22 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
   }
 
-  void sendContinueRequest() {
-    if (_currentChatId == null || _isTemporary == false) return;
-    _socketInterface.agreeToContinue(_currentChatId!);
-
-    state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueRequest: false,
-            isWaitingForResponse: true,
-          ),
-        );
-      },
-      orElse: () {},
-    );
-  }
-
-  void respondToContinueRequest(bool agree) {
-    if (_currentChatId == null) return;
-
-    if (agree) {
-      _socketInterface.agreeToContinue(_currentChatId!);
+  void sendContinueProposal(String message) {
+    if (_currentChatId == null || _isTemporary == false || _senderId == null) {
+      return;
     }
 
+    debugPrint('Отправка предложения продолжить чат: $message');
+
+    _socketInterface.proposeContinueChat(_currentChatId!, _senderId!, message);
+
     state.maybeMap(
       loaded: (state) {
         emit(
           state.copyWith(
-            showContinueRequest: false,
-            isWaitingForResponse: false,
+            showContinueProposal: false,
+            isWaitingForResponse: true,
+            continueChatProposal: null,
           ),
         );
       },
@@ -441,13 +643,39 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
   }
 
-  void hideContinueRequest() {
+  void respondToContinueProposal(bool accepted) {
+    if (_currentChatId == null || _senderId == null) return;
+
+    debugPrint('Ответ на предложение: accepted=$accepted');
+
+    _socketInterface.respondToContinueChat(
+      _currentChatId!,
+      _senderId!,
+      accepted,
+    );
+
     state.maybeMap(
       loaded: (state) {
         emit(
           state.copyWith(
-            showContinueRequest: false,
+            showContinueProposal: false,
             isWaitingForResponse: false,
+            continueChatProposal: null,
+          ),
+        );
+      },
+      orElse: () {},
+    );
+  }
+
+  void hideContinueProposal() {
+    state.maybeMap(
+      loaded: (state) {
+        emit(
+          state.copyWith(
+            showContinueProposal: false,
+            isWaitingForResponse: false,
+            continueChatProposal: null,
           ),
         );
       },
@@ -460,7 +688,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       return;
     }
 
+    final tempId =
+        'temp_sticker_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
+
     final message = Message(
+      id: null,
       senderId: _senderId!,
       recipientId: _recipientId!,
       text: "",
@@ -477,56 +709,139 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           mimeType: 'image/jpeg',
           fileSize: 0,
           sortOrder: 0,
+          // Не включаем giftId и gift для стикеров
+          giftId: null,
+          gift: null,
         ),
       ],
+      tempId: tempId,
+      isSending: true,
     );
 
     state.maybeMap(
       loaded: (state) {
-        final optimisticMessage = message.copyWith(createdAt: DateTime.now());
-        emit(state.copyWith(messages: [...state.messages, optimisticMessage]));
-        _messageInterface.sendMessage(message);
+        emit(state.copyWith(messages: [...state.messages, message]));
+
+        final sendMessage = message.toSendMessage();
+        final cleanedMedia =
+            sendMessage.media
+                .map((media) => media.copyWith(giftId: null, gift: null))
+                .toList();
+
+        _messageInterface.sendMessage(
+          sendMessage.copyWith(media: cleanedMedia),
+        );
       },
-      orElse: () => _messageInterface.sendMessage(message),
+      orElse: () {
+        emit(
+          ChatMessageState.loaded(
+            messages: [message],
+            isTemporary: _isTemporary!,
+          ),
+        );
+
+        final sendMessage = message.toSendMessage();
+        final cleanedMedia =
+            sendMessage.media
+                .map((media) => media.copyWith(giftId: null, gift: null))
+                .toList();
+
+        _messageInterface.sendMessage(
+          sendMessage.copyWith(media: cleanedMedia),
+        );
+      },
     );
   }
 
   void sendTextMessage(String text) {
     if (text.isEmpty) return;
-    if (_senderId == null || _recipientId == null || _isTemporary == null) {
+
+    if (_senderId == null || _senderId!.isEmpty) {
+      debugPrint('Ошибка: senderId не установлен');
+      return;
+    }
+    if (_recipientId == null || _recipientId!.isEmpty) {
+      debugPrint('Ошибка: recipientId не установлен');
+      return;
+    }
+    if (_isTemporary == null) {
+      debugPrint('Ошибка: isTemporary не установлен');
+      return;
+    }
+    if (_currentChatId == null || _currentChatId!.isEmpty) {
+      debugPrint('Ошибка: currentChatId не установлен');
       return;
     }
 
-    final message = Message(
-      senderId: _senderId!,
-      recipientId: _recipientId!,
-      text: text,
-      createdAt: DateTime.now(),
-      chatId: _isTemporary! ? null : _currentChatId,
-      tempChatId: _isTemporary! ? _currentChatId : null,
-      read: false,
-      contentType: 'text',
-      media: [],
-    );
+    try {
+      final tempId =
+          'temp_text_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
 
-    state.maybeMap(
-      loaded: (state) {
-        final optimisticMessage = message.copyWith(createdAt: DateTime.now());
-        emit(state.copyWith(messages: [...state.messages, optimisticMessage]));
-        _messageInterface.sendMessage(message);
-      },
-      orElse: () => _messageInterface.sendMessage(message),
-    );
+      final message = Message(
+        id: null,
+        senderId: _senderId!,
+        recipientId: _recipientId!,
+        text: text,
+        createdAt: DateTime.now(),
+        chatId: _isTemporary! ? null : _currentChatId,
+        tempChatId: _isTemporary! ? _currentChatId : null,
+        read: false,
+        contentType: 'text',
+        media: [],
+        tempId: tempId,
+        isSending: true,
+      );
+
+      state.maybeMap(
+        loaded: (state) {
+          emit(state.copyWith(messages: [...state.messages, message]));
+          // Отправляем SendMessage (без клиентских полей)
+          _messageInterface.sendMessage(message.toSendMessage());
+        },
+        orElse: () {
+          emit(
+            ChatMessageState.loaded(
+              messages: [message],
+              isTemporary: _isTemporary!,
+            ),
+          );
+          _messageInterface.sendMessage(message.toSendMessage());
+        },
+      );
+    } catch (e) {
+      debugPrint('Ошибка при создании текстового сообщения: $e');
+      _updateMessageWithError(
+        'temp_text_${DateTime.now().millisecondsSinceEpoch}',
+        e.toString(),
+      );
+    }
   }
 
   void sendMediaMessage(List<MediaItem> mediaItems, {String text = ''}) {
     if (mediaItems.isEmpty) return;
-    if (_senderId == null || _recipientId == null || _isTemporary == null) {
+
+    if (_senderId == null || _senderId!.isEmpty) {
+      debugPrint('Ошибка: senderId не установлен');
+      return;
+    }
+    if (_recipientId == null || _recipientId!.isEmpty) {
+      debugPrint('Ошибка: recipientId не установлен');
+      return;
+    }
+    if (_isTemporary == null) {
+      debugPrint('Ошибка: isTemporary не установлен');
+      return;
+    }
+    if (_currentChatId == null || _currentChatId!.isEmpty) {
+      debugPrint('Ошибка: currentChatId не установлен');
       return;
     }
 
+    final tempId =
+        'temp_media_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
+
     final tempMessage = Message(
-      id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      id: null,
       senderId: _senderId!,
       recipientId: _recipientId!,
       text: text,
@@ -539,8 +854,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           mediaItems
               .map(
                 (mediaItem) => MessageMedia(
-                  id:
-                      'temp_media_${DateTime.now().millisecondsSinceEpoch}_${mediaItems.indexOf(mediaItem)}',
+                  id: null,
                   contentType: _mapMediaTypeToContentType(mediaItem.type),
                   mimeType: mediaItem.type,
                   fileSize: mediaItem.size,
@@ -550,6 +864,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
                 ),
               )
               .toList(),
+      tempId: tempId,
+      isSending: true,
     );
 
     state.maybeMap(
@@ -584,14 +900,15 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       final failedUploads =
           uploadedMedia.where((media) => media.mediaUrl == null).toList();
       if (failedUploads.isNotEmpty && !isClosed) {
-        _updateTempMessageWithError(
-          tempMessage.id!,
+        _updateMessageWithError(
+          tempMessage.tempId!,
           'Не удалось загрузить ${failedUploads.length} файлов',
         );
         return;
       }
 
       final finalMessage = Message(
+        id: null,
         senderId: _senderId!,
         recipientId: _recipientId!,
         text: text,
@@ -604,21 +921,18 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       );
 
       try {
-        _messageInterface.sendMessage(finalMessage);
-        if (!isClosed) {
-          _replaceTempMessage(tempMessage.id!, finalMessage);
-        }
+        _messageInterface.sendMessage(finalMessage.toSendMessage());
       } catch (e) {
         if (!isClosed) {
-          _updateTempMessageWithError(
-            tempMessage.id!,
+          _updateMessageWithError(
+            tempMessage.tempId!,
             'Failed to send message: $e',
           );
         }
       }
     } catch (e) {
       if (!isClosed) {
-        _updateTempMessageWithError(tempMessage.id!, e.toString());
+        _updateMessageWithError(tempMessage.tempId!, e.toString());
       }
     }
   }
@@ -683,37 +997,13 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     return uploadedMedia;
   }
 
-  void _replaceTempMessage(String tempMessageId, Message finalMessage) {
+  void _updateMessageWithError(String tempId, String error) {
     state.maybeMap(
       loaded: (state) {
         final updatedMessages =
             state.messages.map((message) {
-              if (message.id == tempMessageId) {
-                return finalMessage;
-              }
-              return message;
-            }).toList();
-
-        emit(state.copyWith(messages: updatedMessages));
-      },
-      orElse: () {
-        emit(
-          ChatMessageState.loaded(
-            messages: [finalMessage],
-            isTemporary: _isTemporary!,
-          ),
-        );
-      },
-    );
-  }
-
-  void _updateTempMessageWithError(String tempMessageId, String error) {
-    state.maybeMap(
-      loaded: (state) {
-        final updatedMessages =
-            state.messages.map((message) {
-              if (message.id == tempMessageId) {
-                return message.copyWith(text: 'Ошибка загрузки: $error');
+              if (message.tempId == tempId) {
+                return message.copyWith(error: error, isSending: false);
               }
               return message;
             }).toList();
@@ -782,10 +1072,22 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void _reconnectMessageSubscriptions() {
     _disposeMessageSubscriptions();
 
+    _messagesSubscription = _messageInterface.messagesStream.listen(
+      _handleMessagesBatch,
+      onError: (e) {
+        debugPrint('Messages stream error: $e');
+        Future.delayed(const Duration(seconds: 3), () {
+          if (!isClosed) _reconnectMessageSubscriptions();
+        });
+      },
+      cancelOnError: false,
+    );
+
     _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
         .listen(
           _handlePaginatedMessages,
           onError: (e) {
+            debugPrint('Paginated messages stream error: $e');
             Future.delayed(const Duration(seconds: 3), () {
               if (!isClosed) _reconnectMessageSubscriptions();
             });
@@ -796,6 +1098,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
       _handleSingleMessage,
       onError: (e) {
+        debugPrint('Single message stream error: $e');
         Future.delayed(const Duration(seconds: 3), () {
           if (!isClosed) _reconnectMessageSubscriptions();
         });
@@ -805,6 +1108,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     if (_currentChatId != null) {
       _loadInitialMessages();
+      _messageInterface.requestMessages(_currentChatId!);
     }
   }
 
@@ -813,7 +1117,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       return;
     }
 
+    final tempId =
+        'temp_gift_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
+
     final message = Message(
+      id: null,
       senderId: _senderId!,
       recipientId: _recipientId!,
       text: '🎁 Подарок!',
@@ -824,23 +1132,24 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       contentType: 'gift',
       media: [],
       gift: gift,
+      tempId: tempId,
+      isSending: true,
     );
 
     state.maybeMap(
       loaded: (state) {
-        final optimisticMessage = message.copyWith(createdAt: DateTime.now());
-
-        emit(state.copyWith(messages: [...state.messages, optimisticMessage]));
-
-        _messageInterface.sendMessage(message);
+        emit(state.copyWith(messages: [...state.messages, message]));
+        _messageInterface.sendMessage(message.toSendMessage());
       },
       orElse: () {
-        _messageInterface.sendMessage(message);
+        _messageInterface.sendMessage(message.toSendMessage());
       },
     );
   }
 
   void _disposeMessageSubscriptions() {
+    _messagesSubscription?.cancel();
+    _messagesSubscription = null;
     _paginatedMessagesSubscription?.cancel();
     _paginatedMessagesSubscription = null;
     _singleMessageSubscription?.cancel();
@@ -860,6 +1169,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _chatAgreeResponseSubscription = null;
     _chatPermanentCreatedSubscription?.cancel();
     _chatPermanentCreatedSubscription = null;
+
+    _continueChatProposalSubscription?.cancel();
+    _continueChatProposalSubscription = null;
+    _continueChatResponseSubscription?.cancel();
+    _continueChatResponseSubscription = null;
 
     _markAsReadTimer?.cancel();
     _markAsReadTimer = null;
@@ -883,5 +1197,26 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     } catch (e) {
       //
     }
+  }
+
+  void updateMessageSendingStatus(
+    String tempId,
+    bool isSending, {
+    String? error,
+  }) {
+    state.maybeMap(
+      loaded: (state) {
+        final updatedMessages =
+            state.messages.map((message) {
+              if (message.tempId == tempId) {
+                return message.copyWith(isSending: isSending, error: error);
+              }
+              return message;
+            }).toList();
+
+        emit(state.copyWith(messages: updatedMessages));
+      },
+      orElse: () {},
+    );
   }
 }

@@ -32,7 +32,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   City? _selectedCity;
   final GlobalKey _cityFieldKey = GlobalKey();
 
-  // Простые валидаторы
   String? _validateCity(String? value) {
     if (value == null || value.isEmpty) {
       return S.of(context).enter_the_city;

@@ -5,11 +5,13 @@ import 'package:meet_now_app/features/security/widget/my_button.dart';
 class NumPad extends StatelessWidget {
   final void Function(String) onKeyPressed;
   final VoidCallback onBackspacePressed;
+  final bool isMobile;
 
   const NumPad({
     super.key,
     required this.onKeyPressed,
     required this.onBackspacePressed,
+    required this.isMobile,
   });
 
   @override
@@ -17,9 +19,9 @@ class NumPad extends StatelessWidget {
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: 3,
-      childAspectRatio: 1.5,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
+      childAspectRatio: isMobile ? 1.5 : 1.8,
+      mainAxisSpacing: isMobile ? 8 : 12,
+      crossAxisSpacing: isMobile ? 8 : 12,
       children: [
         MyButton(value: '1', onKeyPressed: onKeyPressed),
         MyButton(value: '2', onKeyPressed: onKeyPressed),

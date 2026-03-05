@@ -1,13 +1,17 @@
+import 'dart:io';
+import 'dart:convert';
+import 'dart:math';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
+import 'package:meet_now_app/features/uploads_avatars/cubit/upload_avatars_localization.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart'
-    show MediaPickerBottomSheet, MediaPickerConfig, DeviceMediaLibrary;
 
 @RoutePage()
 class UploadsAvatarsScreen extends StatefulWidget {
@@ -25,10 +29,55 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
   bool _avatarConfirmed = false;
   int _currentPage = 0;
   bool _isNavigating = false;
+  late UploadsAvatarsCubit _cubit;
 
   final DeviceMediaLibrary _mediaLibrary = DeviceMediaLibrary();
 
-  UploadsAvatarsCubit get _cubit => context.read<UploadsAvatarsCubit>();
+  String _translateErrorKey(
+    UploadAvatarsErrorKeys errorKey,
+    BuildContext context,
+  ) {
+    switch (errorKey) {
+      case UploadAvatarsErrorKeys.emptyFileData:
+        return S.of(context).emptyFileData;
+      case UploadAvatarsErrorKeys.theAvatarIsNotSelected:
+        return S.of(context).theAvatarIsNotSelected;
+      case UploadAvatarsErrorKeys.emptyAvatarData:
+        return S.of(context).emptyAvatarData;
+      case UploadAvatarsErrorKeys.avatarUploadError:
+        return S.of(context).avatarUploadError;
+      case UploadAvatarsErrorKeys.imageDeletionError:
+        return S.of(context).imageDeletionError;
+      case UploadAvatarsErrorKeys.errorDeletingAllImages:
+        return S.of(context).errorDeletingAllImages;
+      case UploadAvatarsErrorKeys.theLimitOf10ImagesHasBeenReached:
+        return S.of(context).theLimitOf10ImagesHasBeenReached;
+      case UploadAvatarsErrorKeys.thereAreNoImagesToDownload:
+        return S.of(context).thereAreNoImagesToDownload;
+      case UploadAvatarsErrorKeys.imageProcessingError:
+        return S.of(context).imageProcessingError;
+      case UploadAvatarsErrorKeys.imageUploadError:
+        return S.of(context).imageUploadError;
+      case UploadAvatarsErrorKeys.errorWhenClearingATemporaryFile:
+        return S.of(context).errorWhenClearingATemporaryFile;
+      case UploadAvatarsErrorKeys.couldntGetFileData:
+        return S.of(context).couldntGetFileData;
+      case UploadAvatarsErrorKeys.dragAndDropTheFilesHere:
+        return S.of(context).dragAndDropTheFilesHere;
+      case UploadAvatarsErrorKeys.orClickTheButton:
+        return S.of(context).orClickTheButton;
+      case UploadAvatarsErrorKeys.selectAFile:
+        return S.of(context).selectAFile;
+      case UploadAvatarsErrorKeys.selectFiles:
+        return S.of(context).selectFiles;
+      case UploadAvatarsErrorKeys.chooseAnAvatar:
+        return S.of(context).choose_an_avatar;
+      case UploadAvatarsErrorKeys.selectPhotos:
+        return S.of(context).selectPhotos;
+      case UploadAvatarsErrorKeys.uploadingAvatar:
+        return S.of(context).uploadingAvatar;
+    }
+  }
 
   int get maxGallerySelectable {
     final existing = widget.currentPhotosCount;
@@ -37,46 +86,281 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
     return remaining > 0 ? remaining : 0;
   }
 
-  Future<void> _showMediaPickerBottomSheet({bool isAvatar = false}) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return MediaPickerBottomSheet(
-          initialSelection: const [],
-          maxSelection: isAvatar ? 1 : maxGallerySelectable,
-          allowMultiple: !isAvatar,
-          showVideos: false,
-          initialChildSize: 0.7,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          showSelectionIndicators: true,
-          config: const MediaPickerConfig(),
-          mediaLibrary: _mediaLibrary,
+  bool get isWeb => kIsWeb;
+  bool get isDesktop =>
+      !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
+  bool get isWebOrDesktop => isWeb || isDesktop;
 
-          onConfirmed: (filesWithBytes) {
-            if (filesWithBytes.isEmpty) return;
+  Future<void> _showMediaPickerBottomSheet(
+    BuildContext context,
+    UploadsAvatarsCubit cubit, {
+    bool isAvatar = false,
+  }) async {
+    // Сохраняем переводы ДО асинхронных операций
+    final errorCouldntGetFileData = _translateErrorKey(
+      UploadAvatarsErrorKeys.couldntGetFileData,
+      context,
+    );
+    final errorUploadingAvatar = _translateErrorKey(
+      UploadAvatarsErrorKeys.uploadingAvatar,
+      context,
+    );
+    final localizations = S.current;
 
-            if (isAvatar) {
-              final first = filesWithBytes.first;
-              _cubit.selectAvatar(first.key, first.value);
-            } else {
-              _cubit.selectGalleryImages(filesWithBytes);
+    if (isWebOrDesktop) {
+      final List<MapEntry<MediaItem, Uint8List?>>?
+      filesWithBytes = await showDialog<List<MapEntry<MediaItem, Uint8List?>>>(
+        context: context,
+        builder:
+            (context) => Dialog(
+              insetPadding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: min(500, MediaQuery.of(context).size.width * 0.9),
+                height: min(500, MediaQuery.of(context).size.height * 0.9),
+                child: MediaPickerWidget(
+                  initialSelection: const [],
+                  maxSelection: isAvatar ? 1 : maxGallerySelectable,
+                  allowMultiple: !isAvatar,
+                  showVideos: false,
+                  onConfirmed: (
+                    List<MapEntry<MediaItem, Uint8List?>> selectedFiles,
+                  ) {
+                    Navigator.of(context).pop(selectedFiles);
+                  },
+                  enableDragDrop: true,
+                  config: const MediaPickerConfig(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.cloud_upload, size: 64),
+                          const SizedBox(height: 16),
+                          Text(
+                            isAvatar
+                                ? localizations.choose_an_avatar
+                                : localizations.selectPhotos,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(localizations.dragAndDropTheFilesHere),
+                          Text(localizations.orClickTheButton),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () async {
+                              final pickedFiles = await _mediaLibrary.pickFiles(
+                                multiple: !isAvatar,
+                                allowedFileTypes: ['image/*'],
+                              );
+
+                              if (pickedFiles != null &&
+                                  pickedFiles.isNotEmpty) {
+                                final filesWithBytes =
+                                    <MapEntry<MediaItem, Uint8List?>>[];
+
+                                for (final fileMap in pickedFiles) {
+                                  final mediaItem = MediaItem.fromMap(fileMap);
+
+                                  Uint8List? bytes;
+                                  if (isWeb) {
+                                    try {
+                                      final fileId =
+                                          fileMap['id']?.toString() ??
+                                          mediaItem.id;
+                                      bytes = await _mediaLibrary.readWebFile(
+                                        fileId,
+                                      );
+                                    } catch (e) {
+                                      bytes = await _mediaLibrary.getFileBytes(
+                                        mediaItem.uri,
+                                      );
+                                    }
+                                  } else {
+                                    bytes = await _mediaLibrary.getFileBytes(
+                                      mediaItem.uri,
+                                    );
+                                  }
+
+                                  filesWithBytes.add(
+                                    MapEntry(mediaItem, bytes),
+                                  );
+                                }
+
+                                if (context.mounted) {
+                                  Navigator.of(context).pop(filesWithBytes);
+                                }
+                              } else {
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              }
+                            },
+                            child: Text(
+                              isAvatar
+                                  ? localizations.selectAFile
+                                  : localizations.selectFiles,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+      );
+
+      if (filesWithBytes != null && filesWithBytes.isNotEmpty) {
+        if (isAvatar) {
+          final firstEntry = filesWithBytes.first;
+          final firstItem = firstEntry.key;
+          var bytes = firstEntry.value;
+
+          if (bytes == null || bytes.isEmpty) {
+            bytes = await _readFileBytes(firstItem.uri);
+          }
+
+          if (bytes != null && bytes.isNotEmpty) {
+            cubit.selectAvatar(firstItem.uri, bytes);
+          } else {
+            if (context.mounted) {
+              _showErrorSnackBar(context, errorCouldntGetFileData);
+            }
+          }
+        } else {
+          final filesWithBytesList = <MapEntry<String, Uint8List>>[];
+          for (final entry in filesWithBytes) {
+            var bytes = entry.value;
+
+            if (bytes == null || bytes.isEmpty) {
+              bytes = await _readFileBytes(entry.key.uri);
             }
 
-            // Navigator.of(sheetContext).pop();
-          },
-        );
-      },
+            if (bytes != null && bytes.isNotEmpty) {
+              filesWithBytesList.add(MapEntry(entry.key.uri, bytes));
+            }
+          }
+
+          if (filesWithBytesList.isNotEmpty) {
+            cubit.selectGalleryImages(filesWithBytesList);
+          } else {
+            if (context.mounted) {
+              _showErrorSnackBar(context, errorCouldntGetFileData);
+            }
+          }
+        }
+      }
+    } else {
+      await MediaPickerBottomSheet.open(
+        context: context,
+        initialSelection: const [],
+        maxSelection: isAvatar ? 1 : maxGallerySelectable,
+        allowMultiple: !isAvatar,
+        showVideos: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        showSelectionIndicators: true,
+        config: const MediaPickerConfig(),
+        mediaLibrary: _mediaLibrary,
+        onConfirmed: (medias) {
+          Navigator.pop(context);
+        },
+        onConfirmedWithBytes: (selectedItemsWithBytes) async {
+          if (selectedItemsWithBytes.isEmpty) {
+            return;
+          }
+
+          if (isAvatar) {
+            final firstEntry = selectedItemsWithBytes.first;
+            final firstItem = firstEntry.key;
+            final bytes = firstEntry.value;
+
+            if (bytes != null && bytes.isNotEmpty) {
+              cubit.selectAvatar(firstItem.uri, bytes);
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(errorUploadingAvatar),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+
+              await cubit.uploadAvatar();
+            } else {
+              if (mounted) {
+                _showErrorSnackBar(context, errorCouldntGetFileData);
+              }
+            }
+          } else {
+            final filesWithBytesList = <MapEntry<String, Uint8List>>[];
+            for (final entry in selectedItemsWithBytes) {
+              if (entry.value != null && entry.value!.isNotEmpty) {
+                filesWithBytesList.add(MapEntry(entry.key.uri, entry.value!));
+              }
+            }
+
+            if (filesWithBytesList.isNotEmpty) {
+              cubit.selectGalleryImages(filesWithBytesList);
+            } else {
+              if (mounted) {
+                _showErrorSnackBar(context, errorCouldntGetFileData);
+              }
+            }
+          }
+        },
+      );
+    }
+  }
+
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
     );
+  }
+
+  Future<Uint8List?> _readFileBytes(String uri) async {
+    try {
+      if (uri.startsWith('data:')) {
+        final base64Data = uri.split(',').last;
+        return Uint8List.fromList(base64Decode(base64Data));
+      }
+
+      if (uri.startsWith('file://')) {
+        final filePath = Uri.parse(uri).toFilePath(windows: Platform.isWindows);
+        final file = File(filePath);
+        if (await file.exists()) {
+          return await file.readAsBytes();
+        }
+      }
+
+      if (!uri.startsWith('http')) {
+        final file = File(uri);
+        if (await file.exists()) {
+          return await file.readAsBytes();
+        }
+      }
+    } catch (e) {
+      //
+    }
+
+    return null;
   }
 
   void _navigateToMainHome() {
     if (_isNavigating) return;
     _isNavigating = true;
 
-    // Используем небольшую задержку перед навигацией
     Future.delayed(const Duration(milliseconds: 50), () {
       if (!mounted) {
         _isNavigating = false;
@@ -91,10 +375,6 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
       } catch (e) {
         if (mounted) {
           context.pushRoute(MainHomeRoute());
-          // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          //   MaterialPageRoute(builder: (_) => const MainHomeRoute()),
-          //   (route) => false,
-          // );
         }
       } finally {
         _isNavigating = false;
@@ -140,6 +420,7 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
   @override
   void initState() {
     super.initState();
+    _cubit = context.read<UploadsAvatarsCubit>();
 
     if (widget.isSkip == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -185,7 +466,9 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
           gallerySelected: (paths) {},
           imagesUploadSuccess: (urls) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
+              if (!mounted) {
+                return;
+              }
 
               if (widget.isSkip == true) {
                 _handleSkipModeNavigation();
@@ -194,12 +477,12 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
               }
             });
           },
-          error: (message) {
+          error: (errorKey) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(message),
+                    content: Text(_translateErrorKey(errorKey, context)),
                     backgroundColor: Colors.red,
                     duration: const Duration(seconds: 3),
                   ),
@@ -211,9 +494,11 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
       },
       child: BlocBuilder<UploadsAvatarsCubit, UploadsAvatarsState>(
         builder: (context, state) {
+          final localizations = S.of(context);
+
           return Scaffold(
             appBar: AppBar(
-              title: Text(S.of(context).uploading_images),
+              title: Text(localizations.uploading_images),
               leading:
                   _currentPage == 1 && widget.isSkip != true
                       ? IconButton(
@@ -238,7 +523,11 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                   state: state,
                   cubit: _cubit,
                   onPickAvatar:
-                      () => _showMediaPickerBottomSheet(isAvatar: true),
+                      () => _showMediaPickerBottomSheet(
+                        context,
+                        _cubit,
+                        isAvatar: true,
+                      ),
                   avatarConfirmed: _avatarConfirmed,
                   onAvatarConfirmedChange: (value) {
                     if (mounted) {
@@ -251,7 +540,11 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                   cubit: _cubit,
                   maxSelectable: maxGallerySelectable,
                   onPickImages:
-                      () => _showMediaPickerBottomSheet(isAvatar: false),
+                      () => _showMediaPickerBottomSheet(
+                        context,
+                        _cubit,
+                        isAvatar: false,
+                      ),
                   onNavigateToMainHome: _navigateToMainHome,
                 ),
               ],

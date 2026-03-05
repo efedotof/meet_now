@@ -321,9 +321,9 @@ class _InputAreaState extends State<InputArea> {
           children: [
             CommandSuggestionsWidget(controller: widget.controller),
             StickerPickerWidget(
-              onStickerSelected: (sticker) {
-                context.read<ChatMessageCubit>().sendStickerMessage(sticker);
-              },
+              // onStickerSelected: (sticker) {
+              //   context.read<ChatMessageCubit>().sendStickerMessage(sticker);
+              // },
               onGiftSelected: (inventory) {
                 context.read<ChatMessageCubit>().sendGiftMessage(
                   inventory.gift,

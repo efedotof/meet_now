@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 class QuestionsSkeleton extends StatelessWidget {
-  const QuestionsSkeleton({super.key});
+  final bool isMobile;
+  const QuestionsSkeleton({super.key, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(
+        bottom: 20,
+        left: isMobile ? 0 : 20,
+        right: isMobile ? 0 : 20,
+        top: isMobile ? 8 : 16,
+      ),
       child: Column(
         children: [
-          const SizedBox(height: 8),
           ...List.generate(
             6,
             (index) => Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(16),
+              margin: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 0,
+                vertical: isMobile ? 8 : 12,
+              ),
+              padding: EdgeInsets.all(isMobile ? 16 : 20),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(isMobile ? 12 : 16),
               ),
               child: SkeletonItem(
                 child: Column(
@@ -33,12 +41,17 @@ class QuestionsSkeleton extends StatelessWidget {
                               spacing: 6,
                               lineStyle: SkeletonLineStyle(
                                 randomLength: true,
-                                height: 20,
+                                height: isMobile ? 20 : 24,
                                 borderRadius: BorderRadius.circular(8),
                                 minLength:
-                                    MediaQuery.of(context).size.width / 3,
+                                    isMobile
+                                        ? MediaQuery.of(context).size.width / 3
+                                        : 200,
                                 maxLength:
-                                    MediaQuery.of(context).size.width / 1.5,
+                                    isMobile
+                                        ? MediaQuery.of(context).size.width /
+                                            1.5
+                                        : 400,
                               ),
                             ),
                           ),
@@ -46,47 +59,53 @@ class QuestionsSkeleton extends StatelessWidget {
                         const SizedBox(width: 12),
                         SkeletonAvatar(
                           style: SkeletonAvatarStyle(
-                            width: 70,
-                            height: 32,
+                            width: isMobile ? 70 : 90,
+                            height: isMobile ? 32 : 40,
                             shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(
+                              isMobile ? 16 : 20,
+                            ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-
                     SkeletonParagraph(
                       style: SkeletonParagraphStyle(
                         lines: 2,
                         spacing: 6,
                         lineStyle: SkeletonLineStyle(
                           randomLength: true,
-                          height: 16,
+                          height: isMobile ? 16 : 18,
                           borderRadius: BorderRadius.circular(6),
-                          minLength: MediaQuery.of(context).size.width / 4,
-                          maxLength: MediaQuery.of(context).size.width / 1.2,
+                          minLength:
+                              isMobile
+                                  ? MediaQuery.of(context).size.width / 4
+                                  : 150,
+                          maxLength:
+                              isMobile
+                                  ? MediaQuery.of(context).size.width / 1.2
+                                  : 350,
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
-
                     Row(
                       children: [
                         Row(
                           children: [
                             SkeletonAvatar(
                               style: SkeletonAvatarStyle(
-                                width: 16,
-                                height: 16,
+                                width: isMobile ? 16 : 18,
+                                height: isMobile ? 16 : 18,
                                 shape: BoxShape.circle,
                               ),
                             ),
                             const SizedBox(width: 4),
                             SkeletonLine(
                               style: SkeletonLineStyle(
-                                height: 14,
-                                width: 30,
+                                height: isMobile ? 14 : 16,
+                                width: isMobile ? 30 : 40,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                             ),
@@ -95,8 +114,8 @@ class QuestionsSkeleton extends StatelessWidget {
                         const Spacer(),
                         SkeletonLine(
                           style: SkeletonLineStyle(
-                            height: 14,
-                            width: 80,
+                            height: isMobile ? 14 : 16,
+                            width: isMobile ? 80 : 120,
                             borderRadius: BorderRadius.circular(6),
                           ),
                         ),

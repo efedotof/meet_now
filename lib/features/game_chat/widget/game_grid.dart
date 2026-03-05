@@ -16,10 +16,10 @@ class GamesGrid extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
+        spacing: 12,
+        runSpacing: 12,
         children: List.generate(games.length, (index) {
           final game = games[index];
           return GameCard(game: game, chatId: chatId);

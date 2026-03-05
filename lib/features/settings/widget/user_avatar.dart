@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class UserAvatar extends StatefulWidget {
   const UserAvatar({super.key, this.avatarKey, required this.radius});
@@ -159,6 +159,7 @@ class _UserAvatarState extends State<UserAvatar> {
           radius: widget.radius,
           backgroundColor: Theme.of(context).colorScheme.primary,
           backgroundImage: imageProvider,
+
           onBackgroundImageError: (exception, stackTrace) {
             if (mounted) {
               setState(() {

@@ -28,10 +28,12 @@ import 'package:meet_now_app/features/settings/cubit/user_date_cubit.dart';
 import 'package:meet_now_app/features/splash/cubit/splash_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/support/cubit/support_cubit.dart';
+import 'package:meet_now_app/features/theme/cubit/particles_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/storage/notification/notification_settings_interface.dart';
+import 'package:meet_now_app_server/storage/particles/particles_interface.dart';
 
 class AppBloc extends StatelessWidget {
   const AppBloc({super.key, required this.config, required this.child});
@@ -60,6 +62,12 @@ class AppBloc extends StatelessWidget {
           create:
               (context) =>
                   SignInCubit(authInterface: context.read<AuthInterface>()),
+        ),
+        BlocProvider(
+          create:
+              (context) => ParticlesCubit(
+                particlesRepository: context.read<ParticlesInterface>(),
+              ),
         ),
         BlocProvider(
           create:
@@ -117,7 +125,6 @@ class AppBloc extends StatelessWidget {
           create:
               (context) => ChatMessageCubit(
                 messageInterface: context.read<MessageInterface>(),
-                gamesInterface: context.read<GamesInterface>(),
                 friendInterface: context.read<FriendInterface>(),
                 uploadImageInterface: context.read<UploadImageInterface>(),
                 socketInterface: context.read<SocketServiceInterface>(),

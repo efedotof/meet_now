@@ -19,7 +19,11 @@ class FriendCard extends StatelessWidget {
         );
         if (chat != null && context.mounted) {
           context.pushRoute(
-            ChatMessageRoute(chatModel: chat, temporaryChatModel: null),
+            ChatMessageRoute(
+              chatModel: chat,
+              temporaryChatModel: null,
+              chatKey: chat.chatId,
+            ),
           );
         }
       },

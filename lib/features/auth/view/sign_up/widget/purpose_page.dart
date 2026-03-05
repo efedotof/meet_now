@@ -41,18 +41,21 @@ class _PurposePageState extends State<PurposePage> {
   }
 
   Future<List<Purpose>> _loadPurposes() async {
+    final purpRepo = context.read<PurpAndInteresInterface>();
+    final storage = !kIsWeb ? context.read<StorageHiveInterface>() : null;
+
     try {
       if (kIsWeb) {
-        final repo = context.read<PurpAndInteresInterface>();
-        return await repo.getAllPurpose();
+        return await purpRepo.getAllPurpose();
       } else {
-        final storage = context.read<StorageHiveInterface>();
-        List<Purpose> purposes = [];
-
         if (storage is StorageHiveRepository) {
           try {
             final box = await storage.getListenablePurposeBox();
+
+            if (!mounted) return [];
+
             final boxData = box.value;
+            final List<Purpose> purposes = [];
 
             for (var i = 0; i < boxData.length; i++) {
               final key = boxData.keyAt(i);
@@ -64,17 +67,14 @@ class _PurposePageState extends State<PurposePage> {
 
             return purposes;
           } catch (e) {
-            final repo = context.read<PurpAndInteresInterface>();
-            return await repo.getAllPurpose();
+            return await purpRepo.getAllPurpose();
           }
         }
 
-        final repo = context.read<PurpAndInteresInterface>();
-        return await repo.getAllPurpose();
+        return await purpRepo.getAllPurpose();
       }
     } catch (e) {
-      final repo = context.read<PurpAndInteresInterface>();
-      return await repo.getAllPurpose();
+      return await purpRepo.getAllPurpose();
     }
   }
 

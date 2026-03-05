@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 class CredentialsPage extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -29,8 +31,16 @@ class _CredentialsPageState extends State<CredentialsPage> {
     });
   }
 
+  void _launchUrl(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Center(
       child: Form(
         key: widget.formKey,
@@ -113,6 +123,48 @@ class _CredentialsPageState extends State<CredentialsPage> {
                         },
                       ),
                       Text(S.of(context).allowProfileSearch),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.onSurface.withValues(alpha: 0.6),
+                    ),
+                    children: [
+                      TextSpan(text: S.of(context).byLoggingInYouAgreeToOur),
+                      TextSpan(
+                        text: S.of(context).termsOfUse,
+                        style: TextStyle(
+                          color: colors.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer:
+                            TapGestureRecognizer()
+                              ..onTap =
+                                  () => _launchUrl(
+                                    'https://mnapp.ru/docs/user_agreement.pdf',
+                                  ),
+                      ),
+                      TextSpan(text: S.of(context).and),
+                      TextSpan(
+                        text: S.of(context).privacyPolicy,
+                        style: TextStyle(
+                          color: colors.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer:
+                            TapGestureRecognizer()
+                              ..onTap =
+                                  () => _launchUrl(
+                                    'https://mnapp.ru/docs/privacy_policy.pdf',
+                                  ),
+                      ),
+                      const TextSpan(text: '.'),
                     ],
                   ),
                 ),

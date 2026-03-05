@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 
 part 'media_selection_state.dart';
 part 'media_selection_cubit.freezed.dart';

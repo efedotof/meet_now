@@ -48,11 +48,14 @@ class _AgeOptionState extends State<AgeOption>
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SearchCubit>().state;
+    final cubit = context.read<SearchCubit>();
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     final isSelected = state.ageFrom == widget.ageStart;
-    final ageLabel = "${widget.ageStart}–${widget.ageStart + 3}";
+
+    final ageLabel = cubit.getAgeLabel(widget.ageStart);
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _animate(isSelected));
 
     return AnimatedBuilder(

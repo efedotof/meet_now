@@ -4,20 +4,29 @@ import 'expandable_question_card.dart';
 
 class QuestionsList extends StatelessWidget {
   final List<Question> questions;
-  const QuestionsList(this.questions, {super.key});
+  final bool isMobile;
+  const QuestionsList(this.questions, {super.key, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(
+        bottom: 20,
+        left: isMobile ? 0 : 20,
+        right: isMobile ? 0 : 20,
+        top: isMobile ? 8 : 16,
+      ),
       child: Column(
         children: [
-          const SizedBox(height: 8),
           ...questions.map(
             (question) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 0,
+                vertical: isMobile ? 8 : 12,
+              ),
               child: ExpandableQuestionCard(
                 question: question,
+                isMobile: isMobile,
                 isInitiallyExpanded: true,
               ),
             ),

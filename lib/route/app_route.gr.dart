@@ -49,6 +49,9 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
     Key? key,
     required TemporaryChat? temporaryChatModel,
     PermanentChatResponseDto? chatModel,
+    VoidCallback? onClose,
+    bool isEmbedded = false,
+    required String chatKey,
     List<PageRouteInfo>? children,
   }) : super(
          ChatMessageRoute.name,
@@ -56,6 +59,9 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
            key: key,
            temporaryChatModel: temporaryChatModel,
            chatModel: chatModel,
+           onClose: onClose,
+           isEmbedded: isEmbedded,
+           chatKey: chatKey,
          ),
          initialChildren: children,
        );
@@ -70,6 +76,9 @@ class ChatMessageRoute extends PageRouteInfo<ChatMessageRouteArgs> {
         key: args.key,
         temporaryChatModel: args.temporaryChatModel,
         chatModel: args.chatModel,
+        onClose: args.onClose,
+        isEmbedded: args.isEmbedded,
+        chatKey: args.chatKey,
       );
     },
   );
@@ -80,6 +89,9 @@ class ChatMessageRouteArgs {
     this.key,
     required this.temporaryChatModel,
     this.chatModel,
+    this.onClose,
+    this.isEmbedded = false,
+    required this.chatKey,
   });
 
   final Key? key;
@@ -88,9 +100,15 @@ class ChatMessageRouteArgs {
 
   final PermanentChatResponseDto? chatModel;
 
+  final VoidCallback? onClose;
+
+  final bool isEmbedded;
+
+  final String chatKey;
+
   @override
   String toString() {
-    return 'ChatMessageRouteArgs{key: $key, temporaryChatModel: $temporaryChatModel, chatModel: $chatModel}';
+    return 'ChatMessageRouteArgs{key: $key, temporaryChatModel: $temporaryChatModel, chatModel: $chatModel, onClose: $onClose, isEmbedded: $isEmbedded, chatKey: $chatKey}';
   }
 
   @override
@@ -99,12 +117,20 @@ class ChatMessageRouteArgs {
     if (other is! ChatMessageRouteArgs) return false;
     return key == other.key &&
         temporaryChatModel == other.temporaryChatModel &&
-        chatModel == other.chatModel;
+        chatModel == other.chatModel &&
+        onClose == other.onClose &&
+        isEmbedded == other.isEmbedded &&
+        chatKey == other.chatKey;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ temporaryChatModel.hashCode ^ chatModel.hashCode;
+      key.hashCode ^
+      temporaryChatModel.hashCode ^
+      chatModel.hashCode ^
+      onClose.hashCode ^
+      isEmbedded.hashCode ^
+      chatKey.hashCode;
 }
 
 /// generated route for

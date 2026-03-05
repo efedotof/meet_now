@@ -41,18 +41,22 @@ class _InterestPageState extends State<InterestPage> {
   }
 
   Future<List<Interest>> _loadInterests() async {
+    final purpRepo = context.read<PurpAndInteresInterface>();
+    final storage = !kIsWeb ? context.read<StorageHiveInterface>() : null;
+
     try {
       if (kIsWeb) {
-        final repo = context.read<PurpAndInteresInterface>();
-        return await repo.getAllInterest();
+        return await purpRepo.getAllInterest();
       } else {
-        final storage = context.read<StorageHiveInterface>();
-        List<Interest> interests = [];
-
         if (storage is StorageHiveRepository) {
           try {
             final box = await storage.getListenableInterestBox();
+
+            if (!mounted) return [];
+
             final boxData = box.value;
+            final List<Interest> interests = [];
+
             for (var i = 0; i < boxData.length; i++) {
               final key = boxData.keyAt(i);
               final value = boxData.get(key);
@@ -63,17 +67,14 @@ class _InterestPageState extends State<InterestPage> {
 
             return interests;
           } catch (e) {
-            final repo = context.read<PurpAndInteresInterface>();
-            return await repo.getAllInterest();
+            return await purpRepo.getAllInterest();
           }
         }
 
-        final repo = context.read<PurpAndInteresInterface>();
-        return await repo.getAllInterest();
+        return await purpRepo.getAllInterest();
       }
     } catch (e) {
-      final repo = context.read<PurpAndInteresInterface>();
-      return await repo.getAllInterest();
+      return await purpRepo.getAllInterest();
     }
   }
 

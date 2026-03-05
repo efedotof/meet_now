@@ -3,20 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat_message/cubit/chat/chat_message_cubit.dart';
 import 'package:meet_now_app/features/chat_message/cubit/sticker/sticker_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
-import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
+// Закомментирован импорт стикеров
+// import 'package:meet_now_app_server/model/social/sticker/sticker.dart';
+// import 'package:meet_now_app_server/model/social/sticker_pack/sticker_pack.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 import 'package:meet_now_app_server/model/social/user_inventory/user_inventory.dart';
-// Добавляем импорт ChatMessageCubit
 
 class StickerPickerWidget extends StatefulWidget {
-  final Function(Sticker) onStickerSelected;
-  final Function(UserInventory)?
-  onGiftSelected; // Изменено: передаем инвентарь вместо отдельных параметров
+  // final Function(Sticker) onStickerSelected;
+  final Function(UserInventory)? onGiftSelected;
 
   const StickerPickerWidget({
     super.key,
-    required this.onStickerSelected,
+    // required this.onStickerSelected,
     this.onGiftSelected,
   });
 
@@ -25,13 +24,15 @@ class StickerPickerWidget extends StatefulWidget {
 }
 
 class _StickerPickerWidgetState extends State<StickerPickerWidget> {
-  List<StickerPack> _stickerPacks = [];
-  final Map<String, List<Sticker>> _stickersByPack = {};
+  // List<StickerPack> _stickerPacks = [];
+  // final Map<String, List<Sticker>> _stickersByPack = {};
   List<UserInventory> _userGifts = [];
-  bool _isLoading = true;
+  // Изменено на false, так как стикеры не загружаем
+  // bool _isLoading = false;
   bool _isLoadingGifts = false;
   String? _error;
   final Map<String, String> _presignedUrlCache = {};
+  // Установлен на -1 (подарки)
   int _selectedPackIndex = -1;
   final ScrollController _horizontalScrollController = ScrollController();
   bool _isSendingGift = false;
@@ -39,10 +40,12 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
   @override
   void initState() {
     super.initState();
-    _loadStickerPacks();
+    // _loadStickerPacks();
     _loadUserGifts();
   }
 
+  // Закомментирован метод загрузки стикеров
+  /*
   Future<void> _loadStickerPacks() async {
     try {
       final cubit = context.read<StickerCubit>();
@@ -62,6 +65,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
       });
     }
   }
+  */
 
   Future<void> _loadUserGifts() async {
     setState(() {
@@ -116,6 +120,8 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
     }
   }
 
+  // Закомментирован метод загрузки стикеров из пака
+  /*
   Future<void> _loadStickersForPack(String packId) async {
     if (_stickersByPack.containsKey(packId)) return;
 
@@ -130,6 +136,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
       //
     }
   }
+  */
 
   Future<String> _getPresignedUrl(String fileUrl) async {
     try {
@@ -148,29 +155,20 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
     }
   }
 
-  List<Sticker> _getCurrentStickers() {
-    if (_selectedPackIndex == -1) {
-      return _userGifts.map((inventory) {
-        return Sticker(
-          id: inventory.id,
-          emoji: '🎁',
-          imageUrl: inventory.gift.animationUrl ?? inventory.gift.imageUrl,
-        );
-      }).toList();
-    } else if (_selectedPackIndex < _stickerPacks.length) {
-      final packId = _stickerPacks[_selectedPackIndex].id;
-      return _stickersByPack[packId] ?? [];
-    }
-    return [];
+  List<dynamic> _getCurrentStickers() {
+    return _userGifts.map((inventory) {
+      return {
+        'id': inventory.id,
+        'emoji': '🎁',
+        'imageUrl': inventory.gift.animationUrl ?? inventory.gift.imageUrl,
+        'isGift': true,
+        'inventory': inventory,
+      };
+    }).toList();
   }
 
   String _getCurrentPackName() {
-    if (_selectedPackIndex == -1) {
-      return 'Подарки (${_userGifts.length})';
-    } else if (_selectedPackIndex < _stickerPacks.length) {
-      return _stickerPacks[_selectedPackIndex].title;
-    }
-    return '';
+    return 'Подарки (${_userGifts.length})';
   }
 
   @override
@@ -241,7 +239,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                         Flexible(
                           fit: FlexFit.loose,
                           child:
-                              _isLoading || _isLoadingGifts
+                              _isLoadingGifts
                                   ? const Center(
                                     child: CircularProgressIndicator(),
                                   )
@@ -262,7 +260,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                         ),
                                         const SizedBox(height: 10),
                                         ElevatedButton(
-                                          onPressed: _loadStickerPacks,
+                                          onPressed: () {},
                                           child: Text(S.of(context).repeat),
                                         ),
                                       ],
@@ -271,9 +269,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                   : _getCurrentStickers().isEmpty
                                   ? Center(
                                     child: Text(
-                                      _selectedPackIndex == -1
-                                          ? 'У вас пока нет подарков'
-                                          : S.of(context).stickers_not_found,
+                                      'У вас пока нет подарков',
                                       style: TextStyle(
                                         color:
                                             isDark
@@ -293,21 +289,25 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                         ),
                                     itemCount: _getCurrentStickers().length,
                                     itemBuilder: (context, index) {
-                                      final sticker =
-                                          _getCurrentStickers()[index];
-                                      final isGift = _selectedPackIndex == -1;
+                                      final item = _getCurrentStickers()[index];
+
+                                      final isGift = true;
 
                                       return GestureDetector(
                                         onTap: () {
                                           if (isGift) {
                                             final inventory = _userGifts[index];
                                             _sendGift(inventory);
-                                          } else {
+                                          }
+                                          // Обработка стикеров закомментирована
+                                          /*
+                                          else {
                                             widget.onStickerSelected(sticker);
                                             context
                                                 .read<StickerCubit>()
                                                 .hideStickers();
                                           }
+                                          */
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(
@@ -317,7 +317,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                             children: [
                                               FutureBuilder<String>(
                                                 future: _getPresignedUrl(
-                                                  sticker.imageUrl,
+                                                  item['imageUrl'],
                                                 ),
                                                 builder: (context, snapshot) {
                                                   if (snapshot
@@ -380,41 +380,42 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                                   }
                                                 },
                                               ),
-                                              if (isGift)
-                                                Positioned(
-                                                  top: 4,
-                                                  right: 4,
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(4),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.black54,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                    ),
-                                                    child: Text(
-                                                      '×${_userGifts[index].quantity}',
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
+
+                                              Positioned(
+                                                top: 4,
+                                                right: 4,
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(
+                                                    4,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black54,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    '×${_userGifts[index].quantity}',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
-                                              if (isGift)
-                                                const Positioned(
-                                                  top: 4,
-                                                  left: 4,
-                                                  child: Icon(
-                                                    Icons.card_giftcard,
-                                                    color: Colors.white,
-                                                    size: 16,
-                                                  ),
+                                              ),
+
+                                              const Positioned(
+                                                top: 4,
+                                                left: 4,
+                                                child: Icon(
+                                                  Icons.card_giftcard,
+                                                  color: Colors.white,
+                                                  size: 16,
                                                 ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -422,6 +423,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     },
                                   ),
                         ),
+
                         Container(
                           height: 60,
                           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -483,7 +485,8 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     ),
                                   ),
                                 ),
-
+                                // Закомментированы вкладки стикеров
+                                /*
                                 ..._stickerPacks.asMap().entries.map((entry) {
                                   final index = entry.key;
                                   final pack = entry.value;
@@ -579,6 +582,7 @@ class _StickerPickerWidgetState extends State<StickerPickerWidget> {
                                     ),
                                   );
                                 }),
+                                */
                               ],
                             ),
                           ),

@@ -117,126 +117,135 @@ class _BuildScaffoldState extends State<BuildScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Image.asset("assets/chat_bg/fone2.png", fit: BoxFit.cover),
-        ),
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset("assets/chat_bg/fone2.png", fit: BoxFit.cover),
+            ),
 
-        Positioned.fill(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 100, bottom: 70),
-            child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
-              builder: (context, state) {
-                final cubit = context.read<ChatMessageCubit>();
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: state.when(
-                    initial: () => const ChatMessagesSkeleton(),
-                    loading: () => const ChatMessagesSkeleton(),
-                    error:
-                        (message) => ErrorMessage(
-                          message: message,
-                          onRetry:
-                              () => cubit.reconnect(
-                                context: context,
-                                isTemporary: widget.isTemporary,
-                                chatId: widget.chatId,
-                                senderId: widget.senderID,
-                                recipientId: widget.recipientId,
-                              ),
-                        ),
-                    loaded: (
-                      messages,
-                      isLoadingMore,
-                      hasMore,
-                      currentPage,
-                      isTemporary,
-                      showContinueRequest,
-                      isWaitingForResponse,
-                      agreeChatResponse,
-                    ) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (messages.isNotEmpty &&
-                            !isLoadingMore &&
-                            !_isUserScrolling) {
-                          _scrollToBottom();
-                        }
-                      });
-
-                      return MessagesList(
-                        scrollController: _scrollController,
-                        currentUserId: widget.currentUserId,
-                      );
-                    },
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 3, right: 3),
+                  child: AppBarWidget(
+                    chatModel: widget.chatModel,
+                    userId: widget.currentUserId,
+                    onBackPressed: widget.onBackPressed,
+                    isTemporary: widget.isTemporary,
+                    onRequestFriend: widget.onRequestFriend,
+                    timerText:
+                        widget.isTemporary
+                            ? context.select(
+                              (SyncTimerCubit cubit) =>
+                                  cubit.state.formattedTime,
+                            )
+                            : null,
                   ),
-                );
-              },
+                ),
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: BlocBuilder<ChatMessageCubit, ChatMessageState>(
+                      builder: (context, state) {
+                        final cubit = context.read<ChatMessageCubit>();
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: state.when(
+                            initial: () => const ChatMessagesSkeleton(),
+                            loading: () => const ChatMessagesSkeleton(),
+                            error:
+                                (message) => ErrorMessage(
+                                  message: message,
+                                  onRetry:
+                                      () => cubit.reconnect(
+                                        context: context,
+                                        isTemporary: widget.isTemporary,
+                                        chatId: widget.chatId,
+                                        senderId: widget.senderID,
+                                        recipientId: widget.recipientId,
+                                      ),
+                                ),
+                            loaded: (
+                              messages,
+                              isLoadingMore,
+                              hasMore,
+                              currentPage,
+                              isTemporary,
+                              showContinueProposal,
+                              isWaitingForResponse,
+                              agreeChatResponse,
+                              continueChatProposal,
+                            ) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (messages.isNotEmpty &&
+                                    !isLoadingMore &&
+                                    !_isUserScrolling) {
+                                  _scrollToBottom();
+                                }
+                              });
+
+                              return MessagesList(
+                                scrollController: _scrollController,
+                                currentUserId: widget.currentUserId,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: InputArea(
+                    controller: widget.messageController,
+                    onSend: () {
+                      widget.sendMessage();
+                      _scrollToBottomImmediately();
+                    },
+                    onCommandResult: (result) {
+                      context.read<ChatMessageCubit>().sendTextMessage(result);
+                      _scrollToBottomImmediately();
+                    },
+                    chatId: widget.chatId,
+                    onAddAttach: widget.onAddAttach,
+                    onStickerSelected: (sticker) {
+                      context.read<ChatMessageCubit>().sendStickerMessage(
+                        sticker,
+                      );
+                      _scrollToBottomImmediately();
+                    },
+                    isTemporary: widget.isTemporary,
+                    onContinueChat: widget.onContinueChat,
+                    onAddTimeChat: widget.onAddTimeChat,
+                    recipientId: widget.recipientId,
+                    tempChatId: widget.chatId,
+                    senderId: widget.senderID,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
 
-        Positioned(
-          top: 10,
-          left: 3,
-          right: 3,
-          child: AppBarWidget(
-            chatModel: widget.chatModel,
-            userId: widget.currentUserId,
-            onBackPressed: widget.onBackPressed,
-            isTemporary: widget.isTemporary,
-            onRequestFriend: widget.onRequestFriend,
-            // onClearHistory: () {},
-            // onDeleteChat: () {},
-            // onBlockUser: () {},
-            timerText:
-                widget.isTemporary
-                    ? context.select(
-                      (SyncTimerCubit cubit) => cubit.state.formattedTime,
-                    )
-                    : null,
-          ),
+            if (_showScrollToBottomButton)
+              Positioned(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 80,
+                right: 16,
+                child: FloatingActionButton.small(
+                  onPressed: _scrollToBottomImmediately,
+                  child: const Icon(Icons.arrow_downward),
+                ),
+              ),
+          ],
         ),
-
-        Positioned(
-          bottom: 3,
-          left: 3,
-          right: 3,
-          child: InputArea(
-            controller: widget.messageController,
-            onSend: () {
-              widget.sendMessage();
-              _scrollToBottomImmediately();
-            },
-            onCommandResult: (result) {
-              context.read<ChatMessageCubit>().sendTextMessage(result);
-              _scrollToBottomImmediately();
-            },
-            chatId: widget.chatId,
-            onAddAttach: widget.onAddAttach,
-            onStickerSelected: (sticker) {
-              context.read<ChatMessageCubit>().sendStickerMessage(sticker);
-              _scrollToBottomImmediately();
-            },
-            isTemporary: widget.isTemporary,
-            onContinueChat: widget.onContinueChat,
-            onAddTimeChat: widget.onAddTimeChat,
-            recipientId: widget.recipientId,
-            tempChatId: widget.chatId,
-            senderId: widget.senderID,
-          ),
-        ),
-
-        if (_showScrollToBottomButton)
-          Positioned(
-            bottom: 80,
-            right: 16,
-            child: FloatingActionButton.small(
-              onPressed: _scrollToBottomImmediately,
-              child: const Icon(Icons.arrow_downward),
-            ),
-          ),
-      ],
+      ),
     );
   }
 }

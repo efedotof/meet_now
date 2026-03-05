@@ -439,6 +439,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_html:
+    dependency: "direct main"
+    description:
+      name: flutter_html
+      sha256: "38a2fd702ffdf3243fb7441ab58aa1bc7e6922d95a50db76534de8260638558d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -718,6 +726,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  list_counter:
+    dependency: transitive
+    description:
+      name: list_counter
+      sha256: c447ae3dfcd1c55f0152867090e67e219d42fe6d4f2807db4bbe8b8d69912237
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   logger:
     dependency: transitive
     description:
@@ -751,11 +767,11 @@ packages:
     source: hosted
     version: "0.11.1"
   media_ui_package:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
-      ref: "12dbc30064268dbd589d43ce0fb8cafc0c362e90"
-      resolved-ref: "12dbc30064268dbd589d43ce0fb8cafc0c362e90"
+      ref: c822ea44a99bb1ed3670316354fc12d77c66a82a
+      resolved-ref: c822ea44a99bb1ed3670316354fc12d77c66a82a
       url: "https://github.com/efedotof/media_ui_package.git"
     source: git
     version: "0.0.4"
@@ -763,8 +779,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: de40649674adc46dfb09f7b71bf85484a8acb2d2
-      resolved-ref: de40649674adc46dfb09f7b71bf85484a8acb2d2
+      ref: c6550b903ae4d5a0face19fff3fc120f1355bdab
+      resolved-ref: c6550b903ae4d5a0face19fff3fc120f1355bdab
       url: "https://github.com/efedotof/meet_now_app_server.git"
     source: git
     version: "0.0.1"
@@ -1197,6 +1213,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "44ec7f2bc3257d4d5ecae9ad2ed73ec1ca123323e0b1662441bc7f756530844f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "32.1.25"
+  syncfusion_flutter_pdf:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_pdf
+      sha256: "3cb4d617cb7c98850a9a19ab21d4d7140b1f753316b23c416c5f598671446fdc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "32.1.25"
   synchronized:
     dependency: transitive
     description:
@@ -1535,4 +1567,4 @@ packages:
     version: "2.1.0"
 sdks:
   dart: ">=3.9.2 <4.0.0"
-  flutter: ">=3.35.0"
+  flutter: ">=3.35.1"

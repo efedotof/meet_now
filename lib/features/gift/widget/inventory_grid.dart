@@ -7,11 +7,13 @@ import 'inventory_item.dart';
 class InventoryGrid extends StatelessWidget {
   final List<UserInventory> inventory;
   final Function(UserInventory) onGiftTap;
+  final bool isMobile;
 
   const InventoryGrid({
     super.key,
     required this.inventory,
     required this.onGiftTap,
+    required this.isMobile,
   });
 
   @override
@@ -19,10 +21,10 @@ class InventoryGrid extends StatelessWidget {
     if (inventory.isEmpty) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
           child: Text(
             S.of(context).you_havent_bought_any_gifts_yet,
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: isMobile ? 16 : 18, color: Colors.grey),
             textAlign: TextAlign.center,
           ),
         ),
@@ -30,12 +32,12 @@ class InventoryGrid extends StatelessWidget {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
+      padding: EdgeInsets.all(isMobile ? 16 : 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isMobile ? 2 : 3,
+        crossAxisSpacing: isMobile ? 16 : 20,
+        mainAxisSpacing: isMobile ? 16 : 20,
+        childAspectRatio: isMobile ? 0.8 : 0.85,
       ),
       itemCount: inventory.length,
       itemBuilder: (context, index) {

@@ -3,7 +3,8 @@ import 'package:meet_now_app/generated/l10n.dart';
 
 class StatusChip extends StatelessWidget {
   final String status;
-  const StatusChip({super.key, required this.status});
+  final bool isMobile;
+  const StatusChip({super.key, required this.status, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +31,19 @@ class StatusChip extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 8 : 12,
+        vertical: isMobile ? 4 : 6,
+      ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isMobile ? 12 : 16),
       ),
       child: Text(
         statusText.toUpperCase(),
         style: TextStyle(
           color: textColor,
-          fontSize: 10,
+          fontSize: isMobile ? 10 : 12,
           fontWeight: FontWeight.bold,
         ),
       ),

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/game_chat/cubit/game_points_cubit.dart';
@@ -51,7 +54,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
 
               Container(
                 height: 45,
-                width: MediaQuery.of(context).size.width * 0.5,
+                width:
+                    kIsWeb || Platform.isWindows
+                        ? MediaQuery.of(context).size.width * 0.4
+                        : MediaQuery.of(context).size.width * 0.5,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   color: isDark ? Colors.white70 : Colors.black87,

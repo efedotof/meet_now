@@ -8,7 +8,6 @@ import 'pin_display.dart';
 
 class SetPinModal extends StatefulWidget {
   const SetPinModal({super.key});
-
   @override
   State<SetPinModal> createState() => _SetPinModalState();
 }

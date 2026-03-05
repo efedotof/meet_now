@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meet_now_app/generated/l10n.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 @RoutePage()
 class SignInScreen extends StatefulWidget {
@@ -29,6 +31,12 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
+  void _launchUrl(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    }
+  }
+
   void _showSnackBar(
     BuildContext context,
     String message, {
@@ -46,6 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = Theme.of(context).colorScheme;
     final bool isDesktop =
         kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
     final double buttonWidth =
@@ -160,6 +169,53 @@ class _SignInScreenState extends State<SignInScreen> {
                                     ),
                                   )
                                   : Text(S.of(context).signIn),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.onSurface.withValues(alpha: 0.6),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: S.of(context).byLoggingInYouAgreeToOur,
+                            ),
+                            TextSpan(
+                              text: S.of(context).termsOfUse,
+                              style: TextStyle(
+                                color: colors.primary,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap =
+                                        () => _launchUrl(
+                                          'https://mnapp.ru/docs/user_agreement.pdf',
+                                        ),
+                            ),
+                            TextSpan(text: S.of(context).and),
+                            TextSpan(
+                              text: S.of(context).privacyPolicy,
+                              style: TextStyle(
+                                color: colors.primary,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer:
+                                  TapGestureRecognizer()
+                                    ..onTap =
+                                        () => _launchUrl(
+                                          'https://mnapp.ru/docs/privacy_policy.pdf',
+                                        ),
+                            ),
+                            const TextSpan(text: '.'),
+                          ],
                         ),
                       ),
                     ),

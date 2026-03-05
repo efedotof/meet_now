@@ -3774,6 +3774,581 @@ class S {
       args: [],
     );
   }
+
+  /// `By logging in, you agree to our `
+  String get byLoggingInYouAgreeToOur {
+    return Intl.message(
+      'By logging in, you agree to our ',
+      name: 'byLoggingInYouAgreeToOur',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy Policy`
+  String get privacyPolicy {
+    return Intl.message(
+      'Privacy Policy',
+      name: 'privacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms of Use`
+  String get termsOfUse {
+    return Intl.message('Terms of Use', name: 'termsOfUse', desc: '', args: []);
+  }
+
+  /// ` and `
+  String get and {
+    return Intl.message(' and ', name: 'and', desc: '', args: []);
+  }
+
+  /// `Select chat to start`
+  String get select_chat_to_start {
+    return Intl.message(
+      'Select chat to start',
+      name: 'select_chat_to_start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select chat hint`
+  String get select_chat_hint {
+    return Intl.message(
+      'Select chat hint',
+      name: 'select_chat_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Language`
+  String get selectLanguage {
+    return Intl.message(
+      'Select Language',
+      name: 'selectLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By using this app You agree to our`
+  String get byUsingThisAppYouAgreeToOur {
+    return Intl.message(
+      'By using this app You agree to our',
+      name: 'byUsingThisAppYouAgreeToOur',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Particle settings loading error: $message`
+  String get particleSettingsLoadingErrorMessage {
+    return Intl.message(
+      'Particle settings loading error: \$message',
+      name: 'particleSettingsLoadingErrorMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Particles on the main screen`
+  String get particlesOnTheMainScreen {
+    return Intl.message(
+      'Particles on the main screen',
+      name: 'particlesOnTheMainScreen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable/disable particle animation`
+  String get enabledisableParticleAnimation {
+    return Intl.message(
+      'Enable/disable particle animation',
+      name: 'enabledisableParticleAnimation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I agree`
+  String get iAgree {
+    return Intl.message('I agree', name: 'iAgree', desc: '', args: []);
+  }
+
+  /// `I disagree`
+  String get iDisagree {
+    return Intl.message('I disagree', name: 'iDisagree', desc: '', args: []);
+  }
+
+  /// `Check your internet connection`
+  String get checkYourInternetConnection {
+    return Intl.message(
+      'Check your internet connection',
+      name: 'checkYourInternetConnection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error loading rules`
+  String get errorLoadingRules {
+    return Intl.message(
+      'Error loading rules',
+      name: 'errorLoadingRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Community Rules`
+  String get communityRules {
+    return Intl.message(
+      'Community Rules',
+      name: 'communityRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading the rules...`
+  String get loadingTheRules {
+    return Intl.message(
+      'Loading the rules...',
+      name: 'loadingTheRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection error. Check your internet connection`
+  String get connectionErrorCheckYourInternetConnection {
+    return Intl.message(
+      'Connection error. Check your internet connection',
+      name: 'connectionErrorCheckYourInternetConnection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't load the rules`
+  String get couldntLoadTheRules {
+    return Intl.message(
+      'Couldn\'t load the rules',
+      name: 'couldntLoadTheRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose files`
+  String get chooseFiles {
+    return Intl.message(
+      'Choose files',
+      name: 'chooseFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drop files or use button below`
+  String get dropFilesOrUseButtonBelow {
+    return Intl.message(
+      'Drop files or use button below',
+      name: 'dropFilesOrUseButtonBelow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Media`
+  String get selectMedia {
+    return Intl.message(
+      'Select Media',
+      name: 'selectMedia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drop files to add media`
+  String get dropFilesToAddMedia {
+    return Intl.message(
+      'Drop files to add media',
+      name: 'dropFilesToAddMedia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum ${widget.maxSelection} files allowed`
+  String get maximumWidgetmaxselectionFilesAllowed {
+    return Intl.message(
+      'Maximum \${widget.maxSelection} files allowed',
+      name: 'maximumWidgetmaxselectionFilesAllowed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to pick files: $e`
+  String get failedToPickFilesE {
+    return Intl.message(
+      'Failed to pick files: \$e',
+      name: 'failedToPickFilesE',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No media files`
+  String get noMediaFiles {
+    return Intl.message(
+      'No media files',
+      name: 'noMediaFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No media available`
+  String get noMediaAvailable {
+    return Intl.message(
+      'No media available',
+      name: 'noMediaAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Permission denied`
+  String get permissionDenied {
+    return Intl.message(
+      'Permission denied',
+      name: 'permissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No media`
+  String get noMedia {
+    return Intl.message('No media', name: 'noMedia', desc: '', args: []);
+  }
+
+  /// `Loading error`
+  String get loadingError {
+    return Intl.message(
+      'Loading error',
+      name: 'loadingError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There are no available images`
+  String get thereAreNoAvailableImages {
+    return Intl.message(
+      'There are no available images',
+      name: 'thereAreNoAvailableImages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading images`
+  String get uploadingimages {
+    return Intl.message(
+      'Uploading images',
+      name: 'uploadingimages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Images uploaded successfully`
+  String get imagesuploadedsuccessfully {
+    return Intl.message(
+      'Images uploaded successfully',
+      name: 'imagesuploadedsuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select photos`
+  String get selectPhotos {
+    return Intl.message(
+      'Select photos',
+      name: 'selectPhotos',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drag and drop the files here`
+  String get dragAndDropTheFilesHere {
+    return Intl.message(
+      'Drag and drop the files here',
+      name: 'dragAndDropTheFilesHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `or click the + button`
+  String get orClickTheButton {
+    return Intl.message(
+      'or click the + button',
+      name: 'orClickTheButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a file`
+  String get selectAFile {
+    return Intl.message(
+      'Select a file',
+      name: 'selectAFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Files`
+  String get selectFiles {
+    return Intl.message(
+      'Select Files',
+      name: 'selectFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't get file data`
+  String get couldntGetFileData {
+    return Intl.message(
+      'Couldn\'t get file data',
+      name: 'couldntGetFileData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An unknown error has occurred`
+  String get unknownError {
+    return Intl.message(
+      'An unknown error has occurred',
+      name: 'unknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No one can see you, turn on search visibility!`
+  String get noOneCanSeeYouTurnOnSearchVisibility {
+    return Intl.message(
+      'No one can see you, turn on search visibility!',
+      name: 'noOneCanSeeYouTurnOnSearchVisibility',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UserData update failed`
+  String get userDataUpdateFailed {
+    return Intl.message(
+      'UserData update failed',
+      name: 'userDataUpdateFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you want to send an optional message?`
+  String get do_you_want_to_send_an_optional_message {
+    return Intl.message(
+      'Do you want to send an optional message?',
+      name: 'do_you_want_to_send_an_optional_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uploading avatar`
+  String get uploadingAvatar {
+    return Intl.message(
+      'Uploading avatar',
+      name: 'uploadingAvatar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Selected Files`
+  String get selectedFiles {
+    return Intl.message(
+      'Selected Files',
+      name: 'selectedFiles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No files selected`
+  String get noFilesSelected {
+    return Intl.message(
+      'No files selected',
+      name: 'noFilesSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear All`
+  String get clearAll {
+    return Intl.message('Clear All', name: 'clearAll', desc: '', args: []);
+  }
+
+  /// `selected`
+  String get selected {
+    return Intl.message('selected', name: 'selected', desc: '', args: []);
+  }
+
+  /// `There are no images to download`
+  String get thereAreNoImagesToDownload {
+    return Intl.message(
+      'There are no images to download',
+      name: 'thereAreNoImagesToDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The limit of 10 images has been reached`
+  String get theLimitOf10ImagesHasBeenReached {
+    return Intl.message(
+      'The limit of 10 images has been reached',
+      name: 'theLimitOf10ImagesHasBeenReached',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error deleting all images`
+  String get errorDeletingAllImages {
+    return Intl.message(
+      'Error deleting all images',
+      name: 'errorDeletingAllImages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image deletion error`
+  String get imageDeletionError {
+    return Intl.message(
+      'Image deletion error',
+      name: 'imageDeletionError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avatar upload error`
+  String get avatarUploadError {
+    return Intl.message(
+      'Avatar upload error',
+      name: 'avatarUploadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Empty avatar data`
+  String get emptyAvatarData {
+    return Intl.message(
+      'Empty avatar data',
+      name: 'emptyAvatarData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The avatar is not selected`
+  String get theAvatarIsNotSelected {
+    return Intl.message(
+      'The avatar is not selected',
+      name: 'theAvatarIsNotSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Empty file data`
+  String get emptyFileData {
+    return Intl.message(
+      'Empty file data',
+      name: 'emptyFileData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image processing error`
+  String get imageProcessingError {
+    return Intl.message(
+      'Image processing error',
+      name: 'imageProcessingError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image upload error`
+  String get imageUploadError {
+    return Intl.message(
+      'Image upload error',
+      name: 'imageUploadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error when clearing a temporary file`
+  String get errorWhenClearingATemporaryFile {
+    return Intl.message(
+      'Error when clearing a temporary file',
+      name: 'errorWhenClearingATemporaryFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close the chat`
+  String get closeTheChat {
+    return Intl.message(
+      'Close the chat',
+      name: 'closeTheChat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load photos`
+  String get failed_to_load_photos {
+    return Intl.message(
+      'Failed to load photos',
+      name: 'failed_to_load_photos',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -8,7 +8,8 @@ import 'set_pin_modal.dart';
 
 class PinSection extends StatelessWidget {
   final SecurityState state;
-  const PinSection({super.key, required this.state});
+  final bool isMobile;
+  const PinSection({super.key, required this.state, required this.isMobile});
 
   void _showPinSetupFlow(BuildContext context) async {
     final cubit = context.read<SecurityCubit>();
@@ -32,7 +33,17 @@ class PinSection extends StatelessWidget {
     return await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => EnterCurrentPinModal(key: UniqueKey()),
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: EnterCurrentPinModal(key: UniqueKey()),
+        );
+      },
     );
   }
 
@@ -40,7 +51,17 @@ class PinSection extends StatelessWidget {
     return await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => SetPinModal(key: UniqueKey()),
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: SetPinModal(key: UniqueKey()),
+        );
+      },
     );
   }
 
@@ -50,7 +71,10 @@ class PinSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SwitchListTile(
-          title: Text(S.of(context).enablePin),
+          title: Text(
+            S.of(context).enablePin,
+            style: TextStyle(fontSize: isMobile ? null : 18),
+          ),
           value: state.pinEnabled,
           onChanged: (value) {
             if (value) {
@@ -63,9 +87,12 @@ class PinSection extends StatelessWidget {
         if (state.pinEnabled) ...[
           const SizedBox(height: 8),
           ListTile(
-            title: Text(S.of(context).changePin),
-            leading: const Icon(Icons.lock_outline),
-            trailing: const Icon(Icons.chevron_right),
+            title: Text(
+              S.of(context).changePin,
+              style: TextStyle(fontSize: isMobile ? null : 16),
+            ),
+            leading: Icon(Icons.lock_outline, size: isMobile ? 24 : 28),
+            trailing: Icon(Icons.chevron_right, size: isMobile ? 24 : 28),
             onTap: () => _showPinSetupFlow(context),
           ),
         ],

@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 part 'main_home_state.dart';
@@ -25,7 +22,6 @@ class MainHomeCubit extends Cubit<MainHomeState> {
   final SocketServiceInterface _socketServiceInterface;
   final StorageHiveInterface _storageHiveInterface;
   final UserInterface _userInterface;
-  StreamSubscription? _newTempChatSubscription;
   StreamSubscription? _tempChatSubscription;
   StreamSubscription? _permChatSubscription;
 
@@ -47,28 +43,10 @@ class MainHomeCubit extends Cubit<MainHomeState> {
     }
   }
 
-  Future<void> getNewTempChat({required BuildContext context}) async {
-    try {
-      await _newTempChatSubscription?.cancel();
-
-      _newTempChatSubscription = _socketServiceInterface.temporaryChatNewStream
-          .listen((tempNewChat) {
-            if (tempNewChat.tempChatId != "" && context.mounted) {
-              context.pushRoute(
-                ChatMessageRoute(temporaryChatModel: tempNewChat),
-              );
-            }
-          });
-    } catch (e) {
-      //
-    }
-  }
-
   @override
   Future<void> close() {
     _tempChatSubscription?.cancel();
     _permChatSubscription?.cancel();
-    _newTempChatSubscription?.cancel();
     return super.close();
   }
 }

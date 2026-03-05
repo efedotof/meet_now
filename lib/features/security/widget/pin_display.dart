@@ -4,11 +4,7 @@ class PinDisplay extends StatelessWidget {
   final String pin;
   final int length;
 
-  const PinDisplay({
-    super.key,
-    required this.pin,
-    required this.length,
-  });
+  const PinDisplay({super.key, required this.pin, required this.length});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +17,10 @@ class PinDisplay extends StatelessWidget {
           height: 16,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index < pin.length
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey.withAlpha(3),
+            color:
+                index < pin.length
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey.withAlpha(3),
           ),
         );
       }),

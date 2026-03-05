@@ -1,12 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
 import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app/route/app_route.dart';
-import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
-import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
+import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class ChatTile extends StatefulWidget {
   const ChatTile({
@@ -18,6 +13,8 @@ class ChatTile extends StatefulWidget {
     this.sendLastMessageAt,
     this.chat,
     this.temporaryChat,
+    this.onTap,
+    this.isSelected = false,
   });
 
   final String name;
@@ -27,6 +24,8 @@ class ChatTile extends StatefulWidget {
   final DateTime? sendLastMessageAt;
   final PermanentChatResponseDto? chat;
   final TemporaryChat? temporaryChat;
+  final VoidCallback? onTap;
+  final bool isSelected;
 
   @override
   State<ChatTile> createState() => _ChatTileState();
@@ -54,7 +53,18 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border:
+            widget.isSelected
+                ? Border(
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 4,
+                  ),
+                )
+                : null,
+      ),
       child: GestureDetector(
         child: SizedBox(
           height: 80,
@@ -62,32 +72,7 @@ class _ChatTileState extends State<ChatTile> {
             children: [
               InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap:
-                    isDeleting
-                        ? null
-                        : () {
-                          if (widget.chat != null) {
-                            context.read<ChatCubit>().openChat(
-                              chatId: widget.chat!.chatId,
-                            );
-                            context.pushRoute(
-                              ChatMessageRoute(
-                                chatModel: widget.chat,
-                                temporaryChatModel: null,
-                              ),
-                            );
-                          } else {
-                            context.read<ChatCubit>().openTempChat(
-                              tempChatId: widget.temporaryChat!.tempChatId,
-                            );
-                            context.pushRoute(
-                              ChatMessageRoute(
-                                chatModel: null,
-                                temporaryChatModel: widget.temporaryChat,
-                              ),
-                            );
-                          }
-                        },
+                onTap: widget.onTap,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   child: Row(
@@ -123,7 +108,7 @@ class _ChatTileState extends State<ChatTile> {
                               ).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.onSurface.withAlpha(150),
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -141,7 +126,7 @@ class _ChatTileState extends State<ChatTile> {
                             ).textTheme.bodySmall?.copyWith(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withAlpha(150),
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                           if (widget.unreadCount != null &&

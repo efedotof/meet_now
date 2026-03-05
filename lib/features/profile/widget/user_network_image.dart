@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:media_ui_package/media_ui_package.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/uploads_avatars/cubit/uploads_avatars_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
-import 'package:meet_now_app_server/meet_now_app_server.dart';
 
 class UserNetworkImage extends StatefulWidget {
   const UserNetworkImage({
@@ -94,9 +94,6 @@ class _UserNetworkImageState extends State<UserNetworkImage> {
                 _cachedFile = fileResponse.file;
               });
             }
-          } else if (fileResponse is DownloadProgress) {
-            final progress = fileResponse.progress;
-            if (progress != null) {}
           }
         }, onError: (error) {});
   }
