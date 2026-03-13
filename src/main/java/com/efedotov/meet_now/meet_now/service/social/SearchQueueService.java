@@ -1,7 +1,17 @@
 package com.efedotov.meet_now.meet_now.service.social;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,14 +27,14 @@ import com.efedotov.meet_now.meet_now.dto.response.search.QueueSizeDto;
 import com.efedotov.meet_now.meet_now.dto.response.search.QueueStatsDto;
 import com.efedotov.meet_now.meet_now.dto.response.search.UserWaitingTimeDto;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
-import com.efedotov.meet_now.meet_now.model.user.User;
-import com.efedotov.meet_now.meet_now.repository.user.MatchDeliveryStateRepository;
-import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
-import com.efedotov.meet_now.meet_now.service.chat.ChatService;
-import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
 import com.efedotov.meet_now.meet_now.model.search.MatchDeliveryState;
 import com.efedotov.meet_now.meet_now.model.search.MatchDeliveryStatus;
+import com.efedotov.meet_now.meet_now.model.user.User;
+import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
+import com.efedotov.meet_now.meet_now.repository.user.MatchDeliveryStateRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SearchQueueService {
     private final Map<UUID, SearchRequest> searchRequests = new ConcurrentHashMap<>();
     private final Queue<UUID> waitingUsers = new ConcurrentLinkedQueue<>();
-    private final Map<UUID, UUID> matchedChatsCache = new ConcurrentHashMap<>();  
+    private final Map<UUID, UUID> matchedChatsCache = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final ChatService chatService;
     private final TemporaryChatRepository temporaryChatRepository;
@@ -51,18 +61,18 @@ public class SearchQueueService {
         }
 
         List<MatchDeliveryState> activeDeliveries = matchDeliveryStateRepository.findByUserIdAndStatus(
-            userId, MatchDeliveryStatus.PENDING);
-        
+                userId, MatchDeliveryStatus.PENDING);
+
         if (activeDeliveries.isEmpty()) {
             activeDeliveries = matchDeliveryStateRepository.findByUserIdAndStatus(
-                userId, MatchDeliveryStatus.PARTIALLY_DELIVERED);
+                    userId, MatchDeliveryStatus.PARTIALLY_DELIVERED);
         }
 
         if (!activeDeliveries.isEmpty()) {
             MatchDeliveryState delivery = activeDeliveries.get(0);
             TemporaryChat chat = temporaryChatRepository
-                .findByTempChatId(delivery.getChatId())
-                .orElse(null);
+                    .findByTempChatId(delivery.getChatId())
+                    .orElse(null);
 
             if (chat != null && !chat.getIsFinished()) {
                 user.setIsSearching(false);
@@ -72,14 +82,14 @@ public class SearchQueueService {
                 matchedChatsCache.put(userId, chat.getTempChatId());
 
                 return SearchStatus.builder()
-                    .isSearching(false)
-                    .searchingSince(null)
-                    .filters(null)
-                    .queuePosition(null)
-                    .totalInQueue(null)
-                    .matchedChat(convertToDto(chat))
-                    .matchStatus("MATCH_FOUND")
-                    .build();
+                        .isSearching(false)
+                        .searchingSince(null)
+                        .filters(null)
+                        .queuePosition(null)
+                        .totalInQueue(null)
+                        .matchedChat(convertToDto(chat))
+                        .matchStatus("MATCH_FOUND")
+                        .build();
             }
         }
 
@@ -126,11 +136,12 @@ public class SearchQueueService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<UUID> waitingCopy = new ArrayList<>(waitingUsers);
-        
+
         waitingCopy.sort((id1, id2) -> {
             SearchRequest r1 = searchRequests.get(id1);
             SearchRequest r2 = searchRequests.get(id2);
-            if (r1 == null || r2 == null) return 0;
+            if (r1 == null || r2 == null)
+                return 0;
             return r1.getAddedAt().compareTo(r2.getAddedAt());
         });
 
@@ -161,7 +172,7 @@ public class SearchQueueService {
                     removeFromSearch(candidateId);
 
                     log.info("MATCH FOUND: {} <-> {}", userId, candidateId);
-                    
+
                     return SearchStatus.builder()
                             .isSearching(false)
                             .searchingSince(null)
@@ -314,8 +325,8 @@ public class SearchQueueService {
     @Scheduled(fixedDelay = 3000)
     @Transactional
     public void processSearchQueues() {
-        log.debug("Processing search queues, total active searches: {}, waiting: {}", 
-                  searchRequests.size(), waitingUsers.size());
+        log.debug("Processing search queues, total active searches: {}, waiting: {}",
+                searchRequests.size(), waitingUsers.size());
 
         cleanupOldRequests();
 
@@ -324,11 +335,12 @@ public class SearchQueueService {
         }
 
         List<UUID> waitingCopy = new ArrayList<>(waitingUsers);
-        
+
         waitingCopy.sort((id1, id2) -> {
             SearchRequest r1 = searchRequests.get(id1);
             SearchRequest r2 = searchRequests.get(id2);
-            if (r1 == null || r2 == null) return 0;
+            if (r1 == null || r2 == null)
+                return 0;
             return r1.getAddedAt().compareTo(r2.getAddedAt());
         });
 
@@ -361,7 +373,7 @@ public class SearchQueueService {
                         removeFromSearch(user2Id);
 
                         log.info("Created chat for users {} and {} via scheduled task", user1Id, user2Id);
-                        return; 
+                        return;
                     }
                 }
             }
@@ -385,36 +397,36 @@ public class SearchQueueService {
 
     public SearchStatus getSearchStatus(UUID userId) {
         List<MatchDeliveryState> activeDeliveries = matchDeliveryStateRepository.findByUserIdAndStatus(
-            userId, MatchDeliveryStatus.PENDING);
-        
+                userId, MatchDeliveryStatus.PENDING);
+
         if (activeDeliveries.isEmpty()) {
             activeDeliveries = matchDeliveryStateRepository.findByUserIdAndStatus(
-                userId, MatchDeliveryStatus.PARTIALLY_DELIVERED);
+                    userId, MatchDeliveryStatus.PARTIALLY_DELIVERED);
         }
 
         if (!activeDeliveries.isEmpty()) {
             MatchDeliveryState delivery = activeDeliveries.get(0);
             TemporaryChat chat = temporaryChatRepository
-                .findByTempChatId(delivery.getChatId())
-                .orElse(null);
+                    .findByTempChatId(delivery.getChatId())
+                    .orElse(null);
 
             if (chat != null && !chat.getIsFinished()) {
                 matchedChatsCache.put(userId, chat.getTempChatId());
-                
+
                 String matchStatus = "MATCH_FOUND";
                 if (delivery.getStatus() == MatchDeliveryStatus.PARTIALLY_DELIVERED) {
                     matchStatus = "MATCH_FOUND";
                 }
 
                 return SearchStatus.builder()
-                    .isSearching(false)
-                    .searchingSince(null)
-                    .filters(null)
-                    .queuePosition(null)
-                    .totalInQueue(null)
-                    .matchedChat(convertToDto(chat))
-                    .matchStatus(matchStatus)
-                    .build();
+                        .isSearching(false)
+                        .searchingSince(null)
+                        .filters(null)
+                        .queuePosition(null)
+                        .totalInQueue(null)
+                        .matchedChat(convertToDto(chat))
+                        .matchStatus(matchStatus)
+                        .build();
             } else {
                 matchDeliveryStateRepository.delete(delivery);
                 matchedChatsCache.remove(userId);
@@ -427,21 +439,21 @@ public class SearchQueueService {
             if (chatOpt.isPresent() && !chatOpt.get().getIsFinished()) {
                 Optional<MatchDeliveryState> deliveryOpt = matchDeliveryStateRepository
                         .findByChatId(cachedChatId);
-                
+
                 if (deliveryOpt.isPresent()) {
                     MatchDeliveryState delivery = deliveryOpt.get();
-                    if (delivery.getStatus() != MatchDeliveryStatus.EXPIRED && 
-                        delivery.getStatus() != MatchDeliveryStatus.CANCELLED) {
-                        
+                    if (delivery.getStatus() != MatchDeliveryStatus.EXPIRED &&
+                            delivery.getStatus() != MatchDeliveryStatus.CANCELLED) {
+
                         return SearchStatus.builder()
-                            .isSearching(false)
-                            .searchingSince(null)
-                            .filters(null)
-                            .queuePosition(null)
-                            .totalInQueue(null)
-                            .matchedChat(convertToDto(chatOpt.get()))
-                            .matchStatus("MATCH_FOUND")
-                            .build();
+                                .isSearching(false)
+                                .searchingSince(null)
+                                .filters(null)
+                                .queuePosition(null)
+                                .totalInQueue(null)
+                                .matchedChat(convertToDto(chatOpt.get()))
+                                .matchStatus("MATCH_FOUND")
+                                .build();
                     }
                 }
             }
@@ -526,13 +538,11 @@ public class SearchQueueService {
     }
 
     private void cleanupOldChatsCache() {
-        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(10);
-
         Iterator<Map.Entry<UUID, UUID>> iterator = matchedChatsCache.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<UUID, UUID> entry = iterator.next();
             UUID chatId = entry.getValue();
-            
+
             Optional<TemporaryChat> chatOpt = temporaryChatRepository.findByTempChatId(chatId);
             if (chatOpt.isEmpty() || chatOpt.get().getIsFinished()) {
                 iterator.remove();
@@ -629,7 +639,7 @@ public class SearchQueueService {
         if (delivery.isUser1Received() && delivery.isUser2Received()) {
             delivery.setStatus(MatchDeliveryStatus.DELIVERED);
             delivery.setCompletedAt(LocalDateTime.now());
-            
+
             log.info("Both users ACK chat {}. Status: DELIVERED", chatId);
         } else if (delivery.isUser1Received() || delivery.isUser2Received()) {
             delivery.setStatus(MatchDeliveryStatus.PARTIALLY_DELIVERED);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
+import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -145,8 +146,9 @@ public class FCMNotificationService {
                             .putData("type", "broadcast")
                             .build();
 
-                    FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
-                    successCount += batchTokens.size();
+                    BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(multicastMessage);
+                    successCount += response.getSuccessCount();
+                    failureCount += response.getFailureCount();
 
                 } catch (FirebaseMessagingException e) {
                     failureCount += batchTokens.size();

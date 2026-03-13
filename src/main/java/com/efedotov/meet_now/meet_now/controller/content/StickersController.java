@@ -42,9 +42,8 @@ public class StickersController {
     @AdminOnly
     public ResponseEntity<Page<StickerPackDto>> getAllStickerPacksAdmin(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String search) {
-        Page<StickerPackDto> packs = stickersService.getAllStickerPacksAdmin(page, size, search);
+            @RequestParam(defaultValue = "20") int size) {
+        Page<StickerPackDto> packs = stickersService.getAllStickerPacksAdmin(page, size);
         return ResponseEntity.ok(packs);
     }
 
@@ -87,9 +86,8 @@ public class StickersController {
     @AdminOnly
     public ResponseEntity<Page<StickerDto>> getAllStickersAdmin(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size,
-            @RequestParam(required = false) UUID packId) {
-        Page<StickerDto> stickers = stickersService.getAllStickersAdmin(page, size, packId);
+            @RequestParam(defaultValue = "50") int size) {
+        Page<StickerDto> stickers = stickersService.getAllStickersAdmin(page, size);
         return ResponseEntity.ok(stickers);
     }
 

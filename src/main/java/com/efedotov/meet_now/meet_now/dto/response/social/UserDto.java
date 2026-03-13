@@ -29,6 +29,7 @@ public class UserDto {
     private Boolean isOnline;
     private String floor;
     private int gamePoints;
+    private Boolean isCardMode;
     private List<String> images;
     private Boolean isBlocked;
     private String blockReason;

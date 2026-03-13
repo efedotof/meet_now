@@ -38,14 +38,8 @@ public class StickersService {
 
     @AdminOnly
     @Transactional(readOnly = true)
-    public Page<StickerPackDto> getAllStickerPacksAdmin(int page, int size, String search) {
+    public Page<StickerPackDto> getAllStickerPacksAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
-        if (search != null && !search.trim().isEmpty()) {
-            return stickerPackRepository.findByTitleContainingIgnoreCaseWithStickers(search.trim(), pageable)
-                    .map(this::convertToStickerPackDto);
-        }
-
         return stickerPackRepository.findAllWithStickers(pageable)
                 .map(this::convertToStickerPackDto);
     }
@@ -110,14 +104,8 @@ public class StickersService {
 
     @AdminOnly
     @Transactional(readOnly = true)
-    public Page<StickerDto> getAllStickersAdmin(int page, int size, UUID packId) {
+    public Page<StickerDto> getAllStickersAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
-        if (packId != null) {
-            return stickerRepository.findByPackId(packId, pageable)
-                    .map(this::convertToStickerDto);
-        }
-
         return stickerRepository.findAll(pageable)
                 .map(this::convertToStickerDto);
     }

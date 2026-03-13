@@ -34,8 +34,6 @@ public class S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-    @Value("${cloud.aws.s3.endpoint}")
-    private String s3PublicUrl;
 
     public String uploadFile(MultipartFile file) throws IOException {
         try {
@@ -191,11 +189,11 @@ public class S3Service {
     }
 
     public String getObjectKeyFromUrl(String fileUrl) {
-        String prefix = s3PublicUrl + "/" + bucketName + "/";
-        if (fileUrl.startsWith(prefix)) {
+        String prefix = "https://s3.ru1.storage.beget.cloud/" + bucketName + "/";
+        if (fileUrl != null && fileUrl.startsWith(prefix)) {
             return fileUrl.substring(prefix.length());
         }
-        return fileUrl;
+        return null;
     }
 
     public void deleteFile(String fileUrl) {

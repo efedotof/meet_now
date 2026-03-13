@@ -31,6 +31,7 @@ import com.efedotov.meet_now.meet_now.repository.user.FriendshipRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
+import com.efedotov.meet_now.meet_now.service.storage.S3Service;
 import com.efedotov.meet_now.meet_now.service.util.EncryptionUtils;
 
 import jakarta.persistence.EntityManager;
@@ -54,6 +55,7 @@ public class UserService {
     private final FriendshipRepository friendshipRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final TemporaryChatRepository temporaryChatRepository;
+    private final S3Service s3Service;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -118,6 +120,7 @@ public class UserService {
         friendRequestRepository.deleteByFromUserIdOrToUserId(userId, userId);
 
         userRepository.delete(user);
+        deleteUserFiles(user);
         log.info("User {} deleted by admin {}", userId, adminId);
     }
 
@@ -644,6 +647,36 @@ public class UserService {
             return ((CustomUserDetails) authentication.getPrincipal()).getUserId();
         } else {
             return null;
+        }
+    }
+
+    public void updateCardMode(UUID userId, boolean enabled) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setIsCardMode(enabled);
+        userRepository.save(user);
+    }
+
+    private void deleteUserFiles(User user) {
+        if (user.getAvatar() != null) {
+            try {
+                s3Service.deleteFile(user.getAvatar());
+                log.info("Avatar deleted for user {}: {}", user.getId(), user.getAvatar());
+            } catch (Exception e) {
+                log.error("Failed to delete avatar {} for user {}", user.getAvatar(), user.getId(), e);
+            }
+        }
+
+        if (user.getImages() != null) {
+            for (String imageUrl : user.getImages()) {
+                try {
+                    s3Service.deleteFile(imageUrl);
+                    log.info("Image deleted for user {}: {}", user.getId(), imageUrl);
+                } catch (Exception e) {
+                    log.error("Failed to delete image {} for user {}", imageUrl, user.getId(), e);
+                }
+            }
         }
     }
 

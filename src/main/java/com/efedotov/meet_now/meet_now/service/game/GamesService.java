@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +34,7 @@ import com.efedotov.meet_now.meet_now.repository.game.GamesRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -328,4 +328,41 @@ public class GamesService {
         GameConfigEntity gameConfig = getGameConfig(gameType);
         gameConfigRepository.delete(gameConfig);
     }
+
+    @AdminOnly
+    public Page<GameConfigEntity> getAllGameConfigsWithPagination(int page, int size, String gameType) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (gameType != null && !gameType.isEmpty()) {
+            Specification<GameConfigEntity> spec = (root, query, cb) -> cb.equal(root.get("gameType"), gameType);
+            return gameConfigRepository.findAll(spec, pageable);
+        }
+
+        return gameConfigRepository.findAll(pageable);
+    }
+
+    @AdminOnly
+    public Page<GameConfigEntity> searchGameConfigs(String gameType, String gameName,
+            Boolean isActive, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<GameConfigEntity> spec = Specification.allOf();
+
+        if (gameType != null && !gameType.isEmpty()) {
+            spec = spec.and(
+                    (root, query, cb) -> cb.like(cb.lower(root.get("gameType")), "%" + gameType.toLowerCase() + "%"));
+        }
+
+        if (gameName != null && !gameName.isEmpty()) {
+            spec = spec.and(
+                    (root, query, cb) -> cb.like(cb.lower(root.get("gameName")), "%" + gameName.toLowerCase() + "%"));
+        }
+
+        if (isActive != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("isActive"), isActive));
+        }
+
+        return gameConfigRepository.findAll(spec, pageable);
+    }
+
 }

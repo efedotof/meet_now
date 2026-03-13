@@ -54,29 +54,28 @@ public class GamesController {
         return ResponseEntity.ok(statistics);
     }
 
-    @Operation(summary = "Получить все игры с пагинацией (только для администратора)")
+    @Operation(summary = "Получить все конфигурации игр с пагинацией (только для администратора)")
     @GetMapping("/admin/all")
     @AdminOnly
-    public ResponseEntity<Page<ChatGame>> getAllGamesWithPagination(
+    public ResponseEntity<Page<GameConfigEntity>> getAllGameConfigsWithPagination(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String gameType) {
-        Page<ChatGame> games = gamesService.getAllGamesWithPagination(page, size, gameType);
-        return ResponseEntity.ok(games);
+        Page<GameConfigEntity> configs = gamesService.getAllGameConfigsWithPagination(page, size, gameType);
+        return ResponseEntity.ok(configs);
     }
 
-    @Operation(summary = "Поиск игр по параметрам (только для администратора)")
+    @Operation(summary = "Поиск конфигураций игр по параметрам (только для администратора)")
     @GetMapping("/admin/search")
     @AdminOnly
-    public ResponseEntity<Page<ChatGame>> searchGames(
-            @RequestParam(required = false) UUID chatId,
+    public ResponseEntity<Page<GameConfigEntity>> searchGameConfigs(
             @RequestParam(required = false) String gameType,
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) String gameName,
+            @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<ChatGame> games = gamesService.searchGames(chatId, gameType, startDate, endDate, page, size);
-        return ResponseEntity.ok(games);
+        Page<GameConfigEntity> configs = gamesService.searchGameConfigs(gameType, gameName, isActive, page, size);
+        return ResponseEntity.ok(configs);
     }
 
     @Operation(summary = "Получить детальную информацию об игре (только для администратора)")

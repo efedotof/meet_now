@@ -277,6 +277,15 @@ public class UserController {
         userService.setUserSearching(userId, false);
     }
 
+    @Operation(summary = "Включение/выключение карточного режима")
+    @PatchMapping("/{id}/card-mode")
+    public ResponseEntity<Void> updateCardMode(
+            @PathVariable UUID id,
+            @RequestParam boolean enabled) {
+        userService.updateCardMode(id, enabled);
+        return ResponseEntity.ok().build();
+    }
+
     private UserDto mapToDto(User user) {
         UserDto dto = new UserDto();
         BeanUtils.copyProperties(user, dto);
