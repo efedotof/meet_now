@@ -278,11 +278,12 @@ public class UserController {
     }
 
     @Operation(summary = "Включение/выключение карточного режима")
-    @PatchMapping("/{id}/card-mode")
+    @PatchMapping("/card-mode")
     public ResponseEntity<Void> updateCardMode(
-            @PathVariable UUID id,
+            Authentication authentication,
             @RequestParam boolean enabled) {
-        userService.updateCardMode(id, enabled);
+        UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
+        userService.updateCardMode(userId, enabled);
         return ResponseEntity.ok().build();
     }
 
