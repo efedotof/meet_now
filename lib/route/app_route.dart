@@ -41,5 +41,12 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: GiftRoute.page, path: "/gift"),
     AutoRoute(page: FriendsRoute.page, path: "/friends"),
     AutoRoute(page: LockedRoute.page, path: "/locked"),
+    AutoRoute(page: SearchModeRoute.page, path: "/search_mode"),
+    AutoRoute(
+      page: DocumentRoute.page,
+      path: "/document",
+      keepHistory: false,
+      allowSnapshotting: false,
+    ),
   ];
 }

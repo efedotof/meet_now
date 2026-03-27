@@ -34,13 +34,22 @@ class _GiftItemState extends State<GiftItem> {
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(13),
+          borderRadius: BorderRadius.circular(16),
           color: isDark ? Colors.white70 : Colors.black87,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Stack(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(13),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: CachedNetworkImage(
                 imageUrl: widget.gift.imageUrl,
                 fit: BoxFit.cover,
@@ -56,46 +65,53 @@ class _GiftItemState extends State<GiftItem> {
                         ),
                       ),
                     ),
-                errorWidget: (context, url, error) {
-                  return Container(
-                    color: isDark ? Colors.white24 : Colors.black26,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.g_mobiledata,
-                          size: 40,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          S.of(context).failed_to_upload,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: isDark ? Colors.white60 : Colors.black54,
+                errorWidget:
+                    (context, url, error) => Container(
+                      color: isDark ? Colors.white24 : Colors.black26,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.g_mobiledata,
+                            size: 40,
+                            color: isDark ? Colors.white70 : Colors.black54,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            S.of(context).failed_to_upload,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: isDark ? Colors.white60 : Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
               ),
             ),
-            Positioned(
-              left: 3,
-              top: 3,
-              right: 3,
+            Container(
+              margin: const EdgeInsets.all(3),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13),
+                      borderRadius: BorderRadius.circular(12),
                       color: isDark ? Colors.white70 : Colors.black87,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
                     ),
-                    padding: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     child: Text(
-                      " ${widget.gift.costPoints} ${S.of(context).points}",
+                      " ${widget.gift.currentPrice ?? ""} ${S.of(context).points}",
                       style: TextStyle(
                         color: isDark ? Colors.black : Colors.white,
                       ),
@@ -103,18 +119,37 @@ class _GiftItemState extends State<GiftItem> {
                   ),
                   if (widget.isInShop && widget.onBuyTap != null)
                     GestureDetector(
-                      onTap: isBuying ? null : widget.onBuyTap,
+                      onTap:
+                          isBuying
+                              ? null
+                              : () {
+                                setState(() => isBuying = true);
+                                widget.onBuyTap?.call();
+                                if (mounted) {
+                                  setState(() => isBuying = false);
+                                }
+                              },
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(13),
+                          borderRadius: BorderRadius.circular(12),
                           color:
                               isBuying
                                   ? Colors.grey
                                   : isDark
                                   ? Colors.white70
                                   : Colors.black87,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
                         ),
-                        padding: const EdgeInsets.all(3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         child:
                             isBuying
                                 ? const SizedBox(
@@ -125,16 +160,15 @@ class _GiftItemState extends State<GiftItem> {
                                     color: Colors.white,
                                   ),
                                 )
-                                : Icon(
+                                : const Icon(
                                   Icons.shopping_bag,
-                                  color: isDark ? Colors.black : Colors.white,
+                                  color: Colors.white,
                                 ),
                       ),
                     ),
                 ],
               ),
             ),
-
             if (!widget.isInShop && widget.count != null && widget.count! > 1)
               Positioned(
                 right: 3,
@@ -158,7 +192,6 @@ class _GiftItemState extends State<GiftItem> {
                   ),
                 ),
               ),
-
             if (widget.gift.isLimited)
               Positioned(
                 left: 3,
@@ -174,11 +207,10 @@ class _GiftItemState extends State<GiftItem> {
                   ),
                   child: Text(
                     S.of(context).limited,
-                    style: TextStyle(color: Colors.white, fontSize: 10),
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
                   ),
                 ),
               ),
-
             if (widget.gift.isSoldOut)
               Positioned.fill(
                 child: Container(
@@ -189,7 +221,7 @@ class _GiftItemState extends State<GiftItem> {
                   child: Center(
                     child: Text(
                       S.of(context).sold_out,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,

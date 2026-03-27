@@ -1,14 +1,63 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:meet_now_app/features/settings/widget/user_avatar.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/auth/user/user.dart';
 
 class ProfileCard extends StatelessWidget {
   const ProfileCard({super.key, required this.user});
   final User user;
+
+  String? _getRoleIconAsset() {
+    final roles = user.roles;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return 'assets/amp.png';
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return 'assets/am.png';
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return 'assets/ap.png';
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return 'assets/mp.png';
+    } else if (roles.contains("ADMIN")) {
+      return 'assets/administration.png';
+    } else if (roles.contains("MODERATION")) {
+      return 'assets/moderator.png';
+    } else if (roles.contains("PREMIUM")) {
+      return 'assets/prem.png';
+    }
+    return null;
+  }
+
+  String? _getRoleTooltipMessage(BuildContext context) {
+    final roles = user.roles;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return S.of(context).administratorModeratorPremium;
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return S.of(context).administratorModerator;
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return S.of(context).administratorPremium;
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return S.of(context).moderatorPremium;
+    } else if (roles.contains("ADMIN")) {
+      return S.of(context).administrator;
+    } else if (roles.contains("MODERATION")) {
+      return S.of(context).moderator;
+    } else if (roles.contains("PREMIUM")) {
+      return S.of(context).premium;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final roleIconAsset = _getRoleIconAsset();
+    final roleTooltip = _getRoleTooltipMessage(context);
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GestureDetector(
@@ -31,6 +80,24 @@ class ProfileCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (roleIconAsset != null && roleTooltip != null)
+                            Tooltip(
+                              message: roleTooltip,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 2,
+                                  right: 4,
+                                ),
+                                child: Image.asset(
+                                  roleIconAsset,
+                                  width: 16,
+                                  height: 16,
+                                  filterQuality: FilterQuality.none,
+                                  cacheWidth: 32,
+                                  cacheHeight: 32,
+                                ),
+                              ),
+                            ),
                           Text(
                             '${user.firstname} ${user.subname}',
                             style: Theme.of(context).textTheme.titleLarge,
@@ -38,66 +105,52 @@ class ProfileCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(width: 4),
+
                           if (user.verified)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Image.asset(
-                                'assets/verify.png',
-                                width: 16,
-                                height: 16,
-                                filterQuality: FilterQuality.none,
-                                cacheWidth: 32,
-                                cacheHeight: 32,
-                              ),
-                            ),
-                          if (user.roles.contains("ADMIN"))
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Image.asset(
-                                'assets/administration.png',
-                                width: 16,
-                                height: 16,
-                                filterQuality: FilterQuality.none,
-                                cacheWidth: 32,
-                                cacheHeight: 32,
-                              ),
-                            ),
-                          if (user.roles.contains("MODERATION"))
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Image.asset(
-                                'assets/moderator.png',
-                                width: 16,
-                                height: 16,
-                                filterQuality: FilterQuality.none,
-                                cacheWidth: 32,
-                                cacheHeight: 32,
+                            Tooltip(
+                              message: S.of(context).verifiedAccount,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 2, left: 4),
+                                child: Image.asset(
+                                  'assets/verify.png',
+                                  width: 16,
+                                  height: 16,
+                                  filterQuality: FilterQuality.none,
+                                  cacheWidth: 32,
+                                  cacheHeight: 32,
+                                ),
                               ),
                             ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        '@${user.username}',
-                        style: Theme.of(context).textTheme.bodyMedium,
+
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 6),
+                            Text(
+                              '@${user.username}',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            if (user.city != null)
+                              const Text(
+                                '•',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            if (user.city != null)
+                              Text(
+                                user.city!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      // Row(
-                      //   children: [
-                      //     Icon(
-                      //       Icons.people,
-                      //       size: 16,
-                      //       color: Theme.of(context).iconTheme.color,
-                      //     ),
-                      //     // const SizedBox(width: 4),
-                      //     // Text(
-                      //     //   S
-                      //     //       .of(context)
-                      //     //       .friendsCount(user.friends?.length ?? 0),
-                      //     //   style: Theme.of(context).textTheme.bodySmall,
-                      //     // ),
-                      //   ],
-                      // ),
                     ],
                   ),
                 ),

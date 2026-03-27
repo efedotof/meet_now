@@ -5,8 +5,13 @@ import 'package:meet_now_app/generated/l10n.dart';
 import 'web_nav_item.dart';
 
 class WebVerticalNavigationBar extends StatelessWidget {
-  const WebVerticalNavigationBar({super.key, required this.tabsRouter});
+  const WebVerticalNavigationBar({
+    super.key,
+    required this.tabsRouter,
+    required this.unreadCount,
+  });
   final TabsRouter tabsRouter;
+  final int unreadCount;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +64,7 @@ class WebVerticalNavigationBar extends StatelessWidget {
             customSelectedColor: selectedColor,
             customUnselectedColor: unselectedColor,
             customBackgroundColor: backgroundColor,
+            unreadCount: unreadCount,
           ),
           const SizedBox(height: 16),
           WebNavItem(

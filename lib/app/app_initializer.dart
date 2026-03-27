@@ -33,16 +33,10 @@ class _AppInitializerState extends State<AppInitializer> {
   Future<void> _initialize() async {
     if (!kIsWeb && widget.storageHive != null) {
       try {
-        final storageHive = widget.storageHive!;
-        try {
-          final _ = storageHive.interestBox;
-          final _ = storageHive.purposeBox;
-        } catch (e) {
-          debugPrint("Hive box error detected, attempting to fix...");
-          await storageHive.init();
-        }
+        await widget.storageHive!.getInterestBox();
+        await widget.storageHive!.getPurposeBox();
       } catch (e) {
-        debugPrint("Failed to initialize Hive: $e");
+        await widget.storageHive!.init();
       }
     }
 

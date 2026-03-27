@@ -1,11 +1,11 @@
 {
-    "name": "meet_now_app",
-    "short_name": "meet_now_app",
+    "name": "MNA",
+    "short_name": "MNA",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "description": "MNA — твой мир знакомств и общения",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

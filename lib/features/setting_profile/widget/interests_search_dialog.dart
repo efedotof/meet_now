@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
@@ -23,12 +24,31 @@ class _InterestsSearchDialogState extends State<InterestsSearchDialog> {
   final List<String> _tempSelectedInterests = [];
   late List<Interest> _allInterests = [];
   List<Interest> _filteredInterests = [];
+  ValueListenable<Box<Interest>>? _listenable;
 
   @override
   void initState() {
     super.initState();
     _tempSelectedInterests.addAll(widget.selectedInterests);
     _searchController.addListener(_filterInterests);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_listenable == null) {
+      _loadListenable();
+    }
+  }
+
+  Future<void> _loadListenable() async {
+    final storage = context.read<StorageHiveInterface>();
+    final listenable = await storage.getListenableInterestBox();
+    if (mounted) {
+      setState(() {
+        _listenable = listenable;
+      });
+    }
   }
 
   void _filterInterests() {
@@ -80,37 +100,39 @@ class _InterestsSearchDialogState extends State<InterestsSearchDialog> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: S.of(context).search_for_interests,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
               ),
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ValueListenableBuilder<Box>(
-                valueListenable:
-                    context.read<StorageHiveInterface>().listenableInterestBox,
-                builder: (context, box, child) {
-                  _allInterests = box.values.cast<Interest>().toList();
-                  if (_filteredInterests.isEmpty) {
-                    _filteredInterests = _allInterests;
-                  }
+              child:
+                  _listenable == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : ValueListenableBuilder<Box<Interest>>(
+                        valueListenable: _listenable!,
+                        builder: (context, box, child) {
+                          _allInterests = box.values.cast<Interest>().toList();
+                          if (_filteredInterests.isEmpty) {
+                            _filteredInterests = _allInterests;
+                          }
 
-                  return ListView.builder(
-                    itemCount: _filteredInterests.length,
-                    itemBuilder: (context, index) {
-                      final interest = _filteredInterests[index];
-                      final isSelected = _tempSelectedInterests.contains(
-                        interest.title,
-                      );
+                          return ListView.builder(
+                            itemCount: _filteredInterests.length,
+                            itemBuilder: (context, index) {
+                              final interest = _filteredInterests[index];
+                              final isSelected = _tempSelectedInterests
+                                  .contains(interest.title);
 
-                      return CheckboxListTile(
-                        title: Text(interest.title ?? ''),
-                        value: isSelected,
-                        onChanged: (_) => _toggleInterest(interest.title!),
-                      );
-                    },
-                  );
-                },
-              ),
+                              return CheckboxListTile(
+                                title: Text(interest.title ?? ''),
+                                value: isSelected,
+                                onChanged:
+                                    (_) => _toggleInterest(interest.title!),
+                              );
+                            },
+                          );
+                        },
+                      ),
             ),
             const SizedBox(height: 16),
             Row(

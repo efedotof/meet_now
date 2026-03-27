@@ -38,9 +38,7 @@ class MainHomeCubit extends Cubit<MainHomeState> {
           });
 
       await _userInterface.getUser();
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
   }
 
   @override

@@ -4,14 +4,15 @@ import 'package:meet_now_app_server/model/supports/answer/answer.dart';
 
 class AnswerCard extends StatelessWidget {
   final Answer answer;
-  final bool isMobile;
-  const AnswerCard({super.key, required this.answer, required this.isMobile});
+
+  const AnswerCard({super.key, required this.answer});
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+
     return Card(
       margin: EdgeInsets.symmetric(vertical: isMobile ? 8 : 12),
-      color: Colors.grey[50],
       child: Padding(
         padding: EdgeInsets.all(isMobile ? 12 : 16),
         child: Column(
@@ -26,16 +27,23 @@ class AnswerCard extends StatelessWidget {
             SizedBox(height: isMobile ? 8 : 12),
             Row(
               children: [
-                Text(
-                  '${S.of(context).author} ${answer.createdBy}',
-                  style: TextStyle(
-                    fontSize: isMobile ? 12 : 14,
-                    color: Colors.grey,
+                Expanded(
+                  child: Text(
+                    '${S.of(context).author} ${answer.createdBy}',
+                    style: TextStyle(
+                      fontSize: isMobile ? 12 : 14,
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
-                  '${answer.createdAt.day.toString().padLeft(2, '0')}.${answer.createdAt.month.toString().padLeft(2, '0')}.${answer.createdAt.year} ${answer.createdAt.hour.toString().padLeft(2, '0')}:${answer.createdAt.minute.toString().padLeft(2, '0')}',
+                  '${answer.createdAt.day.toString().padLeft(2, '0')}.'
+                  '${answer.createdAt.month.toString().padLeft(2, '0')}.'
+                  '${answer.createdAt.year} '
+                  '${answer.createdAt.hour.toString().padLeft(2, '0')}:'
+                  '${answer.createdAt.minute.toString().padLeft(2, '0')}',
                   style: TextStyle(
                     fontSize: isMobile ? 12 : 14,
                     color: Colors.grey,

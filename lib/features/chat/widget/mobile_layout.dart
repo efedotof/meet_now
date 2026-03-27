@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/chat/cubit/chat_cubit.dart';
+import 'package:meet_now_app/features/search/widget/anon_search/search_progress_bar.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/model/chats/permanent_chat_response_dto/permanent_chat_response_dto.dart';
@@ -54,46 +55,57 @@ class MobileLayout extends StatelessWidget {
         onRefresh: () async {
           await context.read<ChatCubit>().refresh();
         },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SearchField(
-                controller: searchController,
-                onChanged: (value) {
-                  context.read<ChatCubit>().updateSearchQuery(value);
-                },
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SearchField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        context.read<ChatCubit>().updateSearchQuery(value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      children:
+                          [
+                            (ChatType.all, S.of(context).all),
+                            (ChatType.permanent, S.of(context).permanent),
+                            (ChatType.temporary, S.of(context).temporary),
+                          ].map((type) {
+                            return ChoiceChip(
+                              label: Text(type.$2),
+                              selected: state.selectedChatType == type.$1,
+                              iconTheme: IconThemeData(
+                                color: isDark ? Colors.black : Colors.white,
+                              ),
+                              checkmarkColor:
+                                  isDark ? Colors.black : Colors.white,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  context.read<ChatCubit>().changeChatType(
+                                    type.$1,
+                                  );
+                                }
+                              },
+                            );
+                          }).toList(),
+                    ),
+                    const SizedBox(height: 10),
+                    MyBody(state: state, onChatSelected: selectChat),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                children:
-                    [
-                      (ChatType.all, S.of(context).all),
-                      (ChatType.permanent, S.of(context).permanent),
-                      (ChatType.temporary, S.of(context).temporary),
-                    ].map((type) {
-                      return ChoiceChip(
-                        label: Text(type.$2),
-                        selected: state.selectedChatType == type.$1,
-                        iconTheme: IconThemeData(
-                          color: isDark ? Colors.black : Colors.white,
-                        ),
-                        checkmarkColor: isDark ? Colors.black : Colors.white,
-                        onSelected: (selected) {
-                          if (selected) {
-                            context.read<ChatCubit>().changeChatType(type.$1);
-                          }
-                        },
-                      );
-                    }).toList(),
-              ),
-              const SizedBox(height: 10),
-              MyBody(state: state, onChatSelected: selectChat),
-            ],
-          ),
+            ),
+
+            const SearchProgressBar(),
+          ],
         ),
       ),
     );

@@ -21,3 +21,5 @@ export 'support/support.dart';
 export 'theme/theme.dart';
 export 'gift/gift.dart';
 export "locked/locked.dart";
+export 'search_mode/search_mode.dart';
+export 'document/document.dart';

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:auto_route/auto_route.dart';
@@ -14,7 +13,6 @@ import 'package:meet_now_app/features/auth/view/sign_up/widget/purpose_page.dart
 import 'package:meet_now_app/features/auth/view/sign_up/widget/sign_up_form_data.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 @RoutePage()
 class SignUpScreen extends StatefulWidget {
@@ -177,16 +175,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final bool isDesktop =
-        kIsWeb || Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    const double mobileBreakpoint = 600;
     final double buttonWidth =
-        isDesktop ? math.min(400, screenWidth * 0.5) : double.infinity;
+        screenWidth < mobileBreakpoint
+            ? double.infinity
+            : math.min(400, screenWidth * 0.5);
 
     return BlocListener<SignUpCubit, SignUpState>(
       listener: (context, state) {
         state.whenOrNull(
-          success: () => context.router.replaceAll([UploadsAvatarsRoute()]),
+          successWithKeys:
+              () => context.router.replaceAll([UploadsAvatarsRoute()]),
           error: (error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(error), backgroundColor: Colors.red),

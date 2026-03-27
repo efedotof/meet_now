@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:meet_now_app_server/model/chats/chat_game/ad_reward_request/ad_reward_request.dart';
 
 part 'game_chat_state.dart';
 part 'game_chat_cubit.freezed.dart';
@@ -99,5 +100,13 @@ class GameChatCubit extends Cubit<GameChatState> {
 
   Future<void> refreshUser() async {
     await _userInterface.getUser();
+  }
+
+  Future<void> awardAdPoints({required int points}) async {
+    try {
+      final request = AdRewardRequest(points: points);
+
+      await gamesRepository.awardAdPoints(points: request);
+    } catch (_) {}
   }
 }

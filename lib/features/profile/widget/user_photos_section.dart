@@ -9,8 +9,13 @@ import 'empty_state.dart';
 import 'user_network_image.dart';
 
 class UserPhotosSection extends StatefulWidget {
-  const UserPhotosSection({super.key, required this.images});
+  const UserPhotosSection({
+    super.key,
+    required this.images,
+    this.showAddButton = true,
+  });
   final List<String> images;
+  final bool showAddButton;
 
   @override
   State<UserPhotosSection> createState() => _UserPhotosSectionState();
@@ -18,6 +23,7 @@ class UserPhotosSection extends StatefulWidget {
 
 class _UserPhotosSectionState extends State<UserPhotosSection> {
   final Set<String> _cachedImages = {};
+  final Set<String> _failedImages = {};
   final _defaultCacheManager = DefaultCacheManager();
 
   @override
@@ -36,6 +42,8 @@ class _UserPhotosSectionState extends State<UserPhotosSection> {
 
   Future<void> _precacheImages() async {
     if (widget.images.isEmpty) return;
+    _failedImages.clear();
+    setState(() {});
 
     final cubit = context.read<UploadsAvatarsCubit>();
     final List<Future<void>> futures = [];
@@ -52,10 +60,18 @@ class _UserPhotosSectionState extends State<UserPhotosSection> {
               key: imageKey,
               authHeaders: {},
             );
-            _cachedImages.add(imageKey);
+            if (mounted) {
+              setState(() {
+                _cachedImages.add(imageKey);
+              });
+            }
           }
         } catch (e) {
-          //
+          if (mounted) {
+            setState(() {
+              _failedImages.add(imageKey);
+            });
+          }
         }
       }());
     }
@@ -106,42 +122,43 @@ class _UserPhotosSectionState extends State<UserPhotosSection> {
                       ],
                     ],
                   ),
-                  RawMaterialButton(
-                    fillColor: isDark ? Colors.white : Colors.black,
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        barrierColor: Colors.black54,
-                        builder: (context) {
-                          return FractionallySizedBox(
-                            heightFactor: 0.92,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(22),
-                              ),
-                              child: Material(
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                child: UploadsAvatarsScreen(
-                                  isSkip: true,
-                                  currentPhotosCount: widget.images.length,
+                  if (widget.showAddButton)
+                    RawMaterialButton(
+                      fillColor: isDark ? Colors.white : Colors.black,
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          barrierColor: Colors.black54,
+                          builder: (context) {
+                            return FractionallySizedBox(
+                              heightFactor: 0.92,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(22),
+                                ),
+                                child: Material(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  child: UploadsAvatarsScreen(
+                                    isSkip: true,
+                                    currentPhotosCount: widget.images.length,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    elevation: 2.0,
-                    shape: const CircleBorder(),
-                    constraints: const BoxConstraints(minWidth: 0.0),
-                    child: Icon(
-                      Icons.add,
-                      color: isDark ? Colors.black : Colors.white,
+                            );
+                          },
+                        );
+                      },
+                      elevation: 2.0,
+                      shape: const CircleBorder(),
+                      constraints: const BoxConstraints(minWidth: 0.0),
+                      child: Icon(
+                        Icons.add,
+                        color: isDark ? Colors.black : Colors.white,
+                      ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -158,21 +175,52 @@ class _UserPhotosSectionState extends State<UserPhotosSection> {
                     return Wrap(
                       spacing: space,
                       runSpacing: space,
-                      children: List.generate(
-                        widget.images.length,
-                        (index) => SizedBox(
+                      children: List.generate(widget.images.length, (index) {
+                        final imageKey = widget.images[index];
+                        final isFailed = _failedImages.contains(imageKey);
+
+                        return SizedBox(
                           width: itemWidth,
                           height: itemWidth * 1.05,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: UserNetworkImage(
-                              imageKey: widget.images[index],
-                              allImageKeys: widget.images,
-                              index: index,
-                            ),
+                            child:
+                                isFailed
+                                    ? Container(
+                                      color: Colors.grey[800],
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.error_outline,
+                                              color: Colors.white70,
+                                              size: 24,
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              S
+                                                  .of(context)
+                                                  .the_image_is_unavailable,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                    : UserNetworkImage(
+                                      imageKey: imageKey,
+                                      allImageKeys: widget.images,
+                                      index: index,
+                                    ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     );
                   },
                 ),

@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/search/search_cubit.dart';
 import 'pulse_animation.dart';
 
 class CustomFloatActionButton extends StatefulWidget {
@@ -13,45 +12,16 @@ class CustomFloatActionButton extends StatefulWidget {
 }
 
 class _CustomFloatActionButtonState extends State<CustomFloatActionButton> {
-  Timer? _timer;
-  int _seconds = 0;
-
-  String get formattedTime {
-    final m = (_seconds ~/ 60).toString().padLeft(2, "0");
-    final s = (_seconds % 60).toString().padLeft(2, "0");
+  String _formatTime(int seconds) {
+    final m = (seconds ~/ 60).toString().padLeft(2, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
     return "$m:$s";
-  }
-
-  void _startTimer() {
-    _seconds = 0;
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() => _seconds++);
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-  }
-
-  @override
-  void dispose() {
-    _stopTimer();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDart = Theme.of(context).brightness == Brightness.dark;
-    return BlocConsumer<SearchCubit, SearchState>(
-      listener: (context, state) {
-        if (state.isSearching) {
-          _startTimer();
-        } else {
-          _stopTimer();
-          _seconds = 0;
-        }
-      },
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
         final cubit = context.read<SearchCubit>();
         final canSearch = state.gender.isNotEmpty && state.ageFrom != null;
@@ -71,7 +41,7 @@ class _CustomFloatActionButtonState extends State<CustomFloatActionButton> {
                   BoxShadow(
                     blurRadius: 10,
                     offset: const Offset(0, 4),
-                    color: isDart ? Colors.white70 : Colors.black87,
+                    color: isDark ? Colors.white70 : Colors.black87,
                   ),
               ],
             ),
@@ -85,7 +55,7 @@ class _CustomFloatActionButtonState extends State<CustomFloatActionButton> {
               children: [
                 if (state.isSearching)
                   Text(
-                    formattedTime,
+                    _formatTime(state.elapsedSeconds),
                     style: TextStyle(
                       color: colors.onPrimary,
                       fontWeight: FontWeight.w600,

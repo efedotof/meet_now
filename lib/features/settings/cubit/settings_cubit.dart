@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
+import 'package:meet_now_app_server/storage/card_swiper/card_swiper_interface.dart';
 
 part 'settings_state.dart';
 part 'settings_cubit.freezed.dart';
@@ -15,7 +16,9 @@ class SettingsCubit extends Cubit<SettingsState> {
     required PasswordStorageInterface passwordStorageInterface,
     required UserStorageInterface userStorageInterface,
     required FCMServiceInterface fcmServiceInterface,
-  }) : _fcmServiceInterface = fcmServiceInterface,
+    required CardSwiperInterface cardSwiperInterface,
+  }) : _cardSwiperInterface = cardSwiperInterface,
+       _fcmServiceInterface = fcmServiceInterface,
        _userInterface = userInterface,
        _userModelAppInterface = userModelAppInterface,
        _userStorageInterface = userStorageInterface,
@@ -27,14 +30,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   final PasswordStorageInterface _passwordStorageInterface;
   final UserStorageInterface _userStorageInterface;
   final UserInterface _userInterface;
-
+  final CardSwiperInterface _cardSwiperInterface;
   final FCMServiceInterface _fcmServiceInterface;
 
   Future<void> exit({required BuildContext context}) async {
+    _userInterface.stopSearch();
     _userStorageInterface.clearUser();
     _userModelAppInterface.user = null;
     _passwordStorageInterface.clearPassword();
     _fcmServiceInterface.deleteFCMToken();
+    _cardSwiperInterface.setValue(value: false);
     if (context.mounted) {
       context.replaceRoute(AuthRoute());
     }
@@ -44,8 +49,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       final user = await _userInterface.getUser();
       _userModelAppInterface.user = user;
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
   }
 }

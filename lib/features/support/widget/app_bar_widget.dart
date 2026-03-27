@@ -25,18 +25,19 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isDark ? Colors.white70 : Colors.black87,
-              ),
-              padding: const EdgeInsets.all(8),
-              alignment: Alignment.center,
-              child: GestureDetector(
+            Material(
+              color: isDark ? Colors.white70 : Colors.black87,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
                 onTap: () => context.maybePop(),
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: isDark ? Colors.black : Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: isDark ? Colors.black : Colors.white,
+                    size: 18,
+                  ),
                 ),
               ),
             ),

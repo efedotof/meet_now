@@ -69,6 +69,14 @@ class AppSettingsSection extends StatelessWidget {
               onTap: () => context.pushRoute(const NotificationRoute()),
             ),
             SettingsItem(
+              icon: Icons.swipe,
+              title: S.of(context).searchMode,
+              onTap:
+                  () => context.pushRoute(
+                    const SearchModeRoute(),
+                  ), // создайте отдельный роут
+            ),
+            SettingsItem(
               icon: Icons.security,
               title: S.of(context).security,
               onTap: () => context.pushRoute(const SecurityRoute()),

@@ -15,6 +15,8 @@ class ChatTile extends StatefulWidget {
     this.temporaryChat,
     this.onTap,
     this.isSelected = false,
+    this.roles,
+    this.verified,
   });
 
   final String name;
@@ -26,6 +28,8 @@ class ChatTile extends StatefulWidget {
   final TemporaryChat? temporaryChat;
   final VoidCallback? onTap;
   final bool isSelected;
+  final Set<String>? roles;
+  final bool? verified;
 
   @override
   State<ChatTile> createState() => _ChatTileState();
@@ -50,8 +54,57 @@ class _ChatTileState extends State<ChatTile> {
     }
   }
 
+  String? _getRoleIconAsset() {
+    final roles = widget.roles;
+    if (roles == null) return null;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return 'assets/amp.png';
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return 'assets/am.png';
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return 'assets/ap.png';
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return 'assets/mp.png';
+    } else if (roles.contains("ADMIN")) {
+      return 'assets/administration.png';
+    } else if (roles.contains("MODERATION")) {
+      return 'assets/moderator.png';
+    } else if (roles.contains("PREMIUM")) {
+      return 'assets/prem.png';
+    }
+    return null;
+  }
+
+  String? _getRoleTooltipMessage() {
+    final roles = widget.roles;
+    if (roles == null) return null;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return S.of(context).administratorModeratorPremium;
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return S.of(context).administratorModerator;
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return S.of(context).administratorPremium;
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return S.of(context).moderatorPremium;
+    } else if (roles.contains("ADMIN")) {
+      return S.of(context).administrator;
+    } else if (roles.contains("MODERATION")) {
+      return S.of(context).moderator;
+    } else if (roles.contains("PREMIUM")) {
+      return S.of(context).premium;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final roleIconAsset = _getRoleIconAsset();
+    final roleTooltip = _getRoleTooltipMessage();
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -93,12 +146,52 @@ class _ChatTileState extends State<ChatTile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              widget.name,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w500),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            Row(
+                              children: [
+                                if (roleIconAsset != null &&
+                                    roleTooltip != null)
+                                  Tooltip(
+                                    message: roleTooltip,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: Image.asset(
+                                        roleIconAsset,
+                                        width: 16,
+                                        height: 16,
+                                        filterQuality: FilterQuality.none,
+                                        cacheWidth: 32,
+                                        cacheHeight: 32,
+                                      ),
+                                    ),
+                                  ),
+                                Flexible(
+                                  child: Text(
+                                    widget.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w500),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+
+                                if (widget.verified == true)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 4),
+                                    child: Tooltip(
+                                      message: S.of(context).verifiedAccount,
+                                      child: Image.asset(
+                                        'assets/verify.png',
+                                        width: 14,
+                                        height: 14,
+                                        filterQuality: FilterQuality.none,
+                                        cacheWidth: 28,
+                                        cacheHeight: 28,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             const SizedBox(height: 4),
                             Text(

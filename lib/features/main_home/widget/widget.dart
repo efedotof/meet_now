@@ -3,3 +3,4 @@ export 'web_vertical_navigation_bar.dart';
 export 'mobile_bottom_navigation_bar.dart';
 export 'season_background.dart';
 export 'season_utils.dart';
+export 'new_update/version_dialog_service.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:meet_now_app/features/about_app/widget/widget.dart';
+import 'package:meet_now_app/route/app_route.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:flutter/gestures.dart';
@@ -200,10 +201,11 @@ class AboutAppScreen extends StatelessWidget {
                   ),
                   recognizer:
                       TapGestureRecognizer()
-                        ..onTap =
-                            () => _launchUrl(
-                              'https://mnapp.ru/docs/user_agreement.pdf',
-                            ),
+                        ..onTap = () {
+                          context.pushRoute(
+                            DocumentRoute(type: "user_agreement"),
+                          );
+                        },
                 ),
                 TextSpan(text: ' ${S.of(context).and} '),
                 TextSpan(
@@ -214,10 +216,11 @@ class AboutAppScreen extends StatelessWidget {
                   ),
                   recognizer:
                       TapGestureRecognizer()
-                        ..onTap =
-                            () => _launchUrl(
-                              'https://mnapp.ru/docs/privacy_policy.pdf',
-                            ),
+                        ..onTap = () {
+                          context.pushRoute(
+                            DocumentRoute(type: "privacy_policy"),
+                          );
+                        },
                 ),
                 const TextSpan(text: '.'),
               ],

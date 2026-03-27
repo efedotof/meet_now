@@ -150,6 +150,50 @@ class ChatRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [DocumentScreen]
+class DocumentRoute extends PageRouteInfo<DocumentRouteArgs> {
+  DocumentRoute({Key? key, required String type, List<PageRouteInfo>? children})
+    : super(
+        DocumentRoute.name,
+        args: DocumentRouteArgs(key: key, type: type),
+        initialChildren: children,
+      );
+
+  static const String name = 'DocumentRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DocumentRouteArgs>();
+      return DocumentScreen(key: args.key, type: args.type);
+    },
+  );
+}
+
+class DocumentRouteArgs {
+  const DocumentRouteArgs({this.key, required this.type});
+
+  final Key? key;
+
+  final String type;
+
+  @override
+  String toString() {
+    return 'DocumentRouteArgs{key: $key, type: $type}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DocumentRouteArgs) return false;
+    return key == other.key && type == other.type;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ type.hashCode;
+}
+
+/// generated route for
 /// [FriendRequestsScreen]
 class FriendRequestsRoute extends PageRouteInfo<void> {
   const FriendRequestsRoute({List<PageRouteInfo>? children})
@@ -229,18 +273,48 @@ class GameChatRouteArgs {
 
 /// generated route for
 /// [GiftScreen]
-class GiftRoute extends PageRouteInfo<void> {
-  const GiftRoute({List<PageRouteInfo>? children})
-    : super(GiftRoute.name, initialChildren: children);
+class GiftRoute extends PageRouteInfo<GiftRouteArgs> {
+  GiftRoute({Key? key, bool? isInventory, List<PageRouteInfo>? children})
+    : super(
+        GiftRoute.name,
+        args: GiftRouteArgs(key: key, isInventory: isInventory),
+        initialChildren: children,
+      );
 
   static const String name = 'GiftRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const GiftScreen();
+      final args = data.argsAs<GiftRouteArgs>(
+        orElse: () => const GiftRouteArgs(),
+      );
+      return GiftScreen(key: args.key, isInventory: args.isInventory);
     },
   );
+}
+
+class GiftRouteArgs {
+  const GiftRouteArgs({this.key, this.isInventory});
+
+  final Key? key;
+
+  final bool? isInventory;
+
+  @override
+  String toString() {
+    return 'GiftRouteArgs{key: $key, isInventory: $isInventory}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! GiftRouteArgs) return false;
+    return key == other.key && isInventory == other.isInventory;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ isInventory.hashCode;
 }
 
 /// generated route for
@@ -377,6 +451,7 @@ class ProfileRoute extends PageRouteInfo<ProfileRouteArgs> {
     Key? key,
     FriendRequest? friendRequest,
     User? otherUser,
+    String? userId,
     List<PageRouteInfo>? children,
   }) : super(
          ProfileRoute.name,
@@ -384,6 +459,7 @@ class ProfileRoute extends PageRouteInfo<ProfileRouteArgs> {
            key: key,
            friendRequest: friendRequest,
            otherUser: otherUser,
+           userId: userId,
          ),
          initialChildren: children,
        );
@@ -400,13 +476,19 @@ class ProfileRoute extends PageRouteInfo<ProfileRouteArgs> {
         key: args.key,
         friendRequest: args.friendRequest,
         otherUser: args.otherUser,
+        userId: args.userId,
       );
     },
   );
 }
 
 class ProfileRouteArgs {
-  const ProfileRouteArgs({this.key, this.friendRequest, this.otherUser});
+  const ProfileRouteArgs({
+    this.key,
+    this.friendRequest,
+    this.otherUser,
+    this.userId,
+  });
 
   final Key? key;
 
@@ -414,9 +496,11 @@ class ProfileRouteArgs {
 
   final User? otherUser;
 
+  final String? userId;
+
   @override
   String toString() {
-    return 'ProfileRouteArgs{key: $key, friendRequest: $friendRequest, otherUser: $otherUser}';
+    return 'ProfileRouteArgs{key: $key, friendRequest: $friendRequest, otherUser: $otherUser, userId: $userId}';
   }
 
   @override
@@ -425,12 +509,16 @@ class ProfileRouteArgs {
     if (other is! ProfileRouteArgs) return false;
     return key == other.key &&
         friendRequest == other.friendRequest &&
-        otherUser == other.otherUser;
+        otherUser == other.otherUser &&
+        userId == other.userId;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ friendRequest.hashCode ^ otherUser.hashCode;
+      key.hashCode ^
+      friendRequest.hashCode ^
+      otherUser.hashCode ^
+      userId.hashCode;
 }
 
 /// generated route for
@@ -445,6 +533,22 @@ class QrCodeRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const QrCodeScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [SearchModeScreen]
+class SearchModeRoute extends PageRouteInfo<void> {
+  const SearchModeRoute({List<PageRouteInfo>? children})
+    : super(SearchModeRoute.name, initialChildren: children);
+
+  static const String name = 'SearchModeRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SearchModeScreen();
     },
   );
 }

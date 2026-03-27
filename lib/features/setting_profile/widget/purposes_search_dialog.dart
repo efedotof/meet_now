@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce/hive.dart';
@@ -23,12 +24,31 @@ class _PurposesSearchDialogState extends State<PurposesSearchDialog> {
   final List<String> _tempSelectedPurposes = [];
   late List<Purpose> _allPurposes = [];
   List<Purpose> _filteredPurposes = [];
+  ValueListenable<Box<Purpose>>? _listenable;
 
   @override
   void initState() {
     super.initState();
     _tempSelectedPurposes.addAll(widget.selectedPurposes);
     _searchController.addListener(_filterPurposes);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_listenable == null) {
+      _loadListenable();
+    }
+  }
+
+  Future<void> _loadListenable() async {
+    final storage = context.read<StorageHiveInterface>();
+    final listenable = await storage.getListenablePurposeBox();
+    if (mounted) {
+      setState(() {
+        _listenable = listenable;
+      });
+    }
   }
 
   void _filterPurposes() {
@@ -80,37 +100,40 @@ class _PurposesSearchDialogState extends State<PurposesSearchDialog> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: S.of(context).goal_search,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
               ),
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ValueListenableBuilder<Box>(
-                valueListenable:
-                    context.read<StorageHiveInterface>().listenablePurposeBox,
-                builder: (context, box, child) {
-                  _allPurposes = box.values.cast<Purpose>().toList();
-                  if (_filteredPurposes.isEmpty) {
-                    _filteredPurposes = _allPurposes;
-                  }
+              child:
+                  _listenable == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : ValueListenableBuilder<Box<Purpose>>(
+                        valueListenable: _listenable!,
+                        builder: (context, box, child) {
+                          _allPurposes = box.values.cast<Purpose>().toList();
+                          if (_filteredPurposes.isEmpty) {
+                            _filteredPurposes = _allPurposes;
+                          }
 
-                  return ListView.builder(
-                    itemCount: _filteredPurposes.length,
-                    itemBuilder: (context, index) {
-                      final purpose = _filteredPurposes[index];
-                      final isSelected = _tempSelectedPurposes.contains(
-                        purpose.title,
-                      );
+                          return ListView.builder(
+                            itemCount: _filteredPurposes.length,
+                            itemBuilder: (context, index) {
+                              final purpose = _filteredPurposes[index];
+                              final isSelected = _tempSelectedPurposes.contains(
+                                purpose.title,
+                              );
 
-                      return CheckboxListTile(
-                        title: Text(purpose.title ?? ''),
-                        value: isSelected,
-                        onChanged: (_) => _togglePurpose(purpose.title!),
-                      );
-                    },
-                  );
-                },
-              ),
+                              return CheckboxListTile(
+                                title: Text(purpose.title ?? ''),
+                                value: isSelected,
+                                onChanged:
+                                    (_) => _togglePurpose(purpose.title!),
+                              );
+                            },
+                          );
+                        },
+                      ),
             ),
             const SizedBox(height: 16),
             Row(

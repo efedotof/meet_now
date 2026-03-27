@@ -159,7 +159,6 @@ class _UserAvatarState extends State<UserAvatar> {
           radius: widget.radius,
           backgroundColor: Theme.of(context).colorScheme.primary,
           backgroundImage: imageProvider,
-
           onBackgroundImageError: (exception, stackTrace) {
             if (mounted) {
               setState(() {
@@ -174,8 +173,14 @@ class _UserAvatarState extends State<UserAvatar> {
 
     return CircleAvatar(
       radius: widget.radius,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      child: Icon(Icons.person, size: widget.radius, color: Colors.white),
+      child: Icon(
+        Icons.person,
+        size: widget.radius,
+        color:
+            Theme.brightnessOf(context) == Brightness.dark
+                ? Colors.black
+                : Colors.white,
+      ),
     );
   }
 }

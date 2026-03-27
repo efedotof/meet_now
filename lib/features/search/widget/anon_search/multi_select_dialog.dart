@@ -52,7 +52,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
                 shrinkWrap: true,
                 itemCount: widget.items.length,
                 separatorBuilder:
-                    (_, __) =>
+                    (_, _) =>
                         Divider(height: 1, color: colors.outline.withAlpha(10)),
                 itemBuilder: (_, i) {
                   final item = widget.items[i];

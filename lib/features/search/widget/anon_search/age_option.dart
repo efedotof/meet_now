@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/search/search_cubit.dart';
 
 class AgeOption extends StatefulWidget {
   const AgeOption({super.key, required this.ageStart});

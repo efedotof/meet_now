@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meet_now_app/features/document/cubit/document_cubit.dart';
+import 'package:meet_now_app/features/document/widget/widget.dart';
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app_server/storage/agree_rules/agree_rules_interface.dart';
 
@@ -21,143 +22,11 @@ class CommunityRulesDialog extends StatefulWidget {
 }
 
 class _CommunityRulesDialogState extends State<CommunityRulesDialog> {
-  Future<String>? _rulesFuture;
-  bool _isLoading = true;
-  bool _hasError = false;
-  String? _errorMessage;
-
   @override
   void initState() {
     super.initState();
-    _loadHtmlRules();
-  }
 
-  void _loadHtmlRules() {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-      _errorMessage = null;
-    });
-
-    _rulesFuture = Dio()
-        .get<String>('https://mnapp.ru/docs/community_rules.html')
-        .then((response) => response.data ?? '')
-        .catchError((error) {
-          setState(() {
-            _hasError = true;
-            _errorMessage =
-                S.of(context).connectionErrorCheckYourInternetConnection;
-          });
-          return '';
-        })
-        .whenComplete(() {
-          setState(() {
-            _isLoading = false;
-          });
-        });
-  }
-
-  void _retryLoading() {
-    _loadHtmlRules();
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(
-              Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            S.of(context).loadingTheRules,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            S.of(context).errorLoadingRules,
-            style: Theme.of(context).textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _errorMessage ?? S.of(context).couldntLoadTheRules,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _retryLoading,
-            icon: const Icon(Icons.refresh),
-            label: Text(S.of(context).repeat),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHtmlRules(String htmlContent) {
-    final theme = Theme.of(context);
-    final textColor =
-        theme.brightness == Brightness.dark ? Colors.white : Colors.black;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(3),
-      child: Html(
-        data: htmlContent,
-        style: {
-          "body": Style(
-            fontSize: FontSize(14),
-            color: textColor,
-            backgroundColor: Colors.transparent,
-          ),
-          "h1": Style(
-            fontSize: FontSize(18),
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-          "h2": Style(
-            fontSize: FontSize(16),
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-          "h3": Style(
-            fontSize: FontSize(15),
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-          "h4": Style(
-            fontSize: FontSize(14),
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-          "ul": Style(
-            margin: Margins.only(top: 2, bottom: 2),
-            color: textColor,
-          ),
-          "li": Style(
-            margin: Margins.only(top: 2, bottom: 2),
-            color: textColor,
-          ),
-          "em": Style(fontStyle: FontStyle.italic, color: textColor),
-          "b": Style(fontWeight: FontWeight.bold, color: textColor),
-        },
-      ),
-    );
+    context.read<DocumentCubit>().getDocument(type: 'community_rules');
   }
 
   @override
@@ -180,32 +49,74 @@ class _CommunityRulesDialogState extends State<CommunityRulesDialog> {
         content: SizedBox(
           width: double.maxFinite,
           height: MediaQuery.of(context).size.height * 0.6,
-          child:
-              _isLoading
-                  ? _buildLoadingWidget()
-                  : (_hasError
-                      ? _buildErrorWidget()
-                      : FutureBuilder<String>(
-                        future: _rulesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return _buildLoadingWidget();
-                          }
-                          if (snapshot.hasError ||
-                              snapshot.data == null ||
-                              snapshot.data!.isEmpty) {
-                            return _buildErrorWidget();
-                          }
-                          return _buildHtmlRules(snapshot.data!);
-                        },
-                      )),
+          child: BlocBuilder<DocumentCubit, DocumentState>(
+            builder: (context, state) {
+              return state.when(
+                loading:
+                    () => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                              Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            S.of(context).loadingTheRules,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                loaded:
+                    (document) => SingleChildScrollView(
+                      padding: const EdgeInsets.all(3),
+                      child: ParseMarkup(text: document),
+                    ),
+                error:
+                    (error) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            S.of(context).errorLoadingRules,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            error,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              context.read<DocumentCubit>().getDocument(
+                                type: 'community_rules',
+                              );
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: Text(S.of(context).repeat),
+                          ),
+                        ],
+                      ),
+                    ),
+              );
+            },
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              widget.onDisagree();
-            },
+            onPressed: widget.onDisagree,
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
               textStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -213,9 +124,7 @@ class _CommunityRulesDialogState extends State<CommunityRulesDialog> {
             child: Text(S.of(context).iDisagree),
           ),
           ElevatedButton(
-            onPressed: () {
-              widget.onAgree();
-            },
+            onPressed: widget.onAgree,
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,

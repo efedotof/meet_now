@@ -2,7 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/main_home/cubit/main_home_cubit.dart';
+import 'package:meet_now_app/features/main_home/cubit/main_home/main_home_cubit.dart';
+import 'package:meet_now_app/features/main_home/cubit/unread_count/unread_count_cubit.dart';
 import 'package:meet_now_app/features/main_home/widget/widget.dart';
 import 'package:meet_now_app/features/theme/cubit/particles_cubit.dart';
 import 'package:meet_now_app/generated/l10n.dart';
@@ -32,6 +33,9 @@ class _MainHomeScreenState extends State<MainHomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      VersionDialogService.checkAndShowDialog(context);
+    });
   }
 
   @override
@@ -128,6 +132,11 @@ class _MainHomeScreenState extends State<MainHomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final unreadCount = context.select<UnreadCountCubit, int>((cubit) {
+      final state = cubit.state;
+      return state.when(initial: () => 0, loaded: (total) => total);
+    });
+
     return PopScope(
       canPop: !_isDialogShown,
       child: Stack(
@@ -181,6 +190,7 @@ class _MainHomeScreenState extends State<MainHomeScreen>
                             body: child,
                             bottomNavigationBar: MobileBottomNavigationBar(
                               tabsRouter: tabsRouter,
+                              unreadCount: unreadCount,
                             ),
                           );
                         }
@@ -189,7 +199,10 @@ class _MainHomeScreenState extends State<MainHomeScreen>
                           backgroundColor: Colors.transparent,
                           body: Row(
                             children: [
-                              WebVerticalNavigationBar(tabsRouter: tabsRouter),
+                              WebVerticalNavigationBar(
+                                tabsRouter: tabsRouter,
+                                unreadCount: unreadCount,
+                              ),
                               Expanded(child: child),
                             ],
                           ),
@@ -198,6 +211,12 @@ class _MainHomeScreenState extends State<MainHomeScreen>
                       }
 
                       if (showDesktopLayout) {
+                        final chatIcon = Badge(
+                          label: Text('$unreadCount'),
+                          isLabelVisible: unreadCount > 0,
+                          child: const Icon(Icons.message),
+                        );
+
                         return Scaffold(
                           backgroundColor: Colors.transparent,
                           body: Row(
@@ -213,7 +232,7 @@ class _MainHomeScreenState extends State<MainHomeScreen>
                                     label: Text(S.of(context).search),
                                   ),
                                   NavigationRailDestination(
-                                    icon: const Icon(Icons.message),
+                                    icon: chatIcon,
                                     label: Text(S.of(context).chat),
                                   ),
                                   NavigationRailDestination(
@@ -229,15 +248,14 @@ class _MainHomeScreenState extends State<MainHomeScreen>
                               Expanded(child: child),
                             ],
                           ),
-                          bottomNavigationBar: null,
                         );
                       }
-
                       return Scaffold(
                         backgroundColor: Colors.transparent,
                         body: child,
                         bottomNavigationBar: MobileBottomNavigationBar(
                           tabsRouter: tabsRouter,
+                          unreadCount: unreadCount,
                         ),
                       );
                     },

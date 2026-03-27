@@ -660,12 +660,12 @@ void debugFillProperties(DiagnosticPropertiesBuilder properties) {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&const DeepCollectionEquality().equals(other.errorKey, errorKey));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.errorKey, errorKey) || other.errorKey == errorKey));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(errorKey));
+int get hashCode => Object.hash(runtimeType,errorKey);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
@@ -697,9 +697,9 @@ class __$ErrorCopyWithImpl<$Res>
 
 /// Create a copy of UploadsAvatarsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? errorKey = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? errorKey = null,}) {
   return _then(_Error(
-freezed == errorKey ? _self.errorKey : errorKey // ignore: cast_nullable_to_non_nullable
+null == errorKey ? _self.errorKey : errorKey // ignore: cast_nullable_to_non_nullable
 as UploadAvatarsErrorKeys,
   ));
 }

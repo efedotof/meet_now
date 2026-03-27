@@ -6,39 +6,32 @@ class SkeletonPoints extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 45,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: Colors.grey.shade300,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SkeletonTheme(
-        shimmerGradient: const LinearGradient(
-          colors: [Colors.grey, Colors.grey, Colors.grey],
-          stops: [0.0, 0.5, 1.0],
-          begin: Alignment(-1.0, -0.5),
-          end: Alignment(1.0, 0.5),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SkeletonAvatar(
-              style: SkeletonAvatarStyle(
-                shape: BoxShape.circle,
-                width: 20,
-                height: 20,
-                padding: const EdgeInsets.only(right: 8),
-              ),
-            ),
-            SkeletonLine(
-              style: SkeletonLineStyle(
-                height: 15,
-                width: 60,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ],
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final shimmerGradient = LinearGradient(
+      colors:
+          isDark
+              ? [
+                Colors.grey.shade800,
+                Colors.grey.shade600,
+                Colors.grey.shade800,
+              ]
+              : [
+                Colors.grey.shade300,
+                Colors.grey.shade100,
+                Colors.grey.shade300,
+              ],
+      stops: const [0.0, 0.5, 1.0],
+      begin: const Alignment(-1.0, -0.5),
+      end: const Alignment(1.0, 0.5),
+    );
+
+    return SkeletonTheme(
+      shimmerGradient: shimmerGradient,
+      child: SkeletonLine(
+        style: SkeletonLineStyle(
+          height: 20,
+          width: 50,
+          borderRadius: BorderRadius.circular(4),
         ),
       ),
     );

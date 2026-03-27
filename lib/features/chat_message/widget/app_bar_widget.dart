@@ -116,6 +116,19 @@ class _AppBarWidgetState extends State<AppBarWidget>
     }
   }
 
+  Set<String>? _getOtherRoles() {
+    if (widget.chatModel == null) return null;
+    if (widget.userId == widget.chatModel!.user1Id) {
+      return widget.chatModel!.rolesUser2;
+    } else {
+      return widget.chatModel!.rolesUser1;
+    }
+  }
+
+  bool? _getOtherVerified() {
+    return null;
+  }
+
   bool get _useRandomAvatar {
     if (widget.isTemporary) return true;
 
@@ -129,6 +142,50 @@ class _AppBarWidgetState extends State<AppBarWidget>
     } else {
       return _getOtherUserId();
     }
+  }
+
+  String? _getRoleIconAsset(Set<String>? roles) {
+    if (roles == null) return null;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return 'assets/amp.png';
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return 'assets/am.png';
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return 'assets/ap.png';
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return 'assets/mp.png';
+    } else if (roles.contains("ADMIN")) {
+      return 'assets/administration.png';
+    } else if (roles.contains("MODERATION")) {
+      return 'assets/moderator.png';
+    } else if (roles.contains("PREMIUM")) {
+      return 'assets/prem.png';
+    }
+    return null;
+  }
+
+  String? _getRoleTooltipMessage(Set<String>? roles) {
+    if (roles == null) return null;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return S.of(context).administratorModeratorPremium;
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return S.of(context).administratorModerator;
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return S.of(context).administratorPremium;
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return S.of(context).moderatorPremium;
+    } else if (roles.contains("ADMIN")) {
+      return S.of(context).administrator;
+    } else if (roles.contains("MODERATION")) {
+      return S.of(context).moderator;
+    } else if (roles.contains("PREMIUM")) {
+      return S.of(context).premium;
+    }
+    return null;
   }
 
   void _showMenu() {
@@ -426,6 +483,11 @@ class _AppBarWidgetState extends State<AppBarWidget>
 
         final double containerWidthMultiplier = useDesktopAppBar ? 0.4 : 0.6;
 
+        final otherRoles = _getOtherRoles();
+        final otherVerified = _getOtherVerified();
+        final roleIconAsset = _getRoleIconAsset(otherRoles);
+        final roleTooltip = _getRoleTooltipMessage(otherRoles);
+
         return Container(
           width: double.infinity,
           height: 60,
@@ -434,22 +496,22 @@ class _AppBarWidgetState extends State<AppBarWidget>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (!useDesktopAppBar)
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDark ? Colors.black87 : Colors.white70,
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  alignment: Alignment.center,
-                  child: GestureDetector(
+                Material(
+                  color: isDark ? Colors.black87 : Colors.white70,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
                     onTap: widget.onBackPressed,
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: isDark ? Colors.white : Colors.black,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: isDark ? Colors.white : Colors.black,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ),
-
               const SizedBox(width: 6),
 
               widget.isTemporary
@@ -600,20 +662,65 @@ class _AppBarWidgetState extends State<AppBarWidget>
                             ),
                           ),
                           const SizedBox(width: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _getOtherUserName(),
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
-                                  fontWeight: FontWeight.w600,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    if (roleIconAsset != null &&
+                                        roleTooltip != null)
+                                      Tooltip(
+                                        message: roleTooltip,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 4,
+                                          ),
+                                          child: Image.asset(
+                                            roleIconAsset,
+                                            width: 16,
+                                            height: 16,
+                                            filterQuality: FilterQuality.none,
+                                            cacheWidth: 32,
+                                            cacheHeight: 32,
+                                          ),
+                                        ),
+                                      ),
+                                    Flexible(
+                                      child: Text(
+                                        _getOtherUserName(),
+                                        style: TextStyle(
+                                          color:
+                                              isDark
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (otherVerified == true)
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 4),
+                                        child: Tooltip(
+                                          message:
+                                              S.of(context).verifiedAccount,
+                                          child: Image.asset(
+                                            'assets/verify.png',
+                                            width: 14,
+                                            height: 14,
+                                            filterQuality: FilterQuality.none,
+                                            cacheWidth: 28,
+                                            cacheHeight: 28,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                              ),
-                              if (widget.isTemporary)
-                                StatusText(state: state, userId: widget.userId),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),

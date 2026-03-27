@@ -18,5 +18,6 @@ abstract class SearchState with _$SearchState {
     @Default('') String searchStatus,
     @Default(false) bool isChatDeliveryConfirmed,
     @Default('') String chatDeliveryStatus,
+    @Default(0) int elapsedSeconds,
   }) = _SearchState;
 }

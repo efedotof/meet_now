@@ -165,13 +165,15 @@ class MyBody extends StatelessWidget {
                 permanentChats.map((chat) {
                   String name;
                   String? avatar;
-
+                  Set<String>? roles;
                   if (currentUserId == chat.user1Id) {
                     name = '${chat.user2Firstname} ${chat.user2Subname}';
                     avatar = chat.user2Avatar;
+                    roles = chat.rolesUser2;
                   } else {
                     name = '${chat.user1Firstname} ${chat.user1Subname}';
                     avatar = chat.user1Avatar;
+                    roles = chat.rolesUser1;
                   }
 
                   return SizedBox(
@@ -187,6 +189,7 @@ class MyBody extends StatelessWidget {
                       sendLastMessageAt: chat.lastMessageAt,
                       onTap: () => onChatSelected(permanentChat: chat),
                       isSelected: selectedPermanentChat?.chatId == chat.chatId,
+                      roles: roles,
                     ),
                   );
                 }).toList(),

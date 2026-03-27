@@ -92,9 +92,7 @@ class QuestionDetail extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: isMobile ? 8 : 12),
-                      ...question.answers.map(
-                        (a) => AnswerCard(answer: a, isMobile: isMobile),
-                      ),
+                      ...question.answers.map((a) => AnswerCard(answer: a)),
                       if (question.answers.isEmpty)
                         Padding(
                           padding: EdgeInsets.symmetric(

@@ -9,7 +9,7 @@ part 'theme_cubit.freezed.dart';
 class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit({required ThemeInterface themeInterface})
     : _themeInterface = themeInterface,
-      super(ThemeState(brightness: Brightness.light)) {
+      super(const ThemeState(brightness: Brightness.light)) {
     _initializeTheme();
   }
 
@@ -20,7 +20,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       emit(ThemeState(brightness: brightness));
       await _themeInterface.setDarkThemeSelected(brightness == Brightness.dark);
     } catch (e) {
-      debugPrint('Error setting theme: \$e');
+      debugPrint('Error setting theme: $e');
     }
   }
 
@@ -30,7 +30,7 @@ class ThemeCubit extends Cubit<ThemeState> {
       final brightness = isDark ? Brightness.dark : Brightness.light;
       emit(ThemeState(brightness: brightness));
     } catch (e) {
-      debugPrint('Error initializing theme: \$e');
+      debugPrint('Error initializing theme: $e');
     }
   }
 }

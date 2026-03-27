@@ -4349,6 +4349,426 @@ class S {
       args: [],
     );
   }
+
+  /// `skip`
+  String get skip {
+    return Intl.message('skip', name: 'skip', desc: '', args: []);
+  }
+
+  /// `A search is underway:`
+  String get aSearchIsUnderway {
+    return Intl.message(
+      'A search is underway:',
+      name: 'aSearchIsUnderway',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search mode`
+  String get searchMode {
+    return Intl.message('Search mode', name: 'searchMode', desc: '', args: []);
+  }
+
+  /// `current`
+  String get currented {
+    return Intl.message('current', name: 'currented', desc: '', args: []);
+  }
+
+  /// `Anonymous search`
+  String get anonymousSearch {
+    return Intl.message(
+      'Anonymous search',
+      name: 'anonymousSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stay invisible until you want to get to know. Only you initiate contact.`
+  String get anonymousSearchDescription {
+    return Intl.message(
+      'Stay invisible until you want to get to know. Only you initiate contact.',
+      name: 'anonymousSearchDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Card mode`
+  String get cardSwiperMode {
+    return Intl.message(
+      'Card mode',
+      name: 'cardSwiperMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quick profile evaluation by swiping. A dialogue begins upon mutual agreement.`
+  String get cardSwiperDescription {
+    return Intl.message(
+      'Quick profile evaluation by swiping. A dialogue begins upon mutual agreement.',
+      name: 'cardSwiperDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Purchased`
+  String get purchased {
+    return Intl.message('Purchased', name: 'purchased', desc: '', args: []);
+  }
+
+  /// `Balance: `
+  String get balance_num {
+    return Intl.message('Balance: ', name: 'balance_num', desc: '', args: []);
+  }
+
+  /// `Gift Search`
+  String get search_gifts {
+    return Intl.message(
+      'Gift Search',
+      name: 'search_gifts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rarity`
+  String get rarity {
+    return Intl.message('Rarity', name: 'rarity', desc: '', args: []);
+  }
+
+  /// `Gifts`
+  String get gifts {
+    return Intl.message('Gifts', name: 'gifts', desc: '', args: []);
+  }
+
+  /// `Default`
+  String get default_sort {
+    return Intl.message('Default', name: 'default_sort', desc: '', args: []);
+  }
+
+  /// `Cheap first`
+  String get price_low_to_high {
+    return Intl.message(
+      'Cheap first',
+      name: 'price_low_to_high',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expensive first`
+  String get price_high_to_low {
+    return Intl.message(
+      'Expensive first',
+      name: 'price_high_to_low',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No gifts found`
+  String get no_gifts_found {
+    return Intl.message(
+      'No gifts found',
+      name: 'no_gifts_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Administrator, Moderator, Premium`
+  String get administratorModeratorPremium {
+    return Intl.message(
+      'Administrator, Moderator, Premium',
+      name: 'administratorModeratorPremium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Administrator, Moderator`
+  String get administratorModerator {
+    return Intl.message(
+      'Administrator, Moderator',
+      name: 'administratorModerator',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Administrator, Premium`
+  String get administratorPremium {
+    return Intl.message(
+      'Administrator, Premium',
+      name: 'administratorPremium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Moderator, Premium`
+  String get moderatorPremium {
+    return Intl.message(
+      'Moderator, Premium',
+      name: 'moderatorPremium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Premium`
+  String get premium {
+    return Intl.message('Premium', name: 'premium', desc: '', args: []);
+  }
+
+  /// `Mode not activated`
+  String get modeNotActivated {
+    return Intl.message(
+      'Mode not activated',
+      name: 'modeNotActivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The mode is activated`
+  String get theModeIsActivated {
+    return Intl.message(
+      'The mode is activated',
+      name: 'theModeIsActivated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verified account`
+  String get verifiedAccount {
+    return Intl.message(
+      'Verified account',
+      name: 'verifiedAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `LIKE`
+  String get like {
+    return Intl.message('LIKE', name: 'like', desc: '', args: []);
+  }
+
+  /// `NOPE`
+  String get nope {
+    return Intl.message('NOPE', name: 'nope', desc: '', args: []);
+  }
+
+  /// `There are no more cards`
+  String get thereAreNoMoreCards {
+    return Intl.message(
+      'There are no more cards',
+      name: 'thereAreNoMoreCards',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filters`
+  String get filters {
+    return Intl.message('Filters', name: 'filters', desc: '', args: []);
+  }
+
+  /// `Match history`
+  String get matchHistory {
+    return Intl.message(
+      'Match history',
+      name: 'matchHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You don't have any matches yet`
+  String get youDontHaveAnyMatchesYet {
+    return Intl.message(
+      'You don\'t have any matches yet',
+      name: 'youDontHaveAnyMatchesYet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `min. ago`
+  String get minAgo {
+    return Intl.message('min. ago', name: 'minAgo', desc: '', args: []);
+  }
+
+  /// `hours ago`
+  String get hoursAgo {
+    return Intl.message('hours ago', name: 'hoursAgo', desc: '', args: []);
+  }
+
+  /// `days ago`
+  String get daysAgo {
+    return Intl.message('days ago', name: 'daysAgo', desc: '', args: []);
+  }
+
+  /// `Document`
+  String get document {
+    return Intl.message('Document', name: 'document', desc: '', args: []);
+  }
+
+  /// `Get points quickly`
+  String get getPointsQuickly {
+    return Intl.message(
+      'Get points quickly',
+      name: 'getPointsQuickly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't show the ad`
+  String get couldntShowTheAd {
+    return Intl.message(
+      'Couldn\'t show the ad',
+      name: 'couldntShowTheAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The ad is not ready, please try again later`
+  String get theAdIsNotReadyPleaseTryAgainLater {
+    return Intl.message(
+      'The ad is not ready, please try again later',
+      name: 'theAdIsNotReadyPleaseTryAgainLater',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error uploading user data`
+  String get errorUploadingUserData {
+    return Intl.message(
+      'Error uploading user data',
+      name: 'errorUploadingUserData',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Likes history`
+  String get likesHistory {
+    return Intl.message(
+      'Likes history',
+      name: 'likesHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No likes yet`
+  String get noLikesYet {
+    return Intl.message('No likes yet', name: 'noLikesYet', desc: '', args: []);
+  }
+
+  /// `User upload error`
+  String get userUploadError {
+    return Intl.message(
+      'User upload error',
+      name: 'userUploadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The user is not loaded. Please try again later.`
+  String get userNotLoaded {
+    return Intl.message(
+      'The user is not loaded. Please try again later.',
+      name: 'userNotLoaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access is denied`
+  String get accessDenied {
+    return Intl.message(
+      'Access is denied',
+      name: 'accessDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To use the card mode, you need to purchase Premium in the gift shop using points`
+  String get premiumRequired {
+    return Intl.message(
+      'To use the card mode, you need to purchase Premium in the gift shop using points',
+      name: 'premiumRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You must add at least one photo to use the card mode.`
+  String get photosRequired {
+    return Intl.message(
+      'You must add at least one photo to use the card mode.',
+      name: 'photosRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To use the card mode, you need to subscribe to Premium and add at least one photo.`
+  String get premiumAndPhotosRequired {
+    return Intl.message(
+      'To use the card mode, you need to subscribe to Premium and add at least one photo.',
+      name: 'premiumAndPhotosRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load image`
+  String get failedToLoadImage {
+    return Intl.message(
+      'Failed to load image',
+      name: 'failedToLoadImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Purchase error`
+  String get purchaseError {
+    return Intl.message(
+      'Purchase error',
+      name: 'purchaseError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type of gift`
+  String get typeOfGift {
+    return Intl.message('Type of gift', name: 'typeOfGift', desc: '', args: []);
+  }
+
+  /// `Rare`
+  String get rare {
+    return Intl.message('Rare', name: 'rare', desc: '', args: []);
+  }
+
+  /// `Price`
+  String get price {
+    return Intl.message('Price', name: 'price', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

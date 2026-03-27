@@ -8,7 +8,14 @@ class DefaultAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 70,
       backgroundColor: Theme.of(context).colorScheme.primary,
-      child: const Icon(Icons.person, size: 70, color: Colors.white),
+      child: Icon(
+        Icons.person,
+        size: 70,
+        color:
+            Theme.brightnessOf(context) == Brightness.dark
+                ? Colors.black
+                : Colors.white,
+      ),
     );
   }
 }

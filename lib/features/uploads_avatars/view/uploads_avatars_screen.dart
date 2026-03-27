@@ -96,7 +96,6 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
     UploadsAvatarsCubit cubit, {
     bool isAvatar = false,
   }) async {
-    // Сохраняем переводы ДО асинхронных операций
     final errorCouldntGetFileData = _translateErrorKey(
       UploadAvatarsErrorKeys.couldntGetFileData,
       context,
@@ -108,111 +107,70 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
     final localizations = S.current;
 
     if (isWebOrDesktop) {
-      final List<MapEntry<MediaItem, Uint8List?>>?
-      filesWithBytes = await showDialog<List<MapEntry<MediaItem, Uint8List?>>>(
-        context: context,
-        builder:
-            (context) => Dialog(
-              insetPadding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: min(500, MediaQuery.of(context).size.width * 0.9),
-                height: min(500, MediaQuery.of(context).size.height * 0.9),
-                child: MediaPickerWidget(
-                  initialSelection: const [],
-                  maxSelection: isAvatar ? 1 : maxGallerySelectable,
-                  allowMultiple: !isAvatar,
-                  showVideos: false,
-                  onConfirmed: (
-                    List<MapEntry<MediaItem, Uint8List?>> selectedFiles,
-                  ) {
-                    Navigator.of(context).pop(selectedFiles);
-                  },
-                  enableDragDrop: true,
-                  config: const MediaPickerConfig(),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.cloud_upload, size: 64),
-                          const SizedBox(height: 16),
-                          Text(
-                            isAvatar
-                                ? localizations.choose_an_avatar
-                                : localizations.selectPhotos,
-                            style: Theme.of(context).textTheme.titleMedium,
+      final pickerKey = GlobalKey<MediaPickerWidgetState>();
+
+      final List<MapEntry<MediaItem, Uint8List?>>? filesWithBytes =
+          await showDialog<List<MapEntry<MediaItem, Uint8List?>>>(
+            context: context,
+            builder:
+                (context) => Dialog(
+                  insetPadding: const EdgeInsets.all(20),
+                  child: SizedBox(
+                    width: min(500, MediaQuery.of(context).size.width * 0.9),
+                    height: min(500, MediaQuery.of(context).size.height * 0.9),
+                    child: MediaPickerWidget(
+                      key: pickerKey,
+                      initialSelection: const [],
+                      maxSelection: isAvatar ? 1 : maxGallerySelectable,
+                      allowMultiple: !isAvatar,
+                      showVideos: false,
+                      onConfirmed: (
+                        List<MapEntry<MediaItem, Uint8List?>> selectedFiles,
+                      ) {
+                        Navigator.of(context).pop(selectedFiles);
+                      },
+                      enableDragDrop: true,
+                      config: const MediaPickerConfig(),
+                      allowedMimeTypes: const ['image/*'],
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.cloud_upload, size: 64),
+                              const SizedBox(height: 16),
+                              Text(
+                                isAvatar
+                                    ? localizations.choose_an_avatar
+                                    : localizations.selectPhotos,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(localizations.dragAndDropTheFilesHere),
+                              Text(localizations.orClickTheButton),
+                              const SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await pickerKey.currentState?.pickFiles();
+                                },
+                                child: Text(
+                                  isAvatar
+                                      ? localizations.selectAFile
+                                      : localizations.selectFiles,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(localizations.dragAndDropTheFilesHere),
-                          Text(localizations.orClickTheButton),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final pickedFiles = await _mediaLibrary.pickFiles(
-                                multiple: !isAvatar,
-                                allowedFileTypes: ['image/*'],
-                              );
-
-                              if (pickedFiles != null &&
-                                  pickedFiles.isNotEmpty) {
-                                final filesWithBytes =
-                                    <MapEntry<MediaItem, Uint8List?>>[];
-
-                                for (final fileMap in pickedFiles) {
-                                  final mediaItem = MediaItem.fromMap(fileMap);
-
-                                  Uint8List? bytes;
-                                  if (isWeb) {
-                                    try {
-                                      final fileId =
-                                          fileMap['id']?.toString() ??
-                                          mediaItem.id;
-                                      bytes = await _mediaLibrary.readWebFile(
-                                        fileId,
-                                      );
-                                    } catch (e) {
-                                      bytes = await _mediaLibrary.getFileBytes(
-                                        mediaItem.uri,
-                                      );
-                                    }
-                                  } else {
-                                    bytes = await _mediaLibrary.getFileBytes(
-                                      mediaItem.uri,
-                                    );
-                                  }
-
-                                  filesWithBytes.add(
-                                    MapEntry(mediaItem, bytes),
-                                  );
-                                }
-
-                                if (context.mounted) {
-                                  Navigator.of(context).pop(filesWithBytes);
-                                }
-                              } else {
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              }
-                            },
-                            child: Text(
-                              isAvatar
-                                  ? localizations.selectAFile
-                                  : localizations.selectFiles,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-      );
+          );
 
       if (filesWithBytes != null && filesWithBytes.isNotEmpty) {
         if (isAvatar) {
@@ -350,9 +308,7 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
           return await file.readAsBytes();
         }
       }
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
 
     return null;
   }
@@ -548,6 +504,25 @@ class _UploadsAvatarsScreenState extends State<UploadsAvatarsScreen> {
                   onNavigateToMainHome: _navigateToMainHome,
                 ),
               ],
+            ),
+            bottomNavigationBar: SizedBox(
+              height: 56,
+              child: Center(
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    backgroundColor: Colors.transparent,
+                  ),
+                  onPressed: () {
+                    if (widget.isSkip == true) {
+                      _handleSkipModeNavigation();
+                    } else {
+                      _navigateToMainHome();
+                    }
+                  },
+                  child: Text(localizations.skip),
+                ),
+              ),
             ),
             floatingActionButton: () {
               if (_currentPage == 0 && widget.isSkip == true) {

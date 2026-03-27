@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SearchState {
 
- String get gender; int? get ageFrom; bool get isLoading; bool get isSearching; int? get queuePosition; int? get totalInQueue; List<String> get interests; List<String> get purposes; String get city; bool get verified; List<City> get cities; TemporaryChat? get matchedChat; String get searchStatus; bool get isChatDeliveryConfirmed; String get chatDeliveryStatus;
+ String get gender; int? get ageFrom; bool get isLoading; bool get isSearching; int? get queuePosition; int? get totalInQueue; List<String> get interests; List<String> get purposes; String get city; bool get verified; List<City> get cities; TemporaryChat? get matchedChat; String get searchStatus; bool get isChatDeliveryConfirmed; String get chatDeliveryStatus; int get elapsedSeconds;
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SearchStateCopyWith<SearchState> get copyWith => _$SearchStateCopyWithImpl<Sear
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&(identical(other.queuePosition, queuePosition) || other.queuePosition == queuePosition)&&(identical(other.totalInQueue, totalInQueue) || other.totalInQueue == totalInQueue)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other.cities, cities)&&(identical(other.matchedChat, matchedChat) || other.matchedChat == matchedChat)&&(identical(other.searchStatus, searchStatus) || other.searchStatus == searchStatus)&&(identical(other.isChatDeliveryConfirmed, isChatDeliveryConfirmed) || other.isChatDeliveryConfirmed == isChatDeliveryConfirmed)&&(identical(other.chatDeliveryStatus, chatDeliveryStatus) || other.chatDeliveryStatus == chatDeliveryStatus));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&(identical(other.queuePosition, queuePosition) || other.queuePosition == queuePosition)&&(identical(other.totalInQueue, totalInQueue) || other.totalInQueue == totalInQueue)&&const DeepCollectionEquality().equals(other.interests, interests)&&const DeepCollectionEquality().equals(other.purposes, purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other.cities, cities)&&(identical(other.matchedChat, matchedChat) || other.matchedChat == matchedChat)&&(identical(other.searchStatus, searchStatus) || other.searchStatus == searchStatus)&&(identical(other.isChatDeliveryConfirmed, isChatDeliveryConfirmed) || other.isChatDeliveryConfirmed == isChatDeliveryConfirmed)&&(identical(other.chatDeliveryStatus, chatDeliveryStatus) || other.chatDeliveryStatus == chatDeliveryStatus)&&(identical(other.elapsedSeconds, elapsedSeconds) || other.elapsedSeconds == elapsedSeconds));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,queuePosition,totalInQueue,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),city,verified,const DeepCollectionEquality().hash(cities),matchedChat,searchStatus,isChatDeliveryConfirmed,chatDeliveryStatus);
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,queuePosition,totalInQueue,const DeepCollectionEquality().hash(interests),const DeepCollectionEquality().hash(purposes),city,verified,const DeepCollectionEquality().hash(cities),matchedChat,searchStatus,isChatDeliveryConfirmed,chatDeliveryStatus,elapsedSeconds);
 
 @override
 String toString() {
-  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, queuePosition: $queuePosition, totalInQueue: $totalInQueue, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities, matchedChat: $matchedChat, searchStatus: $searchStatus, isChatDeliveryConfirmed: $isChatDeliveryConfirmed, chatDeliveryStatus: $chatDeliveryStatus)';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, queuePosition: $queuePosition, totalInQueue: $totalInQueue, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities, matchedChat: $matchedChat, searchStatus: $searchStatus, isChatDeliveryConfirmed: $isChatDeliveryConfirmed, chatDeliveryStatus: $chatDeliveryStatus, elapsedSeconds: $elapsedSeconds)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SearchStateCopyWith<$Res>  {
   factory $SearchStateCopyWith(SearchState value, $Res Function(SearchState) _then) = _$SearchStateCopyWithImpl;
 @useResult
 $Res call({
- String gender, int? ageFrom, bool isLoading, bool isSearching, int? queuePosition, int? totalInQueue, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities, TemporaryChat? matchedChat, String searchStatus, bool isChatDeliveryConfirmed, String chatDeliveryStatus
+ String gender, int? ageFrom, bool isLoading, bool isSearching, int? queuePosition, int? totalInQueue, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities, TemporaryChat? matchedChat, String searchStatus, bool isChatDeliveryConfirmed, String chatDeliveryStatus, int elapsedSeconds
 });
 
 
@@ -62,7 +62,7 @@ class _$SearchStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? queuePosition = freezed,Object? totalInQueue = freezed,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,Object? matchedChat = freezed,Object? searchStatus = null,Object? isChatDeliveryConfirmed = null,Object? chatDeliveryStatus = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? queuePosition = freezed,Object? totalInQueue = freezed,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,Object? matchedChat = freezed,Object? searchStatus = null,Object? isChatDeliveryConfirmed = null,Object? chatDeliveryStatus = null,Object? elapsedSeconds = null,}) {
   return _then(_self.copyWith(
 gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
@@ -79,7 +79,8 @@ as List<City>,matchedChat: freezed == matchedChat ? _self.matchedChat : matchedC
 as TemporaryChat?,searchStatus: null == searchStatus ? _self.searchStatus : searchStatus // ignore: cast_nullable_to_non_nullable
 as String,isChatDeliveryConfirmed: null == isChatDeliveryConfirmed ? _self.isChatDeliveryConfirmed : isChatDeliveryConfirmed // ignore: cast_nullable_to_non_nullable
 as bool,chatDeliveryStatus: null == chatDeliveryStatus ? _self.chatDeliveryStatus : chatDeliveryStatus // ignore: cast_nullable_to_non_nullable
-as String,
+as String,elapsedSeconds: null == elapsedSeconds ? _self.elapsedSeconds : elapsedSeconds // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of SearchState
@@ -176,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus,  int elapsedSeconds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SearchState() when $default != null:
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus,_that.elapsedSeconds);case _:
   return orElse();
 
 }
@@ -197,10 +198,10 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus,  int elapsedSeconds)  $default,) {final _that = this;
 switch (_that) {
 case _SearchState():
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus,_that.elapsedSeconds);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +218,10 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String gender,  int? ageFrom,  bool isLoading,  bool isSearching,  int? queuePosition,  int? totalInQueue,  List<String> interests,  List<String> purposes,  String city,  bool verified,  List<City> cities,  TemporaryChat? matchedChat,  String searchStatus,  bool isChatDeliveryConfirmed,  String chatDeliveryStatus,  int elapsedSeconds)?  $default,) {final _that = this;
 switch (_that) {
 case _SearchState() when $default != null:
-return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus);case _:
+return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_that.queuePosition,_that.totalInQueue,_that.interests,_that.purposes,_that.city,_that.verified,_that.cities,_that.matchedChat,_that.searchStatus,_that.isChatDeliveryConfirmed,_that.chatDeliveryStatus,_that.elapsedSeconds);case _:
   return null;
 
 }
@@ -232,7 +233,7 @@ return $default(_that.gender,_that.ageFrom,_that.isLoading,_that.isSearching,_th
 
 
 class _SearchState implements SearchState {
-  const _SearchState({this.gender = '', this.ageFrom, this.isLoading = false, this.isSearching = false, this.queuePosition = 0, this.totalInQueue = 0, final  List<String> interests = const [], final  List<String> purposes = const [], this.city = '', this.verified = false, final  List<City> cities = const [], this.matchedChat, this.searchStatus = '', this.isChatDeliveryConfirmed = false, this.chatDeliveryStatus = ''}): _interests = interests,_purposes = purposes,_cities = cities;
+  const _SearchState({this.gender = '', this.ageFrom, this.isLoading = false, this.isSearching = false, this.queuePosition = 0, this.totalInQueue = 0, final  List<String> interests = const [], final  List<String> purposes = const [], this.city = '', this.verified = false, final  List<City> cities = const [], this.matchedChat, this.searchStatus = '', this.isChatDeliveryConfirmed = false, this.chatDeliveryStatus = '', this.elapsedSeconds = 0}): _interests = interests,_purposes = purposes,_cities = cities;
   
 
 @override@JsonKey() final  String gender;
@@ -268,6 +269,7 @@ class _SearchState implements SearchState {
 @override@JsonKey() final  String searchStatus;
 @override@JsonKey() final  bool isChatDeliveryConfirmed;
 @override@JsonKey() final  String chatDeliveryStatus;
+@override@JsonKey() final  int elapsedSeconds;
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +281,16 @@ _$SearchStateCopyWith<_SearchState> get copyWith => __$SearchStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&(identical(other.queuePosition, queuePosition) || other.queuePosition == queuePosition)&&(identical(other.totalInQueue, totalInQueue) || other.totalInQueue == totalInQueue)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other._cities, _cities)&&(identical(other.matchedChat, matchedChat) || other.matchedChat == matchedChat)&&(identical(other.searchStatus, searchStatus) || other.searchStatus == searchStatus)&&(identical(other.isChatDeliveryConfirmed, isChatDeliveryConfirmed) || other.isChatDeliveryConfirmed == isChatDeliveryConfirmed)&&(identical(other.chatDeliveryStatus, chatDeliveryStatus) || other.chatDeliveryStatus == chatDeliveryStatus));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchState&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.ageFrom, ageFrom) || other.ageFrom == ageFrom)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&(identical(other.queuePosition, queuePosition) || other.queuePosition == queuePosition)&&(identical(other.totalInQueue, totalInQueue) || other.totalInQueue == totalInQueue)&&const DeepCollectionEquality().equals(other._interests, _interests)&&const DeepCollectionEquality().equals(other._purposes, _purposes)&&(identical(other.city, city) || other.city == city)&&(identical(other.verified, verified) || other.verified == verified)&&const DeepCollectionEquality().equals(other._cities, _cities)&&(identical(other.matchedChat, matchedChat) || other.matchedChat == matchedChat)&&(identical(other.searchStatus, searchStatus) || other.searchStatus == searchStatus)&&(identical(other.isChatDeliveryConfirmed, isChatDeliveryConfirmed) || other.isChatDeliveryConfirmed == isChatDeliveryConfirmed)&&(identical(other.chatDeliveryStatus, chatDeliveryStatus) || other.chatDeliveryStatus == chatDeliveryStatus)&&(identical(other.elapsedSeconds, elapsedSeconds) || other.elapsedSeconds == elapsedSeconds));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,queuePosition,totalInQueue,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),city,verified,const DeepCollectionEquality().hash(_cities),matchedChat,searchStatus,isChatDeliveryConfirmed,chatDeliveryStatus);
+int get hashCode => Object.hash(runtimeType,gender,ageFrom,isLoading,isSearching,queuePosition,totalInQueue,const DeepCollectionEquality().hash(_interests),const DeepCollectionEquality().hash(_purposes),city,verified,const DeepCollectionEquality().hash(_cities),matchedChat,searchStatus,isChatDeliveryConfirmed,chatDeliveryStatus,elapsedSeconds);
 
 @override
 String toString() {
-  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, queuePosition: $queuePosition, totalInQueue: $totalInQueue, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities, matchedChat: $matchedChat, searchStatus: $searchStatus, isChatDeliveryConfirmed: $isChatDeliveryConfirmed, chatDeliveryStatus: $chatDeliveryStatus)';
+  return 'SearchState(gender: $gender, ageFrom: $ageFrom, isLoading: $isLoading, isSearching: $isSearching, queuePosition: $queuePosition, totalInQueue: $totalInQueue, interests: $interests, purposes: $purposes, city: $city, verified: $verified, cities: $cities, matchedChat: $matchedChat, searchStatus: $searchStatus, isChatDeliveryConfirmed: $isChatDeliveryConfirmed, chatDeliveryStatus: $chatDeliveryStatus, elapsedSeconds: $elapsedSeconds)';
 }
 
 
@@ -299,7 +301,7 @@ abstract mixin class _$SearchStateCopyWith<$Res> implements $SearchStateCopyWith
   factory _$SearchStateCopyWith(_SearchState value, $Res Function(_SearchState) _then) = __$SearchStateCopyWithImpl;
 @override @useResult
 $Res call({
- String gender, int? ageFrom, bool isLoading, bool isSearching, int? queuePosition, int? totalInQueue, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities, TemporaryChat? matchedChat, String searchStatus, bool isChatDeliveryConfirmed, String chatDeliveryStatus
+ String gender, int? ageFrom, bool isLoading, bool isSearching, int? queuePosition, int? totalInQueue, List<String> interests, List<String> purposes, String city, bool verified, List<City> cities, TemporaryChat? matchedChat, String searchStatus, bool isChatDeliveryConfirmed, String chatDeliveryStatus, int elapsedSeconds
 });
 
 
@@ -316,7 +318,7 @@ class __$SearchStateCopyWithImpl<$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? queuePosition = freezed,Object? totalInQueue = freezed,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,Object? matchedChat = freezed,Object? searchStatus = null,Object? isChatDeliveryConfirmed = null,Object? chatDeliveryStatus = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? gender = null,Object? ageFrom = freezed,Object? isLoading = null,Object? isSearching = null,Object? queuePosition = freezed,Object? totalInQueue = freezed,Object? interests = null,Object? purposes = null,Object? city = null,Object? verified = null,Object? cities = null,Object? matchedChat = freezed,Object? searchStatus = null,Object? isChatDeliveryConfirmed = null,Object? chatDeliveryStatus = null,Object? elapsedSeconds = null,}) {
   return _then(_SearchState(
 gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,ageFrom: freezed == ageFrom ? _self.ageFrom : ageFrom // ignore: cast_nullable_to_non_nullable
@@ -333,7 +335,8 @@ as List<City>,matchedChat: freezed == matchedChat ? _self.matchedChat : matchedC
 as TemporaryChat?,searchStatus: null == searchStatus ? _self.searchStatus : searchStatus // ignore: cast_nullable_to_non_nullable
 as String,isChatDeliveryConfirmed: null == isChatDeliveryConfirmed ? _self.isChatDeliveryConfirmed : isChatDeliveryConfirmed // ignore: cast_nullable_to_non_nullable
 as bool,chatDeliveryStatus: null == chatDeliveryStatus ? _self.chatDeliveryStatus : chatDeliveryStatus // ignore: cast_nullable_to_non_nullable
-as String,
+as String,elapsedSeconds: null == elapsedSeconds ? _self.elapsedSeconds : elapsedSeconds // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

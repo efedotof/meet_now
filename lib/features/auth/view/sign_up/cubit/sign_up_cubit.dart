@@ -6,7 +6,11 @@ import 'package:meet_now_app_server/model/auth/registration/registration.dart';
 import 'package:meet_now_app_server/model/social/city/city.dart';
 import 'package:meet_now_app_server/repository/auth/auth_interface.dart';
 import 'package:meet_now_app_server/repository/city/city_interface.dart';
+import 'package:meet_now_app_server/repository/keys_api/keys_api_interface.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
+import 'package:meet_now_app_server/model/keys/key_upload_request/key_upload_request.dart';
+import 'package:meet_now_app_server/model/keys/salt_upload_request/salt_upload_request.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_keys_interface.dart';
 
 part 'sign_up_state.dart';
 part 'sign_up_cubit.freezed.dart';
@@ -16,14 +20,20 @@ class SignUpCubit extends Cubit<SignUpState> {
     required CityInterface cityInterface,
     required AuthInterface authInterface,
     required UploadImageInterface uploadImageInterface,
+    required RsaKeysInterface rsaKeys,
+    required KeysApiInterface keysApi,
   }) : _cityInterface = cityInterface,
        _uploadImageInterface = uploadImageInterface,
        _authInterface = authInterface,
+       _rsaKeys = rsaKeys,
+       _keysApi = keysApi,
        super(const SignUpState.initial());
 
   final AuthInterface _authInterface;
   final UploadImageInterface _uploadImageInterface;
   final CityInterface _cityInterface;
+  final RsaKeysInterface _rsaKeys;
+  final KeysApiInterface _keysApi;
 
   Future<void> pickAndUploadAvatar(SignUpFormData formData) async {
     try {
@@ -66,7 +76,8 @@ class SignUpCubit extends Cubit<SignUpState> {
       final user = await _authInterface.registration(registration: regData);
 
       if (user.id.isNotEmpty) {
-        emit(const SignUpState.success());
+        await _uploadKeys(user.id, registration.password);
+        emit(const SignUpState.successWithKeys());
       } else {
         emit(
           const SignUpState.error(
@@ -76,6 +87,28 @@ class SignUpCubit extends Cubit<SignUpState> {
       }
     } catch (e) {
       emit(SignUpState.error(error: _getUserFriendlyError(e)));
+    }
+  }
+
+  Future<void> _uploadKeys(String userId, String password) async {
+    try {
+      final keys = await _rsaKeys.generateAndSaveKeysWithPasswordAndReturnSalt(
+        password,
+      );
+      final publicKey = keys.publicKey;
+      final encryptedPrivateKey = keys.encryptedPrivateKey;
+      final salt = keys.salt;
+
+      await _keysApi.uploadKeys(
+        KeyUploadRequest(
+          publicKey: publicKey,
+          encryptedPrivateKey: encryptedPrivateKey,
+        ),
+      );
+      await _keysApi.uploadSalt(SaltUploadRequest(salt: salt));
+    } catch (e) {
+      emit(SignUpState.error(error: 'Ошибка загрузки ключей: $e'));
+      rethrow;
     }
   }
 

@@ -227,10 +227,7 @@ class _ExpandableQuestionCardState extends State<ExpandableQuestionCard>
                             ),
                             SizedBox(height: widget.isMobile ? 8 : 12),
                             ...widget.question.answers.map(
-                              (a) => AnswerCard(
-                                answer: a,
-                                isMobile: widget.isMobile,
-                              ),
+                              (a) => AnswerCard(answer: a),
                             ),
                             if (widget.question.answers.isEmpty)
                               Padding(

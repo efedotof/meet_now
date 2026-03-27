@@ -13,6 +13,7 @@ class WebNavItem extends StatelessWidget {
     this.customSelectedColor,
     this.customUnselectedColor,
     this.customBackgroundColor,
+    this.unreadCount = 0,
   });
 
   final IconData icon;
@@ -25,6 +26,7 @@ class WebNavItem extends StatelessWidget {
   final Color? customSelectedColor;
   final Color? customUnselectedColor;
   final Color? customBackgroundColor;
+  final int unreadCount;
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +68,14 @@ class WebNavItem extends StatelessWidget {
                       )
                       : null,
             ),
-            child: Icon(
-              icon,
-              size: iconSize,
-              color: isActive ? selectedColor : unselectedColor,
+            child: Badge(
+              label: Text('$unreadCount'),
+              isLabelVisible: unreadCount > 0,
+              child: Icon(
+                icon,
+                size: iconSize,
+                color: isActive ? selectedColor : unselectedColor,
+              ),
             ),
           ),
           const SizedBox(height: 4),

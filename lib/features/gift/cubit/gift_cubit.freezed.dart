@@ -12,11 +12,17 @@ part of 'gift_cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$GiftState {
+mixin _$GiftState implements DiagnosticableTreeMixin {
 
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'GiftState'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -28,7 +34,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'GiftState()';
 }
 
@@ -128,12 +134,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  bool isBuyingGift,  GiftView currentView)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Gift> gifts,  List<Gift> allGifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  List<GiftType> allTypes,  Set<String> selectedTypeIds,  String searchQuery,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  PriceRange? selectedPriceRange,  bool isBuyingGift,  GiftView currentView,  BuyGiftResponse? lastPurchaseResponse)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.lastClaimedGift,_that.selectedRarity,_that.isBuyingGift,_that.currentView);case _Error() when error != null:
+return loaded(_that.gifts,_that.allGifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.allTypes,_that.selectedTypeIds,_that.searchQuery,_that.lastClaimedGift,_that.selectedRarity,_that.selectedPriceRange,_that.isBuyingGift,_that.currentView,_that.lastPurchaseResponse);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +158,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  bool isBuyingGift,  GiftView currentView)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Gift> gifts,  List<Gift> allGifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  List<GiftType> allTypes,  Set<String> selectedTypeIds,  String searchQuery,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  PriceRange? selectedPriceRange,  bool isBuyingGift,  GiftView currentView,  BuyGiftResponse? lastPurchaseResponse)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.lastClaimedGift,_that.selectedRarity,_that.isBuyingGift,_that.currentView);case _Error():
+return loaded(_that.gifts,_that.allGifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.allTypes,_that.selectedTypeIds,_that.searchQuery,_that.lastClaimedGift,_that.selectedRarity,_that.selectedPriceRange,_that.isBuyingGift,_that.currentView,_that.lastPurchaseResponse);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +181,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Gift> gifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  bool isBuyingGift,  GiftView currentView)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Gift> gifts,  List<Gift> allGifts,  List<UserInventory> inventory,  bool isDailyGiftAvailable,  int currentStreak,  GiftStats giftStats,  List<GiftRarity> rarities,  List<GiftType> allTypes,  Set<String> selectedTypeIds,  String searchQuery,  Gift? lastClaimedGift,  GiftRarity? selectedRarity,  PriceRange? selectedPriceRange,  bool isBuyingGift,  GiftView currentView,  BuyGiftResponse? lastPurchaseResponse)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.gifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.lastClaimedGift,_that.selectedRarity,_that.isBuyingGift,_that.currentView);case _Error() when error != null:
+return loaded(_that.gifts,_that.allGifts,_that.inventory,_that.isDailyGiftAvailable,_that.currentStreak,_that.giftStats,_that.rarities,_that.allTypes,_that.selectedTypeIds,_that.searchQuery,_that.lastClaimedGift,_that.selectedRarity,_that.selectedPriceRange,_that.isBuyingGift,_that.currentView,_that.lastPurchaseResponse);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -192,7 +198,7 @@ return error(_that.message);case _:
 /// @nodoc
 
 
-class _Initial implements GiftState {
+class _Initial with DiagnosticableTreeMixin implements GiftState {
   const _Initial();
   
 
@@ -200,6 +206,12 @@ class _Initial implements GiftState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'GiftState.initial'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -211,7 +223,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'GiftState.initial()';
 }
 
@@ -224,7 +236,7 @@ String toString() {
 /// @nodoc
 
 
-class _Loading implements GiftState {
+class _Loading with DiagnosticableTreeMixin implements GiftState {
   const _Loading();
   
 
@@ -232,6 +244,12 @@ class _Loading implements GiftState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'GiftState.loading'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -243,7 +261,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'GiftState.loading()';
 }
 
@@ -256,8 +274,8 @@ String toString() {
 /// @nodoc
 
 
-class _Loaded implements GiftState {
-  const _Loaded({required final  List<Gift> gifts, required final  List<UserInventory> inventory, required this.isDailyGiftAvailable, required this.currentStreak, required this.giftStats, required final  List<GiftRarity> rarities, this.lastClaimedGift, this.selectedRarity, this.isBuyingGift = false, this.currentView = GiftView.shop}): _gifts = gifts,_inventory = inventory,_rarities = rarities;
+class _Loaded with DiagnosticableTreeMixin implements GiftState {
+  const _Loaded({required final  List<Gift> gifts, required final  List<Gift> allGifts, required final  List<UserInventory> inventory, required this.isDailyGiftAvailable, required this.currentStreak, required this.giftStats, required final  List<GiftRarity> rarities, required final  List<GiftType> allTypes, required final  Set<String> selectedTypeIds, required this.searchQuery, this.lastClaimedGift, this.selectedRarity, this.selectedPriceRange, this.isBuyingGift = false, this.currentView = GiftView.shop, this.lastPurchaseResponse}): _gifts = gifts,_allGifts = allGifts,_inventory = inventory,_rarities = rarities,_allTypes = allTypes,_selectedTypeIds = selectedTypeIds;
   
 
  final  List<Gift> _gifts;
@@ -265,6 +283,13 @@ class _Loaded implements GiftState {
   if (_gifts is EqualUnmodifiableListView) return _gifts;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_gifts);
+}
+
+ final  List<Gift> _allGifts;
+ List<Gift> get allGifts {
+  if (_allGifts is EqualUnmodifiableListView) return _allGifts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_allGifts);
 }
 
  final  List<UserInventory> _inventory;
@@ -284,10 +309,27 @@ class _Loaded implements GiftState {
   return EqualUnmodifiableListView(_rarities);
 }
 
+ final  List<GiftType> _allTypes;
+ List<GiftType> get allTypes {
+  if (_allTypes is EqualUnmodifiableListView) return _allTypes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_allTypes);
+}
+
+ final  Set<String> _selectedTypeIds;
+ Set<String> get selectedTypeIds {
+  if (_selectedTypeIds is EqualUnmodifiableSetView) return _selectedTypeIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_selectedTypeIds);
+}
+
+ final  String searchQuery;
  final  Gift? lastClaimedGift;
  final  GiftRarity? selectedRarity;
+ final  PriceRange? selectedPriceRange;
 @JsonKey() final  bool isBuyingGift;
 @JsonKey() final  GiftView currentView;
+ final  BuyGiftResponse? lastPurchaseResponse;
 
 /// Create a copy of GiftState
 /// with the given fields replaced by the non-null parameter values.
@@ -296,19 +338,25 @@ class _Loaded implements GiftState {
 _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'GiftState.loaded'))
+    ..add(DiagnosticsProperty('gifts', gifts))..add(DiagnosticsProperty('allGifts', allGifts))..add(DiagnosticsProperty('inventory', inventory))..add(DiagnosticsProperty('isDailyGiftAvailable', isDailyGiftAvailable))..add(DiagnosticsProperty('currentStreak', currentStreak))..add(DiagnosticsProperty('giftStats', giftStats))..add(DiagnosticsProperty('rarities', rarities))..add(DiagnosticsProperty('allTypes', allTypes))..add(DiagnosticsProperty('selectedTypeIds', selectedTypeIds))..add(DiagnosticsProperty('searchQuery', searchQuery))..add(DiagnosticsProperty('lastClaimedGift', lastClaimedGift))..add(DiagnosticsProperty('selectedRarity', selectedRarity))..add(DiagnosticsProperty('selectedPriceRange', selectedPriceRange))..add(DiagnosticsProperty('isBuyingGift', isBuyingGift))..add(DiagnosticsProperty('currentView', currentView))..add(DiagnosticsProperty('lastPurchaseResponse', lastPurchaseResponse));
+}
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._gifts, _gifts)&&const DeepCollectionEquality().equals(other._inventory, _inventory)&&(identical(other.isDailyGiftAvailable, isDailyGiftAvailable) || other.isDailyGiftAvailable == isDailyGiftAvailable)&&(identical(other.currentStreak, currentStreak) || other.currentStreak == currentStreak)&&(identical(other.giftStats, giftStats) || other.giftStats == giftStats)&&const DeepCollectionEquality().equals(other._rarities, _rarities)&&(identical(other.lastClaimedGift, lastClaimedGift) || other.lastClaimedGift == lastClaimedGift)&&(identical(other.selectedRarity, selectedRarity) || other.selectedRarity == selectedRarity)&&(identical(other.isBuyingGift, isBuyingGift) || other.isBuyingGift == isBuyingGift)&&(identical(other.currentView, currentView) || other.currentView == currentView));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._gifts, _gifts)&&const DeepCollectionEquality().equals(other._allGifts, _allGifts)&&const DeepCollectionEquality().equals(other._inventory, _inventory)&&(identical(other.isDailyGiftAvailable, isDailyGiftAvailable) || other.isDailyGiftAvailable == isDailyGiftAvailable)&&(identical(other.currentStreak, currentStreak) || other.currentStreak == currentStreak)&&(identical(other.giftStats, giftStats) || other.giftStats == giftStats)&&const DeepCollectionEquality().equals(other._rarities, _rarities)&&const DeepCollectionEquality().equals(other._allTypes, _allTypes)&&const DeepCollectionEquality().equals(other._selectedTypeIds, _selectedTypeIds)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.lastClaimedGift, lastClaimedGift) || other.lastClaimedGift == lastClaimedGift)&&(identical(other.selectedRarity, selectedRarity) || other.selectedRarity == selectedRarity)&&(identical(other.selectedPriceRange, selectedPriceRange) || other.selectedPriceRange == selectedPriceRange)&&(identical(other.isBuyingGift, isBuyingGift) || other.isBuyingGift == isBuyingGift)&&(identical(other.currentView, currentView) || other.currentView == currentView)&&(identical(other.lastPurchaseResponse, lastPurchaseResponse) || other.lastPurchaseResponse == lastPurchaseResponse));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_gifts),const DeepCollectionEquality().hash(_inventory),isDailyGiftAvailable,currentStreak,giftStats,const DeepCollectionEquality().hash(_rarities),lastClaimedGift,selectedRarity,isBuyingGift,currentView);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_gifts),const DeepCollectionEquality().hash(_allGifts),const DeepCollectionEquality().hash(_inventory),isDailyGiftAvailable,currentStreak,giftStats,const DeepCollectionEquality().hash(_rarities),const DeepCollectionEquality().hash(_allTypes),const DeepCollectionEquality().hash(_selectedTypeIds),searchQuery,lastClaimedGift,selectedRarity,selectedPriceRange,isBuyingGift,currentView,lastPurchaseResponse);
 
 @override
-String toString() {
-  return 'GiftState.loaded(gifts: $gifts, inventory: $inventory, isDailyGiftAvailable: $isDailyGiftAvailable, currentStreak: $currentStreak, giftStats: $giftStats, rarities: $rarities, lastClaimedGift: $lastClaimedGift, selectedRarity: $selectedRarity, isBuyingGift: $isBuyingGift, currentView: $currentView)';
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'GiftState.loaded(gifts: $gifts, allGifts: $allGifts, inventory: $inventory, isDailyGiftAvailable: $isDailyGiftAvailable, currentStreak: $currentStreak, giftStats: $giftStats, rarities: $rarities, allTypes: $allTypes, selectedTypeIds: $selectedTypeIds, searchQuery: $searchQuery, lastClaimedGift: $lastClaimedGift, selectedRarity: $selectedRarity, selectedPriceRange: $selectedPriceRange, isBuyingGift: $isBuyingGift, currentView: $currentView, lastPurchaseResponse: $lastPurchaseResponse)';
 }
 
 
@@ -319,11 +367,11 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $GiftStateCopyWith<$Res> 
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Gift> gifts, List<UserInventory> inventory, bool isDailyGiftAvailable, int currentStreak, GiftStats giftStats, List<GiftRarity> rarities, Gift? lastClaimedGift, GiftRarity? selectedRarity, bool isBuyingGift, GiftView currentView
+ List<Gift> gifts, List<Gift> allGifts, List<UserInventory> inventory, bool isDailyGiftAvailable, int currentStreak, GiftStats giftStats, List<GiftRarity> rarities, List<GiftType> allTypes, Set<String> selectedTypeIds, String searchQuery, Gift? lastClaimedGift, GiftRarity? selectedRarity, PriceRange? selectedPriceRange, bool isBuyingGift, GiftView currentView, BuyGiftResponse? lastPurchaseResponse
 });
 
 
-$GiftStatsCopyWith<$Res> get giftStats;$GiftCopyWith<$Res>? get lastClaimedGift;$GiftRarityCopyWith<$Res>? get selectedRarity;
+$GiftStatsCopyWith<$Res> get giftStats;$GiftCopyWith<$Res>? get lastClaimedGift;$GiftRarityCopyWith<$Res>? get selectedRarity;$BuyGiftResponseCopyWith<$Res>? get lastPurchaseResponse;
 
 }
 /// @nodoc
@@ -336,19 +384,25 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of GiftState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? gifts = null,Object? inventory = null,Object? isDailyGiftAvailable = null,Object? currentStreak = null,Object? giftStats = null,Object? rarities = null,Object? lastClaimedGift = freezed,Object? selectedRarity = freezed,Object? isBuyingGift = null,Object? currentView = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? gifts = null,Object? allGifts = null,Object? inventory = null,Object? isDailyGiftAvailable = null,Object? currentStreak = null,Object? giftStats = null,Object? rarities = null,Object? allTypes = null,Object? selectedTypeIds = null,Object? searchQuery = null,Object? lastClaimedGift = freezed,Object? selectedRarity = freezed,Object? selectedPriceRange = freezed,Object? isBuyingGift = null,Object? currentView = null,Object? lastPurchaseResponse = freezed,}) {
   return _then(_Loaded(
 gifts: null == gifts ? _self._gifts : gifts // ignore: cast_nullable_to_non_nullable
+as List<Gift>,allGifts: null == allGifts ? _self._allGifts : allGifts // ignore: cast_nullable_to_non_nullable
 as List<Gift>,inventory: null == inventory ? _self._inventory : inventory // ignore: cast_nullable_to_non_nullable
 as List<UserInventory>,isDailyGiftAvailable: null == isDailyGiftAvailable ? _self.isDailyGiftAvailable : isDailyGiftAvailable // ignore: cast_nullable_to_non_nullable
 as bool,currentStreak: null == currentStreak ? _self.currentStreak : currentStreak // ignore: cast_nullable_to_non_nullable
 as int,giftStats: null == giftStats ? _self.giftStats : giftStats // ignore: cast_nullable_to_non_nullable
 as GiftStats,rarities: null == rarities ? _self._rarities : rarities // ignore: cast_nullable_to_non_nullable
-as List<GiftRarity>,lastClaimedGift: freezed == lastClaimedGift ? _self.lastClaimedGift : lastClaimedGift // ignore: cast_nullable_to_non_nullable
+as List<GiftRarity>,allTypes: null == allTypes ? _self._allTypes : allTypes // ignore: cast_nullable_to_non_nullable
+as List<GiftType>,selectedTypeIds: null == selectedTypeIds ? _self._selectedTypeIds : selectedTypeIds // ignore: cast_nullable_to_non_nullable
+as Set<String>,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
+as String,lastClaimedGift: freezed == lastClaimedGift ? _self.lastClaimedGift : lastClaimedGift // ignore: cast_nullable_to_non_nullable
 as Gift?,selectedRarity: freezed == selectedRarity ? _self.selectedRarity : selectedRarity // ignore: cast_nullable_to_non_nullable
-as GiftRarity?,isBuyingGift: null == isBuyingGift ? _self.isBuyingGift : isBuyingGift // ignore: cast_nullable_to_non_nullable
+as GiftRarity?,selectedPriceRange: freezed == selectedPriceRange ? _self.selectedPriceRange : selectedPriceRange // ignore: cast_nullable_to_non_nullable
+as PriceRange?,isBuyingGift: null == isBuyingGift ? _self.isBuyingGift : isBuyingGift // ignore: cast_nullable_to_non_nullable
 as bool,currentView: null == currentView ? _self.currentView : currentView // ignore: cast_nullable_to_non_nullable
-as GiftView,
+as GiftView,lastPurchaseResponse: freezed == lastPurchaseResponse ? _self.lastPurchaseResponse : lastPurchaseResponse // ignore: cast_nullable_to_non_nullable
+as BuyGiftResponse?,
   ));
 }
 
@@ -385,13 +439,25 @@ $GiftRarityCopyWith<$Res>? get selectedRarity {
   return $GiftRarityCopyWith<$Res>(_self.selectedRarity!, (value) {
     return _then(_self.copyWith(selectedRarity: value));
   });
+}/// Create a copy of GiftState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BuyGiftResponseCopyWith<$Res>? get lastPurchaseResponse {
+    if (_self.lastPurchaseResponse == null) {
+    return null;
+  }
+
+  return $BuyGiftResponseCopyWith<$Res>(_self.lastPurchaseResponse!, (value) {
+    return _then(_self.copyWith(lastPurchaseResponse: value));
+  });
 }
 }
 
 /// @nodoc
 
 
-class _Error implements GiftState {
+class _Error with DiagnosticableTreeMixin implements GiftState {
   const _Error(this.message);
   
 
@@ -404,6 +470,12 @@ class _Error implements GiftState {
 _$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'GiftState.error'))
+    ..add(DiagnosticsProperty('message', message));
+}
 
 @override
 bool operator ==(Object other) {
@@ -415,7 +487,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,message);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'GiftState.error(message: $message)';
 }
 

@@ -1,15 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/gift/widget/gift_item.dart';
-import 'package:meet_now_app/features/gift/widget/skeleton_gift_grid.dart';
 import 'package:meet_now_app_server/model/gifts/gift/gift.dart';
 import 'package:meet_now_app_server/repository/upload_image/upload_image_interface.dart';
 
 class GiftShopGrid extends StatefulWidget {
   final List<Gift> gifts;
   final Function(Gift) onGiftTap;
-  final Function(Gift) onBuyGift;
+  final void Function(Gift) onBuyGift;
   final bool isMobile;
 
   const GiftShopGrid({
@@ -71,9 +69,6 @@ class _GiftShopGridState extends State<GiftShopGrid>
         _processedGiftsCache[gift.id] = processedGift;
       } catch (e) {
         _processedGiftsCache[gift.id] = gift;
-        if (kDebugMode) {
-          print('Ошибка при обработке URL для подарка ${gift.id}: $e');
-        }
       }
     }
 
@@ -103,7 +98,6 @@ class _GiftShopGridState extends State<GiftShopGrid>
       for (final id in removedIds) {
         _processedGiftsCache.remove(id);
       }
-
       _processGiftsUrls();
     }
   }
@@ -113,7 +107,7 @@ class _GiftShopGridState extends State<GiftShopGrid>
     super.build(context);
 
     if (widget.gifts.isEmpty || _processedGiftsCache.isEmpty) {
-      return SkeletonGiftGrid(isMobile: widget.isMobile);
+      return const Center(child: CircularProgressIndicator());
     }
 
     final giftsToDisplay =
@@ -125,9 +119,9 @@ class _GiftShopGridState extends State<GiftShopGrid>
       padding: EdgeInsets.all(widget.isMobile ? 16 : 24),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: widget.isMobile ? 2 : 3,
-        crossAxisSpacing: widget.isMobile ? 16 : 20,
-        mainAxisSpacing: widget.isMobile ? 16 : 20,
-        childAspectRatio: widget.isMobile ? 0.8 : 0.85,
+        crossAxisSpacing: widget.isMobile ? 16 : 24,
+        mainAxisSpacing: widget.isMobile ? 16 : 24,
+        childAspectRatio: widget.isMobile ? 0.75 : 0.8,
       ),
       itemCount: widget.gifts.length,
       itemBuilder: (context, index) {

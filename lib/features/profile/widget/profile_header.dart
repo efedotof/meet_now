@@ -7,6 +7,50 @@ class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.user});
   final User user;
 
+  String? _getRoleIconAsset() {
+    final roles = user.roles;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return 'assets/amp.png';
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return 'assets/am.png';
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return 'assets/ap.png';
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return 'assets/mp.png';
+    } else if (roles.contains("ADMIN")) {
+      return 'assets/administration.png';
+    } else if (roles.contains("MODERATION")) {
+      return 'assets/moderator.png';
+    } else if (roles.contains("PREMIUM")) {
+      return 'assets/prem.png';
+    }
+    return null;
+  }
+
+  String? _getRoleTooltipMessage(BuildContext context) {
+    final roles = user.roles;
+    if (roles.contains("ADMIN") &&
+        roles.contains("MODERATION") &&
+        roles.contains("PREMIUM")) {
+      return S.of(context).administratorModeratorPremium;
+    } else if (roles.contains("ADMIN") && roles.contains("MODERATION")) {
+      return S.of(context).administratorModerator;
+    } else if (roles.contains("ADMIN") && roles.contains("PREMIUM")) {
+      return S.of(context).administratorPremium;
+    } else if (roles.contains("MODERATION") && roles.contains("PREMIUM")) {
+      return S.of(context).moderatorPremium;
+    } else if (roles.contains("ADMIN")) {
+      return S.of(context).administrator;
+    } else if (roles.contains("MODERATION")) {
+      return S.of(context).moderator;
+    } else if (roles.contains("PREMIUM")) {
+      return S.of(context).premium;
+    }
+    return null;
+  }
+
   String getGender(BuildContext context, String floor) {
     if (floor == "male") {
       return S.of(context).male;
@@ -17,6 +61,9 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final roleIconAsset = _getRoleIconAsset();
+    final roleTooltip = _getRoleTooltipMessage(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -82,7 +129,7 @@ class ProfileHeader extends StatelessWidget {
                             ),
                           if (user.verified)
                             Tooltip(
-                              message: S.of(context).confirmed,
+                              message: S.of(context).verifiedAccount,
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Image.asset(
@@ -90,32 +137,23 @@ class ProfileHeader extends StatelessWidget {
                                   width: 20,
                                   height: 20,
                                   filterQuality: FilterQuality.none,
+                                  cacheWidth: 40,
+                                  cacheHeight: 40,
                                 ),
                               ),
                             ),
-                          if (user.roles.contains("ADMIN"))
+                          if (roleIconAsset != null && roleTooltip != null)
                             Tooltip(
-                              message: S.of(context).administrator,
+                              message: roleTooltip,
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Image.asset(
-                                  'assets/administration.png',
+                                  roleIconAsset,
                                   width: 20,
                                   height: 20,
                                   filterQuality: FilterQuality.none,
-                                ),
-                              ),
-                            ),
-                          if (user.roles.contains("MODERATION"))
-                            Tooltip(
-                              message: S.of(context).moderator,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Image.asset(
-                                  'assets/moderator.png',
-                                  width: 20,
-                                  height: 20,
-                                  filterQuality: FilterQuality.none,
+                                  cacheWidth: 40,
+                                  cacheHeight: 40,
                                 ),
                               ),
                             ),
@@ -130,30 +168,33 @@ class ProfileHeader extends StatelessWidget {
                     constraints: const BoxConstraints(
                       maxWidth: double.infinity,
                     ),
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: [
-                        if (user.age != null)
-                          Text(
-                            '${user.age} ${S.of(context).years}',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        if (user.age != null && user.city != null)
-                          const Text(
-                            '•',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.bold,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          if (user.age != null)
+                            Text(
+                              '${user.age} ${S.of(context).years}',
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                          ),
-                        if (user.city != null)
-                          Text(
-                            user.city!,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                      ],
+                          if (user.age != null && user.city != null)
+                            const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          if (user.city != null)
+                            Text(
+                              user.city!,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 const SizedBox(height: 4),
@@ -164,6 +205,14 @@ class ProfileHeader extends StatelessWidget {
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
                   ),
+                Text(
+                  user.isCardMode!
+                      ? S.of(context).theModeIsActivated
+                      : S.of(context).modeNotActivated,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                ),
               ],
             ),
           ),

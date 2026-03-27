@@ -17,6 +17,7 @@ final dartTheme = ThemeData(
       fontWeight: FontWeight.normal,
     ),
   ),
+
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Color(0xFF111010),
     selectedItemColor: Colors.white,

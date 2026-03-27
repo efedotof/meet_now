@@ -20,20 +20,58 @@ class DailyGiftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: EdgeInsets.all(isMobile ? 16 : 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            blurRadius: 12,
+            spreadRadius: 1,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
         padding: EdgeInsets.all(isMobile ? 16 : 20),
         child: Column(
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.card_giftcard,
-                  size: isMobile ? 40 : 48,
-                  color: Colors.amber,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.amber.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(12),
+                  child: Icon(
+                    Icons.card_giftcard,
+                    size: isMobile ? 32 : 40,
+                    color: Colors.white,
+                  ),
                 ),
-                SizedBox(width: isMobile ? 16 : 20),
+                SizedBox(width: isMobile ? 12 : 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

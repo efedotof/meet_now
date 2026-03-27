@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meet_now_app/features/search/cubit/search_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/search/search_cubit.dart';
 
 class GenderToggle extends StatefulWidget {
   const GenderToggle({super.key});
@@ -58,7 +58,13 @@ class _GenderToggleState extends State<GenderToggle> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () => cubit.selectGender(gender),
+                      onTap: () {
+                        if (state.gender == gender) {
+                          cubit.selectGender('');
+                        } else {
+                          cubit.selectGender(gender);
+                        }
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         child: Center(

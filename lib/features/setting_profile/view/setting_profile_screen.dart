@@ -198,6 +198,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
 
           await _handleAvatarSelection(firstItem.uri, bytes);
         } else {
+          if (!mounted) return;
           _showErrorSnackBar(S.of(context).couldntGetFileData);
         }
       }
@@ -266,9 +267,7 @@ class _SettingProfileScreenState extends State<SettingProfileScreen> {
           return await file.readAsBytes();
         }
       }
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
 
     return null;
   }

@@ -1,0 +1,1 @@
+void updateWebBackground(bool isDark) {}

@@ -6,15 +6,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meet_now_app/features/profile/widget/widget.dart';
 import 'package:meet_now_app/features/settings/cubit/settings_cubit.dart';
 import 'package:meet_now_app/features/settings/cubit/user_date_cubit.dart';
+import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 
 @RoutePage()
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key, this.friendRequest, this.otherUser});
+  const ProfileScreen({
+    super.key,
+    this.friendRequest,
+    this.otherUser,
+    this.userId,
+  });
   final FriendRequest? friendRequest;
   final User? otherUser;
+  final String? userId;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -25,6 +32,10 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool _isMobileLayout = false;
   static const double mobileBreakpoint = 768;
 
+  User? _loadedUser;
+  bool _isLoading = false;
+  String? _error;
+
   @override
   void initState() {
     super.initState();
@@ -32,12 +43,12 @@ class _ProfileScreenState extends State<ProfileScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLayout();
     });
-  }
 
-  User? getUser(BuildContext context) {
-    if (widget.friendRequest != null) return widget.friendRequest!.toUser();
-    if (widget.otherUser != null) return widget.otherUser!;
-    return context.read<UserModelAppInterface>().user;
+    if (widget.userId != null &&
+        widget.otherUser == null &&
+        widget.friendRequest == null) {
+      _loadUser();
+    }
   }
 
   @override
@@ -65,6 +76,57 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
+  Future<void> _loadUser() async {
+    if (widget.userId == null) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final user = await context.read<UserInterface>().getOtherUser(
+        userId: widget.userId!,
+      );
+      if (mounted) {
+        setState(() {
+          _loadedUser = user;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = S.of(context).userUploadError;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  User? getUser(BuildContext context) {
+    if (_loadedUser != null) return _loadedUser;
+    if (widget.friendRequest != null) return widget.friendRequest!.toUser();
+    if (widget.otherUser != null) return widget.otherUser!;
+    return context.read<UserModelAppInterface>().user;
+  }
+
+  bool _isCurrentUser(BuildContext context) {
+    final displayedUser = getUser(context);
+    final currentUser = context.read<UserModelAppInterface>().user;
+    if (displayedUser == null || currentUser == null) return false;
+    return displayedUser.id == currentUser.id;
+  }
+
+  Future<void> _refreshData() async {
+    if (widget.userId != null &&
+        widget.otherUser == null &&
+        widget.friendRequest == null &&
+        _loadedUser != null) {
+      await _loadUser();
+    } else {
+      await context.read<UserDateCubit>().refreshUser();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -82,6 +144,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     final theme = Theme.of(context);
     final userModel = getUser(context);
+
+    final bool showSkeleton = _isLoading || userModel == null;
 
     return SkeletonTheme(
       shimmerGradient: const LinearGradient(
@@ -106,98 +170,103 @@ class _ProfileScreenState extends State<ProfileScreen>
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             return RefreshIndicator(
-              onRefresh: () => context.read<UserDateCubit>().refreshUser(),
+              onRefresh: _refreshData,
               child: SafeArea(
                 child: Stack(
                   children: [
-                    userModel == null
-                        ? const ProfileSkeleton()
-                        : SingleChildScrollView(
-                          padding:
-                              useDesktopLayout
-                                  ? const EdgeInsets.symmetric(
-                                    horizontal: 0,
-                                    vertical: 12,
-                                  )
-                                  : const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                          child:
-                              useDesktopLayout
-                                  ? Center(
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: 500,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          const SizedBox(height: 30),
-                                          ProfileHeader(user: userModel),
-                                          const SizedBox(height: 10),
-                                          PersonalInfo(
-                                            theme: theme,
-                                            user: userModel,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          InterestsSection(
-                                            theme: theme,
-                                            user: userModel,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          PurposesSection(
-                                            theme: theme,
-                                            user: userModel,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          if (userModel.images != null &&
-                                              userModel.images!.isNotEmpty &&
-                                              widget.otherUser == null) ...[
-                                            UserPhotosSection(
-                                              images: userModel.images!,
-                                            ),
-                                            const SizedBox(height: 20),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                  : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      const SizedBox(height: 30),
-                                      ProfileHeader(user: userModel),
-                                      const SizedBox(height: 10),
-                                      PersonalInfo(
-                                        theme: theme,
-                                        user: userModel,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      InterestsSection(
-                                        theme: theme,
-                                        user: userModel,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      PurposesSection(
-                                        theme: theme,
-                                        user: userModel,
-                                      ),
-                                      const SizedBox(height: 16),
-                                      if (userModel.images != null &&
-                                          userModel.images!.isNotEmpty &&
-                                          widget.otherUser == null) ...[
-                                        UserPhotosSection(
-                                          images: userModel.images!,
-                                        ),
-                                        const SizedBox(height: 20),
-                                      ],
-                                    ],
-                                  ),
+                    if (_error != null)
+                      Center(
+                        child: Text(
+                          _error!,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.error,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
+                      )
+                    else if (showSkeleton)
+                      const ProfileSkeleton()
+                    else
+                      SingleChildScrollView(
+                        padding:
+                            useDesktopLayout
+                                ? const EdgeInsets.symmetric(
+                                  horizontal: 0,
+                                  vertical: 12,
+                                )
+                                : const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                        child:
+                            useDesktopLayout
+                                ? Center(
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 500,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        const SizedBox(height: 30),
+                                        ProfileHeader(user: userModel),
+                                        const SizedBox(height: 10),
+                                        PersonalInfo(
+                                          theme: theme,
+                                          user: userModel,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        InterestsSection(
+                                          theme: theme,
+                                          user: userModel,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        PurposesSection(
+                                          theme: theme,
+                                          user: userModel,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        if (userModel.images != null &&
+                                            userModel.images!.isNotEmpty &&
+                                            !_isCurrentUser(context)) ...[
+                                          UserPhotosSection(
+                                            images: userModel.images!,
+                                          ),
+                                          const SizedBox(height: 20),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                : Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    const SizedBox(height: 30),
+                                    ProfileHeader(user: userModel),
+                                    const SizedBox(height: 10),
+                                    PersonalInfo(theme: theme, user: userModel),
+                                    const SizedBox(height: 16),
+                                    InterestsSection(
+                                      theme: theme,
+                                      user: userModel,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    PurposesSection(
+                                      theme: theme,
+                                      user: userModel,
+                                    ),
+                                    const SizedBox(height: 16),
 
+                                    UserPhotosSection(
+                                      images: userModel.images ?? [],
+                                      showAddButton: _isCurrentUser(context),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                      ),
                     Positioned(
                       left: 12,
                       top: 12,
@@ -218,8 +287,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ),
                       ),
                     ),
-                    if (widget.friendRequest == null &&
-                        widget.otherUser == null)
+
+                    if (_isCurrentUser(context))
                       Positioned(
                         right: 12,
                         top: 12,

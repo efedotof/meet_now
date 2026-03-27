@@ -3,7 +3,7 @@ description: "A new Flutter project."
 publish_to: 'none' 
 
 
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.7.2
@@ -17,51 +17,53 @@ dependencies:
     git:
       url: https://github.com/efedotof/meet_now_app_server.git
       path: .
-      ref: c6550b903ae4d5a0face19fff3fc120f1355bdab
+      ref: 4fe28ee60b55f661ebd757e8e13ab876fb2ca9a6
   media_ui_package:
     git:
       url: https://github.com/efedotof/media_ui_package.git
       path: .
-      ref: c822ea44a99bb1ed3670316354fc12d77c66a82a
+      ref: 316a0fc2fb243c1c14769754363c3984ce2c68ba
 
   cupertino_icons: ^1.0.8
-  bloc: ^9.0.0
+  bloc: ^9.2.0
   flutter_bloc: ^9.1.1
   freezed_annotation: ^3.1.0
-  json_annotation: ^4.9.0
-  dio: ^5.8.0+1
+  json_annotation: ^4.11.0
+  dio: ^5.9.2
   web_socket: ^1.0.1
   cached_network_image: ^3.4.1
-  hive_ce: ^2.11.3
-  hive_ce_flutter: ^2.3.1
-  shared_preferences: ^2.5.3
-  pretty_qr_code: ^3.4.0
-  auto_route: ^10.1.0+1
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
+  shared_preferences: ^2.5.4
+  pretty_qr_code: ^3.6.0
+  auto_route: ^11.1.0
   encrypt: ^5.0.3
-  file_picker: ^10.2.0
+  file_picker: ^10.3.10
   intl: ^0.20.2
   stomp_dart_client: ^2.1.3
-  mobile_scanner: ^7.0.1
+  mobile_scanner: ^7.2.0
   universal_platform: ^1.1.0
   pin_code_fields: ^8.0.1
   path_provider: ^2.1.5
   url_launcher: ^6.3.2
   photo_view: ^0.15.0
   webview_flutter: ^4.13.1
-  webview_flutter_android: ^4.10.11
-  webview_flutter_wkwebview: ^3.23.5
+  webview_flutter_android: ^4.10.13
+  webview_flutter_wkwebview: ^3.24.0
   mime: ^2.0.0
-  video_player: ^2.10.0
+  video_player: ^2.11.1
   icons_launcher: ^3.0.3
   skeletons_forked : ^0.0.4
-  firebase_core: ^4.2.1
-  firebase_messaging: ^16.0.4
+  firebase_core: ^4.5.0
+  firebase_messaging: ^16.1.2
   flutter_local_notifications: ^19.5.0
   random_avatar: ^0.0.8
   flutter_cache_manager: ^3.4.1
   change_package_name: ^1.1.0
-  syncfusion_flutter_pdf: ^32.1.25
+  syncfusion_flutter_pdf: ^32.2.9
   flutter_html: ^3.0.0
+  yandex_mobileads: ^7.18.0
+  package_info_plus: ^9.0.0
 
 
 icons_launcher:
@@ -84,12 +86,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
-  build_runner: ^2.5.4
-  freezed: ^3.1.0
-  json_serializable: ^6.9.5
-  hive_ce_generator: ^1.9.2
-  auto_route_generator: ^10.1.0
+  flutter_lints: ^6.0.0
+  build_runner: ^2.12.2
+  freezed: ^3.2.5
+  json_serializable: ^6.13.0
+  hive_ce_generator: ^1.11.1
+  auto_route_generator: ^10.5.0
 
 flutter:
   uses-material-design: true
@@ -97,6 +99,11 @@ flutter:
     - assets/administration.png
     - assets/moderator.png
     - assets/verify.png
+    - assets/prem.png
+    - assets/amp.png
+    - assets/mp.png
+    - assets/ap.png
+    - assets/am.png
     - assets/logo.png
     - assets/chat_bg/fone1.png
     - assets/chat_bg/fone2.png

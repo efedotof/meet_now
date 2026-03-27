@@ -55,14 +55,15 @@ extension SignInStatePatterns on SignInState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Error value)?  error,TResult Function( _Success value)?  success,TResult Function( _Loading value)?  loading,TResult Function( _NoEmpty value)?  noEmpty,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Error value)?  error,TResult Function( _Success value)?  success,TResult Function( _Loading value)?  loading,TResult Function( _LoadingKeys value)?  loadingKeys,TResult Function( _NoEmpty value)?  noEmpty,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Error() when error != null:
 return error(_that);case _Success() when success != null:
 return success(_that);case _Loading() when loading != null:
-return loading(_that);case _NoEmpty() when noEmpty != null:
+return loading(_that);case _LoadingKeys() when loadingKeys != null:
+return loadingKeys(_that);case _NoEmpty() when noEmpty != null:
 return noEmpty(_that);case _:
   return orElse();
 
@@ -81,14 +82,15 @@ return noEmpty(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Error value)  error,required TResult Function( _Success value)  success,required TResult Function( _Loading value)  loading,required TResult Function( _NoEmpty value)  noEmpty,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Error value)  error,required TResult Function( _Success value)  success,required TResult Function( _Loading value)  loading,required TResult Function( _LoadingKeys value)  loadingKeys,required TResult Function( _NoEmpty value)  noEmpty,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Error():
 return error(_that);case _Success():
 return success(_that);case _Loading():
-return loading(_that);case _NoEmpty():
+return loading(_that);case _LoadingKeys():
+return loadingKeys(_that);case _NoEmpty():
 return noEmpty(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -106,14 +108,15 @@ return noEmpty(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Error value)?  error,TResult? Function( _Success value)?  success,TResult? Function( _Loading value)?  loading,TResult? Function( _NoEmpty value)?  noEmpty,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Error value)?  error,TResult? Function( _Success value)?  success,TResult? Function( _Loading value)?  loading,TResult? Function( _LoadingKeys value)?  loadingKeys,TResult? Function( _NoEmpty value)?  noEmpty,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Error() when error != null:
 return error(_that);case _Success() when success != null:
 return success(_that);case _Loading() when loading != null:
-return loading(_that);case _NoEmpty() when noEmpty != null:
+return loading(_that);case _LoadingKeys() when loadingKeys != null:
+return loadingKeys(_that);case _NoEmpty() when noEmpty != null:
 return noEmpty(_that);case _:
   return null;
 
@@ -131,13 +134,14 @@ return noEmpty(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String error)?  error,TResult Function()?  success,TResult Function()?  loading,TResult Function()?  noEmpty,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String error)?  error,TResult Function()?  success,TResult Function()?  loading,TResult Function()?  loadingKeys,TResult Function()?  noEmpty,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Error() when error != null:
 return error(_that.error);case _Success() when success != null:
 return success();case _Loading() when loading != null:
-return loading();case _NoEmpty() when noEmpty != null:
+return loading();case _LoadingKeys() when loadingKeys != null:
+return loadingKeys();case _NoEmpty() when noEmpty != null:
 return noEmpty();case _:
   return orElse();
 
@@ -156,13 +160,14 @@ return noEmpty();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String error)  error,required TResult Function()  success,required TResult Function()  loading,required TResult Function()  noEmpty,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String error)  error,required TResult Function()  success,required TResult Function()  loading,required TResult Function()  loadingKeys,required TResult Function()  noEmpty,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Error():
 return error(_that.error);case _Success():
 return success();case _Loading():
-return loading();case _NoEmpty():
+return loading();case _LoadingKeys():
+return loadingKeys();case _NoEmpty():
 return noEmpty();case _:
   throw StateError('Unexpected subclass');
 
@@ -180,13 +185,14 @@ return noEmpty();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String error)?  error,TResult? Function()?  success,TResult? Function()?  loading,TResult? Function()?  noEmpty,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String error)?  error,TResult? Function()?  success,TResult? Function()?  loading,TResult? Function()?  loadingKeys,TResult? Function()?  noEmpty,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Error() when error != null:
 return error(_that.error);case _Success() when success != null:
 return success();case _Loading() when loading != null:
-return loading();case _NoEmpty() when noEmpty != null:
+return loading();case _LoadingKeys() when loadingKeys != null:
+return loadingKeys();case _NoEmpty() when noEmpty != null:
 return noEmpty();case _:
   return null;
 
@@ -349,6 +355,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'SignInState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _LoadingKeys implements SignInState {
+  const _LoadingKeys();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadingKeys);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SignInState.loadingKeys()';
 }
 
 

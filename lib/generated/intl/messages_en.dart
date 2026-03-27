@@ -30,11 +30,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "ITSDECIDED": MessageLookupByLibrary.simpleMessage("RESOLVED"),
     "Minuttt": MessageLookupByLibrary.simpleMessage("m"),
     "RECEIVED": MessageLookupByLibrary.simpleMessage("RECEIVED"),
+    "aSearchIsUnderway": MessageLookupByLibrary.simpleMessage(
+      "A search is underway:",
+    ),
     "a_daily_gift": MessageLookupByLibrary.simpleMessage("A daily gift"),
     "aboutApp": MessageLookupByLibrary.simpleMessage("About App"),
     "aboutMe": MessageLookupByLibrary.simpleMessage("About me"),
     "about_me": MessageLookupByLibrary.simpleMessage("About me"),
     "accept": MessageLookupByLibrary.simpleMessage("Accept"),
+    "accessDenied": MessageLookupByLibrary.simpleMessage("Access is denied"),
     "account": MessageLookupByLibrary.simpleMessage("Account"),
     "accountSettings": MessageLookupByLibrary.simpleMessage("Account Settings"),
     "add3Minutes": MessageLookupByLibrary.simpleMessage("Add 3 minutes"),
@@ -66,6 +70,15 @@ class MessageLookup extends MessageLookupByLibrary {
       "Additional comments",
     ),
     "administrator": MessageLookupByLibrary.simpleMessage("Administrator"),
+    "administratorModerator": MessageLookupByLibrary.simpleMessage(
+      "Administrator, Moderator",
+    ),
+    "administratorModeratorPremium": MessageLookupByLibrary.simpleMessage(
+      "Administrator, Moderator, Premium",
+    ),
+    "administratorPremium": MessageLookupByLibrary.simpleMessage(
+      "Administrator, Premium",
+    ),
     "age": MessageLookupByLibrary.simpleMessage("Age"),
     "all": MessageLookupByLibrary.simpleMessage("All"),
     "all_interests_loaded": MessageLookupByLibrary.simpleMessage(
@@ -87,6 +100,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "and": MessageLookupByLibrary.simpleMessage(" and "),
     "anonymous": MessageLookupByLibrary.simpleMessage("Anonymous"),
     "anonymousChat": MessageLookupByLibrary.simpleMessage("Anonymous chat"),
+    "anonymousSearch": MessageLookupByLibrary.simpleMessage("Anonymous search"),
+    "anonymousSearchDescription": MessageLookupByLibrary.simpleMessage(
+      "Stay invisible until you want to get to know. Only you initiate contact.",
+    ),
     "anonymousUser": MessageLookupByLibrary.simpleMessage("Anonymous user"),
     "anonymous_chat": MessageLookupByLibrary.simpleMessage("Anonymous chat"),
     "answers": MessageLookupByLibrary.simpleMessage("Answers"),
@@ -131,6 +148,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Avatar upload failed",
     ),
     "background": MessageLookupByLibrary.simpleMessage("Background"),
+    "balance_num": MessageLookupByLibrary.simpleMessage("Balance: "),
     "basic_settings": MessageLookupByLibrary.simpleMessage("Basic settings"),
     "block": MessageLookupByLibrary.simpleMessage("Block"),
     "blockuser": MessageLookupByLibrary.simpleMessage("Block User"),
@@ -149,6 +167,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Camera start error",
     ),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "cardSwiperDescription": MessageLookupByLibrary.simpleMessage(
+      "Quick profile evaluation by swiping. A dialogue begins upon mutual agreement.",
+    ),
+    "cardSwiperMode": MessageLookupByLibrary.simpleMessage("Card mode"),
     "changePin": MessageLookupByLibrary.simpleMessage("Change PIN"),
     "change_your_avatar": MessageLookupByLibrary.simpleMessage(
       "Change your avatar",
@@ -252,6 +274,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "couldntLoadTheRules": MessageLookupByLibrary.simpleMessage(
       "Couldn\'t load the rules",
     ),
+    "couldntShowTheAd": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t show the ad",
+    ),
     "couldnt_get_the_link_to_the_game": MessageLookupByLibrary.simpleMessage(
       "Could not get the link to the game",
     ),
@@ -262,6 +287,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Create a question",
     ),
     "credentials": MessageLookupByLibrary.simpleMessage("Credentials"),
+    "currented": MessageLookupByLibrary.simpleMessage("current"),
     "currents": MessageLookupByLibrary.simpleMessage("Current"),
     "darkDescription": MessageLookupByLibrary.simpleMessage(
       "Stylish and modern design",
@@ -271,6 +297,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "datingGoals": MessageLookupByLibrary.simpleMessage("Dating goals"),
     "day": MessageLookupByLibrary.simpleMessage("d."),
     "days": MessageLookupByLibrary.simpleMessage("days"),
+    "daysAgo": MessageLookupByLibrary.simpleMessage("days ago"),
+    "default_sort": MessageLookupByLibrary.simpleMessage("Default"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "delete_a_chat": MessageLookupByLibrary.simpleMessage("Delete a chat"),
     "delete_an_avatar": MessageLookupByLibrary.simpleMessage(
@@ -295,6 +323,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Do you want to send an optional message?",
         ),
+    "document": MessageLookupByLibrary.simpleMessage("Document"),
     "download_error": MessageLookupByLibrary.simpleMessage("Download error"),
     "download_error_click_to_repeat": MessageLookupByLibrary.simpleMessage(
       "Download error. Click to retry",
@@ -366,6 +395,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Error loading rules",
     ),
     "errorPrefix": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorUploadingUserData": MessageLookupByLibrary.simpleMessage(
+      "Error uploading user data",
+    ),
     "errorWhenClearingATemporaryFile": MessageLookupByLibrary.simpleMessage(
       "Error when clearing a temporary file",
     ),
@@ -375,6 +407,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "exit": MessageLookupByLibrary.simpleMessage("Exit"),
     "extendOrQuestionnaire": MessageLookupByLibrary.simpleMessage(
       "Do you want to extend the chat time or go to the questionnaire?",
+    ),
+    "failedToLoadImage": MessageLookupByLibrary.simpleMessage(
+      "Failed to load image",
     ),
     "failedToPickFilesE": MessageLookupByLibrary.simpleMessage(
       "Failed to pick files: \$e",
@@ -415,6 +450,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "feedbackTitle": MessageLookupByLibrary.simpleMessage("📞 Feedback"),
     "female": MessageLookupByLibrary.simpleMessage("Female"),
+    "filters": MessageLookupByLibrary.simpleMessage("Filters"),
     "finish": MessageLookupByLibrary.simpleMessage("Finish"),
     "finishOrClose": MessageLookupByLibrary.simpleMessage(
       "Do you want to finish this temporary chat or just close it?",
@@ -440,6 +476,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "games": MessageLookupByLibrary.simpleMessage("Games"),
     "gender": MessageLookupByLibrary.simpleMessage("Gender"),
     "generated": MessageLookupByLibrary.simpleMessage("Generated"),
+    "getPointsQuickly": MessageLookupByLibrary.simpleMessage(
+      "Get points quickly",
+    ),
+    "gifts": MessageLookupByLibrary.simpleMessage("Gifts"),
     "go_to_the_main_screen": MessageLookupByLibrary.simpleMessage(
       "Go to the main screen",
     ),
@@ -453,6 +493,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "heading": MessageLookupByLibrary.simpleMessage("Heading"),
     "historycleared": MessageLookupByLibrary.simpleMessage("History cleared"),
     "hour": MessageLookupByLibrary.simpleMessage("h."),
+    "hoursAgo": MessageLookupByLibrary.simpleMessage("hours ago"),
     "iAgree": MessageLookupByLibrary.simpleMessage("I agree"),
     "iDisagree": MessageLookupByLibrary.simpleMessage("I disagree"),
     "imageDeletionError": MessageLookupByLibrary.simpleMessage(
@@ -490,6 +531,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Clean and bright design",
     ),
     "lightTheme": MessageLookupByLibrary.simpleMessage("Light Theme"),
+    "like": MessageLookupByLibrary.simpleMessage("LIKE"),
+    "likesHistory": MessageLookupByLibrary.simpleMessage("Likes history"),
     "limited": MessageLookupByLibrary.simpleMessage("Limited"),
     "limited_edition": MessageLookupByLibrary.simpleMessage("Limited edition"),
     "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
@@ -510,6 +553,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "🔧 Main Features of MNA",
     ),
     "male": MessageLookupByLibrary.simpleMessage("Male"),
+    "matchHistory": MessageLookupByLibrary.simpleMessage("Match history"),
     "max_age_65": MessageLookupByLibrary.simpleMessage(
       "Maximum age is 65 years",
     ),
@@ -520,6 +564,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "messageHint": MessageLookupByLibrary.simpleMessage("Message..."),
     "messages": MessageLookupByLibrary.simpleMessage("Messages"),
     "minAge": MessageLookupByLibrary.simpleMessage("Minimum age is 14"),
+    "minAgo": MessageLookupByLibrary.simpleMessage("min. ago"),
     "minPassword": MessageLookupByLibrary.simpleMessage(
       "At least 6 characters",
     ),
@@ -530,7 +575,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "minutes_to_chat": MessageLookupByLibrary.simpleMessage(
       " minutes to the chat.",
     ),
+    "modeNotActivated": MessageLookupByLibrary.simpleMessage(
+      "Mode not activated",
+    ),
     "moderator": MessageLookupByLibrary.simpleMessage("Moderator"),
+    "moderatorPremium": MessageLookupByLibrary.simpleMessage(
+      "Moderator, Premium",
+    ),
     "month": MessageLookupByLibrary.simpleMessage("mo."),
     "music": MessageLookupByLibrary.simpleMessage("Music"),
     "myInterests": MessageLookupByLibrary.simpleMessage("My Interests"),
@@ -555,6 +606,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noFriendsYet": MessageLookupByLibrary.simpleMessage(
       "You have no friends yet",
     ),
+    "noLikesYet": MessageLookupByLibrary.simpleMessage("No likes yet"),
     "noMedia": MessageLookupByLibrary.simpleMessage("No media"),
     "noMediaAvailable": MessageLookupByLibrary.simpleMessage(
       "No media available",
@@ -573,6 +625,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_friend_requests": MessageLookupByLibrary.simpleMessage(
       "No friend requests",
     ),
+    "no_gifts_found": MessageLookupByLibrary.simpleMessage("No gifts found"),
     "no_questions_found": MessageLookupByLibrary.simpleMessage(
       "No questions found",
     ),
@@ -582,6 +635,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "nointerestsadded": MessageLookupByLibrary.simpleMessage(
       "No interests added yet",
     ),
+    "nope": MessageLookupByLibrary.simpleMessage("NOPE"),
     "nopurposesadded": MessageLookupByLibrary.simpleMessage(
       "No purposes added yet",
     ),
@@ -638,6 +692,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Personal information",
     ),
     "photo": MessageLookupByLibrary.simpleMessage("Photo"),
+    "photosRequired": MessageLookupByLibrary.simpleMessage(
+      "You must add at least one photo to use the card mode.",
+    ),
     "pinChangedSuccess": MessageLookupByLibrary.simpleMessage(
       "PIN changed successfully",
     ),
@@ -657,6 +714,18 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "points": MessageLookupByLibrary.simpleMessage("points"),
     "points_spent": MessageLookupByLibrary.simpleMessage("Points spent:"),
+    "premium": MessageLookupByLibrary.simpleMessage("Premium"),
+    "premiumAndPhotosRequired": MessageLookupByLibrary.simpleMessage(
+      "To use the card mode, you need to subscribe to Premium and add at least one photo.",
+    ),
+    "premiumRequired": MessageLookupByLibrary.simpleMessage(
+      "To use the card mode, you need to purchase Premium in the gift shop using points",
+    ),
+    "price": MessageLookupByLibrary.simpleMessage("Price"),
+    "price_high_to_low": MessageLookupByLibrary.simpleMessage(
+      "Expensive first",
+    ),
+    "price_low_to_high": MessageLookupByLibrary.simpleMessage("Cheap first"),
     "primary": MessageLookupByLibrary.simpleMessage("Primary"),
     "privacyMode": MessageLookupByLibrary.simpleMessage("Privacy Mode"),
     "privacyModeDescription": MessageLookupByLibrary.simpleMessage(
@@ -670,10 +739,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileupdatedsuccessfully": MessageLookupByLibrary.simpleMessage(
       "Profile updated successfully",
     ),
+    "purchaseError": MessageLookupByLibrary.simpleMessage("Purchase error"),
     "purchase_confirmation": MessageLookupByLibrary.simpleMessage(
       "Purchase confirmation",
     ),
     "purchase_error": MessageLookupByLibrary.simpleMessage("Purchase error:"),
+    "purchased": MessageLookupByLibrary.simpleMessage("Purchased"),
     "purpose_load_error": MessageLookupByLibrary.simpleMessage(
       "Purpose load error",
     ),
@@ -693,6 +764,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "question_id": MessageLookupByLibrary.simpleMessage("Question ID"),
     "quiet_hours": MessageLookupByLibrary.simpleMessage("Quiet hours"),
     "quiet_mode": MessageLookupByLibrary.simpleMessage("Quiet mode"),
+    "rare": MessageLookupByLibrary.simpleMessage("Rare"),
+    "rarity": MessageLookupByLibrary.simpleMessage("Rarity"),
     "reason": MessageLookupByLibrary.simpleMessage("Reason:"),
     "receive": MessageLookupByLibrary.simpleMessage("Receive"),
     "received": MessageLookupByLibrary.simpleMessage("Received:"),
@@ -724,9 +797,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "searchFriendsHint": MessageLookupByLibrary.simpleMessage(
       "Search friends...",
     ),
+    "searchMode": MessageLookupByLibrary.simpleMessage("Search mode"),
     "search_for_interests": MessageLookupByLibrary.simpleMessage(
       "Search interests...",
     ),
+    "search_gifts": MessageLookupByLibrary.simpleMessage("Gift Search"),
     "searching": MessageLookupByLibrary.simpleMessage("Searching"),
     "seconds": MessageLookupByLibrary.simpleMessage("seconds"),
     "security": MessageLookupByLibrary.simpleMessage("Security"),
@@ -784,6 +859,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "show_content": MessageLookupByLibrary.simpleMessage("Show content"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign in"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
+    "skip": MessageLookupByLibrary.simpleMessage("skip"),
     "sold_out": MessageLookupByLibrary.simpleMessage("SOLD OUT"),
     "soon": MessageLookupByLibrary.simpleMessage("soon"),
     "sound": MessageLookupByLibrary.simpleMessage("Sound"),
@@ -855,11 +931,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "ten_images": MessageLookupByLibrary.simpleMessage("10 images"),
     "termsOfUse": MessageLookupByLibrary.simpleMessage("Terms of Use"),
     "text": MessageLookupByLibrary.simpleMessage("Text"),
+    "theAdIsNotReadyPleaseTryAgainLater": MessageLookupByLibrary.simpleMessage(
+      "The ad is not ready, please try again later",
+    ),
     "theAvatarIsNotSelected": MessageLookupByLibrary.simpleMessage(
       "The avatar is not selected",
     ),
     "theLimitOf10ImagesHasBeenReached": MessageLookupByLibrary.simpleMessage(
       "The limit of 10 images has been reached",
+    ),
+    "theModeIsActivated": MessageLookupByLibrary.simpleMessage(
+      "The mode is activated",
     ),
     "the_avatar_has_been_uploaded_successfully":
         MessageLookupByLibrary.simpleMessage(
@@ -921,6 +1003,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "thereAreNoImagesToDownload": MessageLookupByLibrary.simpleMessage(
       "There are no images to download",
     ),
+    "thereAreNoMoreCards": MessageLookupByLibrary.simpleMessage(
+      "There are no more cards",
+    ),
     "there_are_no_answers_yet": MessageLookupByLibrary.simpleMessage(
       "No answers yet",
     ),
@@ -961,6 +1046,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Try a different search query",
     ),
     "try_again": MessageLookupByLibrary.simpleMessage("Try again"),
+    "typeOfGift": MessageLookupByLibrary.simpleMessage("Type of gift"),
     "types_of_notifications": MessageLookupByLibrary.simpleMessage(
       "Types of notifications",
     ),
@@ -990,9 +1076,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "userNotAvailable": MessageLookupByLibrary.simpleMessage(
       "User Not Available",
     ),
+    "userNotLoaded": MessageLookupByLibrary.simpleMessage(
+      "The user is not loaded. Please try again later.",
+    ),
+    "userUploadError": MessageLookupByLibrary.simpleMessage(
+      "User upload error",
+    ),
     "userblocked": MessageLookupByLibrary.simpleMessage("User blocked"),
     "username": MessageLookupByLibrary.simpleMessage("Username"),
     "usernameHint": MessageLookupByLibrary.simpleMessage("Username"),
+    "verifiedAccount": MessageLookupByLibrary.simpleMessage("Verified account"),
     "version": m1,
     "vibration": MessageLookupByLibrary.simpleMessage("Vibration"),
     "viewAll": MessageLookupByLibrary.simpleMessage("View all"),
@@ -1018,6 +1111,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "year": MessageLookupByLibrary.simpleMessage("y."),
     "years": MessageLookupByLibrary.simpleMessage("years"),
     "yesterday": MessageLookupByLibrary.simpleMessage("Yesterday"),
+    "youDontHaveAnyMatchesYet": MessageLookupByLibrary.simpleMessage(
+      "You don\'t have any matches yet",
+    ),
     "youHaveBeenBlocked": MessageLookupByLibrary.simpleMessage(
       "You have been blocked",
     ),
