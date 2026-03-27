@@ -32,12 +32,6 @@ class _SignInScreenState extends State<SignInScreen> {
     });
   }
 
-  void _launchUrl(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    }
-  }
-
   void _showSnackBar(
     BuildContext context,
     String message, {
