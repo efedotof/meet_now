@@ -2,7 +2,9 @@ package com.efedotov.meet_now.meet_now.service.swipe;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -11,14 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.efedotov.meet_now.meet_now.dto.response.swipe.MatchResponse;
 import com.efedotov.meet_now.meet_now.dto.response.swipe.SwipeCandidateResponse;
+import com.efedotov.meet_now.meet_now.dto.response.swipe.UserLikeResponse;
 import com.efedotov.meet_now.meet_now.exception.UnauthorizedException;
 import com.efedotov.meet_now.meet_now.model.swipe.Match;
 import com.efedotov.meet_now.meet_now.model.swipe.Swipe;
 import com.efedotov.meet_now.meet_now.model.swipe.SwipeAction;
+import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.swipe.MatchRepository;
 import com.efedotov.meet_now.meet_now.repository.swipe.SwipeRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.service.chat.ChatService;
+import com.efedotov.meet_now.meet_now.service.notification.InternalNotificationService;
+import com.efedotov.meet_now.meet_now.service.social.FriendService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +38,9 @@ public class SwipeService {
     private final UserRepository userRepository;
     private final SwipeRepository swipeRepository;
     private final MatchRepository matchRepository;
+    private final ChatService chatService;
+    private final FriendService friendService;
+    private final InternalNotificationService internalNotificationService;
 
     private void checkAccess(UUID userId) {
         User user = userRepository.findById(userId)
@@ -53,6 +63,26 @@ public class SwipeService {
             List<String> interests,
             List<String> purposes) {
         checkAccess(currentUserId);
+
+        if (floor != null && floor.trim().isEmpty()) {
+            floor = null;
+        }
+        if (interests != null) {
+            interests = interests.stream()
+                    .filter(i -> i != null && !i.trim().isEmpty())
+                    .collect(Collectors.toList());
+            if (interests.isEmpty()) {
+                interests = null;
+            }
+        }
+        if (purposes != null) {
+            purposes = purposes.stream()
+                    .filter(p -> p != null && !p.trim().isEmpty())
+                    .collect(Collectors.toList());
+            if (purposes.isEmpty()) {
+                purposes = null;
+            }
+        }
 
         boolean interestsEmpty = interests == null || interests.isEmpty();
         boolean purposesEmpty = purposes == null || purposes.isEmpty();
@@ -92,6 +122,9 @@ public class SwipeService {
         swipe.setAction(SwipeAction.LIKE);
         swipeRepository.save(swipe);
 
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Current user not found"));
+
         Optional<Swipe> mutualLike = swipeRepository.findBySwiperIdAndTargetId(targetId, currentUserId)
                 .filter(s -> s.getAction() == SwipeAction.LIKE);
 
@@ -103,10 +136,14 @@ public class SwipeService {
             match.setUser2Id(user2);
             matchRepository.save(match);
 
-            return Optional.of(mapToMatchResponse(match, target));
-        }
+            chatService.createOrGetPermanentChat(currentUserId, targetId);
+            friendService.sendFriendRequest(currentUserId, targetId);
 
-        return Optional.empty();
+            return Optional.of(mapToMatchResponse(match, target));
+        } else {
+            internalNotificationService.sendRatingNotification(targetId, currentUserId, currentUser.getUsername());
+            return Optional.empty();
+        }
     }
 
     @Transactional
@@ -162,6 +199,12 @@ public class SwipeService {
         dto.setFirstname(user.getFirstname());
         dto.setSubname(user.getSubname());
         dto.setAge(user.getAge());
+        if (user.getRoles() != null) {
+            Set<String> roles = user.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRoles(roles);
+        }
         dto.setCity(user.getCity());
         dto.setAvatar(user.getAvatar());
         dto.setImages(user.getImages());
@@ -169,6 +212,46 @@ public class SwipeService {
         dto.setInterests(user.getInterests());
         dto.setDescription(user.getDescription());
         dto.setVerified(user.getVerified());
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserLikeResponse> getUsersWhoLikedMe(UUID currentUserId) {
+        checkAccess(currentUserId);
+        List<Swipe> likes = swipeRepository.findByTargetIdAndAction(currentUserId, SwipeAction.LIKE);
+        return likes.stream()
+                .map(swipe -> {
+                    UUID swiperId = swipe.getSwiperId();
+                    if (matchRepository.existsMatchBetweenUsers(currentUserId, swiperId)) {
+                        return null;
+                    }
+                    User swiper = userRepository.findById(swiperId).orElse(null);
+                    if (swiper == null)
+                        return null;
+                    return mapToUserLikeResponse(swiper);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private UserLikeResponse mapToUserLikeResponse(User user) {
+         UserLikeResponse dto = new UserLikeResponse();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setFirstname(user.getFirstname());
+        dto.setSubname(user.getSubname());
+        dto.setAge(user.getAge());
+        dto.setAvatar(user.getAvatar());
+        dto.setCity(user.getCity());
+          if (user.getRoles() != null) {
+            Set<String> roles = user.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRoles(roles);
+        }
+        dto.setFloor(user.getFloor());
+        dto.setVerified(user.getVerified());
+
         return dto;
     }
 }

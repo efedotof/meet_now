@@ -14,3 +14,4 @@ public class MeetNowApplication {
 		SpringApplication.run(MeetNowApplication.class, args);
 	}
 }
+

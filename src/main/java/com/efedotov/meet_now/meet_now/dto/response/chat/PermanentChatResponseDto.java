@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.Data;
+import java.util.Set;
 
 @Data
 public class PermanentChatResponseDto {
@@ -14,6 +15,8 @@ public class PermanentChatResponseDto {
     private String user1Subname;
     private String user1Avatar;
     private UUID user2Id;
+    private Set<String> rolesUser1;
+    private Set<String> rolesUser2;
     private String user2Username;
     private String user2Firstname;
     private String user2Subname;

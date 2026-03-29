@@ -3,6 +3,8 @@ package com.efedotov.meet_now.meet_now.service.chat;
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
+import com.efedotov.meet_now.meet_now.model.user.Role;
+import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +50,8 @@ public class ChatQueryService {
 
     private PermanentChatResponseDto convertToPermanentChatDto(Chat chat, UUID userId) {
         PermanentChatResponseDto dto = new PermanentChatResponseDto();
+        User user1 = chat.getUser1();
+        User user2 = chat.getUser2();
         dto.setChatId(chat.getChatId());
         dto.setUser1Id(chat.getUser1().getId());
         dto.setUser1Username(chat.getUser1().getUsername());
@@ -65,6 +71,18 @@ public class ChatQueryService {
         Long unreadCount = messageRepository.countUnreadMessagesInChat(chat.getChatId(), userId);
         Long totalMessages = messageRepository.countByChat_ChatId(chat.getChatId());
 
+        if (user1.getRoles() != null) {
+            Set<String> roles = user1.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRolesUser1(roles);
+        }
+        if (user2.getRoles() != null) {
+            Set<String> roles = user2.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRolesUser2(roles);
+        }
         dto.setUnreadCount(unreadCount);
         dto.setTotalMessages(totalMessages);
 

@@ -19,4 +19,7 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
     Optional<Match> findByUsers(@Param("userId") UUID userId, @Param("otherId") UUID otherId);
 
     boolean existsByUser1IdAndUser2Id(UUID user1Id, UUID user2Id);
+
+    @Query("SELECT COUNT(m) > 0 FROM Match m WHERE (m.user1Id = :userId AND m.user2Id = :otherId) OR (m.user1Id = :otherId AND m.user2Id = :userId)")
+    boolean existsMatchBetweenUsers(@Param("userId") UUID userId, @Param("otherId") UUID otherId);
 }

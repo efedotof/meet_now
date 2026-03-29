@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.efedotov.meet_now.meet_now.dto.request.game.AdRewardRequest;
 import com.efedotov.meet_now.meet_now.dto.request.game.AddGameRequest;
 import com.efedotov.meet_now.meet_now.dto.request.game.BulkGameUpdateRequest;
 import com.efedotov.meet_now.meet_now.dto.request.game.GameCompletionInternalRequest;
@@ -59,9 +61,8 @@ public class GamesController {
     @AdminOnly
     public ResponseEntity<Page<GameConfigEntity>> getAllGameConfigsWithPagination(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String gameType) {
-        Page<GameConfigEntity> configs = gamesService.getAllGameConfigsWithPagination(page, size, gameType);
+            @RequestParam(defaultValue = "20") int size) {
+        Page<GameConfigEntity> configs = gamesService.getAllGameConfigsWithPagination(page, size);
         return ResponseEntity.ok(configs);
     }
 
@@ -275,6 +276,19 @@ public class GamesController {
     @AdminOnly
     public ResponseEntity<Void> deleteGameConfig(@PathVariable String gameType) {
         gamesService.deleteGameConfig(gameType);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Начислить очки за просмотр рекламы")
+    @PostMapping("/ad-reward")
+    public ResponseEntity<Void> awardAdPoints(
+            Authentication authentication,
+            @RequestBody AdRewardRequest request) {
+        UUID userId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
+
+        log.info("Awarding {} ad points to user: {}", request.getPoints(), userId);
+
+        gamesService.awardAdPoints(userId, request.getPoints());
         return ResponseEntity.ok().build();
     }
 }

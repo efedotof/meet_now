@@ -2,6 +2,8 @@ package com.efedotov.meet_now.meet_now.service.chat;
 
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
+import com.efedotov.meet_now.meet_now.model.user.Role;
+import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
@@ -11,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -72,6 +75,9 @@ public class PermanentChatUpdateService {
 
     private PermanentChatResponseDto convertToPermanentChatDto(Chat chat, UUID userId) {
         PermanentChatResponseDto dto = new PermanentChatResponseDto();
+        User user1 = chat.getUser1();
+        User user2 = chat.getUser2();
+
         dto.setChatId(chat.getChatId());
         dto.setUser1Id(chat.getUser1().getId());
         dto.setUser1Username(chat.getUser1().getUsername());
@@ -85,6 +91,19 @@ public class PermanentChatUpdateService {
         dto.setUser2Avatar(chat.getUser2().getAvatar());
         dto.setCreatedAt(chat.getCreatedAt());
         dto.setIsOpened(chat.getIsOpened());
+
+        if (user1.getRoles() != null) {
+            Set<String> roles = user1.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRolesUser1(roles);
+        }
+        if (user2.getRoles() != null) {
+            Set<String> roles = user2.getRoles().stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.toSet());
+            dto.setRolesUser2(roles);
+        }
         dto.setLastMessage(chat.getLastMessage());
         dto.setLastMessageAt(chat.getLastMessageAt());
 

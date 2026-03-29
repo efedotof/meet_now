@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.efedotov.meet_now.meet_now.dto.response.swipe.MatchResponse;
 import com.efedotov.meet_now.meet_now.dto.response.swipe.SwipeCandidateResponse;
+import com.efedotov.meet_now.meet_now.dto.response.swipe.UserLikeResponse;
 import com.efedotov.meet_now.meet_now.security.CustomUserDetails;
 import com.efedotov.meet_now.meet_now.service.swipe.SwipeService;
 
@@ -76,5 +77,13 @@ public class SwipeController {
         UUID currentUserId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
         List<MatchResponse> matches = swipeService.getMatches(currentUserId);
         return ResponseEntity.ok(matches);
+    }
+
+    @Operation(summary = "Получить список пользователей, которые поставили лайк текущему пользователю")
+    @GetMapping("/likes")
+    public ResponseEntity<List<UserLikeResponse>> getUsersWhoLikedMe(Authentication authentication) {
+        UUID currentUserId = ((CustomUserDetails) authentication.getPrincipal()).getUserId();
+        List<UserLikeResponse> likes = swipeService.getUsersWhoLikedMe(currentUserId);
+        return ResponseEntity.ok(likes);
     }
 }

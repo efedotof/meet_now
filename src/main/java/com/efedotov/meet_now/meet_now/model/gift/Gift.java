@@ -77,6 +77,9 @@ public class Gift {
     @Column(name = "sold_count")
     private Integer soldCount = 0;
 
+    @Column(name = "current_price")
+    private Integer currentPrice;
+
     @Transient
     public boolean isAvailableForPurchase() {
         if (!isActive) {

@@ -33,22 +33,22 @@ public class InternalNotificationService {
         }
     }
 
-     public void sendNewMessageNotification(UUID recipientId, UUID senderId, String senderName, 
-                                          String messagePreview, UUID chatId, UUID tempChatId, boolean isTemporary) {
+    public void sendNewMessageNotification(UUID recipientId, UUID senderId, String senderName,
+            String messagePreview, UUID chatId, UUID tempChatId, boolean isTemporary) {
         try {
             UUID targetChatId = isTemporary ? tempChatId : chatId;
-            
+
             if (targetChatId != null && webSocketSessionService.isUserActiveInChat(recipientId, targetChatId)) {
-                log.info("Пользователь {} активен в чате {}, уведомление не отправляется", 
+                log.info("Пользователь {} активен в чате {}, уведомление не отправляется",
                         recipientId, targetChatId);
                 return;
             }
-            
+
             User sender = userRepository.findById(senderId)
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
 
             String avatarUrl = sender.getAvatar();
-            
+
             String displayName = isTemporary ? "Анонимный пользователь" : senderName;
             String title = displayName;
             String message = messagePreview.length() > 100 ? messagePreview.substring(0, 100) + "..." : messagePreview;
@@ -56,10 +56,10 @@ public class InternalNotificationService {
             Map<String, String> data = new HashMap<>();
             data.put("type", "new_message");
             data.put("senderId", senderId.toString());
-            data.put("senderName", displayName); 
+            data.put("senderName", displayName);
             data.put("isTemporary", String.valueOf(isTemporary));
             data.put("action", "open_chat");
-            
+
             if (chatId != null) {
                 data.put("chatId", chatId.toString());
             }
@@ -75,7 +75,7 @@ public class InternalNotificationService {
             String pushToken = pushTokenService.getDecryptedPushToken(recipientId);
             if (pushToken != null) {
                 fcmNotificationService.sendDataNotificationToToken(pushToken, message, title, data);
-                log.info("New message notification sent to user: {}, temporary: {}, chatId: {}", 
+                log.info("New message notification sent to user: {}, temporary: {}, chatId: {}",
                         recipientId, isTemporary, targetChatId);
             } else {
                 log.warn("No push token found for user: {}", recipientId);
@@ -129,6 +129,36 @@ public class InternalNotificationService {
 
         } catch (Exception e) {
             log.error("Failed to send system data notification to user: {}", userId, e);
+        }
+    }
+
+    public void sendRatingNotification(UUID targetUserId, UUID raterUserId, String raterName) {
+        try {
+            User rater = userRepository.findById(raterUserId).orElse(null);
+            String avatarUrl = (rater != null) ? rater.getAvatar() : null;
+
+            String title = "Новая симпатия";
+            String message = raterName + " оценил(а) вас";
+
+            Map<String, String> data = new HashMap<>();
+            data.put("type", "rating");
+            data.put("raterId", raterUserId.toString());
+            data.put("raterName", raterName);
+            data.put("action", "open_profile");
+            if (avatarUrl != null && !avatarUrl.trim().isEmpty()) {
+                data.put("avatarUrl", avatarUrl);
+                data.put("image", avatarUrl);
+            }
+
+            String pushToken = pushTokenService.getDecryptedPushToken(targetUserId);
+            if (pushToken != null) {
+                fcmNotificationService.sendDataNotificationToToken(pushToken, message, title, data);
+                log.info("Rating notification sent to user: {} from rater: {}", targetUserId, raterUserId);
+            } else {
+                log.warn("No push token for user: {}", targetUserId);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send rating notification to user: {} from rater: {}", targetUserId, raterUserId, e);
         }
     }
 }

@@ -24,4 +24,5 @@ public class GiftDto {
     private Boolean isLimited;
     private Boolean isSoldOut;
     private Integer soldCount;
+    private Integer currentPrice;
 }

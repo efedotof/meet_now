@@ -1,16 +1,17 @@
 package com.efedotov.meet_now.meet_now.repository.gift;
 
-import com.efedotov.meet_now.meet_now.model.gift.Gift;
-import com.efedotov.meet_now.meet_now.model.gift.GiftRarity;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.efedotov.meet_now.meet_now.model.gift.Gift;
+import com.efedotov.meet_now.meet_now.model.gift.GiftRarity;
 
 @Repository
 public interface GiftRepository extends JpaRepository<Gift, UUID> {
@@ -52,4 +53,6 @@ public interface GiftRepository extends JpaRepository<Gift, UUID> {
 
     @Query("SELECT g FROM Gift g WHERE g.isLimited = true AND g.isSoldOut = true AND g.isActive = true")
     List<Gift> findSoldOutGifts();
+
+    List<Gift> findAllByIsActiveTrue();
 }

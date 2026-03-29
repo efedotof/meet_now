@@ -33,4 +33,6 @@ public class UserDto {
     private List<String> images;
     private Boolean isBlocked;
     private String blockReason;
+    private String publicKey;
+
 }

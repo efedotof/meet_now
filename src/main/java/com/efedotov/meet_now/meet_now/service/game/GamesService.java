@@ -330,14 +330,8 @@ public class GamesService {
     }
 
     @AdminOnly
-    public Page<GameConfigEntity> getAllGameConfigsWithPagination(int page, int size, String gameType) {
+    public Page<GameConfigEntity> getAllGameConfigsWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
-        if (gameType != null && !gameType.isEmpty()) {
-            Specification<GameConfigEntity> spec = (root, query, cb) -> cb.equal(root.get("gameType"), gameType);
-            return gameConfigRepository.findAll(spec, pageable);
-        }
-
         return gameConfigRepository.findAll(pageable);
     }
 
@@ -363,6 +357,15 @@ public class GamesService {
         }
 
         return gameConfigRepository.findAll(spec, pageable);
+    }
+
+    @Transactional
+    public void awardAdPoints(UUID userId, int points) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        user.setGamePoints(user.getGamePoints() + points);
+        userRepository.save(user);
+        log.info("Начислено {} очков пользователю {} за просмотр рекламы", points, user.getUsername());
     }
 
 }

@@ -619,7 +619,7 @@ public class UserService {
         dto.setFloor(user.getFloor());
         dto.setIsBlocked(user.getIsBlocked());
         dto.setBlockReason(user.getBlockReason());
-
+        dto.setPublicKey(user.getPublicKey());
         dto.setPurposes(user.getPurposes() != null ? new ArrayList<>(user.getPurposes()) : new ArrayList<>());
         dto.setInterests(user.getInterests() != null ? new ArrayList<>(user.getInterests()) : new ArrayList<>());
 
@@ -680,4 +680,36 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void saveKeys(UUID userId, String publicKey, String encryptedPrivateKey) {
+        User user = getById(userId);
+        user.setPublicKey(publicKey);
+        user.setEncryptedPrivateKey(encryptedPrivateKey);
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public String getPublicKey(UUID userId) {
+        User user = getById(userId);
+        return user.getPublicKey();
+    }
+
+    @Transactional
+    public void saveSalt(UUID userId, String salt) {
+        User user = getById(userId);
+        user.setSalt(salt);
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public String getSalt(UUID userId) {
+        User user = getById(userId);
+        return user.getSalt();
+    }
+
+    @Transactional(readOnly = true)
+    public String getEncryptedPrivateKey(UUID userId) {
+        User user = getById(userId);
+        return user.getEncryptedPrivateKey();
+    }
 }

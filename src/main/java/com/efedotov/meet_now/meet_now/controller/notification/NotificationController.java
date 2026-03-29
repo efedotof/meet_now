@@ -3,6 +3,8 @@ package com.efedotov.meet_now.meet_now.controller.notification;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Pageable;
 
 import com.efedotov.meet_now.meet_now.dto.request.notification.NotificationLogRequest;
 import com.efedotov.meet_now.meet_now.dto.request.notification.NotificationRequest;
@@ -27,7 +28,6 @@ import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.service.notification.FCMNotificationService;
 import com.efedotov.meet_now.meet_now.service.notification.NotificationStatisticsService;
 import com.efedotov.meet_now.meet_now.service.notification.PushTokenService;
-import org.springframework.data.domain.Page;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

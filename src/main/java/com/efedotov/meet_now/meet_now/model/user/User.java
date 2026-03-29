@@ -56,6 +56,9 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "premium_expires_at")
+    private LocalDateTime premiumExpiresAt = LocalDateTime.now();
+
     private Boolean verified = false;
 
     @Column(name = "is_searchable")
@@ -118,4 +121,13 @@ public class User {
 
     @Column(name = "push_token_salt")
     private String pushTokenSalt;
+
+    @Column(columnDefinition = "TEXT")
+    private String publicKey;
+
+    @Column(columnDefinition = "TEXT")
+    private String encryptedPrivateKey;
+
+    @Column(columnDefinition = "TEXT")
+    private String salt;
 }

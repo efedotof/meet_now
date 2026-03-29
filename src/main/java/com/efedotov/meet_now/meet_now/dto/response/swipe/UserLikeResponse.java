@@ -1,28 +1,24 @@
 package com.efedotov.meet_now.meet_now.dto.response.swipe;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SwipeCandidateResponse {
+public class UserLikeResponse {
     private UUID id;
     private String username;
     private String firstname;
     private String subname;
+    private String avatar;
     private Integer age;
     private String city;
-    private String avatar;
-    private List<String> images;
-    private List<String> purposes;
-    private List<String> interests;
     private Set<String> roles;
-    private String description;
+    private String floor;
     private Boolean verified;
 }

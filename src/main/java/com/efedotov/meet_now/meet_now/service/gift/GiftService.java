@@ -44,6 +44,7 @@ import com.efedotov.meet_now.meet_now.model.gift.GiftRarity;
 import com.efedotov.meet_now.meet_now.model.gift.GiftType;
 import com.efedotov.meet_now.meet_now.model.gift.SentGift;
 import com.efedotov.meet_now.meet_now.model.gift.UserInventory;
+import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
@@ -53,6 +54,7 @@ import com.efedotov.meet_now.meet_now.repository.gift.GiftRepository;
 import com.efedotov.meet_now.meet_now.repository.gift.GiftTypeRepository;
 import com.efedotov.meet_now.meet_now.repository.gift.SentGiftRepository;
 import com.efedotov.meet_now.meet_now.repository.gift.UserInventoryRepository;
+import com.efedotov.meet_now.meet_now.repository.moderation.RoleRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
@@ -73,6 +75,8 @@ public class GiftService {
     private final ChatRepository chatRepository;
     private final TemporaryChatRepository temporaryChatRepository;
     private final GiftTypeRepository giftTypeRepository;
+    private final MarketPriceService marketPriceService;
+    private final RoleRepository roleRepository;
 
     @AdminOnly
     public List<AdminGiftDto> getAllGiftsAdmin() {
@@ -502,21 +506,24 @@ public class GiftService {
                 log.error("Лимитированный подарок распродан: {}", gift.getName());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Этот подарок уже распродан");
             }
-
             if (gift.getAvailableQuantity() != null && gift.getAvailableQuantity() <= 0) {
                 log.error("Лимитированный подарок закончился: {}", gift.getName());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Этот подарок закончился");
             }
         }
 
-        if (sender.getGamePoints() < gift.getCostPoints()) {
+        // --- ИСПОЛЬЗУЕМ ТЕКУЩУЮ РЫНОЧНУЮ ЦЕНУ ---
+        int currentPrice = marketPriceService.getCurrentPrice(gift);
+
+        if (sender.getGamePoints() < currentPrice) {
             log.error("Недостаточно очков у пользователя {}. Требуется: {}, доступно: {}",
-                    senderId, gift.getCostPoints(), sender.getGamePoints());
+                    senderId, currentPrice, sender.getGamePoints());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Недостаточно игровых очков. Требуется: %d, доступно: %d",
-                            gift.getCostPoints(), sender.getGamePoints()));
+                            currentPrice, sender.getGamePoints()));
         }
 
+        // Резервирование лимитированного подарка
         if (Boolean.TRUE.equals(gift.getIsLimited())) {
             int updated = giftRepository.decreaseGiftQuantity(gift.getId(), 1);
             if (updated == 0) {
@@ -531,14 +538,15 @@ public class GiftService {
                     gift.getName(), remaining);
         }
 
-        Integer newBalance = sender.getGamePoints() - gift.getCostPoints();
+        // Списание очков по рыночной цене
+        Integer newBalance = sender.getGamePoints() - currentPrice;
         sender.setGamePoints(newBalance);
-
         userRepository.save(sender);
 
         log.info("Списано {} очков у отправителя {}. Новый баланс: {}",
-                gift.getCostPoints(), senderId, newBalance);
+                currentPrice, senderId, newBalance);
 
+        // Проверка чата (как было)
         Chat chat = null;
         if (request.getChatId() != null) {
             chat = chatRepository.findById(request.getChatId())
@@ -587,7 +595,6 @@ public class GiftService {
         if (chat != null) {
             sentGift.setChat(chat);
         }
-
         if (tempChat != null) {
             sentGift.setTempChat(tempChat);
         }
@@ -606,7 +613,7 @@ public class GiftService {
         updateGiftStatistics(sender, recipient, gift);
 
         log.info("Подарок '{}' (стоимостью {} очков) успешно отправлен от {} к {}. Анонимно: {}",
-                gift.getName(), gift.getCostPoints(), senderId, request.getRecipientId(),
+                gift.getName(), currentPrice, senderId, request.getRecipientId(),
                 Boolean.TRUE.equals(request.getIsAnonymous()));
 
         return convertToSentGiftDto(savedSentGift);
@@ -644,26 +651,26 @@ public class GiftService {
                 log.error("Подарок распродан: {}", gift.getName());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Этот подарок уже распродан");
             }
-
             if (gift.getAvailableQuantity() != null && gift.getAvailableQuantity() <= 0) {
                 log.error("Подарок закончился: {}", gift.getName());
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Этот подарок закончился");
             }
         }
 
-        Integer giftCost = gift.getCostPoints();
-        if (giftCost == null || giftCost <= 0) {
-            log.error("Подарок {} имеет невалидную стоимость: {}", gift.getName(), giftCost);
+        int currentPrice = marketPriceService.getCurrentPrice(gift);
+
+        if (currentPrice <= 0) {
+            log.error("Подарок {} имеет невалидную стоимость: {}", gift.getName(), currentPrice);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Подарок не может быть куплен");
         }
 
         Integer userPoints = user.getGamePoints();
-        if (userPoints < giftCost) {
+        if (userPoints < currentPrice) {
             log.error("Недостаточно очков у пользователя {}. Требуется: {}, доступно: {}",
-                    userId, giftCost, userPoints);
+                    userId, currentPrice, userPoints);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Недостаточно игровых очков. Требуется: %d, доступно: %d",
-                            giftCost, userPoints));
+                            currentPrice, userPoints));
         }
 
         if (Boolean.TRUE.equals(gift.getIsLimited())) {
@@ -677,12 +684,12 @@ public class GiftService {
                     gift.getName(), gift.getAvailableQuantity() != null ? gift.getAvailableQuantity() - 1 : "∞");
         }
 
-        Integer newBalance = userPoints - giftCost;
+        Integer newBalance = userPoints - currentPrice;
         user.setGamePoints(newBalance);
         User savedUser = userRepository.save(user);
 
         log.info("Списано {} очков у пользователя {}. Новый баланс: {}",
-                giftCost, userId, newBalance);
+                currentPrice, userId, newBalance);
 
         UserInventory inventoryItem = addGiftToInventory(user, gift, null, false);
 
@@ -693,7 +700,7 @@ public class GiftService {
         return BuyGiftResponse.builder()
                 .purchaseId(purchaseId)
                 .inventoryItem(convertToUserInventoryDto(inventoryItem))
-                .spentPoints(giftCost)
+                .spentPoints(currentPrice)
                 .newBalance(savedUser.getGamePoints())
                 .purchasedAt(LocalDateTime.now())
                 .build();
@@ -715,22 +722,51 @@ public class GiftService {
                 })
                 .findFirst();
 
+        UserInventory inventory;
         if (existingInventory.isPresent()) {
-            UserInventory inventory = existingInventory.get();
+            inventory = existingInventory.get();
             inventory.setQuantity(inventory.getQuantity() + 1);
             inventory.setReceivedAt(LocalDateTime.now());
-            return userInventoryRepository.save(inventory);
         } else {
-            UserInventory inventory = new UserInventory();
+            inventory = new UserInventory();
             inventory.setUser(recipient);
             inventory.setGift(gift);
             inventory.setReceivedFrom(receivedFrom);
             inventory.setQuantity(1);
             inventory.setIsVisible(true);
             inventory.setReceivedAt(LocalDateTime.now());
-            return userInventoryRepository.save(inventory);
         }
+
+        if ("PREMIUM".equals(gift.getGiftType().getTypeName())) {
+            grantPremiumRoleIfNeeded(recipient);
+        }
+
+        return userInventoryRepository.save(inventory);
     }
+
+   private void grantPremiumRoleIfNeeded(User user) {
+    boolean alreadyPremium = user.getRoles().stream()
+            .anyMatch(role -> "PREMIUM".equals(role.getRoleName()));
+
+    Role premiumRole = roleRepository.findByRoleName("PREMIUM")
+            .orElseThrow(() -> new IllegalStateException("Роль PREMIUM не найдена в базе данных"));
+
+    if (!alreadyPremium) {
+        user.getRoles().add(premiumRole);
+        log.info("Пользователь {} получил премиум-роль", user.getId());
+    }
+
+    LocalDateTime now = LocalDateTime.now();
+    if (user.getPremiumExpiresAt() != null && user.getPremiumExpiresAt().isAfter(now)) {
+        user.setPremiumExpiresAt(user.getPremiumExpiresAt().plusDays(30));
+        log.info("Срок премиума для пользователя {} продлён до {}", user.getId(), user.getPremiumExpiresAt());
+    } else {
+        user.setPremiumExpiresAt(now.plusDays(30));
+        log.info("Пользователю {} установлен срок премиума до {}", user.getId(), user.getPremiumExpiresAt());
+    }
+
+    userRepository.save(user);
+}
 
     public List<SentGiftDto> getSentGifts(UUID userId, int limit) {
         PageRequest pageRequest = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "sentAt"));
@@ -805,18 +841,23 @@ public class GiftService {
         Map<GiftRarity, List<Gift>> giftsByRarity = new HashMap<>();
 
         for (GiftRarity rarity : activeRarities) {
-            List<Gift> gifts = giftRepository.findByRarityAndIsActiveTrue(rarity);
-            if (!gifts.isEmpty()) {
+            List<Gift> allGifts = giftRepository.findByRarityAndIsActiveTrue(rarity);
+            List<Gift> filteredGifts = allGifts.stream()
+                    .filter(gift -> !"PREMIUM".equals(gift.getGiftType().getTypeName()))
+                    .collect(Collectors.toList());
+
+            if (!filteredGifts.isEmpty()) {
                 raritiesWithGifts.add(rarity);
-                giftsByRarity.put(rarity, gifts);
-                log.info("Для редкости {} найдено подарков: {}", rarity.getName(), gifts.size());
+                giftsByRarity.put(rarity, filteredGifts);
+                log.info("Для редкости {} найдено подарков после исключения PREMIUM: {}",
+                        rarity.getName(), filteredGifts.size());
             } else {
-                log.warn("Для редкости {} нет активных подарков", rarity.getName());
+                log.warn("Для редкости {} нет активных подарков (или все подарки типа PREMIUM)", rarity.getName());
             }
         }
 
         if (raritiesWithGifts.isEmpty()) {
-            log.error("Нет активных подарков ни для одной редкости");
+            log.error("Нет активных подарков ни для одной редкости после исключения PREMIUM");
             return null;
         }
 
@@ -929,7 +970,7 @@ public class GiftService {
                 .rarity(convertToGiftRarityDto(gift.getRarity()))
                 .costPoints(gift.getCostPoints())
                 .animationUrl(gift.getAnimationUrl())
-
+                .currentPrice(marketPriceService.getCurrentPrice(gift))
                 .availableQuantity(gift.getAvailableQuantity())
                 .isLimited(gift.getIsLimited())
                 .isSoldOut(gift.getIsSoldOut())
