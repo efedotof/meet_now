@@ -1,10 +1,10 @@
 package com.efedotov.meet_now.meet_now.dto.response.chat;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 import lombok.Data;
-import java.util.Set;
 
 @Data
 public class PermanentChatResponseDto {
@@ -27,4 +27,5 @@ public class PermanentChatResponseDto {
     private LocalDateTime lastMessageAt;
     private Long unreadCount;
     private Long totalMessages;
+    private String encryptedAesKey;
 }

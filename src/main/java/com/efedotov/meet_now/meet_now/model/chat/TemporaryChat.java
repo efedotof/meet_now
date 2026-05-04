@@ -57,4 +57,10 @@ public class TemporaryChat {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "encrypted_aes_key_sender", columnDefinition = "TEXT")
+    private String encryptedAesKeyForSender;
+
+    @Column(name = "encrypted_aes_key_recipient", columnDefinition = "TEXT")
+    private String encryptedAesKeyForRecipient;
 }

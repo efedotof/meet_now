@@ -46,9 +46,15 @@ public class Chat {
     @Column(name = "deleted_by_user1")
     private Boolean deletedByUser1 = false;
 
-    @Column(name = "deleted_by_user2") 
+    @Column(name = "deleted_by_user2")
     private Boolean deletedByUser2 = false;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "encrypted_aes_key_user1", columnDefinition = "TEXT")
+    private String encryptedAesKeyForUser1;
+
+    @Column(name = "encrypted_aes_key_user2", columnDefinition = "TEXT")
+    private String encryptedAesKeyForUser2;
 }

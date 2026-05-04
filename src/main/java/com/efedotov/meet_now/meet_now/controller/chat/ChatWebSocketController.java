@@ -85,7 +85,7 @@ public class ChatWebSocketController {
 
         log.info("Received getActiveTemporary request from userId={}", userId);
         List<TemporaryChatDto> chats = chatQueryService.getActiveTemporaryChats(userId).stream()
-                .map(this::mapTemporaryToDto)
+                .map(chat -> mapTemporaryToDto(chat, userId))
                 .collect(Collectors.toList());
         log.info("Returning {} active temporary chats to username={}", chats.size(), username);
         messagingTemplate.convertAndSendToUser(
@@ -116,7 +116,7 @@ public class ChatWebSocketController {
         activityNotificationService.sendActivityNotification(activityDto);
     }
 
-    private TemporaryChatDto mapTemporaryToDto(TemporaryChat chat) {
+    private TemporaryChatDto mapTemporaryToDto(TemporaryChat chat, UUID currentUserId) {
         TemporaryChatDto dto = new TemporaryChatDto();
         dto.setTempChatId(chat.getTempChatId());
         dto.setSenderId(chat.getSender().getId());
@@ -127,6 +127,13 @@ public class ChatWebSocketController {
         dto.setBothAgreed(chat.getBothAgreed());
         dto.setSenderAgreed(chat.getSenderAgreed());
         dto.setRecipientAgreed(chat.getRecipientAgreed());
+
+        if (currentUserId.equals(chat.getSender().getId())) {
+            dto.setEncryptedAesKey(chat.getEncryptedAesKeyForSender());
+        } else if (currentUserId.equals(chat.getRecipient().getId())) {
+            dto.setEncryptedAesKey(chat.getEncryptedAesKeyForRecipient());
+        }
+
         return dto;
     }
 

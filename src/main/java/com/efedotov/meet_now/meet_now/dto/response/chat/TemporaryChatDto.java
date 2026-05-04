@@ -22,4 +22,5 @@ public class TemporaryChatDto {
     private Boolean bothAgreed;
     private Boolean senderAgreed;
     private Boolean recipientAgreed;
+    private String encryptedAesKey;
 }

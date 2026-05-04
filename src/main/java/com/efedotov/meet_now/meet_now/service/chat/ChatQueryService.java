@@ -1,5 +1,13 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
 import com.efedotov.meet_now.meet_now.model.chat.Chat;
 import com.efedotov.meet_now.meet_now.model.chat.TemporaryChat;
@@ -7,15 +15,9 @@ import com.efedotov.meet_now.meet_now.model.user.Role;
 import com.efedotov.meet_now.meet_now.model.user.User;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.MessageRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -85,7 +87,11 @@ public class ChatQueryService {
         }
         dto.setUnreadCount(unreadCount);
         dto.setTotalMessages(totalMessages);
-
+        if (userId.equals(chat.getUser1().getId())) {
+            dto.setEncryptedAesKey(chat.getEncryptedAesKeyForUser1());
+        } else if (userId.equals(chat.getUser2().getId())) {
+            dto.setEncryptedAesKey(chat.getEncryptedAesKeyForUser2());
+        }
         return dto;
     }
 

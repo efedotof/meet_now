@@ -1,6 +1,8 @@
 package com.efedotov.meet_now.meet_now.service.chat;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,7 +10,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.efedotov.meet_now.meet_now.security.AdminOnly;
 import com.efedotov.meet_now.meet_now.dto.response.chat.ChatStatisticsAdmin;
 import com.efedotov.meet_now.meet_now.dto.response.chat.UserChatsResponse;
 import com.efedotov.meet_now.meet_now.dto.response.social.UserDto;
@@ -22,6 +23,7 @@ import com.efedotov.meet_now.meet_now.repository.chat.ChatGameRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.ChatRepository;
 import com.efedotov.meet_now.meet_now.repository.chat.TemporaryChatRepository;
 import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
+import com.efedotov.meet_now.meet_now.security.AdminOnly;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class ChatService {
     private final ChatGameRepository chatGameRepository;
     private final UserRepository userRepository;
     private final ChatTimerManagementService chatTimerManagementService;
+    private final RsaCryptoService rsaCryptoService;
 
     @AdminOnly
     @Transactional(readOnly = true)
@@ -146,7 +149,7 @@ public class ChatService {
         tempChat.setBothAgreed(false);
 
         temporaryChatRepository.save(tempChat);
-
+         generateAndStoreAesKeyForTemporaryChat(tempChat, sender, recipient);
         ChatConstraint constraint = new ChatConstraint();
         constraint.setTemporaryChat(tempChat);
         constraint.setWaitSeconds(30);
@@ -184,17 +187,14 @@ public class ChatService {
 
         if (existingChat.isPresent()) {
             Chat chat = existingChat.get();
-
             boolean isActive = !Boolean.TRUE.equals(chat.getDeletedByUser1()) &&
                     !Boolean.TRUE.equals(chat.getDeletedByUser2()) &&
                     Boolean.TRUE.equals(chat.getIsOpened());
-
             if (isActive) {
                 log.info("Найден существующий активный постоянный чат: {}", chat.getChatId());
                 return chat;
             }
-
-            log.info("Чат найден, но не активен (удален или закрыт). Создаем новый.");
+            log.info("Чат найден, но не активен. Создаем новый.");
         }
 
         Chat chat = new Chat();
@@ -205,10 +205,11 @@ public class ChatService {
         chat.setDeletedByUser1(false);
         chat.setDeletedByUser2(false);
         chat.setDeletedAt(null);
-
         chatRepository.save(chat);
-        log.info("Создан новый постоянный чат между {} и {}", user1Id, user2Id);
 
+        generateAndStoreAesKeyForChat(chat, user1, user2);
+
+        log.info("Создан новый постоянный чат между {} и {}", user1Id, user2Id);
         return chat;
     }
 
@@ -241,44 +242,45 @@ public class ChatService {
         return chatRepository.findById(chatId);
     }
 
-   @Transactional
-public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
-    if (!Boolean.TRUE.equals(tempChat.getSenderAgreed()) || 
-        !Boolean.TRUE.equals(tempChat.getRecipientAgreed())) {
-        log.warn("Попытка создать постоянный чат без согласия обоих пользователей: {}", 
-                 tempChat.getTempChatId());
-        throw new IllegalStateException("Нельзя создать постоянный чат без согласия обоих пользователей");
-    }
+    @Transactional
+    public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
+        if (!Boolean.TRUE.equals(tempChat.getSenderAgreed()) ||
+                !Boolean.TRUE.equals(tempChat.getRecipientAgreed())) {
+            log.warn("Попытка создать постоянный чат без согласия обоих пользователей: {}", tempChat.getTempChatId());
+            throw new IllegalStateException("Нельзя создать постоянный чат без согласия обоих пользователей");
+        }
 
-    Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
-            tempChat.getSender().getId(), tempChat.getRecipient().getId());
-
-    Chat chat;
-    if (existingChat.isEmpty()) {
-        chat = new Chat();
-        chat.setUser1(tempChat.getSender());
-        chat.setUser2(tempChat.getRecipient());
-        chat.setCreatedAt(LocalDateTime.now());
-        chat.setIsOpened(true);
-        chatRepository.save(chat);
-
-        log.info("Создан постоянный чат между {} и {}",
+        Optional<Chat> existingChat = chatRepository.findByUser1IdAndUser2Id(
                 tempChat.getSender().getId(), tempChat.getRecipient().getId());
-    } else {
-        chat = existingChat.get();
-        if (!Boolean.TRUE.equals(chat.getIsOpened())) {
+
+        Chat chat;
+        if (existingChat.isEmpty()) {
+            chat = new Chat();
+            chat.setUser1(tempChat.getSender());
+            chat.setUser2(tempChat.getRecipient());
+            chat.setCreatedAt(LocalDateTime.now());
             chat.setIsOpened(true);
             chatRepository.save(chat);
-            log.info("Чат {} открыт (isOpened = true)", chat.getChatId());
+
+            generateAndStoreAesKeyForChat(chat, tempChat.getSender(), tempChat.getRecipient());
+
+            log.info("Создан постоянный чат между {} и {}",
+                    tempChat.getSender().getId(), tempChat.getRecipient().getId());
+        } else {
+            chat = existingChat.get();
+            if (!Boolean.TRUE.equals(chat.getIsOpened())) {
+                chat.setIsOpened(true);
+                chatRepository.save(chat);
+                log.info("Чат {} открыт (isOpened = true)", chat.getChatId());
+            }
         }
+
+        tempChat.setIsFinished(true);
+        temporaryChatRepository.save(tempChat);
+        chatTimerManagementService.stopTimer(tempChat.getTempChatId());
+
+        return chat;
     }
-
-    tempChat.setIsFinished(true);
-    temporaryChatRepository.save(tempChat);
-    chatTimerManagementService.stopTimer(tempChat.getTempChatId());
-
-    return chat;
-}
 
     @Transactional
     public void agreeToContinue(UUID tempChatId, UUID userId) {
@@ -454,5 +456,45 @@ public Chat createPermanentChatFromTemporary(TemporaryChat tempChat) {
 
     private boolean isUserParticipant(TemporaryChat tempChat, UUID userId) {
         return tempChat.getSender().getId().equals(userId) || tempChat.getRecipient().getId().equals(userId);
+    }
+
+    private void generateAndStoreAesKeyForChat(Chat chat, User user1, User user2) {
+        try {
+            byte[] aesKey = new byte[32];
+            SecureRandom secureRandom = new SecureRandom();
+            secureRandom.nextBytes(aesKey);
+            String base64AesKey = Base64.getEncoder().encodeToString(aesKey);
+
+            String encryptedForUser1 = rsaCryptoService.encrypt(base64AesKey, user1.getPublicKey());
+            String encryptedForUser2 = rsaCryptoService.encrypt(base64AesKey, user2.getPublicKey());
+
+            chat.setEncryptedAesKeyForUser1(encryptedForUser1);
+            chat.setEncryptedAesKeyForUser2(encryptedForUser2);
+            chatRepository.save(chat);
+            log.info("AES-ключ сгенерирован и сохранён для чата {}", chat.getChatId());
+        } catch (Exception e) {
+            log.error("Ошибка генерации AES-ключа для чата {}", chat.getChatId(), e);
+            throw new RuntimeException("Failed to generate AES key for chat", e);
+        }
+    }
+
+    private void generateAndStoreAesKeyForTemporaryChat(TemporaryChat tempChat, User sender, User recipient) {
+        try {
+            byte[] aesKey = new byte[32];
+            SecureRandom secureRandom = new SecureRandom();
+            secureRandom.nextBytes(aesKey);
+            String base64AesKey = Base64.getEncoder().encodeToString(aesKey);
+
+            String encryptedForSender = rsaCryptoService.encrypt(base64AesKey, sender.getPublicKey());
+            String encryptedForRecipient = rsaCryptoService.encrypt(base64AesKey, recipient.getPublicKey());
+
+            tempChat.setEncryptedAesKeyForSender(encryptedForSender);
+            tempChat.setEncryptedAesKeyForRecipient(encryptedForRecipient);
+            temporaryChatRepository.save(tempChat);
+            log.info("AES-ключ сгенерирован для временного чата {}", tempChat.getTempChatId());
+        } catch (Exception e) {
+            log.error("Ошибка генерации AES-ключа для временного чата {}", tempChat.getTempChatId(), e);
+            throw new RuntimeException("Failed to generate AES key for temporary chat", e);
+        }
     }
 }
