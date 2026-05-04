@@ -595,6 +595,9 @@ public class MessageProcessingService {
                 return media.size() > 1 ? "Файлы (" + media.size() + ")" : "Файл";
             }
         }
+        if (text != null && text.startsWith("{") && text.endsWith("}")) {
+            return text;
+        }
         return text != null && text.length() > 50 ? text.substring(0, 47) + "..." : text;
     }
 }

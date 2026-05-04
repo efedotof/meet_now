@@ -1,4 +1,3 @@
-
 package com.efedotov.meet_now.meet_now.service.chat;
 
 import com.efedotov.meet_now.meet_now.dto.response.chat.PermanentChatResponseDto;
@@ -54,7 +53,17 @@ public class MatchmakingService {
                     .build();
         }
 
-        String targetFloor = myFloor.equalsIgnoreCase("М") ? "Ж" : "М";
+        String targetFloor;
+        if ("male".equalsIgnoreCase(myFloor)) {
+            targetFloor = "female";
+        } else if ("female".equalsIgnoreCase(myFloor)) {
+            targetFloor = "male";
+        } else {
+            return MatchmakingResponse.builder()
+                    .success(false)
+                    .message("Некорректное значение пола")
+                    .build();
+        }
 
         boolean isPremium = currentUser.getRoles().stream()
                 .anyMatch(role -> "PREMIUM".equals(role.getRoleName()));
