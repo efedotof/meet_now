@@ -22,6 +22,8 @@ import 'package:meet_now_app/features/my_report/cubit/report_cubit.dart';
 import 'package:meet_now_app/features/notification/cubit/notification_cubit.dart';
 import 'package:meet_now_app/features/pin_code/cubit/pin_code_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/card_swiper/card_swiper_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/matchmaking/matchmaking_cubit.dart';
+import 'package:meet_now_app/features/search/cubit/news/news_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search/search_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/search_mode/search_mode_cubit.dart';
 import 'package:meet_now_app/features/search/cubit/user_stats/user_stats_cubit.dart';
@@ -38,10 +40,13 @@ import 'package:meet_now_app/theme/theme_cubit/theme_cubit.dart';
 import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/repository/document/document_interface.dart';
 import 'package:meet_now_app_server/repository/keys_api/keys_api_interface.dart';
+import 'package:meet_now_app_server/repository/matchmaking/matchmaking_interface.dart';
+import 'package:meet_now_app_server/repository/news/news_interface.dart';
 import 'package:meet_now_app_server/repository/swipe/swipe_interface.dart';
 import 'package:meet_now_app_server/storage/card_swiper/card_swiper_interface.dart';
 import 'package:meet_now_app_server/storage/notification/notification_settings_interface.dart';
 import 'package:meet_now_app_server/storage/particles/particles_interface.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_encryption_service.dart';
 import 'package:meet_now_app_server/storage/rsa_keys/rsa_keys_interface.dart';
 
 class AppBloc extends StatelessWidget {
@@ -131,6 +136,8 @@ class AppBloc extends StatelessWidget {
                 userModelAppInterface: context.read<UserModelAppInterface>(),
                 socketServiceInterface: context.read<SocketServiceInterface>(),
                 chatInterface: context.read<ChatInterface>(),
+                rsaEncryptionService: context.read<RsaEncryptionService>(),
+                rsaKeys: context.read<RsaKeysInterface>(),
               ),
         ),
         BlocProvider(
@@ -160,6 +167,8 @@ class AppBloc extends StatelessWidget {
                 socketInterface: context.read<SocketServiceInterface>(),
                 chatInterface: context.read<ChatInterface>(),
                 userInterface: context.read<UserInterface>(),
+                rsaEncryptionService: context.read<RsaEncryptionService>(),
+                rsaKeys: context.read<RsaKeysInterface>(),
               ),
         ),
         BlocProvider(
@@ -245,7 +254,6 @@ class AppBloc extends StatelessWidget {
               (context) => StickerCubit(
                 stickerParksInterface: context.read<StikersParksInterface>(),
                 giftInterface: context.read<GiftInterface>(),
-                // messageInterface: context.read<MessageInterface>(),
               ),
         ),
         BlocProvider(
@@ -295,6 +303,17 @@ class AppBloc extends StatelessWidget {
           create:
               (context) =>
                   CardSwiperCubit(interface: context.read<SwipeInterface>()),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  NewsCubit(newsInterface: context.read<NewsInterface>()),
+        ),
+        BlocProvider(
+          create:
+              (context) => MatchmakingCubit(
+                matchmakingInterface: context.read<MatchmakingInterface>(),
+              ),
         ),
       ],
       child: child,

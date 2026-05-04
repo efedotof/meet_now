@@ -25,7 +25,6 @@ class _MessagesListState extends State<MessagesList> {
   bool _isLoadingMore = false;
   bool _hasMore = true;
   final double _scrollThreshold = 200.0;
-  final Map<String, GlobalKey> _messageKeys = {};
   Timer? _visibilityCheckTimer;
 
   @override
@@ -88,31 +87,33 @@ class _MessagesListState extends State<MessagesList> {
   void _checkVisibleMessages() {
     if (!widget.scrollController.hasClients) return;
 
-    final visibleMessages = <Message>[];
     final cubit = context.read<ChatMessageCubit>();
     final state = cubit.state;
 
     state.maybeMap(
       loaded: (state) {
         final messages = state.messages;
+        if (messages.isEmpty) return;
 
-        for (final message in messages) {
-          if (message.senderId == widget.currentUserId || message.read) {
-            continue;
-          }
+        final scrollOffset = widget.scrollController.position.pixels;
+        final viewportHeight =
+            widget.scrollController.position.viewportDimension;
 
-          final key = _messageKeys[message.id];
-          if (key != null && key.currentContext != null) {
-            final renderBox =
-                key.currentContext!.findRenderObject() as RenderBox?;
-            if (renderBox != null) {
-              final position = renderBox.localToGlobal(Offset.zero);
-              final size = renderBox.size;
+        const approximateMessageHeight = 100.0;
 
-              if (_isWidgetVisible(position, size)) {
-                visibleMessages.add(message);
-              }
-            }
+        int firstVisibleIndex =
+            (scrollOffset / approximateMessageHeight).floor();
+        int lastVisibleIndex =
+            ((scrollOffset + viewportHeight) / approximateMessageHeight).ceil();
+
+        firstVisibleIndex = firstVisibleIndex.clamp(0, messages.length - 1);
+        lastVisibleIndex = lastVisibleIndex.clamp(0, messages.length - 1);
+
+        final visibleMessages = <Message>[];
+        for (int i = firstVisibleIndex; i <= lastVisibleIndex; i++) {
+          final message = messages[i];
+          if (message.senderId != widget.currentUserId && !message.read) {
+            visibleMessages.add(message);
           }
         }
 
@@ -124,16 +125,10 @@ class _MessagesListState extends State<MessagesList> {
     );
   }
 
-  bool _isWidgetVisible(Offset position, Size size) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return position.dy + size.height > 0 && position.dy < screenHeight;
-  }
-
   void _scrollToBottom() {
     if (widget.scrollController.hasClients) {
       widget.scrollController.animateTo(
-        0.0,
+        widget.scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -161,16 +156,6 @@ class _MessagesListState extends State<MessagesList> {
           loaded: (loadedState) {
             final messages = loadedState.messages;
 
-            _messageKeys.removeWhere(
-              (key, _) => !messages.any((message) => message.id == key),
-            );
-
-            for (final message in messages) {
-              if (message.id != null && !_messageKeys.containsKey(message.id)) {
-                _messageKeys[message.id!] = GlobalKey();
-              }
-            }
-
             return CustomScrollView(
               controller: widget.scrollController,
               reverse: false,
@@ -183,15 +168,13 @@ class _MessagesListState extends State<MessagesList> {
                     final isMe = message.senderId == widget.currentUserId;
                     final showTime = _shouldShowTime(index, messages);
                     return Column(
-                      key:
-                          message.id != null ? _messageKeys[message.id!] : null,
+                      key: ValueKey(message.id ?? message.tempId),
                       crossAxisAlignment:
                           message.isGift
                               ? CrossAxisAlignment.center
                               : (isMe
                                   ? CrossAxisAlignment.end
                                   : CrossAxisAlignment.start),
-
                       children: [
                         if (message.isGift)
                           Padding(
@@ -224,7 +207,11 @@ class _MessagesListState extends State<MessagesList> {
                               bottom: 16,
                             ),
                             child: Text(
-                              DateFormat.Hm().format(message.createdAt!),
+                              DateFormat.Hm().format(
+                                message.createdAt!.add(
+                                  const Duration(hours: 3),
+                                ),
+                              ),
                               style: Theme.of(
                                 context,
                               ).textTheme.bodySmall?.copyWith(
@@ -278,7 +265,6 @@ class _MessagesListState extends State<MessagesList> {
     if (!widget.scrollController.hasClients) return false;
 
     final currentScroll = widget.scrollController.position.pixels;
-
     return currentScroll <= 200;
   }
 }

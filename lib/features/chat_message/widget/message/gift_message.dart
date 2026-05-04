@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,40 +22,105 @@ class GiftMessage extends StatefulWidget {
 }
 
 class _GiftMessageState extends State<GiftMessage> {
-  late Future<String> _giftUrlFuture;
-  final Map<String, String> _urlCache = {};
+  static final Map<String, String> _urlCache = {};
+  String? _displayUrl;
+  bool _isLoading = false;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _giftUrlFuture = _getGiftUrl();
+    _prepareUrl();
   }
 
   @override
   void didUpdateWidget(covariant GiftMessage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.message.gift?.id != widget.message.gift?.id) {
-      _giftUrlFuture = _getGiftUrl();
+      _prepareUrl();
     }
   }
 
-  Future<String> _getGiftUrl() async {
+  void _prepareUrl() {
     final gift = widget.message.gift;
-    if (gift == null) throw Exception('No gift');
+    if (gift == null) {
+      setState(() {
+        _displayUrl = null;
+        _isLoading = false;
+        _hasError = true;
+      });
+      return;
+    }
 
-    final urlToUse =
+    final originalUrl =
         (gift.animationUrl != null && gift.animationUrl!.isNotEmpty)
             ? gift.animationUrl!
             : gift.imageUrl;
 
-    if (_urlCache.containsKey(urlToUse)) {
-      return _urlCache[urlToUse]!;
+    if (_urlCache.containsKey(originalUrl)) {
+      setState(() {
+        _displayUrl = _urlCache[originalUrl];
+        _isLoading = false;
+        _hasError = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+        _displayUrl = null;
+      });
+      _fetchPresignedUrl(originalUrl);
     }
+  }
 
-    final uploadImageInterface = context.read<UploadImageInterface>();
-    final url = await uploadImageInterface.getPresignedUrl(urlToUse);
-    _urlCache[urlToUse] = url;
-    return url;
+  Future<void> _fetchPresignedUrl(String originalUrl) async {
+    try {
+      final uploadImageInterface = context.read<UploadImageInterface>();
+      final presignedUrl = await uploadImageInterface.getPresignedUrl(
+        originalUrl,
+      );
+      _urlCache[originalUrl] = presignedUrl;
+      if (mounted) {
+        final currentOriginalUrl =
+            (widget.message.gift?.animationUrl != null &&
+                    widget.message.gift!.animationUrl!.isNotEmpty)
+                ? widget.message.gift!.animationUrl!
+                : widget.message.gift?.imageUrl ?? '';
+        if (currentOriginalUrl == originalUrl) {
+          setState(() {
+            _displayUrl = presignedUrl;
+            _isLoading = false;
+            _hasError = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final currentOriginalUrl =
+            (widget.message.gift?.animationUrl != null &&
+                    widget.message.gift!.animationUrl!.isNotEmpty)
+                ? widget.message.gift!.animationUrl!
+                : widget.message.gift?.imageUrl ?? '';
+        if (currentOriginalUrl == originalUrl) {
+          setState(() {
+            _isLoading = false;
+            _hasError = true;
+          });
+        }
+      }
+    }
+  }
+
+  void _retry() {
+    final gift = widget.message.gift;
+    if (gift != null) {
+      final originalUrl =
+          (gift.animationUrl != null && gift.animationUrl!.isNotEmpty)
+              ? gift.animationUrl!
+              : gift.imageUrl;
+      _urlCache.remove(originalUrl);
+      _prepareUrl();
+    }
   }
 
   @override
@@ -72,65 +136,86 @@ class _GiftMessageState extends State<GiftMessage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            FutureBuilder<String>(
-              future: _giftUrlFuture,
-              builder: (context, snapshot) {
-                return Container(
-                  width: 160,
-                  height: 160,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: Colors.transparent,
-                    boxShadow: [
-                      BoxShadow(
-                        color: rarityColor.withValues(alpha: 0.3),
-                        blurRadius: 16,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
+            Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                color: Colors.transparent,
+                boxShadow: [
+                  BoxShadow(
+                    color: rarityColor.withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (snapshot.connectionState == ConnectionState.waiting)
-                        CircularProgressIndicator(color: rarityColor),
-                      if (snapshot.hasError)
+                ],
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_isLoading) CircularProgressIndicator(color: rarityColor),
+                  if (_hasError && !_isLoading)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         Icon(Icons.card_giftcard, size: 64, color: rarityColor),
-                      if (snapshot.hasData)
-                        CachedNetworkImage(
-                          imageUrl: snapshot.data!,
-                          fit: BoxFit.contain,
-                          width: 120,
-                          height: 120,
-                        ),
-                      if (gift?.animationUrl != null &&
-                          gift!.animationUrl!.isNotEmpty)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: scheme.primary,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 16,
-                              color: Colors.white,
-                            ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: _retry,
+                          child: Text(
+                            'Повторить',
+                            style: TextStyle(color: rarityColor),
                           ),
                         ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  if (_displayUrl != null && !_hasError)
+                    CachedNetworkImage(
+                      imageUrl: _displayUrl!,
+                      fit: BoxFit.contain,
+                      width: 120,
+                      height: 120,
+                      cacheKey: gift?.id,
+                      placeholder:
+                          (_, _) =>
+                              CircularProgressIndicator(color: rarityColor),
+                      errorWidget: (_, _, _) {
+                        final originalUrl =
+                            (gift?.animationUrl != null &&
+                                    gift!.animationUrl!.isNotEmpty)
+                                ? gift.animationUrl!
+                                : gift?.imageUrl ?? '';
+                        _urlCache.remove(originalUrl);
+                        return Icon(
+                          Icons.card_giftcard,
+                          size: 64,
+                          color: rarityColor,
+                        );
+                      },
+                    ),
+                  if (gift?.animationUrl != null &&
+                      gift!.animationUrl!.isNotEmpty)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: scheme.primary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow_rounded,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-
             const SizedBox(height: 12),
-
-            /// TEXT "Вы отправили подарок / Вам отправили подарок"
             Text(
               widget.isMe ? 'Вы отправили подарок' : 'Вам отправили подарок',
               style: widget.theme.textTheme.bodyMedium?.copyWith(

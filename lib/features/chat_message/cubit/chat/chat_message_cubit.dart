@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -7,7 +8,10 @@ import 'package:meet_now_app_server/meet_now_app_server.dart';
 import 'package:meet_now_app_server/model/chats/continue_chat_proposal_response_dto/continue_chat_proposal_response_dto.dart';
 import 'package:meet_now_app_server/model/chats/continue_chat_response_dto/continue_chat_response_dto.dart';
 import 'package:meet_now_app_server/repository/message/paginated_messages_response.dart';
-
+import 'package:meet_now_app_server/storage/rsa_keys/crypto_service.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_encryption_service.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_keys_interface.dart';
+import 'package:cryptography/cryptography.dart';
 part 'chat_message_state.dart';
 part 'chat_message_cubit.freezed.dart';
 
@@ -30,6 +34,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   final SocketServiceInterface _socketInterface;
   final ChatInterface _chatInterface;
   final UserInterface _userInterface;
+  final RsaEncryptionService _rsaEncryptionService;
+  final RsaKeysInterface _rsaKeys;
 
   String? _currentChatId;
   String? _senderId;
@@ -47,6 +53,10 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   bool _friendRequestSent = false;
 
   final Map<String, String> _tempIdToRealId = {};
+  final Map<String, String> _otherUserPublicKeys = {};
+
+  final Map<String, SecretKey> _chatAesKeys = {};
+  SecretKey? _currentChatAesKey;
 
   ChatMessageCubit({
     required UserInterface userInterface,
@@ -55,7 +65,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     required SocketServiceInterface socketInterface,
     required FriendInterface friendInterface,
     required MessageInterface messageInterface,
-  }) : _userInterface = userInterface,
+    required RsaEncryptionService rsaEncryptionService,
+    required RsaKeysInterface rsaKeys,
+  }) : _rsaEncryptionService = rsaEncryptionService,
+       _rsaKeys = rsaKeys,
+       _userInterface = userInterface,
        _chatInterface = chatInterface,
        _socketInterface = socketInterface,
        _uploadImageInterface = uploadImageInterface,
@@ -63,6 +77,53 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
        _messageInterface = messageInterface,
        super(const ChatMessageState.initial()) {
     _setupChatSubscriptions();
+  }
+
+  Future<void> setChatEncryptedAesKey(String encryptedAesKey) async {
+    if (encryptedAesKey.isEmpty) {
+      return;
+    }
+
+    if (_currentChatId != null && _chatAesKeys.containsKey(_currentChatId)) {
+      _currentChatAesKey = _chatAesKeys[_currentChatId];
+
+      return;
+    }
+
+    try {
+      final myPrivateKey = await _rsaKeys.getMyDecryptedPrivateKey();
+      if (myPrivateKey == null) {
+        return;
+      }
+
+      final decryptedBase64Key = await _rsaEncryptionService.rsaDecrypt(
+        encryptedAesKey,
+        myPrivateKey,
+      );
+      final keyBytes = base64Decode(decryptedBase64Key);
+      final aesKey = SecretKey(keyBytes);
+
+      if (_currentChatId != null) {
+        _chatAesKeys[_currentChatId!] = aesKey;
+        _currentChatAesKey = aesKey;
+      }
+    } catch (_) {}
+  }
+
+  Future<String> _encryptWithChatAes(String plainText) async {
+    if (_currentChatAesKey == null) {
+      throw Exception('AES-ключ чата не установлен');
+    }
+    final cryptoService = CryptoService();
+    return await cryptoService.encrypt(plainText, _currentChatAesKey!);
+  }
+
+  Future<String> _decryptWithChatAes(String cipherText) async {
+    if (_currentChatAesKey == null) {
+      throw Exception('AES-ключ чата не установлен');
+    }
+    final cryptoService = CryptoService();
+    return await cryptoService.decrypt(cipherText, _currentChatAesKey!);
   }
 
   void _setupChatSubscriptions() {
@@ -84,8 +145,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _handleContinueChatProposal(ContinueChatProposalResponseDto proposal) {
     if (proposal.tempChatId == _currentChatId) {
-      debugPrint('Получено предложение продолжить чат: ${proposal.message}');
-
       state.maybeMap(
         loaded: (state) {
           emit(
@@ -113,8 +172,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _handleContinueChatResponse(ContinueChatResponseDto response) {
     if (response.tempChatId == _currentChatId) {
-      debugPrint('Получен ответ на предложение: accepted=${response.accepted}');
-
       if (response.accepted && response.permanentChatCreated == true) {
         _handleSuccessfulAgreement(response);
       } else {
@@ -140,6 +197,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     required String chatId,
     required String senderId,
     required String recipientId,
+    String? encryptedAesKey,
   }) {
     if (_currentChatId == chatId &&
         _senderId == senderId &&
@@ -147,7 +205,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         _isTemporary == isTemporary) {
       return;
     }
-
     _friendRequestSent = false;
     _isTemporary = isTemporary;
     _currentChatId = chatId;
@@ -155,18 +212,20 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _recipientId = recipientId;
     _tempIdToRealId.clear();
 
-    _resetPagination();
+    _currentChatAesKey = null;
 
+    _resetPagination();
     _disposeSubscriptions();
     emit(const ChatMessageState.loading());
 
     try {
+      if (encryptedAesKey != null && encryptedAesKey.isNotEmpty) {
+        setChatEncryptedAesKey(encryptedAesKey);
+      }
+
       _messagesSubscription = _messageInterface.messagesStream.listen(
-        (messages) {
-          _handleMessagesBatch(messages);
-        },
+        (messages) async => await _handleMessagesBatch(messages),
         onError: (e) {
-          debugPrint('Messages stream error: $e');
           if (!isClosed) {
             emit(ChatMessageState.error('Failed to load messages: $e'));
           }
@@ -176,9 +235,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
       _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
           .listen(
-            _handlePaginatedMessages,
+            (response) async => await _handlePaginatedMessages(response),
             onError: (e) {
-              debugPrint('Paginated messages stream error: $e');
               if (!isClosed) {
                 emit(ChatMessageState.error('Failed to load messages: $e'));
               }
@@ -187,9 +245,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           );
 
       _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
-        _handleSingleMessage,
+        (message) async => await _handleSingleMessage(message),
         onError: (e) {
-          debugPrint('Single message stream error: $e');
           _reconnectMessageSubscriptions();
         },
         cancelOnError: false,
@@ -197,20 +254,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
       _setupChatSubscriptions();
       _loadInitialMessages();
-
       if (_currentChatId != null) {
         _messageInterface.requestMessages(_currentChatId!);
       }
-
       _startMarkAsReadTimer();
     } catch (e) {
-      if (!isClosed) {
-        emit(ChatMessageState.error('Failed to initialize: $e'));
-      }
+      if (!isClosed) emit(ChatMessageState.error('Failed to initialize: $e'));
     }
   }
 
-  void _handleMessagesBatch(List<Message> messages) {
+  Future<void> _handleMessagesBatch(List<Message> messages) async {
     if (messages.isEmpty) return;
 
     final firstMessage = messages.first;
@@ -219,32 +272,40 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       return;
     }
 
+    final decryptedMessages = await Future.wait(
+      messages.map(_decryptIncomingMessage),
+    );
+
     if (!isClosed) {
       state.maybeMap(
         loaded: (state) {
           final existingIds =
               state.messages.map((m) => m.id).where((id) => id != null).toSet();
           final newMessages =
-              messages.where((m) => !existingIds.contains(m.id)).toList();
+              decryptedMessages
+                  .where((m) => !existingIds.contains(m.id))
+                  .toList();
 
           if (newMessages.isNotEmpty) {
             final updatedMessages = [...state.messages, ...newMessages]..sort(
-              (a, b) => (b.createdAt ?? DateTime.now()).compareTo(
-                a.createdAt ?? DateTime.now(),
+              (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+                b.createdAt ?? DateTime.now(),
               ),
             );
-
             _collectUnreadMessagesIds(newMessages);
-
             emit(state.copyWith(messages: updatedMessages));
           }
         },
         orElse: () {
-          _collectUnreadMessagesIds(messages);
-
+          _collectUnreadMessagesIds(decryptedMessages);
           emit(
             ChatMessageState.loaded(
-              messages: messages,
+              messages:
+                  decryptedMessages..sort(
+                    (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+                      b.createdAt ?? DateTime.now(),
+                    ),
+                  ),
               isTemporary: _isTemporary!,
               hasMore: false,
               currentPage: 0,
@@ -256,20 +317,28 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
   }
 
-  void _handlePaginatedMessages(PaginatedMessagesResponse response) {
+  Future<void> _handlePaginatedMessages(
+    PaginatedMessagesResponse response,
+  ) async {
     if (!isClosed) {
+      final decryptedMessages = await Future.wait(
+        response.messages.map(_decryptIncomingMessage),
+      );
+
       state.maybeMap(
         loaded: (state) {
           List<Message> updatedMessages;
-
           if (response.currentPage == 0) {
-            updatedMessages = response.messages;
+            updatedMessages = decryptedMessages;
           } else {
-            updatedMessages = [...response.messages, ...state.messages];
+            updatedMessages = [...decryptedMessages, ...state.messages];
           }
-
+          updatedMessages.sort(
+            (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+              b.createdAt ?? DateTime.now(),
+            ),
+          );
           _collectUnreadMessagesIds(updatedMessages);
-
           emit(
             state.copyWith(
               messages: updatedMessages,
@@ -280,11 +349,10 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           );
         },
         orElse: () {
-          _collectUnreadMessagesIds(response.messages);
-
+          _collectUnreadMessagesIds(decryptedMessages);
           emit(
             ChatMessageState.loaded(
-              messages: response.messages,
+              messages: decryptedMessages,
               isTemporary: _isTemporary!,
               hasMore: response.hasNext,
               currentPage: response.currentPage,
@@ -298,9 +366,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void markMessagesAsReadByIds(List<String> messageIds) {
     final messages = _getMessagesByIds(messageIds);
-    if (messages.isNotEmpty) {
-      markMessagesAsRead(messages);
-    }
+    if (messages.isNotEmpty) markMessagesAsRead(messages);
   }
 
   List<Message> _getMessagesByIds(List<String> messageIds) {
@@ -317,22 +383,20 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
   }
 
-  void _handleSingleMessage(Message newMessage) {
-    debugPrint(
-      '🆕 ChatMessageCubit: Получено новое сообщение: ${newMessage.id} от ${newMessage.senderId}',
-    );
-
+  Future<void> _handleSingleMessage(Message newMessage) async {
     if (newMessage.chatId != _currentChatId &&
         newMessage.tempChatId != _currentChatId) {
       return;
     }
 
-    if (newMessage.id != null) {
-      _replaceTempMessageWithRealId(newMessage);
+    final decryptedMessage = await _decryptIncomingMessage(newMessage);
+
+    if (decryptedMessage.id != null) {
+      _replaceTempMessageWithRealId(decryptedMessage);
     }
 
-    if (newMessage.senderId != _senderId && !newMessage.read) {
-      _messageInterface.markMessagesAsRead([newMessage.id!]);
+    if (decryptedMessage.senderId != _senderId && !decryptedMessage.read) {
+      _messageInterface.markMessagesAsRead([decryptedMessage.id!]);
     }
 
     if (!isClosed) {
@@ -340,22 +404,29 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         loaded: (state) {
           final existingIndex = state.messages.indexWhere(
             (msg) =>
-                msg.id == newMessage.id ||
+                msg.id == decryptedMessage.id ||
                 (msg.tempId != null &&
-                    _tempIdToRealId[msg.tempId] == newMessage.id),
+                    _tempIdToRealId[msg.tempId] == decryptedMessage.id),
           );
 
           List<Message> updatedMessages;
           if (existingIndex != -1) {
             updatedMessages = List<Message>.from(state.messages);
-            updatedMessages[existingIndex] = newMessage;
+            updatedMessages[existingIndex] = decryptedMessage;
           } else {
-            updatedMessages = [...state.messages, newMessage];
+            updatedMessages = [...state.messages, decryptedMessage];
           }
 
-          if (newMessage.senderId != _senderId && !newMessage.read) {
-            if (newMessage.id != null) {
-              _unreadMessagesIds.add(newMessage.id!);
+          updatedMessages.sort(
+            (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+              b.createdAt ?? DateTime.now(),
+            ),
+          );
+
+          if (decryptedMessage.senderId != _senderId &&
+              !decryptedMessage.read) {
+            if (decryptedMessage.id != null) {
+              _unreadMessagesIds.add(decryptedMessage.id!);
             }
           }
 
@@ -364,7 +435,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         orElse: () {
           emit(
             ChatMessageState.loaded(
-              messages: [newMessage],
+              messages: [decryptedMessage],
               isTemporary: _isTemporary!,
               hasMore: false,
               currentPage: 0,
@@ -399,7 +470,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
           final updatedMessages = List<Message>.from(state.messages);
           updatedMessages[tempIndex] = realMessage;
-
+          updatedMessages.sort(
+            (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+              b.createdAt ?? DateTime.now(),
+            ),
+          );
           emit(state.copyWith(messages: updatedMessages));
         }
       },
@@ -418,20 +493,17 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   void _startMarkAsReadTimer() {
-    _markAsReadTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      _sendMarkAsRead();
-    });
+    _markAsReadTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _sendMarkAsRead(),
+    );
   }
 
   void _sendMarkAsRead() {
     if (_unreadMessagesIds.isNotEmpty) {
       final idsToMark = List<String>.from(_unreadMessagesIds);
       _unreadMessagesIds.clear();
-
       _messageInterface.markMessagesAsRead(idsToMark);
-      debugPrint(
-        '📨 Отправлена отметка о прочтении для ${idsToMark.length} сообщений',
-      );
     }
   }
 
@@ -451,7 +523,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     if (unreadMessages.isNotEmpty) {
       _messageInterface.markMessagesAsRead(unreadMessages);
-
       _unreadMessagesIds.removeWhere((id) => unreadMessages.contains(id));
 
       state.maybeMap(
@@ -463,7 +534,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
                 }
                 return message;
               }).toList();
-
           emit(state.copyWith(messages: updatedMessages));
         },
         orElse: () {},
@@ -473,10 +543,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _loadInitialMessages() {
     if (_currentChatId == null) return;
-
     _currentPage = 0;
     _hasMoreMessages = true;
-
     _messageInterface.requestPaginatedMessages(
       _currentChatId!,
       _currentPage,
@@ -493,16 +561,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
 
     _isLoadingMore = true;
-
     state.maybeMap(
-      loaded: (state) {
-        emit(state.copyWith(isLoadingMore: true));
-      },
+      loaded: (state) => emit(state.copyWith(isLoadingMore: true)),
       orElse: () {},
     );
-
     final nextPage = _currentPage + 1;
-    debugPrint('📤 Загрузка следующих сообщений, страница $nextPage');
 
     _messageInterface.requestPaginatedMessages(
       _currentChatId!,
@@ -513,12 +576,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   Future<User?> getOtherUser({required String otherUser}) async {
     final user = await _userInterface.getOtherUser(userId: otherUser);
-
-    if (user.id != "") {
-      return user;
-    } else {
-      return null;
-    }
+    return user.id.isNotEmpty ? user : null;
   }
 
   void _resetPagination() {
@@ -533,14 +591,13 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void _handleChatAgreeNotification(AgreeChatResponse response) {
     if (response.tempChatId == _currentChatId) {
       state.maybeMap(
-        loaded: (state) {
-          emit(
-            state.copyWith(
-              showContinueProposal: true,
-              agreeChatResponse: response,
+        loaded:
+            (state) => emit(
+              state.copyWith(
+                showContinueProposal: true,
+                agreeChatResponse: response,
+              ),
             ),
-          );
-        },
         orElse: () {},
       );
     }
@@ -566,7 +623,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
   void _handleSuccessfulAgreement(dynamic response) {
     _isTemporary = false;
-
     if (response is ContinueChatResponseDto) {
       _currentChatId = response.permanentChat.chatId;
     } else if (response is AgreeChatResponse &&
@@ -580,42 +636,36 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     }
 
     state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueProposal: false,
-            isTemporary: false,
-            isWaitingForResponse: false,
-            continueChatProposal: null,
+      loaded:
+          (state) => emit(
+            state.copyWith(
+              showContinueProposal: false,
+              isTemporary: false,
+              isWaitingForResponse: false,
+              continueChatProposal: null,
+            ),
           ),
-        );
-      },
       orElse: () {},
     );
   }
 
   Future<void> _sendFriendRequestSilently() async {
     if (_recipientId == null || _recipientId!.isEmpty) return;
-
     try {
       await _friendInterface.sendFriendRequest(toUserId: _recipientId!);
-      debugPrint('Friend request sent automatically to $_recipientId');
-    } catch (e) {
-      debugPrint('Error sending friend request: $e');
-    }
+    } catch (_) {}
   }
 
   void _handleAgreementError(AgreeChatResponse response) {
     state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueProposal: false,
-            isWaitingForResponse: false,
-            agreeChatResponse: response,
+      loaded:
+          (state) => emit(
+            state.copyWith(
+              showContinueProposal: false,
+              isWaitingForResponse: false,
+              agreeChatResponse: response,
+            ),
           ),
-        );
-      },
       orElse: () {},
     );
   }
@@ -625,20 +675,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       return;
     }
 
-    debugPrint('Отправка предложения продолжить чат: $message');
-
     _socketInterface.proposeContinueChat(_currentChatId!, _senderId!, message);
-
     state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueProposal: false,
-            isWaitingForResponse: true,
-            continueChatProposal: null,
+      loaded:
+          (state) => emit(
+            state.copyWith(
+              showContinueProposal: false,
+              isWaitingForResponse: true,
+              continueChatProposal: null,
+            ),
           ),
-        );
-      },
       orElse: () {},
     );
   }
@@ -646,39 +692,34 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   void respondToContinueProposal(bool accepted) {
     if (_currentChatId == null || _senderId == null) return;
 
-    debugPrint('Ответ на предложение: accepted=$accepted');
-
     _socketInterface.respondToContinueChat(
       _currentChatId!,
       _senderId!,
       accepted,
     );
-
     state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueProposal: false,
-            isWaitingForResponse: false,
-            continueChatProposal: null,
+      loaded:
+          (state) => emit(
+            state.copyWith(
+              showContinueProposal: false,
+              isWaitingForResponse: false,
+              continueChatProposal: null,
+            ),
           ),
-        );
-      },
       orElse: () {},
     );
   }
 
   void hideContinueProposal() {
     state.maybeMap(
-      loaded: (state) {
-        emit(
-          state.copyWith(
-            showContinueProposal: false,
-            isWaitingForResponse: false,
-            continueChatProposal: null,
+      loaded:
+          (state) => emit(
+            state.copyWith(
+              showContinueProposal: false,
+              isWaitingForResponse: false,
+              continueChatProposal: null,
+            ),
           ),
-        );
-      },
       orElse: () {},
     );
   }
@@ -690,7 +731,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     final tempId =
         'temp_sticker_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
-
     final message = Message(
       id: null,
       senderId: _senderId!,
@@ -709,7 +749,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           mimeType: 'image/jpeg',
           fileSize: 0,
           sortOrder: 0,
-          // Не включаем giftId и gift для стикеров
           giftId: null,
           gift: null,
         ),
@@ -720,14 +759,18 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     state.maybeMap(
       loaded: (state) {
-        emit(state.copyWith(messages: [...state.messages, message]));
+        final updatedMessages = [...state.messages, message]..sort(
+          (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+            b.createdAt ?? DateTime.now(),
+          ),
+        );
+        emit(state.copyWith(messages: updatedMessages));
 
         final sendMessage = message.toSendMessage();
         final cleanedMedia =
             sendMessage.media
                 .map((media) => media.copyWith(giftId: null, gift: null))
                 .toList();
-
         _messageInterface.sendMessage(
           sendMessage.copyWith(media: cleanedMedia),
         );
@@ -739,13 +782,11 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
             isTemporary: _isTemporary!,
           ),
         );
-
         final sendMessage = message.toSendMessage();
         final cleanedMedia =
             sendMessage.media
                 .map((media) => media.copyWith(giftId: null, gift: null))
                 .toList();
-
         _messageInterface.sendMessage(
           sendMessage.copyWith(media: cleanedMedia),
         );
@@ -753,87 +794,90 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
   }
 
-  void sendTextMessage(String text) {
+  void sendTextMessage(String text) async {
     if (text.isEmpty) return;
+    if (_senderId == null ||
+        _recipientId == null ||
+        _isTemporary == null ||
+        _currentChatId == null) {
+      return;
+    }
 
-    if (_senderId == null || _senderId!.isEmpty) {
-      debugPrint('Ошибка: senderId не установлен');
-      return;
-    }
-    if (_recipientId == null || _recipientId!.isEmpty) {
-      debugPrint('Ошибка: recipientId не установлен');
-      return;
-    }
-    if (_isTemporary == null) {
-      debugPrint('Ошибка: isTemporary не установлен');
-      return;
-    }
-    if (_currentChatId == null || _currentChatId!.isEmpty) {
-      debugPrint('Ошибка: currentChatId не установлен');
-      return;
-    }
+    final tempId =
+        'temp_text_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
+
+    final localMessage = Message(
+      id: null,
+      senderId: _senderId!,
+      recipientId: _recipientId!,
+      text: text,
+      createdAt: DateTime.now(),
+      chatId: _isTemporary! ? null : _currentChatId,
+      tempChatId: _isTemporary! ? _currentChatId : null,
+      read: false,
+      contentType: 'text',
+      media: [],
+      tempId: tempId,
+      isSending: true,
+    );
+
+    state.maybeMap(
+      loaded: (state) {
+        final updatedMessages = [...state.messages, localMessage]..sort(
+          (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+            b.createdAt ?? DateTime.now(),
+          ),
+        );
+        emit(state.copyWith(messages: updatedMessages));
+      },
+      orElse: () {
+        emit(
+          ChatMessageState.loaded(
+            messages: [localMessage],
+            isTemporary: _isTemporary!,
+          ),
+        );
+      },
+    );
 
     try {
-      final tempId =
-          'temp_text_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
-
-      final message = Message(
-        id: null,
-        senderId: _senderId!,
-        recipientId: _recipientId!,
-        text: text,
-        createdAt: DateTime.now(),
-        chatId: _isTemporary! ? null : _currentChatId,
-        tempChatId: _isTemporary! ? _currentChatId : null,
-        read: false,
-        contentType: 'text',
-        media: [],
-        tempId: tempId,
-        isSending: true,
-      );
-
-      state.maybeMap(
-        loaded: (state) {
-          emit(state.copyWith(messages: [...state.messages, message]));
-          // Отправляем SendMessage (без клиентских полей)
-          _messageInterface.sendMessage(message.toSendMessage());
-        },
-        orElse: () {
-          emit(
-            ChatMessageState.loaded(
-              messages: [message],
-              isTemporary: _isTemporary!,
-            ),
+      if (!_isTemporary! && _currentChatAesKey != null) {
+        final encryptedText = await _encryptWithChatAes(text);
+        final sendMessage = localMessage.toSendMessage().copyWith(
+          text: encryptedText,
+        );
+        _messageInterface.sendMessage(sendMessage);
+      } else {
+        final recipientPublicKey = await _getRecipientPublicKey(_recipientId!);
+        if (recipientPublicKey == null) {
+          _updateMessageWithError(
+            tempId,
+            'Не удалось получить публичный ключ получателя',
           );
-          _messageInterface.sendMessage(message.toSendMessage());
-        },
-      );
+          return;
+        }
+        final encryptedText = await _rsaEncryptionService.encryptWithPublicKey(
+          text,
+          recipientPublicKey,
+        );
+        final sendMessage = localMessage.toSendMessage().copyWith(
+          text: encryptedText,
+        );
+        _messageInterface.sendMessage(sendMessage);
+      }
     } catch (e) {
-      debugPrint('Ошибка при создании текстового сообщения: $e');
-      _updateMessageWithError(
-        'temp_text_${DateTime.now().millisecondsSinceEpoch}',
-        e.toString(),
-      );
+      _updateMessageWithError(tempId, e.toString());
     }
   }
 
   void sendMediaMessage(List<MediaItem> mediaItems, {String text = ''}) {
     if (mediaItems.isEmpty) return;
-
-    if (_senderId == null || _senderId!.isEmpty) {
-      debugPrint('Ошибка: senderId не установлен');
-      return;
-    }
-    if (_recipientId == null || _recipientId!.isEmpty) {
-      debugPrint('Ошибка: recipientId не установлен');
-      return;
-    }
-    if (_isTemporary == null) {
-      debugPrint('Ошибка: isTemporary не установлен');
-      return;
-    }
-    if (_currentChatId == null || _currentChatId!.isEmpty) {
-      debugPrint('Ошибка: currentChatId не установлен');
+    if (_senderId == null ||
+        _senderId!.isEmpty ||
+        _recipientId == null ||
+        _recipientId!.isEmpty ||
+        _isTemporary == null ||
+        _currentChatId == null) {
       return;
     }
 
@@ -869,17 +913,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
 
     state.maybeMap(
-      loaded: (state) {
-        emit(state.copyWith(messages: [...state.messages, tempMessage]));
-      },
-      orElse: () {
-        emit(
-          ChatMessageState.loaded(
-            messages: [tempMessage],
-            isTemporary: _isTemporary!,
+      loaded:
+          (state) =>
+              emit(state.copyWith(messages: [...state.messages, tempMessage])),
+      orElse:
+          () => emit(
+            ChatMessageState.loaded(
+              messages: [tempMessage],
+              isTemporary: _isTemporary!,
+            ),
           ),
-        );
-      },
     );
 
     _uploadAndSendMediaMessage(mediaItems, tempMessage, text);
@@ -896,7 +939,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     try {
       final uploadedMedia = await _uploadMediaFiles(mediaItems);
-
       final failedUploads =
           uploadedMedia.where((media) => media.mediaUrl == null).toList();
       if (failedUploads.isNotEmpty && !isClosed) {
@@ -907,11 +949,41 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         return;
       }
 
+      String finalText = text;
+      if (text.isNotEmpty) {
+        if (!_isTemporary! && _currentChatAesKey != null) {
+          finalText = await _encryptWithChatAes(text);
+        } else {
+          final recipientPublicKey = await _getRecipientPublicKey(
+            _recipientId!,
+          );
+          if (recipientPublicKey == null) {
+            _updateMessageWithError(
+              tempMessage.tempId!,
+              'Не удалось получить публичный ключ получателя',
+            );
+            return;
+          }
+          try {
+            finalText = await _rsaEncryptionService.encryptWithPublicKey(
+              text,
+              recipientPublicKey,
+            );
+          } catch (e) {
+            _updateMessageWithError(
+              tempMessage.tempId!,
+              'Ошибка шифрования: $e',
+            );
+            return;
+          }
+        }
+      }
+
       final finalMessage = Message(
         id: null,
         senderId: _senderId!,
         recipientId: _recipientId!,
-        text: text,
+        text: finalText,
         createdAt: DateTime.now(),
         chatId: _isTemporary! ? null : _currentChatId,
         tempChatId: _isTemporary! ? _currentChatId : null,
@@ -920,20 +992,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         media: uploadedMedia,
       );
 
-      try {
-        _messageInterface.sendMessage(finalMessage.toSendMessage());
-      } catch (e) {
-        if (!isClosed) {
-          _updateMessageWithError(
-            tempMessage.tempId!,
-            'Failed to send message: $e',
-          );
-        }
-      }
+      _messageInterface.sendMessage(finalMessage.toSendMessage());
     } catch (e) {
-      if (!isClosed) {
-        _updateMessageWithError(tempMessage.tempId!, e.toString());
-      }
+      if (!isClosed) _updateMessageWithError(tempMessage.tempId!, e.toString());
     }
   }
 
@@ -941,10 +1002,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     List<MediaItem> mediaItems,
   ) async {
     final uploadedMedia = <MessageMedia>[];
-
     try {
       final uris = mediaItems.map((item) => item.uri).toList();
-
       final fileUrls = await _uploadImageInterface.uploadMultipleMedia(uris);
 
       for (int i = 0; i < mediaItems.length; i++) {
@@ -956,7 +1015,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
           if (mediaItem.type == 'video') {
             thumbnailUrl = await _generateVideoThumbnail(mediaItem, mediaUrl);
           }
-
           uploadedMedia.add(
             MessageMedia(
               contentType: _mapMediaTypeToContentType(mediaItem.type),
@@ -993,7 +1051,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         );
       }
     }
-
     return uploadedMedia;
   }
 
@@ -1007,19 +1064,16 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               }
               return message;
             }).toList();
-
         emit(state.copyWith(messages: updatedMessages));
       },
       orElse: () {},
     );
   }
 
-  String _determineContentType(List<MediaItem> mediaItems) {
-    if (mediaItems.length == 1) {
-      return _mapMediaTypeToContentType(mediaItems.first.type);
-    }
-    return 'file';
-  }
+  String _determineContentType(List<MediaItem> mediaItems) =>
+      mediaItems.length == 1
+          ? _mapMediaTypeToContentType(mediaItems.first.type)
+          : 'file';
 
   String _mapMediaTypeToContentType(String mediaType) {
     switch (mediaType) {
@@ -1037,17 +1091,13 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       if (temporaryModel != null) {
         _chatInterface.finistTemporaryChat(tempChat: temporaryModel);
       }
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
   }
 
   Future<String?> _generateVideoThumbnail(
     MediaItem videoItem,
     String videoUrl,
-  ) async {
-    return null;
-  }
+  ) async => null;
 
   void reconnect({
     required BuildContext context,
@@ -1073,9 +1123,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     _disposeMessageSubscriptions();
 
     _messagesSubscription = _messageInterface.messagesStream.listen(
-      _handleMessagesBatch,
+      (messages) async => await _handleMessagesBatch(messages),
       onError: (e) {
-        debugPrint('Messages stream error: $e');
         Future.delayed(const Duration(seconds: 3), () {
           if (!isClosed) _reconnectMessageSubscriptions();
         });
@@ -1085,9 +1134,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     _paginatedMessagesSubscription = _messageInterface.paginatedMessagesStream
         .listen(
-          _handlePaginatedMessages,
+          (response) async => await _handlePaginatedMessages(response),
           onError: (e) {
-            debugPrint('Paginated messages stream error: $e');
             Future.delayed(const Duration(seconds: 3), () {
               if (!isClosed) _reconnectMessageSubscriptions();
             });
@@ -1096,9 +1144,8 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
         );
 
     _singleMessageSubscription = _messageInterface.singleMessageStream.listen(
-      _handleSingleMessage,
+      (message) async => await _handleSingleMessage(message),
       onError: (e) {
-        debugPrint('Single message stream error: $e');
         Future.delayed(const Duration(seconds: 3), () {
           if (!isClosed) _reconnectMessageSubscriptions();
         });
@@ -1119,7 +1166,6 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     final tempId =
         'temp_gift_${DateTime.now().millisecondsSinceEpoch}_${UniqueKey().hashCode}';
-
     final message = Message(
       id: null,
       senderId: _senderId!,
@@ -1138,12 +1184,15 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
     state.maybeMap(
       loaded: (state) {
-        emit(state.copyWith(messages: [...state.messages, message]));
+        final updatedMessages = [...state.messages, message]..sort(
+          (a, b) => (a.createdAt ?? DateTime.now()).compareTo(
+            b.createdAt ?? DateTime.now(),
+          ),
+        );
+        emit(state.copyWith(messages: updatedMessages));
         _messageInterface.sendMessage(message.toSendMessage());
       },
-      orElse: () {
-        _messageInterface.sendMessage(message.toSendMessage());
-      },
+      orElse: () => _messageInterface.sendMessage(message.toSendMessage()),
     );
   }
 
@@ -1157,24 +1206,17 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   void _disposeSubscriptions() {
-    _messagesSubscription?.cancel();
-    _messagesSubscription = null;
-    _paginatedMessagesSubscription?.cancel();
-    _paginatedMessagesSubscription = null;
-    _singleMessageSubscription?.cancel();
-    _singleMessageSubscription = null;
+    _disposeMessageSubscriptions();
     _chatAgreeNotificationSubscription?.cancel();
     _chatAgreeNotificationSubscription = null;
     _chatAgreeResponseSubscription?.cancel();
     _chatAgreeResponseSubscription = null;
     _chatPermanentCreatedSubscription?.cancel();
     _chatPermanentCreatedSubscription = null;
-
     _continueChatProposalSubscription?.cancel();
     _continueChatProposalSubscription = null;
     _continueChatResponseSubscription?.cancel();
     _continueChatResponseSubscription = null;
-
     _markAsReadTimer?.cancel();
     _markAsReadTimer = null;
   }
@@ -1191,12 +1233,9 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     required String toUserId,
   }) async {
     if (toUserId.isEmpty) return;
-
     try {
       await _friendInterface.sendFriendRequest(toUserId: toUserId);
-    } catch (e) {
-      //
-    }
+    } catch (_) {}
   }
 
   void updateMessageSendingStatus(
@@ -1213,10 +1252,78 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
               }
               return message;
             }).toList();
-
         emit(state.copyWith(messages: updatedMessages));
       },
       orElse: () {},
     );
+  }
+
+  Future<String?> _getRecipientPublicKey(String userId) async {
+    if (_otherUserPublicKeys.containsKey(userId)) {
+      return _otherUserPublicKeys[userId];
+    }
+    final user = await getOtherUser(otherUser: userId);
+    if (user != null && user.publicKey != null && user.publicKey!.isNotEmpty) {
+      _otherUserPublicKeys[userId] = user.publicKey!;
+      return user.publicKey;
+    }
+
+    return null;
+  }
+
+  Future<Message> _decryptIncomingMessage(Message message) async {
+    if (!_isTemporary! && _currentChatAesKey != null) {
+      if (message.contentType == 'text' && message.text.isNotEmpty) {
+        try {
+          final decryptedText = await _decryptWithChatAes(message.text);
+
+          return message.copyWith(text: decryptedText);
+        } catch (e) {
+          return message.copyWith(text: '[Ошибка расшифровки]');
+        }
+      }
+      return message;
+    }
+
+    if (message.contentType != 'text') {
+      return message;
+    }
+
+    if (message.recipientId != _senderId) {
+      return message;
+    }
+
+    if (message.text.isEmpty) return message;
+
+    final isEnc = _isEncrypted(message.text);
+
+    if (!isEnc) return message;
+
+    try {
+      final myPrivateKey = await _rsaKeys.getMyDecryptedPrivateKey();
+      if (myPrivateKey == null) {
+        return message.copyWith(text: '[Зашифровано]');
+      }
+      final decryptedText = await _rsaEncryptionService.decryptWithPrivateKey(
+        message.text,
+        myPrivateKey,
+      );
+
+      return message.copyWith(text: decryptedText);
+    } catch (e, stack) {
+      return message.copyWith(text: '[Ошибка расшифровки]');
+    }
+  }
+
+  bool _isEncrypted(String text) {
+    try {
+      final json = jsonDecode(text) as Map;
+      final hasEncKey = json.containsKey('encryptedAesKey');
+      final hasEncData = json.containsKey('encryptedData');
+
+      return hasEncKey && hasEncData;
+    } catch (e) {
+      return false;
+    }
   }
 }

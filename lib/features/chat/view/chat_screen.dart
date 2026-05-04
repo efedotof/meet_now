@@ -13,6 +13,8 @@ import 'package:meet_now_app_server/repository/socket/socket_service_interface.d
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
 import 'package:skeletons_forked/skeletons_forked.dart';
 import 'dart:io';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_encryption_service.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_keys_interface.dart';
 
 @RoutePage()
 class ChatScreen extends StatefulWidget {
@@ -145,6 +147,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             socketServiceInterface: context.read<SocketServiceInterface>(),
             userModelAppInterface: context.read<UserModelAppInterface>(),
             chatInterface: context.read<ChatInterface>(),
+            rsaEncryptionService: context.read<RsaEncryptionService>(),
+            rsaKeys: context.read<RsaKeysInterface>(),
           )..refresh(),
       child: SkeletonTheme(
         shimmerGradient: const LinearGradient(

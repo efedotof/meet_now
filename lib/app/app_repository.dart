@@ -45,6 +45,8 @@ class AppRepository extends StatelessWidget {
       swipeAddress: swipeAddress,
       keysApiAddress: keysApiAddress,
       documentAddress: documentAddress,
+      newsAddress: newsAddress,
+      matchmaikingAddress: matchmakingAddress,
     ).initializeRepository();
   }
 }

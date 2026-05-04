@@ -84,7 +84,6 @@ class SignInCubit extends Cubit<SignInState> {
     try {
       String salt;
       String encryptedPrivateKey;
-      bool keysGenerated = false;
 
       try {
         final saltResponse = await _keysApi.getSalt();
@@ -96,22 +95,17 @@ class SignInCubit extends Cubit<SignInState> {
           _logger.info(
             'Keys not found on server, generating new keys for user $userId',
           );
-
           emit(SignInState.loadingKeys());
-
           final generatedKeys = await _generateAndUploadKeys(password, userId);
           salt = generatedKeys.salt;
           encryptedPrivateKey = generatedKeys.encryptedPrivateKey;
-          keysGenerated = true;
         } else {
           _logger.error('Error checking keys: $e');
           rethrow;
         }
       }
 
-      if (!keysGenerated) {
-        await _rsaKeys.saveEncryptedPrivateKey(encryptedPrivateKey);
-      }
+      await _rsaKeys.saveEncryptedPrivateKey(encryptedPrivateKey);
 
       final decryptedPrivateKey = await _rsaKeys.decryptPrivateKey(
         password,

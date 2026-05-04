@@ -6,7 +6,6 @@ import 'package:meet_now_app/features/auth/view/sign_in/cubit/sign_in_cubit.dart
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meet_now_app/generated/l10n.dart';
 import 'package:meet_now_app/route/app_route.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
 
 @RoutePage()

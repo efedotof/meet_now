@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meet_now_app_server/model/chats/delete_chat_request/delete_chat_request.dart';
@@ -8,6 +10,10 @@ import 'package:meet_now_app_server/model/chats/temporary/temporary_chat.dart';
 import 'package:meet_now_app_server/repository/chat/chat_interface.dart';
 import 'package:meet_now_app_server/repository/socket/socket_service_interface.dart';
 import 'package:meet_now_app_server/repository/user_model_app/user_model_app_interface.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/crypto_service.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_encryption_service.dart';
+import 'package:meet_now_app_server/storage/rsa_keys/rsa_keys_interface.dart';
+import 'package:cryptography/cryptography.dart';
 
 part 'chat_state.dart';
 part 'chat_cubit.freezed.dart';
@@ -18,12 +24,19 @@ class ChatCubit extends Cubit<ChatState> {
   final UserModelAppInterface _userModelAppInterface;
   final SocketServiceInterface _socketServiceInterface;
   final ChatInterface _chatInterface;
+  final RsaEncryptionService _rsaEncryptionService;
+  final RsaKeysInterface _rsaKeys;
+  final Map<String, SecretKey> _chatAesKeys = {};
 
   ChatCubit({
     required ChatInterface chatInterface,
     required SocketServiceInterface socketServiceInterface,
     required UserModelAppInterface userModelAppInterface,
-  }) : _chatInterface = chatInterface,
+    required RsaEncryptionService rsaEncryptionService,
+    required RsaKeysInterface rsaKeys,
+  }) : _rsaEncryptionService = rsaEncryptionService,
+       _rsaKeys = rsaKeys,
+       _chatInterface = chatInterface,
        _userModelAppInterface = userModelAppInterface,
        _socketServiceInterface = socketServiceInterface,
        super(
@@ -41,13 +54,21 @@ class ChatCubit extends Cubit<ChatState> {
     final user = _userModelAppInterface.user;
     emit(state.copyWith(currentUserId: user?.id));
 
-    _socketServiceInterface.getPermanent();
-    _socketServiceInterface.getActiveTemporary();
-
     _permanentSub = _socketServiceInterface.permanentChatsStream.listen(
-      (chats) {
+      (chats) async {
+        final decryptedChats = <PermanentChatResponseDto>[];
+        for (var chat in chats) {
+          final decryptedLastMessage = await _decryptLastMessage(chat);
+
+          final modifiedChat = chat.copyWith(lastMessage: decryptedLastMessage);
+          decryptedChats.add(modifiedChat);
+        }
         emit(
-          state.copyWith(permanentChat: chats, isLoading: false, error: null),
+          state.copyWith(
+            permanentChat: decryptedChats,
+            isLoading: false,
+            error: null,
+          ),
         );
       },
       onError:
@@ -63,6 +84,9 @@ class ChatCubit extends Cubit<ChatState> {
       onError:
           (e) => emit(state.copyWith(error: e.toString(), isLoading: false)),
     );
+
+    _socketServiceInterface.getPermanent();
+    _socketServiceInterface.getActiveTemporary();
   }
 
   void changeChatType(ChatType chatType) {
@@ -167,5 +191,39 @@ class ChatCubit extends Cubit<ChatState> {
     _permanentSub.cancel();
     _temporarySub.cancel();
     return super.close();
+  }
+
+  Future<String?> _decryptLastMessage(PermanentChatResponseDto chat) async {
+    if (chat.lastMessage == null || chat.lastMessage!.isEmpty) return '';
+    if (chat.encryptedAesKey == null || chat.encryptedAesKey!.isEmpty) {
+      return chat.lastMessage;
+    }
+
+    try {
+      SecretKey? aesKey;
+      if (_chatAesKeys.containsKey(chat.chatId)) {
+        aesKey = _chatAesKeys[chat.chatId];
+      } else {
+        final myPrivateKey = await _rsaKeys.getMyDecryptedPrivateKey();
+        if (myPrivateKey == null) {
+          return '[Зашифровано]';
+        }
+
+        final decryptedBase64Key = await _rsaEncryptionService.rsaDecrypt(
+          chat.encryptedAesKey!,
+          myPrivateKey,
+        );
+        final keyBytes = base64Decode(decryptedBase64Key);
+        aesKey = SecretKey(keyBytes);
+        _chatAesKeys[chat.chatId] = aesKey;
+      }
+
+      final cryptoService = CryptoService();
+      final decrypted = await cryptoService.decrypt(chat.lastMessage!, aesKey!);
+
+      return decrypted;
+    } catch (e) {
+      return chat.lastMessage;
+    }
   }
 }

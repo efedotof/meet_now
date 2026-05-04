@@ -93,7 +93,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
-  void _initializeChat() {
+  void _initializeChat() async {
     if (!mounted || _disposed) return;
 
     try {
@@ -131,11 +131,36 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       }
 
       senderID = currentUser.id;
-
       recipientId =
           isTemporary
               ? _getTemporaryChatRecipient(currentUserId: currentUser.id)
               : _getChatRecipient(currentUserId: currentUser.id);
+
+      String? encryptedAesKey;
+
+      if (isTemporary) {
+        encryptedAesKey = widget.temporaryChatModel?.encryptedAesKey;
+      } else {
+        int attempts = 0;
+        while (attempts < 50 &&
+            (_chatCubit?.state.permanentChat.isEmpty ?? true)) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          attempts++;
+        }
+
+        PermanentChatResponseDto? freshChat;
+        final chats = _chatCubit?.state.permanentChat;
+        if (chats != null) {
+          for (final chat in chats) {
+            if (chat.chatId == _chatId) {
+              freshChat = chat;
+              break;
+            }
+          }
+        }
+        encryptedAesKey =
+            freshChat?.encryptedAesKey ?? widget.chatModel?.encryptedAesKey;
+      }
 
       _userActivityCubit?.subscribeAction(chatId: _chatId!);
 
@@ -145,6 +170,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         chatId: _chatId!,
         senderId: senderID,
         recipientId: recipientId,
+        encryptedAesKey: encryptedAesKey,
       );
 
       _subscription = _chatMessageCubit?.stream.listen(_handleChatMessageState);
@@ -157,7 +183,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           userId: senderID,
           totalTime: totalTime,
         );
-
         _timerSubscription = _timerCubit?.stream.listen(_handleSyncTimerState);
       }
 
@@ -705,9 +730,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
-      } catch (e) {
-        //
-      }
+      } catch (_) {}
     });
   }
 
