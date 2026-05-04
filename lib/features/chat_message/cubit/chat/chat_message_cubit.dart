@@ -1310,7 +1310,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
       );
 
       return message.copyWith(text: decryptedText);
-    } catch (e, stack) {
+    } catch (e) {
       return message.copyWith(text: '[Ошибка расшифровки]');
     }
   }
