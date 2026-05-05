@@ -126,9 +126,13 @@ public class InternalNotificationService {
             } else {
                 log.warn("No push token found for user: {}", userId);
             }
-
-        } catch (Exception e) {
-            log.error("Failed to send system data notification to user: {}", userId, e);
+        } catch (RuntimeException e) {
+            if (e.getMessage() != null && e.getMessage().contains("UNREGISTERED")) {
+                log.warn("Failed to send system data notification to user {} due to unregistered token: {}", userId,
+                        e.getMessage());
+            } else {
+                log.error("Failed to send system data notification to user: {}", userId, e);
+            }
         }
     }
 

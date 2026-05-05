@@ -53,9 +53,9 @@ public class SecurityConfig {
                                                                 "/app/**",
                                                                 "/topic/**",
                                                                 "/api/v1/document/**",
-                                                                "/queue/**")
+                                                                "/queue/**",
+                                                                "/api/news/active")
                                                 .permitAll()
-
                                                 .requestMatchers("/api/v1/user/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/api/v1/friend/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/api/v1/support/admin/**").hasRole("ADMIN")
@@ -100,4 +100,5 @@ public class SecurityConfig {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
+
 }

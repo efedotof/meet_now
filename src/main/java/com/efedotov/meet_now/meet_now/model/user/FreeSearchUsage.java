@@ -1,5 +1,6 @@
 package com.efedotov.meet_now.meet_now.model.user;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,4 +20,7 @@ public class FreeSearchUsage {
 
     @Column(name = "used_at", nullable = false)
     private LocalDateTime usedAt = LocalDateTime.now();
+
+    @Column(name = "used_date", nullable = false)
+    private LocalDate usedDate = LocalDate.now();
 }

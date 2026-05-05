@@ -14,6 +14,7 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 
@@ -118,10 +119,13 @@ public class FCMNotificationService {
 
             String response = FirebaseMessaging.getInstance().send(fcmMessage);
             log.debug("FCM notification with data sent to token: {}, response: {}", pushToken, response);
-
         } catch (FirebaseMessagingException e) {
-            log.error("Failed to send FCM data notification to token: {}", pushToken, e);
-            throw new RuntimeException("FCM data notification failed", e);
+            if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
+                log.warn("Push token is unregistered, will be removed: {}", pushToken);
+            } else {
+                log.error("Failed to send FCM data notification to token: {}", pushToken, e);
+                throw new RuntimeException("FCM data notification failed", e);
+            }
         }
     }
 

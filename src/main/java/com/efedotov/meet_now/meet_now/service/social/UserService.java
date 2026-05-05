@@ -102,25 +102,10 @@ public class UserService {
     public void deleteUser(UUID userId) {
         UUID adminId = getCurrentAdminId();
         validateAdmin(adminId);
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         if (adminId.equals(userId)) {
             throw new RuntimeException("Cannot delete yourself");
         }
-        deleteSecondChanceByUserId(userId);
-
-        temporaryChatRepository.deleteBySenderIdOrRecipientId(userId, userId);
-
-        questionRepository.deleteByUserId(userId);
-        answerRepository.deleteByUserId(userId);
-        reportRepository.deleteByReporterIdOrReportedId(userId, userId);
-        friendshipRepository.deleteByUserIdOrFriendId(userId, userId);
-        friendRequestRepository.deleteByFromUserIdOrToUserId(userId, userId);
-
-        userRepository.delete(user);
-        deleteUserFiles(user);
+        deleteUserCompletely(userId);
         log.info("User {} deleted by admin {}", userId, adminId);
     }
 
@@ -711,5 +696,43 @@ public class UserService {
     public String getEncryptedPrivateKey(UUID userId) {
         User user = getById(userId);
         return user.getEncryptedPrivateKey();
+    }
+
+    @Transactional
+    public void deleteUserCompletely(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        deleteSecondChanceByUserId(userId);
+        temporaryChatRepository.deleteBySenderIdOrRecipientId(userId, userId);
+        questionRepository.deleteByUserId(userId);
+        answerRepository.deleteByUserId(userId);
+        reportRepository.deleteByReporterIdOrReportedId(userId, userId);
+        friendshipRepository.deleteByUserIdOrFriendId(userId, userId);
+        friendRequestRepository.deleteByFromUserIdOrToUserId(userId, userId);
+
+        deleteUserMessageMedia(userId);
+
+        deleteUserFiles(user);
+
+        userRepository.delete(user);
+
+        log.info("User {} completely deleted by system", userId);
+    }
+
+    private void deleteUserMessageMedia(UUID userId) {
+        List<String> mediaUrls = entityManager.createQuery(
+                "SELECT mm.mediaUrl FROM MessageMedia mm WHERE mm.message.sender.id = :userId", String.class)
+                .setParameter("userId", userId)
+                .getResultList();
+
+        for (String mediaUrl : mediaUrls) {
+            try {
+                s3Service.deleteFile(mediaUrl);
+                log.debug("Deleted message media from S3: {}", mediaUrl);
+            } catch (Exception e) {
+                log.error("Failed to delete message media {} for user {}", mediaUrl, userId, e);
+            }
+        }
     }
 }

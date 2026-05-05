@@ -130,4 +130,7 @@ public class User {
 
     @Column(columnDefinition = "TEXT")
     private String salt;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 }

@@ -149,7 +149,7 @@ public class ChatService {
         tempChat.setBothAgreed(false);
 
         temporaryChatRepository.save(tempChat);
-         generateAndStoreAesKeyForTemporaryChat(tempChat, sender, recipient);
+        generateAndStoreAesKeyForTemporaryChat(tempChat, sender, recipient);
         ChatConstraint constraint = new ChatConstraint();
         constraint.setTemporaryChat(tempChat);
         constraint.setWaitSeconds(30);
@@ -460,6 +460,13 @@ public class ChatService {
 
     private void generateAndStoreAesKeyForChat(Chat chat, User user1, User user2) {
         try {
+            if (user1.getPublicKey() == null || user1.getPublicKey().isBlank()) {
+                throw new IllegalStateException("User " + user1.getId() + " does not have a public key");
+            }
+            if (user2.getPublicKey() == null || user2.getPublicKey().isBlank()) {
+                throw new IllegalStateException("User " + user2.getId() + " does not have a public key");
+            }
+
             byte[] aesKey = new byte[32];
             SecureRandom secureRandom = new SecureRandom();
             secureRandom.nextBytes(aesKey);
@@ -474,7 +481,7 @@ public class ChatService {
             log.info("AES-ключ сгенерирован и сохранён для чата {}", chat.getChatId());
         } catch (Exception e) {
             log.error("Ошибка генерации AES-ключа для чата {}", chat.getChatId(), e);
-            throw new RuntimeException("Failed to generate AES key for chat", e);
+            throw new RuntimeException("Failed to generate AES key for chat: " + e.getMessage(), e);
         }
     }
 

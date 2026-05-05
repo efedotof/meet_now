@@ -16,6 +16,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.messaging.MessagingException;
@@ -31,117 +33,148 @@ public class MatchmakingService {
     private final InternalNotificationService internalNotificationService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    private static final int PREMIUM_SEARCH_COST = 10;
+    private static final int PREMIUM_SEARCH_COST = 1000;
 
     @Transactional
     public MatchmakingResponse quickSearch(UUID userId) {
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
-
-        if (Boolean.TRUE.equals(currentUser.getIsSearching())) {
-            return MatchmakingResponse.builder()
-                    .success(false)
-                    .message("Вы уже находитесь в поиске")
-                    .build();
-        }
-
-        String myFloor = currentUser.getFloor();
-        if (myFloor == null || myFloor.isBlank()) {
-            return MatchmakingResponse.builder()
-                    .success(false)
-                    .message("У вас не указан пол")
-                    .build();
-        }
-
-        String targetFloor;
-        if ("male".equalsIgnoreCase(myFloor)) {
-            targetFloor = "female";
-        } else if ("female".equalsIgnoreCase(myFloor)) {
-            targetFloor = "male";
-        } else {
-            return MatchmakingResponse.builder()
-                    .success(false)
-                    .message("Некорректное значение пола")
-                    .build();
-        }
-
-        boolean isPremium = currentUser.getRoles().stream()
-                .anyMatch(role -> "PREMIUM".equals(role.getRoleName()));
-
-        if (!isPremium) {
-            if (freeSearchUsageRepository.existsById(userId)) {
-                return MatchmakingResponse.builder()
-                        .success(false)
-                        .message("Вы уже использовали бесплатный поиск")
-                        .build();
-            }
-        } else {
-            if (currentUser.getGamePoints() < PREMIUM_SEARCH_COST) {
-                return MatchmakingResponse.builder()
-                        .success(false)
-                        .message("Недостаточно очков. Требуется: " + PREMIUM_SEARCH_COST)
-                        .build();
-            }
-        }
-
-        User partner = userRepository.findRandomForQuickMatch(userId, targetFloor)
-                .orElse(null);
-        if (partner == null) {
-            return MatchmakingResponse.builder()
-                    .success(false)
-                    .message("Нет подходящих собеседников")
-                    .build();
-        }
-
-        if (!isPremium) {
-            FreeSearchUsage usage = new FreeSearchUsage();
-            usage.setUserId(userId);
-            freeSearchUsageRepository.save(usage);
-        } else {
-            currentUser.setGamePoints(currentUser.getGamePoints() - PREMIUM_SEARCH_COST);
-            userRepository.save(currentUser);
-        }
-
-        Chat chat;
         try {
-            chat = chatService.createOrGetPermanentChat(userId, partner.getId());
+            User currentUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+
+            if (Boolean.TRUE.equals(currentUser.getIsSearching())) {
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("Вы уже находитесь в поиске")
+                        .build();
+            }
+
+            String myFloor = currentUser.getFloor();
+            if (myFloor == null || myFloor.isBlank()) {
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("У вас не указан пол")
+                        .build();
+            }
+
+            String targetFloor;
+            if ("male".equalsIgnoreCase(myFloor)) {
+                targetFloor = "female";
+            } else if ("female".equalsIgnoreCase(myFloor)) {
+                targetFloor = "male";
+            } else {
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("Некорректное значение пола")
+                        .build();
+            }
+
+            boolean isPremium = currentUser.getRoles().stream()
+                    .anyMatch(role -> "PREMIUM".equals(role.getRoleName()));
+
+            if (isPremium) {
+                if (currentUser.getGamePoints() < PREMIUM_SEARCH_COST) {
+                    return MatchmakingResponse.builder()
+                            .success(false)
+                            .message("Недостаточно очков. Требуется: " + PREMIUM_SEARCH_COST)
+                            .build();
+                }
+            } else {
+                Optional<FreeSearchUsage> usage = freeSearchUsageRepository.findByUserIdAndUsedDate(userId,
+                        LocalDate.now());
+                if (usage.isPresent()) {
+                    return MatchmakingResponse.builder()
+                            .success(false)
+                            .message("Вы уже использовали бесплатный поиск сегодня. Попробуйте завтра.")
+                            .build();
+                }
+            }
+
+            User partner = userRepository.findRandomForQuickMatch(userId, targetFloor)
+                    .orElse(null);
+            if (partner == null) {
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("Нет подходящих собеседников")
+                        .build();
+            }
+
+            if (currentUser.getPublicKey() == null || currentUser.getPublicKey().isBlank()) {
+                log.warn("User {} has no public key", userId);
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("Ваш профиль не настроен для шифрования. Пожалуйста, выйдите и войдите снова.")
+                        .build();
+            }
+            if (partner.getPublicKey() == null || partner.getPublicKey().isBlank()) {
+                log.warn("Partner {} has no public key", partner.getId());
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("У выбранного собеседника отсутствует публичный ключ. Попробуйте позже.")
+                        .build();
+            }
+
+            if (isPremium) {
+                currentUser.setGamePoints(currentUser.getGamePoints() - PREMIUM_SEARCH_COST);
+                userRepository.save(currentUser);
+            } else {
+                FreeSearchUsage usage = new FreeSearchUsage();
+                usage.setUserId(userId);
+                usage.setUsedAt(LocalDateTime.now());
+                usage.setUsedDate(LocalDate.now());
+                freeSearchUsageRepository.save(usage);
+            }
+
+            Chat chat;
+            try {
+                chat = chatService.createOrGetPermanentChat(userId, partner.getId());
+            } catch (Exception e) {
+                log.error("Ошибка создания постоянного чата при быстром поиске", e);
+                return MatchmakingResponse.builder()
+                        .success(false)
+                        .message("Не удалось создать чат: " + e.getMessage())
+                        .build();
+            }
+
+            currentUser.setIsSearching(false);
+            partner.setIsSearching(false);
+            userRepository.saveAll(List.of(currentUser, partner));
+
+            PermanentChatResponseDto permanentChatDto = mapToPermanentChatDto(chat);
+
+            try {
+                messagingTemplate.convertAndSendToUser(
+                        partner.getUsername(),
+                        "/queue/chat.permanent.updated",
+                        permanentChatDto);
+            } catch (MessagingException e) {
+                log.warn("Не удалось отправить WebSocket уведомление пользователю {}", partner.getUsername());
+            }
+
+            Map<String, String> data = new HashMap<>();
+            data.put("type", "new_match");
+            data.put("chatId", chat.getChatId().toString());
+            data.put("action", "open_chat");
+            internalNotificationService.sendSystemDataNotification(
+                    partner.getId(),
+                    "У вас новый собеседник!",
+                    "Новый чат",
+                    data);
+
+            return MatchmakingResponse.builder()
+                    .success(true)
+                    .message("Собеседник найден!")
+                    .permanentChat(permanentChatDto)
+                    .chatId(chat.getChatId())
+                    .pointsSpent(isPremium ? PREMIUM_SEARCH_COST : 0)
+                    .build();
+
         } catch (Exception e) {
-            log.error("Ошибка создания постоянного чата при быстром поиске", e);
-            throw new RuntimeException("Не удалось создать чат", e);
+            log.error("Неожиданная ошибка в quickSearch", e);
+            return MatchmakingResponse.builder()
+                    .success(false)
+                    .message("Произошла ошибка: " + e.getMessage())
+                    .build();
         }
-
-        currentUser.setIsSearching(false);
-        partner.setIsSearching(false);
-        userRepository.saveAll(List.of(currentUser, partner));
-
-        PermanentChatResponseDto permanentChatDto = mapToPermanentChatDto(chat);
-
-        try {
-            messagingTemplate.convertAndSendToUser(
-                    partner.getUsername(),
-                    "/queue/chat.permanent.updated",
-                    permanentChatDto);
-        } catch (MessagingException e) {
-            log.warn("Не удалось отправить WebSocket уведомление пользователю {}", partner.getUsername());
-        }
-
-        Map<String, String> data = new HashMap<>();
-        data.put("type", "new_match");
-        data.put("chatId", chat.getChatId().toString());
-        data.put("action", "open_chat");
-        internalNotificationService.sendSystemDataNotification(
-                partner.getId(),
-                "У вас новый собеседник!",
-                "Новый чат",
-                data);
-
-        return MatchmakingResponse.builder()
-                .success(true)
-                .message("Собеседник найден!")
-                .permanentChat(permanentChatDto)
-                .chatId(chat.getChatId())
-                .pointsSpent(isPremium ? PREMIUM_SEARCH_COST : 0)
-                .build();
     }
 
     private PermanentChatResponseDto mapToPermanentChatDto(Chat chat) {

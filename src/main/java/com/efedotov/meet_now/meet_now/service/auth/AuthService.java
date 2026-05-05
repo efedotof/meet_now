@@ -1,5 +1,6 @@
 package com.efedotov.meet_now.meet_now.service.auth;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,7 +68,7 @@ public class AuthService {
 
         UserDto userDto = mapToDto(savedUser);
         userDto.setToken(session.getToken());
-
+        userRepository.updateLastLogin(userDto.getId(), LocalDateTime.now());
         return userDto;
     }
 
@@ -87,7 +88,7 @@ public class AuthService {
         UserSession session = sessionService.createSession(user.getId());
         UserDto userDto = mapToDto(user);
         userDto.setToken(session.getToken());
-
+        userRepository.updateLastLogin(userDto.getId(), LocalDateTime.now());
         return userDto;
     }
 
