@@ -54,7 +54,7 @@ public class SessionAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             log.debug("Found Bearer token, length: {}", token.length());
 
-            Optional<UserSession> sessionOpt = sessionService.findValidSession(token);
+            Optional<UserSession> sessionOpt = sessionService.validateAndUpdateLastLogin(token);
 
             if (sessionOpt.isPresent()) {
                 UserSession session = sessionOpt.get();

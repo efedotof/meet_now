@@ -19,6 +19,7 @@ import com.efedotov.meet_now.meet_now.dto.response.social.LogoutResult;
 import com.efedotov.meet_now.meet_now.dto.response.social.SessionStatistics;
 import com.efedotov.meet_now.meet_now.model.user.UserSession;
 import com.efedotov.meet_now.meet_now.repository.user.UserSessionRepository;
+import com.efedotov.meet_now.meet_now.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SessionService {
     private final UserSessionRepository sessionRepository;
+    private final UserRepository userRepository;
 
     private static final long SESSION_DURATION_HOURS = 12;
 
@@ -167,5 +169,16 @@ public class SessionService {
     public void cleanExpiredSessions() {
         sessionRepository.deleteExpiredSessions(Instant.now());
         log.info("Очистка просроченных сессий выполнена");
+    }
+
+    @Transactional
+    public Optional<UserSession> validateAndUpdateLastLogin(String token) {
+        Optional<UserSession> sessionOpt = findValidSession(token);
+        if (sessionOpt.isPresent()) {
+            UserSession session = sessionOpt.get();
+            userRepository.updateLastLogin(session.getUserId(), LocalDateTime.now());
+            log.debug("Обновлено время последнего входа для пользователя {} через токен", session.getUserId());
+        }
+        return sessionOpt;
     }
 }
