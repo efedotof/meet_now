@@ -116,6 +116,7 @@ public class ReportController {
                         @ApiResponse(responseCode = "201", description = "Жалоба успешно создана"),
                         @ApiResponse(responseCode = "400", description = "Неверные параметры запроса")
         })
+        
         @PostMapping
         public ResponseEntity<ReportDto> createReport(
                         @RequestBody CreateReportRequest request) {

@@ -34,4 +34,6 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     @Modifying
     @Query("DELETE FROM Report r WHERE r.reporter.id = :reporterId OR r.reported.id = :reportedId")
     void deleteByReporterIdOrReportedId(@Param("reporterId") UUID reporterId, @Param("reportedId") UUID reportedId);
+
+    long countByReported_IdAndStatus(UUID reportedId, ReportStatus status);
 }
