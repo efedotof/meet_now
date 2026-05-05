@@ -136,6 +136,7 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                     onBackPressed: widget.onBackPressed,
                     isTemporary: widget.isTemporary,
                     onRequestFriend: widget.onRequestFriend,
+                    onReportUser: widget.onReportUser,
                     timerText:
                         widget.isTemporary
                             ? context.select(
@@ -229,6 +230,7 @@ class _BuildScaffoldState extends State<BuildScaffold> {
                     recipientId: widget.recipientId,
                     tempChatId: widget.chatId,
                     senderId: widget.senderID,
+                    onReportUser: widget.onReportUser,
                   ),
                 ),
               ],

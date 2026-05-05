@@ -841,7 +841,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
     );
 
     try {
-      if (!_isTemporary! && _currentChatAesKey != null) {
+      if (_currentChatAesKey != null) {
         final encryptedText = await _encryptWithChatAes(text);
         final sendMessage = localMessage.toSendMessage().copyWith(
           text: encryptedText,
@@ -951,7 +951,7 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
 
       String finalText = text;
       if (text.isNotEmpty) {
-        if (!_isTemporary! && _currentChatAesKey != null) {
+        if (_currentChatAesKey != null) {
           finalText = await _encryptWithChatAes(text);
         } else {
           final recipientPublicKey = await _getRecipientPublicKey(
@@ -1272,11 +1272,10 @@ class ChatMessageCubit extends Cubit<ChatMessageState> {
   }
 
   Future<Message> _decryptIncomingMessage(Message message) async {
-    if (!_isTemporary! && _currentChatAesKey != null) {
+    if (_currentChatAesKey != null) {
       if (message.contentType == 'text' && message.text.isNotEmpty) {
         try {
           final decryptedText = await _decryptWithChatAes(message.text);
-
           return message.copyWith(text: decryptedText);
         } catch (e) {
           return message.copyWith(text: '[Ошибка расшифровки]');

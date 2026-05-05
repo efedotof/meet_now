@@ -928,7 +928,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     if (!mounted || _disposed || _isDialogShowing) return;
 
     _isDialogShowing = true;
-    final commentController = TextEditingController();
     final theme = Theme.of(context);
     String? selectedReason;
 
@@ -954,9 +953,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         RadioGroup<String>(
                           groupValue: selectedReason,
                           onChanged: (value) {
-                            setState(() {
-                              selectedReason = value;
-                            });
+                            setState(() => selectedReason = value);
                           },
                           child: Column(
                             children:
@@ -970,15 +967,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                     .toList(),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: commentController,
-                          decoration: InputDecoration(
-                            labelText: S.of(context).additionalcomments,
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                        ),
                       ],
                     ),
                   ),
@@ -986,9 +974,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        if (mounted && !_disposed) {
-                          _isDialogShowing = false;
-                        }
+                        if (mounted && !_disposed) _isDialogShowing = false;
                       },
                       child: Text(S.of(context).cancel),
                     ),
@@ -997,7 +983,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         backgroundColor: theme.colorScheme.error,
                         foregroundColor: theme.colorScheme.onError,
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if (selectedReason == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -1011,8 +997,36 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                           );
                           return;
                         }
-                        Navigator.pop(context);
-                        if (mounted && !_disposed) {
+
+                        final reportService = context.read<ReportInterface>();
+                        final messenger = ScaffoldMessenger.of(context);
+                        final navigator = Navigator.of(context);
+
+                        try {
+                          await reportService.createReport(
+                            reportedId: recipientId,
+                            reason: selectedReason!,
+                          );
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(S.of(context).complaintSent),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  S.of(context).errorSendingComplaint,
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                        navigator.pop();
+                        if (context.mounted && !_disposed) {
                           _isDialogShowing = false;
                         }
                       },
@@ -1022,9 +1036,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 ),
           ),
     ).then((_) {
-      if (mounted && !_disposed) {
-        _isDialogShowing = false;
-      }
+      if (context.mounted && !_disposed) _isDialogShowing = false;
     });
   }
 

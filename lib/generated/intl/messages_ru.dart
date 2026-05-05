@@ -249,6 +249,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "communityRules": MessageLookupByLibrary.simpleMessage(
       "Правила сообщества",
     ),
+    "complaintSent": MessageLookupByLibrary.simpleMessage("Жалоба отправлена"),
     "completed": MessageLookupByLibrary.simpleMessage("Завершено"),
     "confirm": MessageLookupByLibrary.simpleMessage("Подтвердить"),
     "confirmPin": MessageLookupByLibrary.simpleMessage("Подтвердите PIN-код"),
@@ -401,6 +402,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ошибка загрузки правил",
     ),
     "errorPrefix": MessageLookupByLibrary.simpleMessage("Ошибка"),
+    "errorSendingComplaint": MessageLookupByLibrary.simpleMessage(
+      "Ошибка при отправке жалобы",
+    ),
     "errorUploadingUserData": MessageLookupByLibrary.simpleMessage(
       "Ошибка загрузки данных пользователя",
     ),

@@ -215,91 +215,9 @@ class _InputAreaState extends State<InputArea> {
         widget.onContinueChat?.call();
         break;
       case 'report_user':
-        _showReportUserDialog();
+        widget.onReportUser?.call();
         break;
     }
-  }
-
-  void _showReportUserDialog() {
-    final commentController = TextEditingController();
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder:
-          (_) => StatefulBuilder(
-            builder:
-                (context, setState) => AlertDialog(
-                  title: Text(S.of(context).reportuser),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(S.of(context).reportuserdescription),
-                        const SizedBox(height: 16),
-                        Text(
-                          S.of(context).selectreason,
-                          style: theme.textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: 8),
-                        ..._getReportReasons().map(
-                          (reason) => RadioListTile<String>(
-                            title: Text(reason),
-                            value: reason,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: commentController,
-                          decoration: InputDecoration(
-                            labelText: S.of(context).additionalcomments,
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(S.of(context).cancel),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.error,
-                        foregroundColor: theme.colorScheme.onError,
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              S
-                                  .of(context)
-                                  .please_select_the_reason_for_the_complaint,
-                            ),
-                            backgroundColor: theme.colorScheme.error,
-                          ),
-                        );
-                        return;
-                      },
-                      child: Text(S.of(context).submitreport),
-                    ),
-                  ],
-                ),
-          ),
-    );
-  }
-
-  List<String> _getReportReasons() {
-    return [
-      S.of(context).spam,
-      S.of(context).harassment,
-      S.of(context).inappropriatecontent,
-      S.of(context).fakeprofile,
-      S.of(context).other,
-    ];
   }
 
   @override
@@ -321,9 +239,6 @@ class _InputAreaState extends State<InputArea> {
           children: [
             CommandSuggestionsWidget(controller: widget.controller),
             StickerPickerWidget(
-              // onStickerSelected: (sticker) {
-              //   context.read<ChatMessageCubit>().sendStickerMessage(sticker);
-              // },
               onGiftSelected: (inventory) {
                 context.read<ChatMessageCubit>().sendGiftMessage(
                   inventory.gift,
@@ -331,12 +246,6 @@ class _InputAreaState extends State<InputArea> {
               },
             ),
 
-            // if (!widget.isTemporary)
-            //   MediaPreviewSection(
-            //     theme: theme,
-            //     thumbnailCache: _thumbnailCache,
-            //     mediaLibrary: _mediaLibrary,
-            //   ),
             InputBottomBar(
               controller: widget.controller,
               chatId: widget.chatId,

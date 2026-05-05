@@ -4769,6 +4769,26 @@ class S {
   String get price {
     return Intl.message('Price', name: 'price', desc: '', args: []);
   }
+
+  /// `Complaint sent`
+  String get complaintSent {
+    return Intl.message(
+      'Complaint sent',
+      name: 'complaintSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error sending complaint`
+  String get errorSendingComplaint {
+    return Intl.message(
+      'Error sending complaint',
+      name: 'errorSendingComplaint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

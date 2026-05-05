@@ -239,6 +239,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "closeTheChat": MessageLookupByLibrary.simpleMessage("Close the chat"),
     "communication": MessageLookupByLibrary.simpleMessage("Communication"),
     "communityRules": MessageLookupByLibrary.simpleMessage("Community Rules"),
+    "complaintSent": MessageLookupByLibrary.simpleMessage("Complaint sent"),
     "completed": MessageLookupByLibrary.simpleMessage("Completed"),
     "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
     "confirmPin": MessageLookupByLibrary.simpleMessage("Confirm PIN"),
@@ -395,6 +396,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Error loading rules",
     ),
     "errorPrefix": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorSendingComplaint": MessageLookupByLibrary.simpleMessage(
+      "Error sending complaint",
+    ),
     "errorUploadingUserData": MessageLookupByLibrary.simpleMessage(
       "Error uploading user data",
     ),

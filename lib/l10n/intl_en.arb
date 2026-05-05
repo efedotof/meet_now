@@ -567,5 +567,7 @@
   "purchaseError": "Purchase error",
   "typeOfGift": "Type of gift",
   "rare": "Rare",
-  "price": "Price"
+  "price": "Price",
+  "complaintSent": "Complaint sent",
+  "errorSendingComplaint": "Error sending complaint"
 }

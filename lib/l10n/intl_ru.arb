@@ -567,5 +567,7 @@
   "purchaseError": "Ошибка покупки",
   "typeOfGift": "Тип подарка",
   "rare": "Редкий",
-  "price": "Цена"
+  "price": "Цена",
+  "complaintSent": "Жалоба отправлена",
+  "errorSendingComplaint": "Ошибка при отправке жалобы"
 }
